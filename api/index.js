@@ -1,57 +1,103 @@
+const TIKHUB_BASE = "https://api.tikhub.io";
+
+function reply(res, status, data) {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Cache-Control", "no-store");
+  return res.status(status).json(data);
+}
+
+async function callTikHub(path, params, apiKey) {
+  const query = new URLSearchParams(params);
+
+  const response = await fetch(
+    `${TIKHUB_BASE}${path}?${query.toString()}`,
+    {
+      headers: {
+        Authorization: `Bearer ${apiKey}`
+      }
+    }
+  );
+
+  const text = await response.text();
+
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    data = { raw: text };
+  }
+
+  return {
+    ok: response.ok,
+    status: response.status,
+    data
+  };
+}
+
 export default async function handler(req, res) {
-  // 先确认 Vercel 函数本身能够正常运行
-  if (req.method === "GET" && !req.query.url) {
-    return res.status(200).json({
-      ok: true,
-      service: "TikHub Douyin Proxy",
-      message: "Proxy is running"
-    });
+  if (req.method === "OPTIONS") {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+    return res.status(204).end();
   }
 
   if (req.method !== "GET") {
-    return res.status(405).json({
+    return reply(res, 405, {
       ok: false,
       error: "Method not allowed"
-    });
-  }
-
-  const douyinUrl = req.query.url;
-
-  if (!douyinUrl) {
-    return res.status(400).json({
-      ok: false,
-      error: "Missing Douyin URL"
     });
   }
 
   const apiKey = process.env.TIKHUB_API_KEY;
 
   if (!apiKey) {
-    return res.status(500).json({
+    return reply(res, 500, {
       ok: false,
       error: "TIKHUB_API_KEY is not configured"
     });
   }
 
-  try {
-    const endpoint =
-      "https://api.tikhub.io/api/v1/douyin/app/v3/fetch_one_video_by_share_url" +
-      "?share_url=" +
-      encodeURIComponent(douyinUrl);
+  const douyinUrl = req.query.url;
 
-    const response = await fetch(endpoint, {
-      headers: {
-        Authorization: `Bearer ${apiKey}`
-      }
+  if (!douyinUrl) {
+    return reply(res, 200, {
+      ok: true,
+      service: "Finance Tree Douyin Resolver",
+      status: "running",
+      usage: "/api?url=DOUYIN_SHARE_URL"
+    });
+  }
+
+  try {
+    const result = await callTikHub(
+      "/api/v1/douyin/app/v3/fetch_one_video_by_share_url",
+      {
+        share_url: douyinUrl
+      },
+      apiKey
+    );
+
+    if (!result.ok) {
+      return reply(res, result.status, {
+        ok: false,
+        input_url: douyinUrl,
+        error: "TikHub failed to resolve the Douyin link",
+        upstream: result.data
+      });
+    }
+
+    return reply(res, 200, {
+      ok: true,
+      source: "douyin",
+      input_url: douyinUrl,
+      data: result.data
     });
 
-    const data = await response.json();
-
-    return res.status(response.status).json(data);
   } catch (error) {
-    return res.status(500).json({
+    return reply(res, 500, {
       ok: false,
-      error: "TikHub request failed",
+      error: "Douyin resolver failed",
       detail: error.message
     });
   }
