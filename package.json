@@ -1,0 +1,13 @@
+{
+  "name": "public-content-reader",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "node --check api/index.js && node --check src/content-reader.js && node --check src/platforms/douyin.js && node --check src/normalizers/douyin.js && node --check src/services/tikhub.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
