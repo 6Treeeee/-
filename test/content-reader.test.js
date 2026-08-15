@@ -186,7 +186,7 @@ test("video retrieval falls back from the documented App route to Web", async ()
   assert.equal(result.content.transcription_input.strategy, "captions");
 });
 
-test("private or restricted App results are not retried through Web", async () => {
+test("unverified TikHub restriction markers are not retried through another TikHub route", async () => {
   const calls = [];
   const client = {
     async get(route) {
@@ -201,7 +201,7 @@ test("private or restricted App results are not retried through Web", async () =
   const reader = new DouyinReader({ client, fetchImpl: publicPageFetch });
   await assert.rejects(
     reader.read({ url: "https://www.douyin.com/video/100", type: "video" }),
-    (error) => error.code === "DOUYIN_VIDEO_RESTRICTED"
+    (error) => error.code === "DOUYIN_PROVIDER_RESTRICTION_UNVERIFIED"
   );
   assert.deepEqual(calls, [TIKHUB_ROUTES.videoApp]);
 });

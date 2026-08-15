@@ -86,7 +86,7 @@ export class TikHubClient {
               details: {
                 route,
                 http_status: response.status,
-                body_preview: clippedText(text)
+                body_length: text.length
               }
             }
           );

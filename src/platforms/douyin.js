@@ -1,18 +1,19 @@
-import { ReaderError, errorSummary } from "../errors.js";
-import { TikHubClient, TIKHUB_ROUTES } from "../services/tikhub.js";
+import { ReaderError } from "../errors.js";
+import { normalizeCreator, normalizeVideo } from "../normalizers/douyin.js";
+import { DirectPublicWebProvider } from "../providers/direct-public-web.js";
+import { TikHubProvider } from "../providers/tikhub.js";
+import { CreatorAnalyzer } from "../services/analysis.js";
+import { ArtifactStore } from "../services/artifacts.js";
+import { ContentProcessor } from "../services/content-processing.js";
 import {
-  extractAweme,
-  extractPostPage,
-  extractSecUserId,
-  extractUser,
-  normalizeCreator,
-  normalizeVideo,
-  postIdentity,
-  restrictionReason
-} from "../normalizers/douyin.js";
+  isTerminalAccessError,
+  ProviderChain,
+  sanitizeDiagnostics
+} from "../services/provider-chain.js";
 
 const DOUYIN_HOSTS = ["douyin.com", "iesdouyin.com"];
 const REDIRECT_STATUS = new Set([301, 302, 303, 307, 308]);
+const RESOLUTION_RETRY_STATUS = new Set([408, 425, 429, 500, 502, 503, 504]);
 const MOBILE_USER_AGENT =
   "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) " +
   "AppleWebKit/605.1.15 Version/17.0 Mobile/15E148 Safari/604.1";
@@ -39,9 +40,12 @@ function validatedDouyinUrl(value) {
   } catch {
     throw new ReaderError("INVALID_URL", "A valid public URL is required.", { status: 400 });
   }
-
   if (!["http:", "https:"].includes(url.protocol) || url.username || url.password) {
-    throw new ReaderError("INVALID_URL", "Only public HTTP(S) URLs without credentials are accepted.", { status: 400 });
+    throw new ReaderError(
+      "INVALID_URL",
+      "Only public HTTP(S) URLs without credentials are accepted.",
+      { status: 400 }
+    );
   }
   if (!isDouyinHost(url.hostname)) {
     throw new ReaderError("UNSUPPORTED_PLATFORM", "Phase 1 currently supports Douyin URLs only.", {
@@ -56,11 +60,19 @@ async function closeBody(response) {
   try {
     await response.body?.cancel();
   } catch {
-    // The redirect was already bodyless or consumed by the runtime.
+    // Redirect responses can already be bodyless or consumed by the runtime.
   }
 }
 
-export async function resolveDouyinUrl(value, fetchImpl = globalThis.fetch) {
+function wait(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export async function resolveDouyinUrl(
+  value,
+  fetchImpl = globalThis.fetch,
+  { retries = 2, retryDelayMs = 250, sleepImpl = wait } = {}
+) {
   let current = validatedDouyinUrl(value);
   const visited = new Set();
   const hops = [];
@@ -70,42 +82,58 @@ export async function resolveDouyinUrl(value, fetchImpl = globalThis.fetch) {
       return { finalUrl: current.href, resolved: false, hops, warning: "redirect_loop" };
     }
     visited.add(current.href);
-
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 10_000);
-    try {
-      const response = await fetchImpl(current, {
-        method: "GET",
-        redirect: "manual",
-        headers: { "User-Agent": MOBILE_USER_AGENT, Accept: "text/html,*/*" },
-        signal: controller.signal
-      });
-      const location = response.headers.get("location");
-      hops.push({ status: response.status, host: current.hostname });
-      await closeBody(response);
-
-      if (!REDIRECT_STATUS.has(response.status) || !location) {
-        return {
-          finalUrl: current.href,
-          resolved: current.href !== value,
-          hops
-        };
+    let lastError = null;
+    let advanced = false;
+    for (let attempt = 0; attempt <= retries; attempt += 1) {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 10_000);
+      try {
+        const response = await fetchImpl(current, {
+          method: "GET",
+          redirect: "manual",
+          headers: { "User-Agent": MOBILE_USER_AGENT, Accept: "text/html,*/*" },
+          signal: controller.signal
+        });
+        const location = response.headers.get("location");
+        const retryable = RESOLUTION_RETRY_STATUS.has(response.status);
+        if (retryable && attempt < retries) {
+          await closeBody(response);
+          await sleepImpl(retryDelayMs * (attempt + 1));
+          continue;
+        }
+        hops.push({ status: response.status, host: current.hostname, attempts: attempt + 1 });
+        await closeBody(response);
+        if (!REDIRECT_STATUS.has(response.status) || !location) {
+          return {
+            finalUrl: current.href,
+            resolved: current.href !== value,
+            hops,
+            ...(retryable ? { warning: "resolution_upstream_unavailable" } : {})
+          };
+        }
+        current = validatedDouyinUrl(new URL(location, current).href);
+        advanced = true;
+        break;
+      } catch (error) {
+        if (error instanceof ReaderError) throw error;
+        lastError = error;
+        if (attempt < retries) {
+          await sleepImpl(retryDelayMs * (attempt + 1));
+          continue;
+        }
+      } finally {
+        clearTimeout(timer);
       }
-
-      current = validatedDouyinUrl(new URL(location, current).href);
-    } catch (error) {
-      if (error instanceof ReaderError) throw error;
+    }
+    if (!advanced && lastError) {
       return {
         finalUrl: current.href,
         resolved: current.href !== value,
         hops,
-        warning: error?.name === "AbortError" ? "resolution_timeout" : "resolution_failed"
+        warning: lastError?.name === "AbortError" ? "resolution_timeout" : "resolution_failed"
       };
-    } finally {
-      clearTimeout(timer);
     }
   }
-
   return { finalUrl: current.href, resolved: true, hops, warning: "redirect_limit" };
 }
 
@@ -141,351 +169,283 @@ function secUserIdFromUrl(value) {
   return match?.[1] ?? url.searchParams.get("sec_uid") ?? null;
 }
 
-async function attempt(operation) {
-  try {
-    return { ok: true, value: await operation() };
-  } catch (error) {
-    return { ok: false, error };
-  }
+function awemeIdFromUrl(value) {
+  const url = validatedDouyinUrl(value);
+  return decodeURIComponent(url.pathname).match(/\/(?:share\/)?(?:video|note)\/(\d+)/i)?.[1] ??
+    url.searchParams.get("modal_id")?.match(/^\d+$/)?.[0] ?? null;
 }
 
-function paginationFailure(message, cause, context) {
-  return new ReaderError("DOUYIN_PAGINATION_FAILED", message, {
-    status: 502,
-    details: { ...context, cause: errorSummary(cause) },
-    cause
-  });
+function canonicalPagination(pagination = {}, creator, itemCount, limitation) {
+  const expectedPosts = pagination.expected_posts ?? pagination.displayed_post_count ??
+    creator?.stats?.post_count ?? null;
+  const uniquePosts = pagination.unique_posts ?? pagination.unique_items ?? itemCount;
+  const publicExhausted = pagination.public_access_exhausted ?? pagination.complete ??
+    pagination.upstream_exhausted ?? false;
+  return {
+    ...pagination,
+    complete: Boolean(publicExhausted),
+    scope: pagination.scope ?? "public_unauthenticated",
+    public_access_exhausted: Boolean(publicExhausted),
+    upstream_exhausted: pagination.upstream_exhausted ?? false,
+    count_consistent: expectedPosts === null || uniquePosts >= expectedPosts,
+    expected_posts: expectedPosts,
+    profile_count_gap: expectedPosts === null ? null : Math.max(0, expectedPosts - uniquePosts),
+    unique_posts: uniquePosts,
+    duplicates_removed: pagination.duplicates_removed ?? 0,
+    pages_fetched: pagination.pages_fetched ?? pagination.pages_captured ?? 0,
+    limitation: limitation ?? null
+  };
 }
 
-async function paginatePosts(client, { secUserId, route, provider, extraParams = {}, maxPages = 100 }) {
-  const items = [];
-  const pages = [];
-  const seenCursors = new Set();
-  let cursor = "0";
-
-  while (pages.length < maxPages) {
-    if (seenCursors.has(cursor)) {
-      throw new ReaderError("DOUYIN_CURSOR_LOOP", "Douyin returned a repeated pagination cursor.", {
-        status: 502,
-        details: { provider, cursor, pages_fetched: pages.length }
-      });
+function accessFailureRecord(limitation) {
+  if (!limitation) return [];
+  return [{
+    aweme_id: null,
+    count: limitation.inaccessible_count ?? null,
+    reason: {
+      code: limitation.code ?? "PUBLIC_ACCESS_LIMITATION",
+      type: limitation.type ?? "access_limited",
+      message: limitation.message ?? "The public profile exposed an access boundary."
     }
-    seenCursors.add(cursor);
+  }];
+}
 
-    let response;
+export class DouyinReader {
+  constructor({
+    apiKey,
+    fetchImpl = globalThis.fetch,
+    client,
+    providers,
+    tikhubProvider,
+    directProvider,
+    processor,
+    analyzer = new CreatorAnalyzer(),
+    artifactStore = new ArtifactStore(),
+    processContent,
+    profileConcurrency = 3
+  } = {}) {
+    this.fetchImpl = fetchImpl;
+    this.explicitProviders = Boolean(providers);
+
+    let configuredProviders = providers;
+    if (!configuredProviders) {
+      const tikhub = tikhubProvider ?? new TikHubProvider({ apiKey, fetchImpl, client });
+      configuredProviders = [];
+      if (tikhub.available) configuredProviders.push(tikhub);
+      if (directProvider) configuredProviders.push(directProvider);
+      else if (!client) configuredProviders.push(new DirectPublicWebProvider());
+    }
+    this.chain = new ProviderChain(configuredProviders);
+    this.processContent = processContent ?? !client;
+    this.artifactStore = artifactStore;
+    this.processor = processor ?? new ContentProcessor({
+      fetchImpl,
+      artifactStore,
+      profileConcurrency
+    });
+    this.analyzer = analyzer;
+  }
+
+  orderFor(contentType) {
+    const ids = this.chain.providers.map((provider) => provider.id);
+    if (this.explicitProviders) return ids;
+    if (contentType === "profile") {
+      // The rendered public grid is the only provider that can authoritatively
+      // enforce a visible login-for-more boundary. TikHub must not become an
+      // enumeration fallback that exposes IDs beyond that boundary.
+      return ids.includes("direct_public_web") ? ["direct_public_web"] : ids;
+    }
+    const preferred = ["tikhub", "direct_public_web"];
+    return [...preferred.filter((id) => ids.includes(id)), ...ids.filter((id) => !preferred.includes(id))];
+  }
+
+  async retrieveVideo(context, order = this.orderFor("video")) {
     try {
-      response = await client.get(route, {
-        sec_user_id: secUserId,
-        max_cursor: cursor,
-        count: 20,
-        ...extraParams
+      return await this.chain.run("readVideo", context, {
+        order,
+        usable: (result) => Boolean(result?.aweme)
       });
     } catch (error) {
-      throw paginationFailure("A Douyin post page could not be retrieved.", error, {
-        provider,
-        cursor,
-        pages_fetched: pages.length
-      });
+      if (isTerminalAccessError(error)) throw error;
+      if (["DOUYIN_PROVIDER_CHAIN_FAILED", "DOUYIN_PROVIDER_UNAVAILABLE"].includes(error?.code)) {
+        throw new ReaderError(
+          "DOUYIN_VIDEO_RETRIEVAL_FAILED",
+          "Douyin's public retrieval providers could not return this video.",
+          { status: 502, details: sanitizeDiagnostics(error.details), cause: error }
+        );
+      }
+      throw error;
     }
+  }
 
-    const page = extractPostPage(response.data);
-    if (!page.recognized) {
-      throw new ReaderError("UPSTREAM_SCHEMA_MISMATCH", "TikHub's Douyin post response had an unknown shape.", {
-        status: 502,
-        details: {
-          provider,
-          route,
-          cursor,
-          pages_fetched: pages.length,
-          request_id: response.meta.request_id
+  normalizeRetrievedVideo(retrieval, context) {
+    const raw = retrieval.value;
+    return normalizeVideo(raw.aweme, {
+      inputUrl: context.inputUrl,
+      resolvedUrl: context.resolvedUrl,
+      acquiredAt: raw.meta?.acquired_at ?? new Date().toISOString(),
+      networkMediaUrls: raw.networkMediaUrls ?? []
+    });
+  }
+
+  async readVideo({ inputUrl, resolvedUrl, resolution }) {
+    const context = {
+      inputUrl,
+      resolvedUrl,
+      awemeId: awemeIdFromUrl(resolvedUrl) ?? awemeIdFromUrl(inputUrl)
+    };
+    const retrieval = await this.retrieveVideo(context);
+    let content = this.normalizeRetrievedVideo(retrieval, context);
+
+    if (this.processContent) {
+      content = await this.processor.processVideo(content, {
+        refreshVideo: async (awemeId) => {
+          const canonicalUrl = `https://www.douyin.com/video/${awemeId}`;
+          const refreshed = await this.retrieveVideo({
+            inputUrl: canonicalUrl,
+            resolvedUrl: canonicalUrl,
+            awemeId
+          }, this.orderFor("video"));
+          return this.normalizeRetrievedVideo(refreshed, {
+            inputUrl: canonicalUrl,
+            resolvedUrl: canonicalUrl
+          });
         }
       });
     }
 
-    items.push(...page.items);
-    pages.push({
-      cursor,
-      next_cursor: page.maxCursor,
-      item_count: page.items.length,
-      has_more: page.hasMore,
-      request_id: response.meta.request_id
-    });
-
-    if (page.hasMore === false) {
-      return { provider, route, items, pages, exhausted: true };
-    }
-    if (page.hasMore !== true) {
-      throw new ReaderError("UPSTREAM_SCHEMA_MISMATCH", "TikHub omitted Douyin's has_more pagination field.", {
-        status: 502,
-        details: { provider, route, cursor, pages_fetched: pages.length }
-      });
-    }
-    if (!page.maxCursor) {
-      throw new ReaderError("DOUYIN_CURSOR_MISSING", "Douyin indicated more posts but returned no next cursor.", {
-        status: 502,
-        details: { provider, cursor, pages_fetched: pages.length }
-      });
-    }
-    cursor = page.maxCursor;
-  }
-
-  throw new ReaderError("DOUYIN_PAGE_LIMIT", "The profile exceeded the pagination safety limit.", {
-    status: 502,
-    details: { provider, max_pages: maxPages, posts_seen: items.length }
-  });
-}
-
-function mergePostSeries(series) {
-  const unique = new Map();
-  let anonymous = 0;
-  let duplicates = 0;
-
-  for (const result of series) {
-    for (const item of result.items) {
-      const id = postIdentity(item) ?? `anonymous-${anonymous++}`;
-      if (unique.has(id)) duplicates += 1;
-      else unique.set(id, item);
-    }
-  }
-  return { items: [...unique.values()], duplicates };
-}
-
-export class DouyinReader {
-  constructor({ apiKey, fetchImpl = globalThis.fetch, client } = {}) {
-    this.fetchImpl = fetchImpl;
-    this.client = client ?? new TikHubClient({ apiKey, fetchImpl });
+    return {
+      schema_version: "2.0",
+      platform: "douyin",
+      content_type: "video",
+      source: {
+        input_url: inputUrl,
+        resolved_url: resolvedUrl,
+        resolution,
+        retrieval: sanitizeDiagnostics(retrieval.value.meta),
+        provider_attempts: retrieval.attempts
+      },
+      content
+    };
   }
 
   async resolveSecUserId(inputUrl, resolvedUrl) {
     const direct = secUserIdFromUrl(resolvedUrl) ?? secUserIdFromUrl(inputUrl);
-    if (direct) return { secUserId: direct, retrieval: { method: "public_redirect" } };
-
-    const response = await this.client.get(TIKHUB_ROUTES.secUserId, { url: inputUrl });
-    const secUserId = extractSecUserId(response.data);
-    if (!secUserId) {
-      throw new ReaderError("DOUYIN_PROFILE_ID_NOT_FOUND", "The public profile URL did not yield a sec_user_id.", {
-        status: 422,
-        details: { route: response.meta.route, request_id: response.meta.request_id }
-      });
-    }
-    return { secUserId, retrieval: response.meta };
-  }
-
-  async readVideo({ inputUrl, resolvedUrl, resolution }) {
-    const attempts = [];
-    let successfulResponses = 0;
-    for (const route of [TIKHUB_ROUTES.videoApp, TIKHUB_ROUTES.videoWeb]) {
-      const result = await attempt(() => this.client.get(route, { share_url: inputUrl }));
-      if (!result.ok) {
-        attempts.push({ route, error: errorSummary(result.error) });
-        continue;
+    if (direct) return { secUserId: direct, meta: { method: "public_redirect" } };
+    const providers = this.chain.providers.filter((provider) =>
+      typeof provider.resolveSecUserId === "function");
+    for (const provider of providers) {
+      try {
+        return await provider.resolveSecUserId(inputUrl);
+      } catch (error) {
+        if (isTerminalAccessError(error)) throw error;
       }
-      successfulResponses += 1;
-
-      const aweme = extractAweme(result.value.data);
-      if (aweme) {
-        return {
-          schema_version: "1.0",
-          platform: "douyin",
-          content_type: "video",
-          source: {
-            input_url: inputUrl,
-            resolved_url: resolvedUrl,
-            resolution,
-            retrieval: result.value.meta
-          },
-          content: normalizeVideo(aweme, { inputUrl, resolvedUrl })
-        };
-      }
-
-      const restriction = restrictionReason(result.value.data);
-      if (route === TIKHUB_ROUTES.videoApp && restriction && [5, 10].includes(restriction.reason)) {
-        throw new ReaderError(
-          "DOUYIN_VIDEO_RESTRICTED",
-          "Douyin marked this content as private or visible only to selected users.",
-          {
-            status: 422,
-            details: {
-              route,
-              request_id: result.value.meta.request_id,
-              restriction
-            }
-          }
-        );
-      }
-
-      attempts.push({
-        route,
-        request_id: result.value.meta.request_id,
-        restriction,
-        error: { code: "EMPTY_VIDEO_RESULT", message: "No public video object was returned." }
-      });
     }
-
-    if (successfulResponses === 0) {
-      throw new ReaderError("DOUYIN_VIDEO_RETRIEVAL_FAILED", "Douyin's retrieval providers could not be reached.", {
-        status: 502,
-        details: { attempts }
-      });
-    }
-
-    throw new ReaderError("DOUYIN_VIDEO_UNAVAILABLE", "No accessible public Douyin video data was returned.", {
-      status: 422,
-      details: { attempts }
-    });
+    return { secUserId: null, meta: { method: "public_page" } };
   }
 
   async readProfile({ inputUrl, resolvedUrl, resolution, knownSecUserId = null }) {
-    const idResult = knownSecUserId
-      ? { secUserId: knownSecUserId, retrieval: { method: "content_detection" } }
+    const identity = knownSecUserId
+      ? { secUserId: knownSecUserId, meta: { method: "content_detection" } }
       : await this.resolveSecUserId(inputUrl, resolvedUrl);
-    const secUserId = idResult.secUserId;
-
-    let profileResponse = null;
-    const profileAttempts = [];
-    for (const route of [TIKHUB_ROUTES.profileApp, TIKHUB_ROUTES.profileWeb]) {
-      const result = await attempt(() => this.client.get(route, { sec_user_id: secUserId }));
-      if (result.ok && extractUser(result.value.data)) {
-        profileResponse = result.value;
-        break;
-      }
-      profileAttempts.push(result.ok
-        ? { route, request_id: result.value.meta.request_id, error: "user_not_found_in_response" }
-        : { route, error: errorSummary(result.error) });
-    }
-
-    const primary = await attempt(() => paginatePosts(this.client, {
-      secUserId,
-      route: TIKHUB_ROUTES.postsApp,
-      provider: "app_v3_normal",
-      extraParams: { sort_type: 0, channel: "normal" }
-    }));
-
-    let series;
-    const warnings = [];
-    const attemptedProviders = new Set(["app_v3_normal"]);
-    if (primary.ok) {
-      series = [primary.value];
-    } else if (primary.error?.details?.pages_fetched === 0) {
-      const lite = await attempt(() => paginatePosts(this.client, {
-        secUserId,
-        route: TIKHUB_ROUTES.postsApp,
-        provider: "app_v3_lite",
-        extraParams: { sort_type: 0, channel: "lite" }
-      }));
-      attemptedProviders.add("app_v3_lite");
-      const web = lite.ok ? null : await paginatePosts(this.client, {
-          secUserId,
-          route: TIKHUB_ROUTES.postsWeb,
-          provider: "web",
-          extraParams: { filter_type: 0 }
-        });
-      if (!lite.ok) attemptedProviders.add("web");
-      series = [lite.ok ? lite.value : web];
-      warnings.push({ code: "APP_POSTS_UNAVAILABLE", detail: errorSummary(primary.error) });
-      if (!lite.ok) warnings.push({
-        code: "APP_LITE_POSTS_UNAVAILABLE",
-        detail: errorSummary(lite.error)
+    const context = { inputUrl, resolvedUrl, secUserId: identity.secUserId };
+    let retrieval;
+    try {
+      retrieval = await this.chain.run("readProfile", context, {
+        order: this.orderFor("profile"),
+        usable: (result) => Boolean(result?.creator && Array.isArray(result?.items))
       });
-    } else {
-      throw primary.error;
-    }
-
-    let merged = mergePostSeries(series);
-    const initialUser = extractUser(profileResponse?.data) ?? series[0].items[0]?.author ?? {};
-    let creator = normalizeCreator(initialUser);
-    if (!creator.sec_user_id) creator = { ...creator, sec_user_id: secUserId };
-    const expectedPosts = creator.stats?.post_count ?? null;
-
-    if (expectedPosts !== null && merged.items.length < expectedPosts) {
-      const candidates = [
-        {
-          route: TIKHUB_ROUTES.postsApp,
-          provider: "app_v3_lite",
-          extraParams: { sort_type: 0, channel: "lite" }
-        },
-        {
-          route: TIKHUB_ROUTES.postsWeb,
-          provider: "web_reconciliation",
-          extraParams: { filter_type: 0 }
-        },
-        {
-          route: TIKHUB_ROUTES.postsWeb,
-          provider: "web_hot",
-          extraParams: { filter_type: 3 }
-        }
-      ].filter((candidate) => !attemptedProviders.has(
-        candidate.provider === "web_reconciliation" ? "web" : candidate.provider
-      ));
-
-      for (const candidate of candidates) {
-        attemptedProviders.add(candidate.provider === "web_reconciliation" ? "web" : candidate.provider);
-        const result = await attempt(() => paginatePosts(this.client, { secUserId, ...candidate }));
-        if (result.ok) {
-          series.push(result.value);
-          merged = mergePostSeries(series);
-          if (merged.items.length >= expectedPosts) break;
-        } else {
-          warnings.push({
-            code: "RECONCILIATION_SOURCE_FAILED",
-            provider: candidate.provider,
-            detail: errorSummary(result.error)
-          });
-        }
+    } catch (error) {
+      if (isTerminalAccessError(error)) throw error;
+      if (["DOUYIN_PROVIDER_CHAIN_FAILED", "DOUYIN_PROVIDER_UNAVAILABLE"].includes(error?.code)) {
+        throw new ReaderError(
+          "DOUYIN_PROFILE_RETRIEVAL_FAILED",
+          "Douyin's public retrieval providers could not return this creator profile.",
+          { status: 502, details: sanitizeDiagnostics(error.details), cause: error }
+        );
       }
+      throw error;
     }
 
-    const posts = merged.items.map((item) => normalizeVideo(item));
-    const upstreamExhausted = series.every((item) => item.exhausted);
-    const countConsistent = expectedPosts === null || posts.length >= expectedPosts;
-    const complete = upstreamExhausted;
-    if (!countConsistent) {
+    const raw = retrieval.value;
+    let creator = normalizeCreator(raw.creator);
+    const secUserId = creator.sec_user_id ?? identity.secUserId;
+    if (secUserId && !creator.sec_user_id) creator = { ...creator, sec_user_id: secUserId };
+    const acquiredAt = raw.meta?.acquired_at ?? new Date().toISOString();
+    let posts = raw.items.map((item) => normalizeVideo(item, { acquiredAt }));
+    const pagination = canonicalPagination(raw.pagination, creator, posts.length, raw.limitation);
+    const warnings = [...(raw.warnings ?? [])];
+    if (raw.limitation) {
+      warnings.push({
+        code: raw.limitation.code ?? "PARTIAL_PUBLIC_PROFILE",
+        message: raw.limitation.message,
+        inaccessible_count: raw.limitation.inaccessible_count ?? pagination.profile_count_gap
+      });
+    } else if (!pagination.count_consistent) {
       warnings.push({
         code: "POST_COUNT_MISMATCH",
-        expected_posts: expectedPosts,
-        accessible_unique_posts: posts.length,
-        message: "Public unauthenticated feeds were exhausted, but the profile count also includes items that may be unlisted, access-limited, or not yet visible in those feeds."
+        expected_posts: pagination.expected_posts,
+        accessible_unique_posts: pagination.unique_posts,
+        message: "The public unauthenticated feed ended before the profile display count was reached."
       });
     }
-    if (!profileResponse) {
-      warnings.push({ code: "PROFILE_METADATA_DERIVED_FROM_POST", attempts: profileAttempts });
+
+    let processingFailures = [];
+    if (this.processContent) {
+      const processed = await this.processor.processProfile(posts, {
+        refreshVideo: async (awemeId) => {
+          const canonicalUrl = `https://www.douyin.com/video/${awemeId}`;
+          const refreshed = await this.retrieveVideo({
+            inputUrl: canonicalUrl,
+            resolvedUrl: canonicalUrl,
+            awemeId
+          }, this.orderFor("video"));
+          return this.normalizeRetrievedVideo(refreshed, {
+            inputUrl: canonicalUrl,
+            resolvedUrl: canonicalUrl
+          });
+        }
+      });
+      posts = processed.posts;
+      processingFailures = processed.failures;
     }
 
+    const accessFailures = accessFailureRecord(raw.limitation);
+    const analysis = this.analyzer.analyze({
+      creator,
+      posts,
+      failures: [...processingFailures, ...accessFailures],
+      pagination,
+      source: {
+        provider: retrieval.provider.id,
+        retrieval: sanitizeDiagnostics(raw.meta)
+      }
+    });
+
     return {
-      schema_version: "1.0",
+      schema_version: "2.0",
       platform: "douyin",
       content_type: "profile",
       source: {
         input_url: inputUrl,
         resolved_url: resolvedUrl,
         resolution,
-        identity_retrieval: idResult.retrieval,
-        profile_retrieval: profileResponse?.meta ?? null,
-        post_retrieval: series.map((item) => ({
-          provider: item.provider,
-          route: item.route,
-          pages_fetched: item.pages.length
-        }))
+        identity_retrieval: identity.meta,
+        retrieval: sanitizeDiagnostics(raw.meta),
+        provider_attempts: retrieval.attempts
       },
       content: {
         creator,
         posts,
-        pagination: {
-          complete,
-          scope: "public_unauthenticated",
-          upstream_exhausted: upstreamExhausted,
-          count_consistent: countConsistent,
-          expected_posts: expectedPosts,
-          profile_count_gap: expectedPosts === null ? null : Math.max(0, expectedPosts - posts.length),
-          unique_posts: posts.length,
-          duplicates_removed: merged.duplicates,
-          pages_fetched: series.reduce((total, item) => total + item.pages.length, 0),
-          series: series.map((item) => ({
-            provider: item.provider,
-            pages: item.pages
-          }))
+        pagination,
+        limitation: raw.limitation ?? null,
+        warnings,
+        processing: {
+          attempted_posts: posts.length,
+          successfully_content_read: posts.length - processingFailures.length,
+          failed_posts: processingFailures
         },
-        warnings
+        analysis
       }
     };
   }
@@ -493,48 +453,77 @@ export class DouyinReader {
   async read({ url, type = "auto" }) {
     const inputUrl = validatedDouyinUrl(url).href;
     const resolution = await resolveDouyinUrl(inputUrl, this.fetchImpl);
-    const resolvedUrl = resolution.finalUrl;
-    const sourceResolution = {
-      ...resolution,
-      finalUrl: publicSourceUrl(resolution.finalUrl)
-    };
+    const resolvedUrl = publicSourceUrl(resolution.finalUrl);
+    const sourceResolution = { ...resolution, finalUrl: resolvedUrl };
     const requestedType = String(type).toLowerCase();
-
     if (!["auto", "video", "profile"].includes(requestedType)) {
       throw new ReaderError("INVALID_CONTENT_TYPE", "type must be auto, video, or profile.", { status: 400 });
     }
 
-    let detectedType = requestedType === "auto" ? detectDouyinContentType(resolvedUrl) : requestedType;
+    const detectedType = requestedType === "auto" ? detectDouyinContentType(resolvedUrl) : requestedType;
     if (detectedType === "profile") {
-      return this.readProfile({ inputUrl, resolvedUrl: sourceResolution.finalUrl, resolution: sourceResolution });
+      return this.readProfile({ inputUrl, resolvedUrl, resolution: sourceResolution });
     }
     if (detectedType === "video") {
-      return this.readVideo({ inputUrl, resolvedUrl: sourceResolution.finalUrl, resolution: sourceResolution });
+      return this.readVideo({ inputUrl, resolvedUrl, resolution: sourceResolution });
     }
 
-    const profileProbe = await attempt(() => this.resolveSecUserId(inputUrl, resolvedUrl));
-    if (profileProbe.ok) {
+    // A short-link fetch can fail transiently even though an ordinary public
+    // browser can still follow it. Probe only the same logged-out public page;
+    // no login, cookie import, challenge handling, or alternate access is used.
+    const direct = this.chain.get("direct_public_web");
+    if (typeof direct?.resolveContent === "function") {
+      try {
+        const browserResolution = await direct.resolveContent({ inputUrl, resolvedUrl });
+        const browserResolvedUrl = publicSourceUrl(browserResolution.finalUrl);
+        const browserDetectedType = browserResolution.contentType ??
+          detectDouyinContentType(browserResolvedUrl);
+        const browserSourceResolution = {
+          ...sourceResolution,
+          finalUrl: browserResolvedUrl,
+          browser_fallback: sanitizeDiagnostics(browserResolution.meta)
+        };
+        if (browserDetectedType === "profile") {
+          return this.readProfile({
+            inputUrl,
+            resolvedUrl: browserResolvedUrl,
+            resolution: browserSourceResolution
+          });
+        }
+        if (browserDetectedType === "video") {
+          return this.readVideo({
+            inputUrl,
+            resolvedUrl: browserResolvedUrl,
+            resolution: browserSourceResolution
+          });
+        }
+      } catch (error) {
+        if (isTerminalAccessError(error)) throw error;
+        // Provider diagnostics are returned only if all identity paths fail.
+        sourceResolution.browser_fallback_error = sanitizeDiagnostics({
+          code: error?.code ?? "DOUYIN_PUBLIC_BROWSER_RESOLUTION_FAILED",
+          details: error?.details
+        });
+      }
+    }
+
+    const identity = await this.resolveSecUserId(inputUrl, resolvedUrl);
+    if (identity.secUserId) {
       return this.readProfile({
         inputUrl,
-        resolvedUrl: sourceResolution.finalUrl,
+        resolvedUrl,
         resolution: sourceResolution,
-        knownSecUserId: profileProbe.value.secUserId
+        knownSecUserId: identity.secUserId
       });
     }
-
-    const video = await attempt(() => this.readVideo({
-      inputUrl,
-      resolvedUrl: sourceResolution.finalUrl,
-      resolution: sourceResolution
-    }));
-    if (video.ok) return video.value;
-
-    throw new ReaderError("DOUYIN_CONTENT_NOT_RESOLVED", "The URL was neither a readable public profile nor video.", {
-      status: 422,
-      details: {
-        profile: errorSummary(profileProbe.error),
-        video: errorSummary(video.error)
-      }
-    });
+    const awemeId = awemeIdFromUrl(resolvedUrl) ?? awemeIdFromUrl(inputUrl);
+    if (awemeId) {
+      return this.readVideo({ inputUrl, resolvedUrl, resolution: sourceResolution });
+    }
+    throw new ReaderError(
+      "DOUYIN_CONTENT_NOT_RESOLVED",
+      "The URL was neither a readable public profile nor video.",
+      { status: 422 }
+    );
   }
 }

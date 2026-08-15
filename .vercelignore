@@ -1,0 +1,16 @@
+node_modules/
+.vercel/
+.env
+.env.*
+!.env.example
+
+# Local acceptance captures contain expiring signed URLs; only the sanitized
+# artifacts/douyin/verified-profile.json file belongs in the function bundle.
+artifacts/douyin/*.raw.json
+artifacts/douyin/media/
+artifacts/douyin/tmp/
+*.mp3
+*.mp4
+*.m4a
+*.webm
+*.wav

@@ -11,7 +11,9 @@ function firstDefined(object, paths) {
 }
 
 function stringValue(value) {
-  return value === undefined || value === null || value === "" ? null : String(value);
+  return value === undefined || value === null || value === ""
+    ? null
+    : String(value).replaceAll("\uFFFD", "，");
 }
 
 function numberValue(value) {
@@ -51,7 +53,17 @@ function collectUrls(value, output = []) {
     return output;
   }
   if (typeof value === "object") {
-    for (const key of ["url_list", "urls", "url", "uri", "download_url", "caption_url"]) {
+    for (const key of [
+      "url_list",
+      "urls",
+      "url",
+      "uri",
+      "download_url",
+      "caption_url",
+      "main_url",
+      "backup_url",
+      "fallback_url"
+    ]) {
       if (Object.prototype.hasOwnProperty.call(value, key)) collectUrls(value[key], output);
     }
   }
@@ -172,7 +184,7 @@ export function normalizeCreator(user) {
   return normalizeCreatorFromObject(user ?? {});
 }
 
-function normalizeCaptions(aweme) {
+function normalizeCaptions(aweme, acquiredAt) {
   const candidates = [
     aweme?.video?.cla_info?.caption_infos,
     aweme?.video?.cla_info?.captions,
@@ -188,19 +200,21 @@ function normalizeCaptions(aweme) {
     language_code: stringValue(track.language_code ?? track.lang),
     format: stringValue(track.format ?? track.caption_format),
     url: uniqueUrls(track.url, track.url_list, track.caption_url)[0] ?? null,
-    source: "douyin"
+    source: "douyin",
+    acquired_at: acquiredAt
   })).filter((track) => track.url || track.id);
 
   return { available: tracks.some((track) => Boolean(track.url)), tracks };
 }
 
-function normalizePlayback(video = {}) {
+function normalizePlayback(video = {}, { acquiredAt, networkMediaUrls = [] } = {}) {
   const playback = [];
   const downloads = [];
+  const audio = [];
 
   function add(target, label, address, extra = {}) {
     for (const url of uniqueUrls(address)) {
-      target.push(compact({ url, source: label, ...extra }));
+      target.push(compact({ url, source: label, acquired_at: acquiredAt, ...extra }));
     }
   }
 
@@ -211,7 +225,7 @@ function normalizePlayback(video = {}) {
   add(downloads, "download_addr", video.download_addr);
   add(downloads, "download_suffix_logo_addr", video.download_suffix_logo_addr);
 
-  for (const rate of video.bit_rate ?? video.bit_rate_audio ?? []) {
+  for (const rate of video.bit_rate ?? []) {
     const extra = {
       quality: stringValue(rate.gear_name ?? rate.quality_type),
       bitrate: numberValue(rate.bit_rate),
@@ -222,8 +236,44 @@ function normalizePlayback(video = {}) {
     add(playback, "bit_rate", rate.play_addr ?? rate.play_addr_265 ?? rate, extra);
   }
 
+  for (const rate of video.bit_rate_audio ?? []) {
+    const meta = rate.audio_meta ?? rate;
+    add(audio, "bit_rate_audio", meta.url_list ?? rate.play_addr ?? meta, {
+      media_type: "audio",
+      quality: stringValue(meta.quality ?? rate.audio_quality),
+      bitrate: numberValue(meta.bitrate ?? rate.bit_rate),
+      codec: stringValue(meta.codec_type ?? rate.codec_type),
+      format: stringValue(meta.format ?? rate.format),
+      content_length: numberValue(meta.size ?? rate.size),
+      file_id: stringValue(meta.file_id)
+    });
+  }
+
+  add(playback, "browser_network", networkMediaUrls, { media_type: "video" });
+
   const dedupe = (items) => [...new Map(items.map((item) => [item.url, item])).values()];
-  return { playback: dedupe(playback), downloads: dedupe(downloads) };
+  return { playback: dedupe(playback), downloads: dedupe(downloads), audio: dedupe(audio) };
+}
+
+function normalizeChapters(aweme) {
+  const chapterInfo = aweme?.recommend_chapter_info ?? {};
+  const sourceList = chapterInfo.recommend_chapter_list ?? aweme?.chapter_list ?? [];
+  const entries = Array.isArray(sourceList)
+    ? sourceList.map((entry, index) => compact({
+        index,
+        start_ms: numberValue(entry.timestamp ?? entry.start_time ?? entry.start_ms),
+        title: stringValue(entry.desc ?? entry.title),
+        detail: stringValue(entry.detail ?? entry.description)
+      }))
+    : [];
+
+  return {
+    available: entries.length > 0 || Boolean(chapterInfo.chapter_abstract),
+    generated_by_ai: Boolean(chapterInfo.chapter_abstract || entries.length),
+    source: "douyin_ai_chapters",
+    abstract: stringValue(chapterInfo.chapter_abstract),
+    entries
+  };
 }
 
 function normalizeImages(aweme) {
@@ -253,12 +303,21 @@ export function postIdentity(aweme) {
   return stringValue(aweme?.aweme_id ?? aweme?.group_id ?? aweme?.item_id);
 }
 
-export function normalizeVideo(aweme, { inputUrl = null, resolvedUrl = null } = {}) {
+export function normalizeVideo(
+  aweme,
+  {
+    inputUrl = null,
+    resolvedUrl = null,
+    acquiredAt = new Date().toISOString(),
+    networkMediaUrls = []
+  } = {}
+) {
   const id = postIdentity(aweme);
   const video = aweme?.video ?? {};
   const author = normalizeCreatorFromObject(aweme?.author ?? {});
-  const captions = normalizeCaptions(aweme);
-  const media = normalizePlayback(video);
+  const captions = normalizeCaptions(aweme, acquiredAt);
+  const media = normalizePlayback(video, { acquiredAt, networkMediaUrls });
+  const chapters = normalizeChapters(aweme);
   const images = normalizeImages(aweme);
   const contentKind = images.length > 0 ? "image_post" : video && Object.keys(video).length ? "video" : "unknown";
   const canonicalUrl = id ? `https://www.douyin.com/video/${id}` : resolvedUrl ?? inputUrl;
@@ -266,8 +325,10 @@ export function normalizeVideo(aweme, { inputUrl = null, resolvedUrl = null } = 
   const title = stringValue(aweme?.item_title ?? aweme?.preview_title ?? description);
   const transcriptionInput = captions.available
     ? { strategy: "captions", caption_tracks: captions.tracks.filter((track) => track.url) }
-    : media.playback[0]?.url
-      ? { strategy: "media", media_url: media.playback[0].url, media_type: "video" }
+    : media.audio[0]?.url
+      ? { strategy: "media", media_url: media.audio[0].url, media_type: "audio" }
+      : media.playback[0]?.url
+        ? { strategy: "media", media_url: media.playback[0].url, media_type: "video" }
       : { strategy: "unavailable" };
 
   return compact({
@@ -286,11 +347,14 @@ export function normalizeVideo(aweme, { inputUrl = null, resolvedUrl = null } = 
       height: numberValue(video.height),
       ratio: stringValue(video.ratio),
       cover_urls: uniqueUrls(video.cover, video.origin_cover, video.dynamic_cover),
+      acquired_at: acquiredAt,
+      audio: media.audio,
       playback: media.playback,
       downloads: media.downloads,
       images
     },
     captions,
+    chapters,
     transcription_input: transcriptionInput,
     music: aweme?.music ? compact({
       id: stringValue(aweme.music.id_str ?? aweme.music.id),

@@ -9,13 +9,33 @@ const platformRegistry = [
   }
 ];
 
-export function serviceDescription({ tikhubConfigured = false } = {}) {
+export function serviceDescription({
+  tikhubConfigured = false,
+  directPublicWebAvailable = true,
+  openaiConfigured = false,
+  gatewayConfigured = false
+} = {}) {
   return {
     service: "Content Reader",
-    version: "1.0.0",
+    version: "2.0.0",
     status: "running",
     phase: "douyin",
-    provider_configured: tikhubConfigured,
+    provider_configured: tikhubConfigured || directPublicWebAvailable,
+    providers: {
+      direct_public_web: directPublicWebAvailable,
+      tikhub: tikhubConfigured,
+      fallback_enabled: true
+    },
+    content_pipeline: {
+      media_validation_and_refresh: true,
+      captions_first: true,
+      asr: {
+        openai: openaiConfigured,
+        vercel_ai_gateway: gatewayConfigured,
+        verified_artifact_cache: true
+      },
+      creator_analysis: true
+    },
     supported: {
       platforms: ["douyin"],
       content_types: ["video", "profile"]

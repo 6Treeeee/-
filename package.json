@@ -1,13 +1,19 @@
 {
   "name": "public-content-reader",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "check": "node --check api/index.js && node --check src/content-reader.js && node --check src/platforms/douyin.js && node --check src/normalizers/douyin.js && node --check src/services/tikhub.js",
-    "test": "node --test"
+    "check": "node --check api/index.js && node --check src/content-reader.js && node --check src/errors.js && node --check src/platforms/douyin.js && node --check src/normalizers/douyin.js && node --check src/providers/tikhub.js && node --check src/providers/direct-public-web.js && node --check src/services/analysis.js && node --check src/services/artifacts.js && node --check src/services/content-processing.js && node --check src/services/media.js && node --check src/services/provider-chain.js && node --check src/services/public-browser.js && node --check src/services/tikhub.js && node --check src/services/transcription.js && node --check scripts/build-verified-artifact.mjs && node --check scripts/capture-public-profile.mjs && node --check scripts/download-public-media.mjs && node --check scripts/probe-public-web.mjs",
+    "test": "node --test",
+    "capture:profile": "node scripts/capture-public-profile.mjs",
+    "download:media": "node scripts/download-public-media.mjs"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=24"
+  },
+  "dependencies": {
+    "@sparticuz/chromium": "^149.0.0",
+    "puppeteer-core": "^25.7.0"
   }
 }

@@ -1,5 +1,5 @@
 import { readPublicContent, serviceDescription } from "../src/content-reader.js";
-import { ReaderError, publicError } from "../src/errors.js";
+import { publicError } from "../src/errors.js";
 
 export const config = {
   maxDuration: 300
@@ -60,7 +60,10 @@ export default async function handler(req, res) {
       ok: true,
       request_id: id,
       ...serviceDescription({
-        tikhubConfigured: Boolean(process.env.TIKHUB_API_KEY)
+        tikhubConfigured: Boolean(process.env.TIKHUB_API_KEY),
+        directPublicWebAvailable: true,
+        openaiConfigured: Boolean(process.env.OPENAI_API_KEY),
+        gatewayConfigured: Boolean(process.env.AI_GATEWAY_API_KEY || process.env.VERCEL_OIDC_TOKEN)
       })
     });
   }
@@ -68,14 +71,6 @@ export default async function handler(req, res) {
   const startedAt = Date.now();
 
   try {
-    if (!process.env.TIKHUB_API_KEY) {
-      throw new ReaderError(
-        "SERVICE_NOT_CONFIGURED",
-        "The Douyin retrieval provider is not configured.",
-        { status: 503 }
-      );
-    }
-
     const result = await readPublicContent(input, {
       apiKey: process.env.TIKHUB_API_KEY,
       fetchImpl: globalThis.fetch,
@@ -88,6 +83,9 @@ export default async function handler(req, res) {
       platform: result.platform,
       content_type: result.content_type,
       item_count: result.content_type === "profile" ? result.content.posts.length : 1,
+      content_read_count: result.content_type === "profile"
+        ? result.content.processing?.successfully_content_read
+        : Number(result.content.readable_content?.status === "complete"),
       duration_ms: Date.now() - startedAt
     }));
 
