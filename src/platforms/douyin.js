@@ -389,7 +389,10 @@ export class DouyinReader {
       if (!lite.ok) attemptedProviders.add("web");
       series = [lite.ok ? lite.value : web];
       warnings.push({ code: "APP_POSTS_UNAVAILABLE", detail: errorSummary(primary.error) });
-      if (!lite.ok) warnings.push({ code: "APP_LITE_POSTS_UNAVAILABLE" });
+      if (!lite.ok) warnings.push({
+        code: "APP_LITE_POSTS_UNAVAILABLE",
+        detail: errorSummary(lite.error)
+      });
     } else {
       throw primary.error;
     }
@@ -413,6 +416,11 @@ export class DouyinReader {
           extraParams: { filter_type: 0 }
         },
         {
+          route: TIKHUB_ROUTES.postsWeb,
+          provider: "web_hot",
+          extraParams: { filter_type: 3 }
+        },
+        {
           route: TIKHUB_ROUTES.postsDouPlus,
           provider: "douplus"
         }
@@ -428,7 +436,11 @@ export class DouyinReader {
           merged = mergePostSeries(series);
           if (merged.items.length >= expectedPosts) break;
         } else {
-          warnings.push({ code: "RECONCILIATION_SOURCE_FAILED", provider: candidate.provider });
+          warnings.push({
+            code: "RECONCILIATION_SOURCE_FAILED",
+            provider: candidate.provider,
+            detail: errorSummary(result.error)
+          });
         }
       }
     }

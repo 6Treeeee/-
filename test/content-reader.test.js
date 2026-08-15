@@ -114,7 +114,7 @@ test("an independently paginated DouPlus feed can reconcile missing public posts
   assert.equal(result.content.pagination.complete, true);
   assert.deepEqual(result.content.posts.map((post) => post.id), ["1", "2", "3"]);
   assert.equal(calls.filter((call) => call.route === TIKHUB_ROUTES.postsApp).length, 2);
-  assert.equal(calls.filter((call) => call.route === TIKHUB_ROUTES.postsWeb).length, 1);
+  assert.equal(calls.filter((call) => call.route === TIKHUB_ROUTES.postsWeb).length, 2);
   assert.equal(calls.filter((call) => call.route === TIKHUB_ROUTES.postsDouPlus).length, 1);
 });
 
