@@ -7,7 +7,8 @@ export const TIKHUB_ROUTES = Object.freeze({
   profileApp: "/api/v1/douyin/app/v3/handler_user_profile",
   profileWeb: "/api/v1/douyin/web/handler_user_profile",
   postsApp: "/api/v1/douyin/app/v3/fetch_user_post_videos",
-  postsWeb: "/api/v1/douyin/web/fetch_user_post_videos"
+  postsWeb: "/api/v1/douyin/web/fetch_user_post_videos",
+  postsDouPlus: "/api/v1/douyin/douplus/fetch_user_posts"
 });
 
 const RETRYABLE_STATUS = new Set([429, 500, 502, 503, 504]);
@@ -45,6 +46,14 @@ export class TikHubClient {
   }
 
   async get(route, params = {}) {
+    return this.request(route, { method: "GET", params });
+  }
+
+  async post(route, body = {}) {
+    return this.request(route, { method: "POST", body });
+  }
+
+  async request(route, { method, params = {}, body } = {}) {
     const url = new URL(`${this.baseUrl}${route}`);
     for (const [key, value] of Object.entries(params)) {
       if (value !== undefined && value !== null && value !== "") {
@@ -60,12 +69,14 @@ export class TikHubClient {
 
       try {
         const response = await this.fetchImpl(url, {
-          method: "GET",
+          method,
           headers: {
             Authorization: `Bearer ${this.apiKey}`,
             Accept: "application/json",
+            ...(body ? { "Content-Type": "application/json" } : {}),
             "User-Agent": "ContentReader/1.0"
           },
+          ...(body ? { body: JSON.stringify(body) } : {}),
           signal: controller.signal
         });
 
@@ -113,7 +124,7 @@ export class TikHubClient {
         }
 
         if (Number(envelope?.code) !== 200) {
-          throw new ReaderError(
+          const failure = new ReaderError(
             "UPSTREAM_API_ERROR",
             "TikHub returned an unsuccessful API result.",
             {
@@ -128,6 +139,12 @@ export class TikHubClient {
               }
             }
           );
+          if (attempt < this.retries && RETRYABLE_STATUS.has(Number(envelope?.code))) {
+            lastError = failure;
+            await wait(250 * (attempt + 1));
+            continue;
+          }
+          throw failure;
         }
 
         return {

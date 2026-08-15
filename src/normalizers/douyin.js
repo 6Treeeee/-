@@ -125,14 +125,17 @@ export function extractPostPage(payload) {
   const container = findObject(payload, (value) =>
     Array.isArray(value.aweme_list) ||
     Array.isArray(value.item_list) ||
-    Array.isArray(value.post_list)
+    Array.isArray(value.post_list) ||
+    Array.isArray(value.items) ||
+    Array.isArray(value.list)
   );
 
   if (!container) {
     return { recognized: false, items: [], hasMore: null, maxCursor: null };
   }
 
-  const items = container.aweme_list ?? container.item_list ?? container.post_list;
+  const items = container.aweme_list ?? container.item_list ?? container.post_list ??
+    container.items ?? container.list;
   return {
     recognized: true,
     items,

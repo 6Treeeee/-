@@ -174,12 +174,18 @@ async function paginatePosts(client, { secUserId, route, provider, extraParams =
 
     let response;
     try {
-      response = await client.get(route, {
-        sec_user_id: secUserId,
-        max_cursor: cursor,
-        count: 20,
-        ...extraParams
-      });
+      response = provider === "douplus"
+        ? await client.post(route, {
+            sec_uid: secUserId,
+            cursor,
+            count: 20
+          })
+        : await client.get(route, {
+            sec_user_id: secUserId,
+            max_cursor: cursor,
+            count: 20,
+            ...extraParams
+          });
     } catch (error) {
       throw paginationFailure("A Douyin post page could not be retrieved.", error, {
         provider,
@@ -363,17 +369,27 @@ export class DouyinReader {
 
     let series;
     const warnings = [];
+    const attemptedProviders = new Set(["app_v3_normal"]);
     if (primary.ok) {
       series = [primary.value];
     } else if (primary.error?.details?.pages_fetched === 0) {
-      const web = await paginatePosts(this.client, {
+      const lite = await attempt(() => paginatePosts(this.client, {
         secUserId,
-        route: TIKHUB_ROUTES.postsWeb,
-        provider: "web",
-        extraParams: { filter_type: 0 }
-      });
-      series = [web];
+        route: TIKHUB_ROUTES.postsApp,
+        provider: "app_v3_lite",
+        extraParams: { sort_type: 0, channel: "lite" }
+      }));
+      attemptedProviders.add("app_v3_lite");
+      const web = lite.ok ? null : await paginatePosts(this.client, {
+          secUserId,
+          route: TIKHUB_ROUTES.postsWeb,
+          provider: "web",
+          extraParams: { filter_type: 0 }
+        });
+      if (!lite.ok) attemptedProviders.add("web");
+      series = [lite.ok ? lite.value : web];
       warnings.push({ code: "APP_POSTS_UNAVAILABLE", detail: errorSummary(primary.error) });
+      if (!lite.ok) warnings.push({ code: "APP_LITE_POSTS_UNAVAILABLE" });
     } else {
       throw primary.error;
     }
@@ -384,8 +400,8 @@ export class DouyinReader {
     if (!creator.sec_user_id) creator = { ...creator, sec_user_id: secUserId };
     const expectedPosts = creator.stats?.post_count ?? null;
 
-    if (expectedPosts !== null && merged.items.length < expectedPosts && series[0].provider === "app_v3_normal") {
-      for (const candidate of [
+    if (expectedPosts !== null && merged.items.length < expectedPosts) {
+      const candidates = [
         {
           route: TIKHUB_ROUTES.postsApp,
           provider: "app_v3_lite",
@@ -395,8 +411,17 @@ export class DouyinReader {
           route: TIKHUB_ROUTES.postsWeb,
           provider: "web_reconciliation",
           extraParams: { filter_type: 0 }
+        },
+        {
+          route: TIKHUB_ROUTES.postsDouPlus,
+          provider: "douplus"
         }
-      ]) {
+      ].filter((candidate) => !attemptedProviders.has(
+        candidate.provider === "web_reconciliation" ? "web" : candidate.provider
+      ));
+
+      for (const candidate of candidates) {
+        attemptedProviders.add(candidate.provider === "web_reconciliation" ? "web" : candidate.provider);
         const result = await attempt(() => paginatePosts(this.client, { secUserId, ...candidate }));
         if (result.ok) {
           series.push(result.value);

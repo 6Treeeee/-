@@ -75,6 +75,49 @@ test("profile pagination exhausts the upstream feed and deduplicates posts", asy
   assert.equal(calls.filter((call) => call.route === TIKHUB_ROUTES.postsWeb).length, 0);
 });
 
+test("an independently paginated DouPlus feed can reconcile missing public posts", async () => {
+  const calls = [];
+  const client = {
+    async get(route, params) {
+      calls.push({ method: "GET", route, params });
+      if (route === TIKHUB_ROUTES.profileApp) {
+        return {
+          data: { user: { sec_uid: SEC_ID, nickname: "Public creator", aweme_count: 3 } },
+          meta: { route, request_id: "profile-request" }
+        };
+      }
+      if (route === TIKHUB_ROUTES.postsApp) throw new Error("App route unavailable");
+      if (route === TIKHUB_ROUTES.postsWeb) {
+        return {
+          data: { aweme_list: [aweme(1), aweme(2)], has_more: 0, max_cursor: "end" },
+          meta: { route, request_id: "web-page" }
+        };
+      }
+      throw new Error(`unexpected GET route ${route}`);
+    },
+    async post(route, body) {
+      calls.push({ method: "POST", route, body });
+      assert.equal(route, TIKHUB_ROUTES.postsDouPlus);
+      return {
+        data: { list: [aweme(3)], has_more: false, cursor: "end" },
+        meta: { route, request_id: "douplus-page" }
+      };
+    }
+  };
+
+  const reader = new DouyinReader({ client, fetchImpl: publicPageFetch });
+  const result = await reader.read({
+    url: `https://www.douyin.com/user/${SEC_ID}`,
+    type: "profile"
+  });
+
+  assert.equal(result.content.pagination.complete, true);
+  assert.deepEqual(result.content.posts.map((post) => post.id), ["1", "2", "3"]);
+  assert.equal(calls.filter((call) => call.route === TIKHUB_ROUTES.postsApp).length, 2);
+  assert.equal(calls.filter((call) => call.route === TIKHUB_ROUTES.postsWeb).length, 1);
+  assert.equal(calls.filter((call) => call.route === TIKHUB_ROUTES.postsDouPlus).length, 1);
+});
+
 test("a repeated cursor stops pagination and never switches providers mid-series", async () => {
   const calls = [];
   const client = {
@@ -213,6 +256,32 @@ test("TikHub client uses GET query parameters and Bearer authentication", async 
   assert.equal(url.searchParams.get("sec_user_id"), SEC_ID);
   assert.equal(url.searchParams.get("count"), "20");
   assert.equal(response.meta.request_id, "request-1");
+});
+
+test("TikHub client sends documented JSON POST bodies", async () => {
+  let observed;
+  const client = new TikHubClient({
+    apiKey: "secret-test-key",
+    retries: 0,
+    fetchImpl: async (url, options) => {
+      observed = { url: String(url), options };
+      return new Response(JSON.stringify({ code: 200, data: { list: [] } }), { status: 200 });
+    }
+  });
+
+  await client.post(TIKHUB_ROUTES.postsDouPlus, {
+    sec_uid: SEC_ID,
+    cursor: "0",
+    count: 20
+  });
+
+  assert.equal(observed.options.method, "POST");
+  assert.equal(observed.options.headers["Content-Type"], "application/json");
+  assert.deepEqual(JSON.parse(observed.options.body), {
+    sec_uid: SEC_ID,
+    cursor: "0",
+    count: 20
+  });
 });
 
 test("the platform router rejects unsupported sources before creating a provider", async () => {
