@@ -174,18 +174,12 @@ async function paginatePosts(client, { secUserId, route, provider, extraParams =
 
     let response;
     try {
-      response = provider === "douplus"
-        ? await client.post(route, {
-            sec_uid: secUserId,
-            cursor,
-            count: 20
-          })
-        : await client.get(route, {
-            sec_user_id: secUserId,
-            max_cursor: cursor,
-            count: 20,
-            ...extraParams
-          });
+      response = await client.get(route, {
+        sec_user_id: secUserId,
+        max_cursor: cursor,
+        count: 20,
+        ...extraParams
+      });
     } catch (error) {
       throw paginationFailure("A Douyin post page could not be retrieved.", error, {
         provider,
@@ -419,10 +413,6 @@ export class DouyinReader {
           route: TIKHUB_ROUTES.postsWeb,
           provider: "web_hot",
           extraParams: { filter_type: 3 }
-        },
-        {
-          route: TIKHUB_ROUTES.postsDouPlus,
-          provider: "douplus"
         }
       ].filter((candidate) => !attemptedProviders.has(
         candidate.provider === "web_reconciliation" ? "web" : candidate.provider
@@ -446,13 +436,15 @@ export class DouyinReader {
     }
 
     const posts = merged.items.map((item) => normalizeVideo(item));
-    const complete = series.every((item) => item.exhausted) &&
-      (expectedPosts === null || posts.length >= expectedPosts);
-    if (!complete) {
+    const upstreamExhausted = series.every((item) => item.exhausted);
+    const countConsistent = expectedPosts === null || posts.length >= expectedPosts;
+    const complete = upstreamExhausted;
+    if (!countConsistent) {
       warnings.push({
         code: "POST_COUNT_MISMATCH",
         expected_posts: expectedPosts,
-        accessible_unique_posts: posts.length
+        accessible_unique_posts: posts.length,
+        message: "Public unauthenticated feeds were exhausted, but the profile count also includes items that may be unlisted, access-limited, or not yet visible in those feeds."
       });
     }
     if (!profileResponse) {
@@ -480,8 +472,11 @@ export class DouyinReader {
         posts,
         pagination: {
           complete,
-          upstream_exhausted: series.every((item) => item.exhausted),
+          scope: "public_unauthenticated",
+          upstream_exhausted: upstreamExhausted,
+          count_consistent: countConsistent,
           expected_posts: expectedPosts,
+          profile_count_gap: expectedPosts === null ? null : Math.max(0, expectedPosts - posts.length),
           unique_posts: posts.length,
           duplicates_removed: merged.duplicates,
           pages_fetched: series.reduce((total, item) => total + item.pages.length, 0),

@@ -37,7 +37,7 @@ Profiles include normalized creator metadata, the deduplicated post list, each p
 - Profile identity: `sec_user_id` parsed from the resolved public URL when possible, otherwise TikHub's documented Web ID extractor.
 - Profile metadata: App V3 profile route, with the documented Web profile route as fallback.
 - Posts: App V3 pages with `count=20`, `sort_type=0`, `channel=normal`; Web is selected only if App fails before page one. Cursor families are never mixed within a pagination series.
-- Reconciliation: if the public profile's post count is greater than an exhausted feed, independent Lite, Web, and documented DouPlus concise series are tried and deduplicated. DouPlus uses JSON `POST` with `sec_uid`, `cursor`, and `count`; its cursor is never mixed with App/Web cursors.
+- Reconciliation: if the public profile's displayed post count is greater than an exhausted feed, independent Lite and Web sort series are tried and deduplicated. A count mismatch is preserved as an explicit warning; it never triggers authentication, CAPTCHA handling, or cookie use.
 
 `TIKHUB_API_KEY` must be configured in the server environment. It is sent only as `Authorization: Bearer …` and is never included in responses or diagnostics.
 
