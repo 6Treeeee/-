@@ -1,0 +1,85 @@
+name: Benchmark pinned Whisper runtime
+
+on:
+  push:
+    branches:
+      - codex/benchmark-whisper-runtime
+    paths:
+      - .github/workflows/benchmark-whisper-runtime.yml
+
+permissions:
+  contents: read
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create a deterministic 55 second speech sample
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .benchmark
+          curl --fail --location --silent --show-error \
+            https://raw.githubusercontent.com/ggml-org/whisper.cpp/371b5a7561823ab2bb32142d2751e35e7534727b/samples/jfk.wav \
+            --output .benchmark/jfk.wav
+          python3 - <<'PY'
+          import wave
+
+          with wave.open(".benchmark/jfk.wav", "rb") as source:
+              params = source.getparams()
+              frames = source.readframes(source.getnframes())
+
+          with wave.open(".benchmark/jfk-55s.wav", "wb") as target:
+              target.setparams(params)
+              target.writeframes(frames * 5)
+          PY
+
+      - name: Benchmark current artifact on Amazon Linux 2023
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker run --rm \
+            -v "$PWD:/work:ro" \
+            -w /work \
+            amazonlinux:2023 \
+            bash -lc '
+              set -euo pipefail
+              runtime=/tmp/whisper-runtime
+              mkdir -p "$runtime"
+              tar -xzf assets/whisper/whisper-bin-ubuntu-x64-b4938-no-openmp.tar.gz -C "$runtime"
+              runtime="$runtime/whisper-bin-ubuntu-x64"
+              model=/work/assets/whisper/ggml-base-q5_1.bin
+              sample=/work/.benchmark/jfk-55s.wav
+
+              printf "processor_count=%s\n" "$(getconf _NPROCESSORS_ONLN)"
+              grep -m1 -E "model name|flags" /proc/cpuinfo || true
+
+              for threads in 1 2 4; do
+                output=/tmp/result-t${threads}
+                log=/tmp/whisper-t${threads}.log
+                started=$(date +%s%N)
+                set +e
+                LD_LIBRARY_PATH="$runtime" "$runtime/whisper-cli" \
+                  -m "$model" \
+                  -f "$sample" \
+                  -l auto \
+                  -t "$threads" \
+                  -ng \
+                  -ojf \
+                  -of "$output" \
+                  -np \
+                  2>&1 | tee "$log"
+                status=${PIPESTATUS[0]}
+                set -e
+                finished=$(date +%s%N)
+                elapsed_ms=$(( (finished - started) / 1000000 ))
+                printf "BENCHMARK threads=%s status=%s elapsed_ms=%s result_bytes=%s\n" \
+                  "$threads" "$status" "$elapsed_ms" "$(stat -c %s "${output}.json" 2>/dev/null || printf 0)"
+                grep -E "loaded CPU backend|whisper_print_timings|ggml_backend_load" "$log" || true
+                test "$status" -eq 0
+                test -s "${output}.json"
+              done
+            '
