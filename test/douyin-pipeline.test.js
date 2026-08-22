@@ -127,6 +127,7 @@ function fakeBrowserPage({
 }) {
   const responseListeners = new Set();
   let listenerAttachedBeforeNavigation = false;
+  let navigatedTo = null;
   const safeAccess = access ?? {
     explicitMoreGate: false,
     securityChallenge: false,
@@ -142,7 +143,8 @@ function fakeBrowserPage({
     off(event, listener) {
       if (event === "response") responseListeners.delete(listener);
     },
-    async goto() {
+    async goto(value) {
+      navigatedTo = String(value);
       listenerAttachedBeforeNavigation = responseListeners.size > 0;
       for (const response of responses) {
         for (const listener of responseListeners) listener(response);
@@ -181,7 +183,8 @@ function fakeBrowserPage({
         return operation({ page, runtime: { kind: "injected-test-browser" } });
       }
     },
-    listenerWasAttached: () => listenerAttachedBeforeNavigation
+    listenerWasAttached: () => listenerAttachedBeforeNavigation,
+    navigatedTo: () => navigatedTo
   };
 }
 
@@ -650,6 +653,46 @@ test("DirectPublicWebProvider recovers when DOM is readable after navigation tim
 
   assert.deepEqual(result.items.map((item) => item.aweme_id), ["100"]);
   assert.equal(result.limitation.code, "LOGIN_REQUIRED_FOR_MORE_POSTS");
+});
+
+test("DirectPublicWebProvider prefers Douyin's resolved public share-profile route", async () => {
+  const profileDom = {
+    listPresent: true,
+    links: [{ id: "100", kind: "video", title: "Public post" }],
+    explicitMoreGate: true,
+    pageTitle: "Creator的抖音",
+    description: "A public creator",
+    creator: {
+      nickname: "Creator",
+      signature: "Public signature",
+      aweme_count: 2,
+      aweme_count_text: "2"
+    }
+  };
+  const fake = fakeBrowserPage({
+    profileDom,
+    access: {
+      explicitMoreGate: true,
+      securityChallenge: false,
+      privateContent: false,
+      unavailable: false,
+      loginRequired: false
+    }
+  });
+  const provider = new DirectPublicWebProvider({
+    browserService: fake.browserService,
+    retries: 0,
+    contentWaitMs: 0,
+    settleMs: 0,
+    maxScrollRounds: 1
+  });
+
+  await provider.readProfile({
+    resolvedUrl: "https://www.iesdouyin.com/share/user/public-user?token=tracking-secret",
+    secUserId: "public-user"
+  });
+
+  assert.equal(fake.navigatedTo(), "https://www.iesdouyin.com/share/user/public-user");
 });
 
 test("MediaResolver refreshes an invalid current URL using the stable aweme_id", async () => {

@@ -86,6 +86,19 @@ function videoTarget({ inputUrl, resolvedUrl, awemeId }) {
 function profileTarget({ inputUrl, resolvedUrl, secUserId }) {
   const id = String(secUserId ?? secUserIdFromUrl(resolvedUrl) ?? secUserIdFromUrl(inputUrl) ?? "");
   if (/^[A-Za-z0-9_-]+$/.test(id)) {
+    for (const value of [resolvedUrl, inputUrl]) {
+      const parsed = safeUrl(value);
+      const candidateId = secUserIdFromUrl(value);
+      if (!parsed || !isDouyinHost(parsed.host) || candidateId !== id ||
+          !/\/(?:share\/)?user\//i.test(parsed.path)) continue;
+      // Use the public share-profile landing route Douyin itself returned,
+      // while discarding device and campaign tracking parameters.
+      parsed.url.search = "";
+      parsed.url.hash = "";
+      return { target: parsed.url.href, secUserId: id };
+    }
+  }
+  if (/^[A-Za-z0-9_-]+$/.test(id)) {
     return { target: `https://www.douyin.com/user/${encodeURIComponent(id)}`, secUserId: id };
   }
   return { target: validatedTarget(resolvedUrl ?? inputUrl), secUserId: null };
