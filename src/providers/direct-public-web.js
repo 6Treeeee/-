@@ -530,6 +530,18 @@ function responseStatusError(response, target) {
   return null;
 }
 
+async function recoverReadableNavigationTimeout(page, error) {
+  if (error?.name !== "TimeoutError") return false;
+  const current = safeUrl(typeof page.url === "function" ? page.url() : null);
+  if (!current || !isDouyinHost(current.host)) return false;
+  try {
+    return Boolean(await page.evaluate(() =>
+      Boolean(document.documentElement && document.body)));
+  } catch {
+    return false;
+  }
+}
+
 function paginationState(postPages) {
   const seenRequestCursors = new Set();
   let repeatedCursor = null;
@@ -627,7 +639,9 @@ export class DirectPublicWebProvider {
       try {
         navigationResponse = await page.goto(target, { waitUntil: "domcontentloaded" });
       } catch (error) {
-        throw transientError(error, target, "The public Douyin URL did not resolve in the browser.");
+        if (!await recoverReadableNavigationTimeout(page, error)) {
+          throw transientError(error, target, "The public Douyin URL did not resolve in the browser.");
+        }
       }
       const statusError = responseStatusError(navigationResponse, target);
       if (statusError) throw statusError;
@@ -678,7 +692,9 @@ export class DirectPublicWebProvider {
         try {
           navigationResponse = await page.goto(selected.target, { waitUntil: "domcontentloaded" });
         } catch (error) {
-          throw transientError(error, selected.target, "The public Douyin video page did not load in time.");
+          if (!await recoverReadableNavigationTimeout(page, error)) {
+            throw transientError(error, selected.target, "The public Douyin video page did not load in time.");
+          }
         }
         const statusError = responseStatusError(navigationResponse, selected.target);
         if (statusError) throw statusError;
@@ -776,7 +792,9 @@ export class DirectPublicWebProvider {
         try {
           navigationResponse = await page.goto(selected.target, { waitUntil: "domcontentloaded" });
         } catch (error) {
-          throw transientError(error, selected.target, "The public Douyin profile page did not load in time.");
+          if (!await recoverReadableNavigationTimeout(page, error)) {
+            throw transientError(error, selected.target, "The public Douyin profile page did not load in time.");
+          }
         }
         const statusError = responseStatusError(navigationResponse, selected.target);
         if (statusError) throw statusError;

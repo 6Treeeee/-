@@ -121,7 +121,9 @@ function fakeBrowserPage({
   videoDom = null,
   profileDom = null,
   resolutionDom = null,
-  access = null
+  access = null,
+  gotoError = null,
+  currentUrl = "https://www.douyin.com/"
 }) {
   const responseListeners = new Set();
   let listenerAttachedBeforeNavigation = false;
@@ -145,10 +147,15 @@ function fakeBrowserPage({
       for (const response of responses) {
         for (const listener of responseListeners) listener(response);
       }
+      if (gotoError) throw gotoError;
       return { status: () => 200 };
+    },
+    url() {
+      return currentUrl;
     },
     async evaluate(operation) {
       const source = operation.toString();
+      if (source.includes("document.documentElement && document.body")) return true;
       if (source.includes("durationSeconds")) {
         if (!videoDom) throw new Error("Unexpected video DOM snapshot");
         return videoDom;
@@ -601,6 +608,48 @@ test("DirectPublicWebProvider records the explicit login-for-more public boundar
   assert.equal(result.limitation.code, "LOGIN_REQUIRED_FOR_MORE_POSTS");
   assert.equal(result.limitation.public_items, 2);
   assert.equal(result.limitation.inaccessible_count, 1);
+});
+
+test("DirectPublicWebProvider recovers when DOM is readable after navigation timeout", async () => {
+  const timeout = new Error("Navigation timeout of 35000 ms exceeded");
+  timeout.name = "TimeoutError";
+  const profileDom = {
+    listPresent: true,
+    links: [{ id: "100", kind: "video", title: "Public post" }],
+    explicitMoreGate: true,
+    pageTitle: "Creator的抖音",
+    description: "A public creator",
+    creator: {
+      nickname: "Creator",
+      signature: "Public signature",
+      aweme_count: 2,
+      aweme_count_text: "2"
+    }
+  };
+  const fake = fakeBrowserPage({
+    profileDom,
+    gotoError: timeout,
+    currentUrl: "https://www.douyin.com/user/public-user",
+    access: {
+      explicitMoreGate: true,
+      securityChallenge: false,
+      privateContent: false,
+      unavailable: false,
+      loginRequired: false
+    }
+  });
+  const provider = new DirectPublicWebProvider({
+    browserService: fake.browserService,
+    retries: 0,
+    contentWaitMs: 0,
+    settleMs: 0,
+    maxScrollRounds: 1
+  });
+
+  const result = await provider.readProfile({ secUserId: "public-user" });
+
+  assert.deepEqual(result.items.map((item) => item.aweme_id), ["100"]);
+  assert.equal(result.limitation.code, "LOGIN_REQUIRED_FOR_MORE_POSTS");
 });
 
 test("MediaResolver refreshes an invalid current URL using the stable aweme_id", async () => {
