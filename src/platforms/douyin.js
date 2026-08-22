@@ -221,6 +221,9 @@ export class DouyinReader {
     processor,
     analyzer = new CreatorAnalyzer(),
     artifactStore = new ArtifactStore(),
+    openAiApiKey = process.env.OPENAI_API_KEY,
+    aiGatewayApiKey = process.env.AI_GATEWAY_API_KEY,
+    vercelOidcToken = process.env.VERCEL_OIDC_TOKEN,
     processContent,
     profileConcurrency = 3
   } = {}) {
@@ -241,6 +244,9 @@ export class DouyinReader {
     this.processor = processor ?? new ContentProcessor({
       fetchImpl,
       artifactStore,
+      openAiApiKey,
+      aiGatewayApiKey,
+      vercelOidcToken,
       profileConcurrency
     });
     this.analyzer = analyzer;

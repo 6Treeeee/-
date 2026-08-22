@@ -1,11 +1,55 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
+import { resolveRuntimeGatewayAuth } from "../api/index.js";
 import { readPublicContent } from "../src/content-reader.js";
 import { DouyinReader } from "../src/platforms/douyin.js";
 import { TikHubClient, TIKHUB_ROUTES } from "../src/services/tikhub.js";
 
 const SEC_ID = "MS4wLjABAAAA_test_public_profile";
+
+test("request-scoped Vercel OIDC is resolved without exposing or persisting it", async () => {
+  let calls = 0;
+  const auth = await resolveRuntimeGatewayAuth({
+    aiGatewayApiKey: null,
+    tokenResolver: async () => {
+      calls += 1;
+      return "request-context-oidc-token";
+    }
+  });
+
+  assert.equal(calls, 1);
+  assert.equal(auth.aiGatewayApiKey, null);
+  assert.equal(auth.vercelOidcToken, "request-context-oidc-token");
+});
+
+test("an explicit Gateway API key takes priority over request-scoped OIDC", async () => {
+  let calls = 0;
+  const auth = await resolveRuntimeGatewayAuth({
+    aiGatewayApiKey: "gateway-key",
+    tokenResolver: async () => {
+      calls += 1;
+      return "unused-oidc-token";
+    }
+  });
+
+  assert.equal(calls, 0);
+  assert.deepEqual(auth, { aiGatewayApiKey: "gateway-key", vercelOidcToken: null });
+});
+
+test("request-scoped ASR credentials reach the content processor", () => {
+  const reader = new DouyinReader({
+    providers: [],
+    fetchImpl: publicPageFetch,
+    openAiApiKey: "openai-test",
+    aiGatewayApiKey: "gateway-test",
+    vercelOidcToken: "oidc-test"
+  });
+
+  assert.equal(reader.processor.openAiApiKey, "openai-test");
+  assert.equal(reader.processor.aiGatewayApiKey, "gateway-test");
+  assert.equal(reader.processor.vercelOidcToken, "oidc-test");
+});
 
 function publicPageFetch() {
   return Promise.resolve(new Response("", { status: 200 }));

@@ -1,3 +1,5 @@
+import { getVercelOidcToken } from "@vercel/oidc";
+
 import { readPublicContent, serviceDescription } from "../src/content-reader.js";
 import { publicError } from "../src/errors.js";
 
@@ -39,6 +41,18 @@ function requestId(req) {
     : crypto.randomUUID();
 }
 
+export async function resolveRuntimeGatewayAuth({
+  aiGatewayApiKey = process.env.AI_GATEWAY_API_KEY,
+  tokenResolver = getVercelOidcToken
+} = {}) {
+  if (aiGatewayApiKey) return { aiGatewayApiKey, vercelOidcToken: null };
+  try {
+    return { aiGatewayApiKey: null, vercelOidcToken: await tokenResolver() };
+  } catch {
+    return { aiGatewayApiKey: null, vercelOidcToken: null };
+  }
+}
+
 export default async function handler(req, res) {
   if (req.method === "OPTIONS") {
     setCommonHeaders(res);
@@ -54,6 +68,9 @@ export default async function handler(req, res) {
 
   const input = requestInput(req);
   const id = requestId(req);
+  // Vercel Functions deliver OIDC through the per-request context header, so
+  // this must be resolved inside the handler rather than at module load time.
+  const gatewayAuth = await resolveRuntimeGatewayAuth();
 
   if (!input.url) {
     return reply(res, 200, {
@@ -63,7 +80,7 @@ export default async function handler(req, res) {
         tikhubConfigured: Boolean(process.env.TIKHUB_API_KEY),
         directPublicWebAvailable: true,
         openaiConfigured: Boolean(process.env.OPENAI_API_KEY),
-        gatewayConfigured: Boolean(process.env.AI_GATEWAY_API_KEY || process.env.VERCEL_OIDC_TOKEN)
+        gatewayConfigured: Boolean(gatewayAuth.aiGatewayApiKey || gatewayAuth.vercelOidcToken)
       })
     });
   }
@@ -74,7 +91,10 @@ export default async function handler(req, res) {
     const result = await readPublicContent(input, {
       apiKey: process.env.TIKHUB_API_KEY,
       fetchImpl: globalThis.fetch,
-      requestId: id
+      requestId: id,
+      openAiApiKey: process.env.OPENAI_API_KEY,
+      aiGatewayApiKey: gatewayAuth.aiGatewayApiKey,
+      vercelOidcToken: gatewayAuth.vercelOidcToken
     });
 
     console.info(JSON.stringify({
