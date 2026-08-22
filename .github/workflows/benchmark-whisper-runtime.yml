@@ -47,6 +47,7 @@ jobs:
             amazonlinux:2023 \
             bash -lc '
               set -euo pipefail
+              dnf install -y tar gzip
               runtime=/tmp/whisper-runtime
               mkdir -p "$runtime"
               tar -xzf assets/whisper/whisper-bin-ubuntu-x64-b4938-no-openmp.tar.gz -C "$runtime"
