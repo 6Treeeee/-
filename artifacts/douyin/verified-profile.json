@@ -1,8 +1,8 @@
 {
   "schema_version": "1.0",
   "pipeline_version": "content-reader-douyin-2.0.0",
-  "captured_at": "2026-08-15T03:45:54.031Z",
-  "built_at": "2026-08-15T04:26:10.305Z",
+  "captured_at": "2026-08-22T09:44:32.340Z",
+  "built_at": "2026-08-22T10:03:16.590Z",
   "access_policy": "public_unauthenticated_only",
   "sec_user_id": "MS4wLjABAAAACRn1modakPZh2EYYhjhHnfFLbhrV1N2Qagl9U3wIrLKuHgNpr3kTCC1a_9w0kSJj",
   "profile": {
@@ -19,19 +19,19 @@
         "https://p3-pc.douyinpic.com/aweme/100x100/aweme-avatar/tos-cn-avt-0015_0f804d63cc9942b25799dc6e3b290ee2.jpeg?from=2956013662"
       ],
       "stats": {
-        "followers": 4348,
+        "followers": 5014,
         "following": 10,
-        "likes_received": 27326,
-        "post_count": 21,
-        "favoriting_count": 68
+        "likes_received": 32267,
+        "post_count": 22,
+        "favoriting_count": 69
       }
     },
     "access": {
       "scope": "public_unauthenticated",
       "explicit_login_more_gate": true,
       "public_visible_post_count": 18,
-      "profile_display_post_count": 21,
-      "public_gap": 3
+      "profile_display_post_count": 22,
+      "public_gap": 4
     },
     "pagination": {
       "complete": true,
@@ -40,19 +40,21 @@
       "upstream_exhausted": false,
       "stopped_by_access_boundary": true,
       "stop_reason": "login_required_for_more",
-      "expected_posts": 21,
+      "expected_posts": 22,
       "unique_posts": 18,
-      "profile_count_gap": 3,
+      "profile_count_gap": 4,
       "limitation": {
         "code": "LOGIN_REQUIRED_FOR_MORE_POSTS",
         "type": "partial_public_profile",
         "message": "登录后查看更多作品",
         "public_items": 18,
-        "displayed_post_count": 21,
-        "inaccessible_count": 3
+        "displayed_post_count": 22,
+        "inaccessible_count": 4
       }
     },
     "public_aweme_ids": [
+      "7673013072324660089",
+      "7672627965000661876",
       "7670118101211453413",
       "7668293312449300858",
       "7666800690468493007",
@@ -68,11 +70,35 @@
       "7660470951104304761",
       "7659713493591027648",
       "7658965930945592571",
-      "7658590025475570063",
-      "7657942395305538996",
-      "7656437114968717285"
+      "7658590025475570063"
     ],
     "videos": [
+      {
+        "aweme_id": "7673013072324660089",
+        "canonical_url": "https://www.douyin.com/video/7673013072324660089",
+        "created_at": "2026-08-12T07:29:00.000Z",
+        "title": "在下沉市场用ai的能力服务客户这真的…",
+        "duration_ms": 105884,
+        "media_read": true,
+        "media_type": "audio",
+        "media_content_type": "video/mp4",
+        "media_bytes": 714309,
+        "transcript_method": "local_faster_whisper_asr",
+        "transcript_segments": 49
+      },
+      {
+        "aweme_id": "7672627965000661876",
+        "canonical_url": "https://www.douyin.com/video/7672627965000661876",
+        "created_at": "2026-08-11T06:34:00.000Z",
+        "title": "如何用智能体的能力赚到人生的第一桶金",
+        "duration_ms": 120210,
+        "media_read": true,
+        "media_type": "audio",
+        "media_content_type": "video/mp4",
+        "media_bytes": 790973,
+        "transcript_method": "local_faster_whisper_asr",
+        "transcript_segments": 68
+      },
       {
         "aweme_id": "7670118101211453413",
         "canonical_url": "https://www.douyin.com/video/7670118101211453413",
@@ -81,6 +107,7 @@
         "duration_ms": 159545,
         "media_read": true,
         "media_type": "audio",
+        "media_content_type": "video/mp4",
         "media_bytes": 1026485,
         "transcript_method": "local_faster_whisper_asr",
         "transcript_segments": 78
@@ -93,6 +120,7 @@
         "duration_ms": 159334,
         "media_read": true,
         "media_type": "audio",
+        "media_content_type": "video/mp4",
         "media_bytes": 1026226,
         "transcript_method": "local_faster_whisper_asr",
         "transcript_segments": 80
@@ -105,6 +133,7 @@
         "duration_ms": 149000,
         "media_read": true,
         "media_type": "audio",
+        "media_content_type": "video/mp4",
         "media_bytes": 975195,
         "transcript_method": "local_faster_whisper_asr",
         "transcript_segments": 84
@@ -117,6 +146,7 @@
         "duration_ms": 150834,
         "media_read": true,
         "media_type": "audio",
+        "media_content_type": "video/mp4",
         "media_bytes": 941603,
         "transcript_method": "local_faster_whisper_asr",
         "transcript_segments": 77
@@ -129,6 +159,7 @@
         "duration_ms": 115567,
         "media_read": true,
         "media_type": "audio",
+        "media_content_type": "video/mp4",
         "media_bytes": 774051,
         "transcript_method": "local_faster_whisper_asr",
         "transcript_segments": 61
@@ -141,6 +172,7 @@
         "duration_ms": 158467,
         "media_read": true,
         "media_type": "audio",
+        "media_content_type": "video/mp4",
         "media_bytes": 1027437,
         "transcript_method": "local_faster_whisper_asr",
         "transcript_segments": 81
@@ -153,6 +185,7 @@
         "duration_ms": 83367,
         "media_read": true,
         "media_type": "audio",
+        "media_content_type": "video/mp4",
         "media_bytes": 569145,
         "transcript_method": "local_faster_whisper_asr",
         "transcript_segments": 29
@@ -165,6 +198,7 @@
         "duration_ms": 116967,
         "media_read": true,
         "media_type": "audio",
+        "media_content_type": "video/mp4",
         "media_bytes": 758729,
         "transcript_method": "local_faster_whisper_asr",
         "transcript_segments": 59
@@ -177,6 +211,7 @@
         "duration_ms": 103676,
         "media_read": true,
         "media_type": "audio",
+        "media_content_type": "video/mp4",
         "media_bytes": 690516,
         "transcript_method": "local_faster_whisper_asr",
         "transcript_segments": 43
@@ -189,6 +224,7 @@
         "duration_ms": 88867,
         "media_read": true,
         "media_type": "audio",
+        "media_content_type": "video/mp4",
         "media_bytes": 598347,
         "transcript_method": "local_faster_whisper_asr",
         "transcript_segments": 38
@@ -201,6 +237,7 @@
         "duration_ms": 99102,
         "media_read": true,
         "media_type": "audio",
+        "media_content_type": "video/mp4",
         "media_bytes": 653786,
         "transcript_method": "local_faster_whisper_asr",
         "transcript_segments": 34
@@ -213,6 +250,7 @@
         "duration_ms": 69034,
         "media_read": true,
         "media_type": "audio",
+        "media_content_type": "video/mp4",
         "media_bytes": 460324,
         "transcript_method": "local_faster_whisper_asr",
         "transcript_segments": 24
@@ -225,6 +263,7 @@
         "duration_ms": 83367,
         "media_read": true,
         "media_type": "audio",
+        "media_content_type": "video/mp4",
         "media_bytes": 555929,
         "transcript_method": "local_faster_whisper_asr",
         "transcript_segments": 39
@@ -237,6 +276,7 @@
         "duration_ms": 124434,
         "media_read": true,
         "media_type": "audio",
+        "media_content_type": "video/mp4",
         "media_bytes": 828340,
         "transcript_method": "local_faster_whisper_asr",
         "transcript_segments": 54
@@ -249,6 +289,7 @@
         "duration_ms": 88000,
         "media_read": true,
         "media_type": "audio",
+        "media_content_type": "video/mp4",
         "media_bytes": 609773,
         "transcript_method": "local_faster_whisper_asr",
         "transcript_segments": 43
@@ -261,37 +302,887 @@
         "duration_ms": 109967,
         "media_read": true,
         "media_type": "audio",
+        "media_content_type": "video/mp4",
         "media_bytes": 735245,
         "transcript_method": "local_faster_whisper_asr",
         "transcript_segments": 54
-      },
-      {
-        "aweme_id": "7657942395305538996",
-        "canonical_url": "https://www.douyin.com/video/7657942395305538996",
-        "created_at": "2026-07-02T14:47:37.000Z",
-        "title": "只要你有工作 ai就能帮你多营收一百万",
-        "duration_ms": 92667,
-        "media_read": true,
-        "media_type": "audio",
-        "media_bytes": 609238,
-        "transcript_method": "local_faster_whisper_asr",
-        "transcript_segments": 55
-      },
-      {
-        "aweme_id": "7656437114968717285",
-        "canonical_url": "https://www.douyin.com/video/7656437114968717285",
-        "created_at": "2026-06-28T13:26:22.000Z",
-        "title": "普通人要有自己第二套赚钱系统",
-        "duration_ms": 55134,
-        "media_read": true,
-        "media_type": "video",
-        "media_bytes": 5897817,
-        "transcript_method": "local_faster_whisper_asr",
-        "transcript_segments": 21
       }
     ]
   },
   "transcripts": {
+    "7673013072324660089": {
+      "status": "complete",
+      "text": "在下沉市场,用AI服务客户就是降维打击。接下来的内容,如果你听完了,你一定能发现其中的机会。在下沉市场,用AI服务客户为什么我说是降维打击?不是因为你比其他的商家多知道几个模型,更不是拿着AI的概念去教育别人。如果你把这名生意理解成信息差,那这个机会很快就会消失。真正的代查发生在供给端。过去,市场提供一项专业的服务,最小单位往往是一支团队,比如内容服务,背后需要策划文案,拍摄,剪辑和运营。\n客户想获得稳定的交付\n通常要为整条生产链付费\n问题在于下沉市场里存在一类需求\n它真实持续\n但不足以长期支撑\n一支完整的团队\n其实说白了就是成本太高了\n市场不是没有客户\n而是原来的服务太重了\n便宜的工具只能提供功能\n客户还要自己整理一些资料\n设计一些流程\n判断一些内容\n能不能自己用带运营服务呢\n每接一单\n就会增加一下人力的成本\n两种供给之间\n一直缺少一个更小的服务单位\n这里最容易犯的一个错误\n就是用AI做低价版带运营\n价格虽然降下来了\n但是你的服务边界\n内容定位\n拍摄\n发布\n运营\n最终结果全部你都要负责的\n智能体只能压缩\n其中一部分的执行时间\n剩下的成本仍然会回到人身上\n所以进入这个市场\n不能只降价格\n必须要重新切割产品\n所谓的降维打击\n不是用更便宜的方式\n把原来的服务重新做一遍\n是发现市场里哪些专业服务\n被捆绑的太重\n再把其中能稳定执行的部分拆出来\n做成一个更小更容易购买的产品\n下沉市场更不是低端市场\n它只是更早的暴露了一个问题\n很多需求没有被满足\n不是需求不值钱\n而是旧的生产方式服务不起他们\n谁能用智能体重新组资执行成\n谁就有机会把这些过去无法成交的需求\n变成一门可持续交付的生意",
+      "segments": [
+        {
+          "start_ms": 0,
+          "end_ms": 28520,
+          "text": "在下沉市场,用AI服务客户就是降维打击。接下来的内容,如果你听完了,你一定能发现其中的机会。在下沉市场,用AI服务客户为什么我说是降维打击?不是因为你比其他的商家多知道几个模型,更不是拿着AI的概念去教育别人。如果你把这名生意理解成信息差,那这个机会很快就会消失。真正的代查发生在供给端。过去,市场提供一项专业的服务,最小单位往往是一支团队,比如内容服务,背后需要策划文案,拍摄,剪辑和运营。",
+          "confidence": 0.9159,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 28520,
+          "end_ms": 30280,
+          "text": "客户想获得稳定的交付",
+          "confidence": 0.9326,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 30280,
+          "end_ms": 32000,
+          "text": "通常要为整条生产链付费",
+          "confidence": 0.9326,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 32000,
+          "end_ms": 34460,
+          "text": "问题在于下沉市场里存在一类需求",
+          "confidence": 0.9326,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 34460,
+          "end_ms": 35500,
+          "text": "它真实持续",
+          "confidence": 0.9326,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 35500,
+          "end_ms": 37220,
+          "text": "但不足以长期支撑",
+          "confidence": 0.9326,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 37220,
+          "end_ms": 38400,
+          "text": "一支完整的团队",
+          "confidence": 0.9326,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 38400,
+          "end_ms": 40700,
+          "text": "其实说白了就是成本太高了",
+          "confidence": 0.9326,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 40700,
+          "end_ms": 42000,
+          "text": "市场不是没有客户",
+          "confidence": 0.9326,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 42000,
+          "end_ms": 43760,
+          "text": "而是原来的服务太重了",
+          "confidence": 0.9326,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 43760,
+          "end_ms": 45480,
+          "text": "便宜的工具只能提供功能",
+          "confidence": 0.9326,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 45480,
+          "end_ms": 47440,
+          "text": "客户还要自己整理一些资料",
+          "confidence": 0.9326,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 47440,
+          "end_ms": 48360,
+          "text": "设计一些流程",
+          "confidence": 0.9326,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 48360,
+          "end_ms": 49480,
+          "text": "判断一些内容",
+          "confidence": 0.9326,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 49480,
+          "end_ms": 51220,
+          "text": "能不能自己用带运营服务呢",
+          "confidence": 0.9326,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 51220,
+          "end_ms": 51860,
+          "text": "每接一单",
+          "confidence": 0.9326,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 51860,
+          "end_ms": 53700,
+          "text": "就会增加一下人力的成本",
+          "confidence": 0.9326,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 53700,
+          "end_ms": 54580,
+          "text": "两种供给之间",
+          "confidence": 0.9326,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 54580,
+          "end_ms": 56640,
+          "text": "一直缺少一个更小的服务单位",
+          "confidence": 0.9326,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 56640,
+          "end_ms": 57980,
+          "text": "这里最容易犯的一个错误",
+          "confidence": 0.9214,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 57980,
+          "end_ms": 59960,
+          "text": "就是用AI做低价版带运营",
+          "confidence": 0.9214,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 59960,
+          "end_ms": 61120,
+          "text": "价格虽然降下来了",
+          "confidence": 0.9214,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 61120,
+          "end_ms": 62300,
+          "text": "但是你的服务边界",
+          "confidence": 0.9214,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 62300,
+          "end_ms": 62940,
+          "text": "内容定位",
+          "confidence": 0.9214,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 62940,
+          "end_ms": 63500,
+          "text": "拍摄",
+          "confidence": 0.9214,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 63500,
+          "end_ms": 63900,
+          "text": "发布",
+          "confidence": 0.9214,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 63900,
+          "end_ms": 64280,
+          "text": "运营",
+          "confidence": 0.9214,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 64280,
+          "end_ms": 66340,
+          "text": "最终结果全部你都要负责的",
+          "confidence": 0.9214,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 66340,
+          "end_ms": 67560,
+          "text": "智能体只能压缩",
+          "confidence": 0.9214,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 67560,
+          "end_ms": 69100,
+          "text": "其中一部分的执行时间",
+          "confidence": 0.9214,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 69100,
+          "end_ms": 71440,
+          "text": "剩下的成本仍然会回到人身上",
+          "confidence": 0.9214,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 71440,
+          "end_ms": 72860,
+          "text": "所以进入这个市场",
+          "confidence": 0.9214,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 72860,
+          "end_ms": 74060,
+          "text": "不能只降价格",
+          "confidence": 0.9214,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 74060,
+          "end_ms": 75480,
+          "text": "必须要重新切割产品",
+          "confidence": 0.9214,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 75480,
+          "end_ms": 76480,
+          "text": "所谓的降维打击",
+          "confidence": 0.9214,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 76480,
+          "end_ms": 78040,
+          "text": "不是用更便宜的方式",
+          "confidence": 0.9214,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 78040,
+          "end_ms": 80060,
+          "text": "把原来的服务重新做一遍",
+          "confidence": 0.9214,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 80060,
+          "end_ms": 82480,
+          "text": "是发现市场里哪些专业服务",
+          "confidence": 0.9214,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 82480,
+          "end_ms": 83520,
+          "text": "被捆绑的太重",
+          "confidence": 0.9214,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 83520,
+          "end_ms": 86360,
+          "text": "再把其中能稳定执行的部分拆出来",
+          "confidence": 0.9364,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 86360,
+          "end_ms": 88640,
+          "text": "做成一个更小更容易购买的产品",
+          "confidence": 0.9364,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 88640,
+          "end_ms": 90640,
+          "text": "下沉市场更不是低端市场",
+          "confidence": 0.9364,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 90640,
+          "end_ms": 92780,
+          "text": "它只是更早的暴露了一个问题",
+          "confidence": 0.9364,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 92780,
+          "end_ms": 94200,
+          "text": "很多需求没有被满足",
+          "confidence": 0.9364,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 94200,
+          "end_ms": 95480,
+          "text": "不是需求不值钱",
+          "confidence": 0.9364,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 95480,
+          "end_ms": 97900,
+          "text": "而是旧的生产方式服务不起他们",
+          "confidence": 0.9364,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 97900,
+          "end_ms": 100680,
+          "text": "谁能用智能体重新组资执行成",
+          "confidence": 0.9364,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 100680,
+          "end_ms": 103940,
+          "text": "谁就有机会把这些过去无法成交的需求",
+          "confidence": 0.9364,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 103940,
+          "end_ms": 105820,
+          "text": "变成一门可持续交付的生意",
+          "confidence": 0.9364,
+          "no_speech_probability": 0
+        }
+      ],
+      "language": "zh",
+      "language_probability": 1,
+      "duration_seconds": 105.908,
+      "method": "local_faster_whisper_asr",
+      "model": "large-v3-turbo",
+      "device": "cpu",
+      "compute_type": "int8",
+      "prompt_glossary": "智能体，AI，下沉市场，创业，商业思维，实体商家，获客，交付。",
+      "transcribed_at": "2026-08-22T10:03:11.261869Z",
+      "processing_seconds": 17.966,
+      "confidence": {
+        "kind": "segment_log_probability",
+        "mean": 0.9285
+      },
+      "limitations": [
+        "ASR text can contain recognition or punctuation errors.",
+        "Confidence is derived from model segment log probabilities, not independently calibrated accuracy."
+      ],
+      "normalization": [
+        "segment_boundaries_preserved_as_newlines"
+      ]
+    },
+    "7672627965000661876": {
+      "status": "complete",
+      "text": "如何用智能体的能力赚到人生的第一桶金,接下来的内容,如果你听完了,或许能让你赚到你的第一个五位数。\n如果今天让我从零开始\n我不会先学AI\n也不会再造一个智能体\n我会先找到一款\n已经具备完整的交付能力的智能体\n再去服务一个原本就存在的市场\n这个市场就是个体或企业的自媒体应用\n很多老板不是不知道要做内容\n也不是不理解短视频的重要性\n他们真正做不到的是长期稳定的更新\n今天忙业务停工\n明天不知道拍什么了停工\n好不容易找了个员工\n换个人以后\n内容又得重新开始\n最后账号无法形成持续的内容供给\n自媒体真正的商业价值\n不是某一条视频突然爆了\n而是企业或个体\n持续的在潜在客户面前出现\n客户第一次刷到你可能没有反应\n第二次开始愿意了解你做什么\n看的足够久才可能产生信任\n所以持续更新不是流量技巧\n而是在持续的积累客户认识你的机会\n坚持更新能够增加被看见被理解的机会\n但不代表任何账号\n只要一更新就一定能获得客户\n因为产品本身内容的方向\n都会影响账号最后的结果\n而我智能体解决的\n就是在这条链路里最容易中断的部分\n就是内容持续生产和执行\n从内容策划到内容生产\n到最后实际的执行和发布\n都可以由智能体\n按照已经确认的流程完成\n现在智能体的价值\n是把这套重复工作\n变成一条能够稳定执行的流程\n这才是OPC可以分销的产品\nOPC不需要每天去替客户写稿\n也不需要自己承担\n所有在运营的工作\nOPC真正要做的就是这件事\n就是第一找到合适的客户\n第二判断它的需求\n第三把客户转换\n完成场景化的演示\n第四交付要靠标准化的产品\n完成就可以了\n所以OPC靠智能体赚钱\n不是靠AI生成内容\n再去卖原历服务\n也不是重新开发一款产品\n再从零念证市场\n你分销的是一款\n已经能够完全工作的智能体\n客户购买它\n是因为长期的经营自媒体\n你的第一笔钱\n不是因为你会使用AI\n而是因为你把一款\n真正能执行的智能体\n卖给了一个\n确实需要持续做内容的人\n这才是真正的机会",
+      "segments": [
+        {
+          "start_ms": 0,
+          "end_ms": 6640,
+          "text": "如何用智能体的能力赚到人生的第一桶金,接下来的内容,如果你听完了,或许能让你赚到你的第一个五位数。",
+          "confidence": 0.9161,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 6640,
+          "end_ms": 8000,
+          "text": "如果今天让我从零开始",
+          "confidence": 0.9453,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 8000,
+          "end_ms": 9240,
+          "text": "我不会先学AI",
+          "confidence": 0.9453,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 9240,
+          "end_ms": 10960,
+          "text": "也不会再造一个智能体",
+          "confidence": 0.9453,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 10960,
+          "end_ms": 12180,
+          "text": "我会先找到一款",
+          "confidence": 0.9453,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 12180,
+          "end_ms": 14480,
+          "text": "已经具备完整的交付能力的智能体",
+          "confidence": 0.9453,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 14480,
+          "end_ms": 17200,
+          "text": "再去服务一个原本就存在的市场",
+          "confidence": 0.9453,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 17200,
+          "end_ms": 19780,
+          "text": "这个市场就是个体或企业的自媒体应用",
+          "confidence": 0.9453,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 19780,
+          "end_ms": 21860,
+          "text": "很多老板不是不知道要做内容",
+          "confidence": 0.9453,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 21860,
+          "end_ms": 23840,
+          "text": "也不是不理解短视频的重要性",
+          "confidence": 0.9453,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 23840,
+          "end_ms": 26560,
+          "text": "他们真正做不到的是长期稳定的更新",
+          "confidence": 0.9453,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 26560,
+          "end_ms": 27960,
+          "text": "今天忙业务停工",
+          "confidence": 0.9453,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 27960,
+          "end_ms": 29620,
+          "text": "明天不知道拍什么了停工",
+          "confidence": 0.9453,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 29620,
+          "end_ms": 30980,
+          "text": "好不容易找了个员工",
+          "confidence": 0.9453,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 30980,
+          "end_ms": 31780,
+          "text": "换个人以后",
+          "confidence": 0.9453,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 31780,
+          "end_ms": 33400,
+          "text": "内容又得重新开始",
+          "confidence": 0.9453,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 33400,
+          "end_ms": 36120,
+          "text": "最后账号无法形成持续的内容供给",
+          "confidence": 0.9453,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 36120,
+          "end_ms": 38060,
+          "text": "自媒体真正的商业价值",
+          "confidence": 0.9353,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 38060,
+          "end_ms": 39880,
+          "text": "不是某一条视频突然爆了",
+          "confidence": 0.9353,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 39880,
+          "end_ms": 41540,
+          "text": "而是企业或个体",
+          "confidence": 0.9353,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 41540,
+          "end_ms": 43940,
+          "text": "持续的在潜在客户面前出现",
+          "confidence": 0.9353,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 43940,
+          "end_ms": 46020,
+          "text": "客户第一次刷到你可能没有反应",
+          "confidence": 0.9353,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 46020,
+          "end_ms": 48200,
+          "text": "第二次开始愿意了解你做什么",
+          "confidence": 0.9353,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 48200,
+          "end_ms": 50420,
+          "text": "看的足够久才可能产生信任",
+          "confidence": 0.9353,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 50420,
+          "end_ms": 52540,
+          "text": "所以持续更新不是流量技巧",
+          "confidence": 0.9353,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 52540,
+          "end_ms": 54920,
+          "text": "而是在持续的积累客户认识你的机会",
+          "confidence": 0.9353,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 54920,
+          "end_ms": 57740,
+          "text": "坚持更新能够增加被看见被理解的机会",
+          "confidence": 0.9353,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 57740,
+          "end_ms": 58860,
+          "text": "但不代表任何账号",
+          "confidence": 0.9353,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 58860,
+          "end_ms": 60660,
+          "text": "只要一更新就一定能获得客户",
+          "confidence": 0.9353,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 60660,
+          "end_ms": 62600,
+          "text": "因为产品本身内容的方向",
+          "confidence": 0.9353,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 62600,
+          "end_ms": 64340,
+          "text": "都会影响账号最后的结果",
+          "confidence": 0.9353,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 64340,
+          "end_ms": 65500,
+          "text": "而我智能体解决的",
+          "confidence": 0.9353,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 65500,
+          "end_ms": 68200,
+          "text": "就是在这条链路里最容易中断的部分",
+          "confidence": 0.9436,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 68200,
+          "end_ms": 70460,
+          "text": "就是内容持续生产和执行",
+          "confidence": 0.9436,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 70460,
+          "end_ms": 72240,
+          "text": "从内容策划到内容生产",
+          "confidence": 0.9436,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 72240,
+          "end_ms": 74080,
+          "text": "到最后实际的执行和发布",
+          "confidence": 0.9436,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 74080,
+          "end_ms": 75080,
+          "text": "都可以由智能体",
+          "confidence": 0.9436,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 75080,
+          "end_ms": 76720,
+          "text": "按照已经确认的流程完成",
+          "confidence": 0.9436,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 76720,
+          "end_ms": 77940,
+          "text": "现在智能体的价值",
+          "confidence": 0.9436,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 77940,
+          "end_ms": 79240,
+          "text": "是把这套重复工作",
+          "confidence": 0.9436,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 79240,
+          "end_ms": 81120,
+          "text": "变成一条能够稳定执行的流程",
+          "confidence": 0.9436,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 81120,
+          "end_ms": 83260,
+          "text": "这才是OPC可以分销的产品",
+          "confidence": 0.9436,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 83260,
+          "end_ms": 85680,
+          "text": "OPC不需要每天去替客户写稿",
+          "confidence": 0.9436,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 85680,
+          "end_ms": 87020,
+          "text": "也不需要自己承担",
+          "confidence": 0.9436,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 87020,
+          "end_ms": 88040,
+          "text": "所有在运营的工作",
+          "confidence": 0.9436,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 88040,
+          "end_ms": 90000,
+          "text": "OPC真正要做的就是这件事",
+          "confidence": 0.9436,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 90000,
+          "end_ms": 91680,
+          "text": "就是第一找到合适的客户",
+          "confidence": 0.9436,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 91680,
+          "end_ms": 92920,
+          "text": "第二判断它的需求",
+          "confidence": 0.9436,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 92920,
+          "end_ms": 94180,
+          "text": "第三把客户转换",
+          "confidence": 0.9233,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 94180,
+          "end_ms": 95500,
+          "text": "完成场景化的演示",
+          "confidence": 0.9233,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 95500,
+          "end_ms": 97580,
+          "text": "第四交付要靠标准化的产品",
+          "confidence": 0.9233,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 97580,
+          "end_ms": 98380,
+          "text": "完成就可以了",
+          "confidence": 0.9233,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 98380,
+          "end_ms": 100100,
+          "text": "所以OPC靠智能体赚钱",
+          "confidence": 0.9233,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 100100,
+          "end_ms": 101720,
+          "text": "不是靠AI生成内容",
+          "confidence": 0.9233,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 101720,
+          "end_ms": 102900,
+          "text": "再去卖原历服务",
+          "confidence": 0.9233,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 102900,
+          "end_ms": 104520,
+          "text": "也不是重新开发一款产品",
+          "confidence": 0.9233,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 104520,
+          "end_ms": 105660,
+          "text": "再从零念证市场",
+          "confidence": 0.9233,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 105660,
+          "end_ms": 106580,
+          "text": "你分销的是一款",
+          "confidence": 0.9233,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 106580,
+          "end_ms": 108580,
+          "text": "已经能够完全工作的智能体",
+          "confidence": 0.9233,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 108580,
+          "end_ms": 109420,
+          "text": "客户购买它",
+          "confidence": 0.9233,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 109420,
+          "end_ms": 110960,
+          "text": "是因为长期的经营自媒体",
+          "confidence": 0.9233,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 110960,
+          "end_ms": 111700,
+          "text": "你的第一笔钱",
+          "confidence": 0.9233,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 111700,
+          "end_ms": 112920,
+          "text": "不是因为你会使用AI",
+          "confidence": 0.9233,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 112920,
+          "end_ms": 114300,
+          "text": "而是因为你把一款",
+          "confidence": 0.9233,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 114300,
+          "end_ms": 115820,
+          "text": "真正能执行的智能体",
+          "confidence": 0.9233,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 115820,
+          "end_ms": 116680,
+          "text": "卖给了一个",
+          "confidence": 0.9233,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 116680,
+          "end_ms": 118640,
+          "text": "确实需要持续做内容的人",
+          "confidence": 0.9233,
+          "no_speech_probability": 0
+        },
+        {
+          "start_ms": 118640,
+          "end_ms": 120120,
+          "text": "这才是真正的机会",
+          "confidence": 0.9233,
+          "no_speech_probability": 0
+        }
+      ],
+      "language": "zh",
+      "language_probability": 1,
+      "duration_seconds": 120.211,
+      "method": "local_faster_whisper_asr",
+      "model": "large-v3-turbo",
+      "device": "cpu",
+      "compute_type": "int8",
+      "prompt_glossary": "智能体，AI，创业，商业思维，实体商家，获客，交付。",
+      "transcribed_at": "2026-08-22T10:02:39.977123Z",
+      "processing_seconds": 22.954,
+      "confidence": {
+        "kind": "segment_log_probability",
+        "mean": 0.9358
+      },
+      "limitations": [
+        "ASR text can contain recognition or punctuation errors.",
+        "Confidence is derived from model segment log probabilities, not independently calibrated accuracy."
+      ],
+      "normalization": [
+        "segment_boundaries_preserved_as_newlines"
+      ]
+    },
     "7670118101211453413": {
       "status": "complete",
       "text": "我真的想说一句,给我们这些认真做产品的团队留点活路吧,我也算不上什么头部博主,但是我真的希望如果说你们收了客户的钱,能认真地给人家交付一些真正能用的东西,不要把市场的名声全部搞臭,这几天很多人家我都想在自己的城市做智能体的业务,我把产品流程PPT发给他们,本意是先让他们看透我产品的体系,以及各个功能的作用都是怎么运行的,结果有人转头就把我PPT的概念发到朋友圈去宣发,宣发的也是真猛,什么自动活客，\n一个人就能做过去一个团队的工作\n我也看了他们发的照片\n虽然发的页面\n只是自己本地跑刚跑通的一个demo\n看到这里我想说的是\n下层市场不等于低端市场\n部分客户可能不懂模型\n但没有人不懂投产比\n所谓的高维打地位\n打的是生产效率和交付的成本\n不是利用信息差夸大产品的能力\n如果只是利用信息差\n把一个还在概念版本的东西\n包装成打开电脑就能自动获客\n那其实就不叫它降位打击了\n那其实就叫提前透支客户的信任\n再说直白一点那就是骗\n通过这件事也说明一点\n这个需求的市场热度已经起来了\n有人进来竞争\n我觉得是好事\n不过竞争能不能让这个行业成熟\n取决于大家最后都在争什么\n如果争的是谁更拥客户\n谁的交付更稳\n争这些客户这边\n最后不能拿到更好的效果\n因为市场上的所有产品\n都会被逼着进步\n不进步就会被淘汰\n不进步就代表产品落后了\n如果争的是谁赚钱更快\n市场就会被搞得很臭\n我最希望进入这个行业的\n恰恰是那些真正服务过\n实体老板的带运营团队\n他们手里最有价值的东西\n是过去几年积累的问题样本\n因为他们手里的这些问题\n本身就来自于真实的交付过程\n如果越来越多的带运营团队\n愿意把这些经验带进来\n我觉得我们也能更快的\n迭代出更好的产品\n毕竟一家公司\n不可能服务过所有的行业\n也不可能把问题全部想出来\n大家在不同城市\n不同赛道里碰到的需求\n最终都会推动整个产品的进步\n那如果镰刀越来越多\n大家就会拿着相似的PPT\n换一个名字夸大几个功能\n再把价格压低一点\n趁客户还不了解这问题\n拿起来连刀就先收一笔钱\n这种竞争比的不是谁能解决问题\n而是谁收钱更快\n一次性交互本身就没有问题\n问题在于把还没有验证过的能力\n说成是确定性的结果\n最后所有人对类似的产品都会嗤之以鼻\n从而导致整个行业的发展方向全部堵死\n尤其是在县城\n客户之间的关系很密切\n一个客户用了之后\n觉得不值他的评价\n很容易传到他的圈子里\n到最后因为某一家服务商的过度承诺\n会变成所有智能体服务商\n都要承担的信任成本\n我不怕通行越来越多\n我甚至希望有更多懂业务的人进入这个行业\n对我来说\n合适的合作伙伴不会只拿着PPT发黄圈\n他应该能够把一个老板真实的需求带回来\n这些反馈才是推进整个智能体业务前进的燃料",
@@ -6853,595 +7744,11 @@
       "normalization": [
         "segment_boundaries_preserved_as_newlines"
       ]
-    },
-    "7657942395305538996": {
-      "status": "complete",
-      "text": "只要你有自己的业务,AI就能帮你多赚100万,这可能是我最后一期,也是最详细的一期帮助实体用AI赋能的一篇内容。\n为什么现在有了AI,我们依然没多赚多少钱，如果你现在手里有一门业务,不管是做咨询还是自媒体,AI帮你多赚的这100万,其实就藏在杠杆率里。\n大多数人对AI的理解传错了,把它当成了一个副驾驶,帮你写写文案修修图,以为这就叫提效,错了,省了点体力,这是加法。\n真正想增长一百万\n来自于惩罚\n善战者求之于事\n不择于人\n你的业务只是一个支点\n而AI就是那个杠杆\n很多人赚不到钱\n是因为它的业务模型里\n只有人力这一个变量\n做设计用时间换钱\n做咨询就用精力换钱\n这就像你拼命的\n在推一个方形的轮子\n很努力但阻力很大\nAI的本质是把你的业务模型\n从线形变成指数增长\n我给你举个例子\n以前你做服务\n一对一交付\n一天服务三个客户\n基本上就是极限\n这就是你的天花板\n但如果你用AI把你的服务产品化\n把你脑子里的经验喂给智能体\n训练成一个专属智能体\n它不需要睡觉\n可以同时服务300个甚至3000个客户\n这时候你赚的就不再是实薪\n而是税后收入\n这就是我说的观点\nAI不是工具\nAI是无限复制你能力的克隆体\n过去赚钱靠的是稀缺性\n是你会别人不会\n现在赚钱靠的是连接性\n你能用AI把你的能力\n一成本连接给无数需要的人\n所以我建议所有做业务的人\n从今天起把你业务里\n所有重复的\n有明确标准的环节\n全部交给AA\n你只做决策和搞关系\n把剩下的时间去维护核心的客户\n你把80%的琐事玻璃\n就能腾出手\n去抓住那20%真正值钱的机遇\n如果说你一天拥有了别人10天的效率\n这多出来的100万\n只是顺带的结果\n找到它\n你的杠杆就开始转动了",
-      "segments": [
-        {
-          "start_ms": 0,
-          "end_ms": 6180,
-          "text": "只要你有自己的业务,AI就能帮你多赚100万,这可能是我最后一期,也是最详细的一期帮助实体用AI赋能的一篇内容。",
-          "confidence": 0.893,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 6480,
-          "end_ms": 14960,
-          "text": "为什么现在有了AI,我们依然没多赚多少钱，如果你现在手里有一门业务,不管是做咨询还是自媒体,AI帮你多赚的这100万,其实就藏在杠杆率里。",
-          "confidence": 0.893,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 15160,
-          "end_ms": 22100,
-          "text": "大多数人对AI的理解传错了,把它当成了一个副驾驶,帮你写写文案修修图,以为这就叫提效,错了,省了点体力,这是加法。",
-          "confidence": 0.893,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 22100,
-          "end_ms": 23600,
-          "text": "真正想增长一百万",
-          "confidence": 0.9191,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 23600,
-          "end_ms": 24520,
-          "text": "来自于惩罚",
-          "confidence": 0.9191,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 24520,
-          "end_ms": 25680,
-          "text": "善战者求之于事",
-          "confidence": 0.9191,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 25680,
-          "end_ms": 26320,
-          "text": "不择于人",
-          "confidence": 0.9191,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 26320,
-          "end_ms": 27600,
-          "text": "你的业务只是一个支点",
-          "confidence": 0.9191,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 27600,
-          "end_ms": 28980,
-          "text": "而AI就是那个杠杆",
-          "confidence": 0.9191,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 28980,
-          "end_ms": 29900,
-          "text": "很多人赚不到钱",
-          "confidence": 0.9191,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 29900,
-          "end_ms": 30900,
-          "text": "是因为它的业务模型里",
-          "confidence": 0.9191,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 30900,
-          "end_ms": 32000,
-          "text": "只有人力这一个变量",
-          "confidence": 0.9191,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 32000,
-          "end_ms": 33480,
-          "text": "做设计用时间换钱",
-          "confidence": 0.9191,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 33480,
-          "end_ms": 35060,
-          "text": "做咨询就用精力换钱",
-          "confidence": 0.9191,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 35060,
-          "end_ms": 36140,
-          "text": "这就像你拼命的",
-          "confidence": 0.9191,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 36140,
-          "end_ms": 37240,
-          "text": "在推一个方形的轮子",
-          "confidence": 0.9191,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 37240,
-          "end_ms": 38560,
-          "text": "很努力但阻力很大",
-          "confidence": 0.9191,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 38560,
-          "end_ms": 40140,
-          "text": "AI的本质是把你的业务模型",
-          "confidence": 0.9191,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 40140,
-          "end_ms": 41480,
-          "text": "从线形变成指数增长",
-          "confidence": 0.9191,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 41480,
-          "end_ms": 42140,
-          "text": "我给你举个例子",
-          "confidence": 0.9191,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 42140,
-          "end_ms": 42960,
-          "text": "以前你做服务",
-          "confidence": 0.9191,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 42960,
-          "end_ms": 43620,
-          "text": "一对一交付",
-          "confidence": 0.9191,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 43620,
-          "end_ms": 44720,
-          "text": "一天服务三个客户",
-          "confidence": 0.9191,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 44720,
-          "end_ms": 45700,
-          "text": "基本上就是极限",
-          "confidence": 0.9191,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 45700,
-          "end_ms": 46720,
-          "text": "这就是你的天花板",
-          "confidence": 0.9251,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 46720,
-          "end_ms": 48980,
-          "text": "但如果你用AI把你的服务产品化",
-          "confidence": 0.9251,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 48980,
-          "end_ms": 50480,
-          "text": "把你脑子里的经验喂给智能体",
-          "confidence": 0.9251,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 50480,
-          "end_ms": 51760,
-          "text": "训练成一个专属智能体",
-          "confidence": 0.9251,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 51760,
-          "end_ms": 52620,
-          "text": "它不需要睡觉",
-          "confidence": 0.9251,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 52620,
-          "end_ms": 55260,
-          "text": "可以同时服务300个甚至3000个客户",
-          "confidence": 0.9251,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 55260,
-          "end_ms": 57000,
-          "text": "这时候你赚的就不再是实薪",
-          "confidence": 0.9251,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 57000,
-          "end_ms": 58040,
-          "text": "而是税后收入",
-          "confidence": 0.9251,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 58040,
-          "end_ms": 59160,
-          "text": "这就是我说的观点",
-          "confidence": 0.9251,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 59160,
-          "end_ms": 59920,
-          "text": "AI不是工具",
-          "confidence": 0.9251,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 59920,
-          "end_ms": 62240,
-          "text": "AI是无限复制你能力的克隆体",
-          "confidence": 0.9251,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 62240,
-          "end_ms": 64260,
-          "text": "过去赚钱靠的是稀缺性",
-          "confidence": 0.9251,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 64260,
-          "end_ms": 65540,
-          "text": "是你会别人不会",
-          "confidence": 0.9251,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 65540,
-          "end_ms": 67320,
-          "text": "现在赚钱靠的是连接性",
-          "confidence": 0.9251,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 67320,
-          "end_ms": 68900,
-          "text": "你能用AI把你的能力",
-          "confidence": 0.9251,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 68900,
-          "end_ms": 70540,
-          "text": "一成本连接给无数需要的人",
-          "confidence": 0.9251,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 70540,
-          "end_ms": 72580,
-          "text": "所以我建议所有做业务的人",
-          "confidence": 0.9251,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 72580,
-          "end_ms": 73980,
-          "text": "从今天起把你业务里",
-          "confidence": 0.9251,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 73980,
-          "end_ms": 74920,
-          "text": "所有重复的",
-          "confidence": 0.9247,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 74920,
-          "end_ms": 76200,
-          "text": "有明确标准的环节",
-          "confidence": 0.9247,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 76200,
-          "end_ms": 77040,
-          "text": "全部交给AA",
-          "confidence": 0.9247,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 77040,
-          "end_ms": 78640,
-          "text": "你只做决策和搞关系",
-          "confidence": 0.9247,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 78640,
-          "end_ms": 80760,
-          "text": "把剩下的时间去维护核心的客户",
-          "confidence": 0.9247,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 80760,
-          "end_ms": 82760,
-          "text": "你把80%的琐事玻璃",
-          "confidence": 0.9247,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 82760,
-          "end_ms": 83520,
-          "text": "就能腾出手",
-          "confidence": 0.9247,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 83520,
-          "end_ms": 85960,
-          "text": "去抓住那20%真正值钱的机遇",
-          "confidence": 0.9247,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 85960,
-          "end_ms": 88660,
-          "text": "如果说你一天拥有了别人10天的效率",
-          "confidence": 0.9247,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 88660,
-          "end_ms": 89720,
-          "text": "这多出来的100万",
-          "confidence": 0.9247,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 89720,
-          "end_ms": 90820,
-          "text": "只是顺带的结果",
-          "confidence": 0.9247,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 90820,
-          "end_ms": 91400,
-          "text": "找到它",
-          "confidence": 0.9247,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 91400,
-          "end_ms": 92680,
-          "text": "你的杠杆就开始转动了",
-          "confidence": 0.9247,
-          "no_speech_probability": 0
-        }
-      ],
-      "language": "zh",
-      "language_probability": 1,
-      "duration_seconds": 92.672,
-      "method": "local_faster_whisper_asr",
-      "model": "large-v3-turbo",
-      "device": "cpu",
-      "compute_type": "int8",
-      "transcribed_at": "2026-08-15T04:16:41.770372Z",
-      "processing_seconds": 41.11,
-      "confidence": {
-        "kind": "segment_log_probability",
-        "mean": 0.921
-      },
-      "limitations": [
-        "ASR text can contain recognition or punctuation errors.",
-        "Confidence is derived from model segment log probabilities, not independently calibrated accuracy."
-      ],
-      "normalization": [
-        "segment_boundaries_preserved_as_newlines"
-      ]
-    },
-    "7656437114968717285": {
-      "status": "complete",
-      "text": "普通人要有自己的第二套赚钱系统，这句话我最近越想越重要，以前一个人只要有工作就觉得自己是安全的，公司给发工资，领导给任务，你每天只需要把那一小块做完，就能活下去，但AI出来以后，很多人发现自己不是不会努力，是离开了别人的架构系统之后，不知道自己还能靠什么换钱，所以普通人最该做的不是裸辞，也不是冲动创业，而是在公司系统之外，慢慢的搭建一套自己的生存系统，这套系统很简单，你要有一个自己熟悉的问题\n这才是第二套赚钱系统\n它一开始不一定赚钱\n可能只是引发一条内容\n帮别人解决一个小问题\n收到一次咨询\n成交一个小单\n但只要这条链路跑通了\n你就不再是一个等任务的人\n你开始有了自我造写的能力\nAI时代真正危险的\n不是不会用工具\n而是你所有的收入\n都和别人的体系挂购\n公司不要你\n你就没有持续换钱的能力\n所以从今天开始\n别只学AI\n你要搭建你的第二套赚钱系统\n工资负责养活你\n第二套系统负责给你未来留活路",
-      "segments": [
-        {
-          "start_ms": 0,
-          "end_ms": 30000,
-          "text": "普通人要有自己的第二套赚钱系统，这句话我最近越想越重要，以前一个人只要有工作就觉得自己是安全的，公司给发工资，领导给任务，你每天只需要把那一小块做完，就能活下去，但AI出来以后，很多人发现自己不是不会努力，是离开了别人的架构系统之后，不知道自己还能靠什么换钱，所以普通人最该做的不是裸辞，也不是冲动创业，而是在公司系统之外，慢慢的搭建一套自己的生存系统，这套系统很简单，你要有一个自己熟悉的问题",
-          "confidence": 0.9386,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 30000,
-          "end_ms": 31240,
-          "text": "这才是第二套赚钱系统",
-          "confidence": 0.9204,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 31240,
-          "end_ms": 32320,
-          "text": "它一开始不一定赚钱",
-          "confidence": 0.9204,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 32320,
-          "end_ms": 33560,
-          "text": "可能只是引发一条内容",
-          "confidence": 0.9204,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 33560,
-          "end_ms": 34600,
-          "text": "帮别人解决一个小问题",
-          "confidence": 0.9204,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 34600,
-          "end_ms": 35460,
-          "text": "收到一次咨询",
-          "confidence": 0.9204,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 35460,
-          "end_ms": 36360,
-          "text": "成交一个小单",
-          "confidence": 0.9204,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 36360,
-          "end_ms": 37800,
-          "text": "但只要这条链路跑通了",
-          "confidence": 0.9204,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 37800,
-          "end_ms": 39260,
-          "text": "你就不再是一个等任务的人",
-          "confidence": 0.9204,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 39260,
-          "end_ms": 40900,
-          "text": "你开始有了自我造写的能力",
-          "confidence": 0.9204,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 40900,
-          "end_ms": 42200,
-          "text": "AI时代真正危险的",
-          "confidence": 0.9204,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 42200,
-          "end_ms": 43020,
-          "text": "不是不会用工具",
-          "confidence": 0.9204,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 43020,
-          "end_ms": 44260,
-          "text": "而是你所有的收入",
-          "confidence": 0.9204,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 44260,
-          "end_ms": 45660,
-          "text": "都和别人的体系挂购",
-          "confidence": 0.9204,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 45660,
-          "end_ms": 46440,
-          "text": "公司不要你",
-          "confidence": 0.9204,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 46440,
-          "end_ms": 47980,
-          "text": "你就没有持续换钱的能力",
-          "confidence": 0.9204,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 47980,
-          "end_ms": 49000,
-          "text": "所以从今天开始",
-          "confidence": 0.9204,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 49000,
-          "end_ms": 49840,
-          "text": "别只学AI",
-          "confidence": 0.9204,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 49840,
-          "end_ms": 51800,
-          "text": "你要搭建你的第二套赚钱系统",
-          "confidence": 0.9204,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 51800,
-          "end_ms": 52960,
-          "text": "工资负责养活你",
-          "confidence": 0.9204,
-          "no_speech_probability": 0
-        },
-        {
-          "start_ms": 52960,
-          "end_ms": 55020,
-          "text": "第二套系统负责给你未来留活路",
-          "confidence": 0.9204,
-          "no_speech_probability": 0
-        }
-      ],
-      "language": "zh",
-      "language_probability": 1,
-      "duration_seconds": 55.147,
-      "method": "local_faster_whisper_asr",
-      "model": "large-v3-turbo",
-      "device": "cpu",
-      "compute_type": "int8",
-      "transcribed_at": "2026-08-15T04:16:00.658088Z",
-      "processing_seconds": 25.396,
-      "confidence": {
-        "kind": "segment_log_probability",
-        "mean": 0.9213
-      },
-      "limitations": [
-        "ASR text can contain recognition or punctuation errors.",
-        "Confidence is derived from model segment log probabilities, not independently calibrated accuracy."
-      ],
-      "normalization": [
-        "segment_boundaries_preserved_as_newlines"
-      ]
     }
   },
   "analysis": {
     "schema_version": "1.0",
-    "generated_at": "2026-08-15T04:26:10.303Z",
+    "generated_at": "2026-08-22T10:03:16.589Z",
     "basis": "public_video_transcripts_and_douyin_public_metadata",
     "creator": {
       "id": "3154917149646688",
@@ -7456,20 +7763,20 @@
         "https://p3-pc.douyinpic.com/aweme/100x100/aweme-avatar/tos-cn-avt-0015_0f804d63cc9942b25799dc6e3b290ee2.jpeg?from=2956013662"
       ],
       "stats": {
-        "followers": 4348,
+        "followers": 5014,
         "following": 10,
-        "likes_received": 27326,
-        "post_count": 21,
-        "favoriting_count": 68
+        "likes_received": 32267,
+        "post_count": 22,
+        "favoriting_count": 69
       }
     },
     "public_post_count": 18,
-    "profile_display_post_count": 21,
+    "profile_display_post_count": 22,
     "analyzed_post_count": 18,
     "inaccessible_or_failed_posts": [
       {
         "aweme_id": null,
-        "count": 3,
+        "count": 4,
         "reason": {
           "code": "LOGIN_REQUIRED_FOR_MORE_POSTS",
           "type": "partial_public_profile",
@@ -7484,6 +7791,18 @@
         "video_count": 18,
         "evidence": [
           {
+            "aweme_id": "7673013072324660089",
+            "url": "https://www.douyin.com/video/7673013072324660089",
+            "created_at": "2026-08-12T07:29:00.000Z",
+            "excerpt": "在下沉市场用AI服务客户是一种降维打击，因为市场需求真实持续，但传统服务成本高。正确的做法是重新切割产品，利用智能体组织执行，满足未被满足的需求，从而将过去无法成交的需求变成可持续交付的生意。"
+          },
+          {
+            "aweme_id": "7672627965000661876",
+            "url": "https://www.douyin.com/video/7672627965000661876",
+            "created_at": "2026-08-11T06:34:00.000Z",
+            "excerpt": "如何利用智能体能力赚取人生第一桶金？通过找到已具备完整交付能力的智能体，服务个体或企业的自媒体经营市场。智能体解决内容持续生产和执行问题，OPC的工作是找到客户、判断需求、场景化演示和交付。OPC通过分销智能体赚钱，卖给需要持续做内容的人。"
+          },
+          {
             "aweme_id": "7670118101211453413",
             "url": "https://www.douyin.com/video/7670118101211453413",
             "created_at": "2026-08-04T10:15:35.000Z",
@@ -7518,18 +7837,6 @@
             "url": "https://www.douyin.com/video/7665296033967322617",
             "created_at": "2026-07-22T10:23:30.000Z",
             "excerpt": "智能体领域中，最先赚钱的往往不是懂技术的人，而是手里有客户的人。信任和渠道比技术更重要，产品被拉平后，能把东西递到客户手里的人更具价值。手里有客户、会搞流量或想进入行业的人可关注AI产品，与懂技术的人合作，实现分工。"
-          },
-          {
-            "aweme_id": "7664891213300462434",
-            "url": "https://www.douyin.com/video/7664891213300462434",
-            "created_at": "2026-07-21T08:12:35.000Z",
-            "excerpt": "智能体市场竞争激烈，有人先盈利证明标品能变现，但不代表换个人换种卖法也能成功。作者认为技术不再是唯一门槛，谁先做出标品谁就能收割市场。合作是验证和提醒，开放合作卖的是标品，而非技术。"
-          },
-          {
-            "aweme_id": "7664199375506400418",
-            "url": "https://www.douyin.com/video/7664199375506400418",
-            "created_at": "2026-07-19T11:27:54.000Z",
-            "excerpt": "作者回应了关于两天赚5万方法的询问，强调这并非关键，而是产品销售。他解释了自己的业务需要长期打磨和技术投入，建议创业者关注产品本身而非短期方法。对于有实体客户或生意的人，智能体可作为创业或内容获客的第一款产品。"
           }
         ]
       },
@@ -7539,6 +7846,18 @@
         "video_count": 18,
         "evidence": [
           {
+            "aweme_id": "7673013072324660089",
+            "url": "https://www.douyin.com/video/7673013072324660089",
+            "created_at": "2026-08-12T07:29:00.000Z",
+            "excerpt": "在下沉市场用AI服务客户是一种降维打击，因为市场需求真实持续，但传统服务成本高。正确的做法是重新切割产品，利用智能体组织执行，满足未被满足的需求，从而将过去无法成交的需求变成可持续交付的生意。"
+          },
+          {
+            "aweme_id": "7672627965000661876",
+            "url": "https://www.douyin.com/video/7672627965000661876",
+            "created_at": "2026-08-11T06:34:00.000Z",
+            "excerpt": "如何利用智能体能力赚取人生第一桶金？通过找到已具备完整交付能力的智能体，服务个体或企业的自媒体经营市场。智能体解决内容持续生产和执行问题，OPC的工作是找到客户、判断需求、场景化演示和交付。OPC通过分销智能体赚钱，卖给需要持续做内容的人。"
+          },
+          {
             "aweme_id": "7670118101211453413",
             "url": "https://www.douyin.com/video/7670118101211453413",
             "created_at": "2026-08-04T10:15:35.000Z",
@@ -7573,18 +7892,6 @@
             "url": "https://www.douyin.com/video/7665296033967322617",
             "created_at": "2026-07-22T10:23:30.000Z",
             "excerpt": "智能体领域中，最先赚钱的往往不是懂技术的人，而是手里有客户的人。信任和渠道比技术更重要，产品被拉平后，能把东西递到客户手里的人更具价值。手里有客户、会搞流量或想进入行业的人可关注AI产品，与懂技术的人合作，实现分工。"
-          },
-          {
-            "aweme_id": "7664891213300462434",
-            "url": "https://www.douyin.com/video/7664891213300462434",
-            "created_at": "2026-07-21T08:12:35.000Z",
-            "excerpt": "智能体市场竞争激烈，有人先盈利证明标品能变现，但不代表换个人换种卖法也能成功。作者认为技术不再是唯一门槛，谁先做出标品谁就能收割市场。合作是验证和提醒，开放合作卖的是标品，而非技术。"
-          },
-          {
-            "aweme_id": "7664199375506400418",
-            "url": "https://www.douyin.com/video/7664199375506400418",
-            "created_at": "2026-07-19T11:27:54.000Z",
-            "excerpt": "作者回应了关于两天赚5万方法的询问，强调这并非关键，而是产品销售。他解释了自己的业务需要长期打磨和技术投入，建议创业者关注产品本身而非短期方法。对于有实体客户或生意的人，智能体可作为创业或内容获客的第一款产品。"
           }
         ]
       },
@@ -7594,6 +7901,18 @@
         "video_count": 17,
         "evidence": [
           {
+            "aweme_id": "7673013072324660089",
+            "url": "https://www.douyin.com/video/7673013072324660089",
+            "created_at": "2026-08-12T07:29:00.000Z",
+            "excerpt": "在下沉市场用AI服务客户是一种降维打击，因为市场需求真实持续，但传统服务成本高。正确的做法是重新切割产品，利用智能体组织执行，满足未被满足的需求，从而将过去无法成交的需求变成可持续交付的生意。"
+          },
+          {
+            "aweme_id": "7672627965000661876",
+            "url": "https://www.douyin.com/video/7672627965000661876",
+            "created_at": "2026-08-11T06:34:00.000Z",
+            "excerpt": "如何利用智能体能力赚取人生第一桶金？通过找到已具备完整交付能力的智能体，服务个体或企业的自媒体经营市场。智能体解决内容持续生产和执行问题，OPC的工作是找到客户、判断需求、场景化演示和交付。OPC通过分销智能体赚钱，卖给需要持续做内容的人。"
+          },
+          {
             "aweme_id": "7670118101211453413",
             "url": "https://www.douyin.com/video/7670118101211453413",
             "created_at": "2026-08-04T10:15:35.000Z",
@@ -7628,26 +7947,26 @@
             "url": "https://www.douyin.com/video/7665296033967322617",
             "created_at": "2026-07-22T10:23:30.000Z",
             "excerpt": "智能体领域中，最先赚钱的往往不是懂技术的人，而是手里有客户的人。信任和渠道比技术更重要，产品被拉平后，能把东西递到客户手里的人更具价值。手里有客户、会搞流量或想进入行业的人可关注AI产品，与懂技术的人合作，实现分工。"
-          },
-          {
-            "aweme_id": "7664891213300462434",
-            "url": "https://www.douyin.com/video/7664891213300462434",
-            "created_at": "2026-07-21T08:12:35.000Z",
-            "excerpt": "智能体市场竞争激烈，有人先盈利证明标品能变现，但不代表换个人换种卖法也能成功。作者认为技术不再是唯一门槛，谁先做出标品谁就能收割市场。合作是验证和提醒，开放合作卖的是标品，而非技术。"
-          },
-          {
-            "aweme_id": "7664199375506400418",
-            "url": "https://www.douyin.com/video/7664199375506400418",
-            "created_at": "2026-07-19T11:27:54.000Z",
-            "excerpt": "作者回应了关于两天赚5万方法的询问，强调这并非关键，而是产品销售。他解释了自己的业务需要长期打磨和技术投入，建议创业者关注产品本身而非短期方法。对于有实体客户或生意的人，智能体可作为创业或内容获客的第一款产品。"
           }
         ]
       },
       {
         "id": "physical_business",
         "topic": "实体商家数字化",
-        "video_count": 16,
+        "video_count": 17,
         "evidence": [
+          {
+            "aweme_id": "7673013072324660089",
+            "url": "https://www.douyin.com/video/7673013072324660089",
+            "created_at": "2026-08-12T07:29:00.000Z",
+            "excerpt": "在下沉市场用AI服务客户是一种降维打击，因为市场需求真实持续，但传统服务成本高。正确的做法是重新切割产品，利用智能体组织执行，满足未被满足的需求，从而将过去无法成交的需求变成可持续交付的生意。"
+          },
+          {
+            "aweme_id": "7672627965000661876",
+            "url": "https://www.douyin.com/video/7672627965000661876",
+            "created_at": "2026-08-11T06:34:00.000Z",
+            "excerpt": "如何利用智能体能力赚取人生第一桶金？通过找到已具备完整交付能力的智能体，服务个体或企业的自媒体经营市场。智能体解决内容持续生产和执行问题，OPC的工作是找到客户、判断需求、场景化演示和交付。OPC通过分销智能体赚钱，卖给需要持续做内容的人。"
+          },
           {
             "aweme_id": "7670118101211453413",
             "url": "https://www.douyin.com/video/7670118101211453413",
@@ -7683,26 +8002,26 @@
             "url": "https://www.douyin.com/video/7665296033967322617",
             "created_at": "2026-07-22T10:23:30.000Z",
             "excerpt": "智能体领域中，最先赚钱的往往不是懂技术的人，而是手里有客户的人。信任和渠道比技术更重要，产品被拉平后，能把东西递到客户手里的人更具价值。手里有客户、会搞流量或想进入行业的人可关注AI产品，与懂技术的人合作，实现分工。"
-          },
-          {
-            "aweme_id": "7664891213300462434",
-            "url": "https://www.douyin.com/video/7664891213300462434",
-            "created_at": "2026-07-21T08:12:35.000Z",
-            "excerpt": "智能体市场竞争激烈，有人先盈利证明标品能变现，但不代表换个人换种卖法也能成功。作者认为技术不再是唯一门槛，谁先做出标品谁就能收割市场。合作是验证和提醒，开放合作卖的是标品，而非技术。"
-          },
-          {
-            "aweme_id": "7664199375506400418",
-            "url": "https://www.douyin.com/video/7664199375506400418",
-            "created_at": "2026-07-19T11:27:54.000Z",
-            "excerpt": "作者回应了关于两天赚5万方法的询问，强调这并非关键，而是产品销售。他解释了自己的业务需要长期打磨和技术投入，建议创业者关注产品本身而非短期方法。对于有实体客户或生意的人，智能体可作为创业或内容获客的第一款产品。"
           }
         ]
       },
       {
         "id": "business_judgment",
         "topic": "商业认知与个人判断",
-        "video_count": 15,
+        "video_count": 16,
         "evidence": [
+          {
+            "aweme_id": "7673013072324660089",
+            "url": "https://www.douyin.com/video/7673013072324660089",
+            "created_at": "2026-08-12T07:29:00.000Z",
+            "excerpt": "在下沉市场用AI服务客户是一种降维打击，因为市场需求真实持续，但传统服务成本高。正确的做法是重新切割产品，利用智能体组织执行，满足未被满足的需求，从而将过去无法成交的需求变成可持续交付的生意。"
+          },
+          {
+            "aweme_id": "7672627965000661876",
+            "url": "https://www.douyin.com/video/7672627965000661876",
+            "created_at": "2026-08-11T06:34:00.000Z",
+            "excerpt": "如何利用智能体能力赚取人生第一桶金？通过找到已具备完整交付能力的智能体，服务个体或企业的自媒体经营市场。智能体解决内容持续生产和执行问题，OPC的工作是找到客户、判断需求、场景化演示和交付。OPC通过分销智能体赚钱，卖给需要持续做内容的人。"
+          },
           {
             "aweme_id": "7670118101211453413",
             "url": "https://www.douyin.com/video/7670118101211453413",
@@ -7738,26 +8057,26 @@
             "url": "https://www.douyin.com/video/7665296033967322617",
             "created_at": "2026-07-22T10:23:30.000Z",
             "excerpt": "智能体领域中，最先赚钱的往往不是懂技术的人，而是手里有客户的人。信任和渠道比技术更重要，产品被拉平后，能把东西递到客户手里的人更具价值。手里有客户、会搞流量或想进入行业的人可关注AI产品，与懂技术的人合作，实现分工。"
-          },
-          {
-            "aweme_id": "7664199375506400418",
-            "url": "https://www.douyin.com/video/7664199375506400418",
-            "created_at": "2026-07-19T11:27:54.000Z",
-            "excerpt": "作者回应了关于两天赚5万方法的询问，强调这并非关键，而是产品销售。他解释了自己的业务需要长期打磨和技术投入，建议创业者关注产品本身而非短期方法。对于有实体客户或生意的人，智能体可作为创业或内容获客的第一款产品。"
-          },
-          {
-            "aweme_id": "7663440599442146661",
-            "url": "https://www.douyin.com/video/7663440599442146661",
-            "created_at": "2026-07-17T10:23:28.000Z",
-            "excerpt": "如何在24小时内实现同城源源不断的客户？关键在于将经营判断公开成内容，提前解释、建立信任和筛选客户。通过内容循环，生意产生真实问题，内容建立信任，客户带来新问题，形成良性循环。内容智能体可以帮助解决客户问题并制作公开视频内容，积累信任。"
           }
         ]
       },
       {
         "id": "delivery",
         "topic": "产品验证与交付",
-        "video_count": 9,
+        "video_count": 10,
         "evidence": [
+          {
+            "aweme_id": "7673013072324660089",
+            "url": "https://www.douyin.com/video/7673013072324660089",
+            "created_at": "2026-08-12T07:29:00.000Z",
+            "excerpt": "在下沉市场用AI服务客户是一种降维打击，因为市场需求真实持续，但传统服务成本高。正确的做法是重新切割产品，利用智能体组织执行，满足未被满足的需求，从而将过去无法成交的需求变成可持续交付的生意。"
+          },
+          {
+            "aweme_id": "7672627965000661876",
+            "url": "https://www.douyin.com/video/7672627965000661876",
+            "created_at": "2026-08-11T06:34:00.000Z",
+            "excerpt": "如何利用智能体能力赚取人生第一桶金？通过找到已具备完整交付能力的智能体，服务个体或企业的自媒体经营市场。智能体解决内容持续生产和执行问题，OPC的工作是找到客户、判断需求、场景化演示和交付。OPC通过分销智能体赚钱，卖给需要持续做内容的人。"
+          },
           {
             "aweme_id": "7670118101211453413",
             "url": "https://www.douyin.com/video/7670118101211453413",
@@ -7793,26 +8112,20 @@
             "url": "https://www.douyin.com/video/7664891213300462434",
             "created_at": "2026-07-21T08:12:35.000Z",
             "excerpt": "智能体市场竞争激烈，有人先盈利证明标品能变现，但不代表换个人换种卖法也能成功。作者认为技术不再是唯一门槛，谁先做出标品谁就能收割市场。合作是验证和提醒，开放合作卖的是标品，而非技术。"
-          },
-          {
-            "aweme_id": "7664199375506400418",
-            "url": "https://www.douyin.com/video/7664199375506400418",
-            "created_at": "2026-07-19T11:27:54.000Z",
-            "excerpt": "作者回应了关于两天赚5万方法的询问，强调这并非关键，而是产品销售。他解释了自己的业务需要长期打磨和技术投入，建议创业者关注产品本身而非短期方法。对于有实体客户或生意的人，智能体可作为创业或内容获客的第一款产品。"
-          },
-          {
-            "aweme_id": "7662722761086035045",
-            "url": "https://www.douyin.com/video/7662722761086035045",
-            "created_at": "2026-07-15T11:57:53.000Z",
-            "excerpt": "上个月开发的智能体通过贴牌给合作伙伴，这个月带来了约10万的间接盈利。产品交付给私人企业老板时，客户购买的是确定性，而贴牌则由合作伙伴负责销售和交付。个人营销有局限性，一个人抵不过一群人。产品优化后，目标是解决实体客户内容产出问题。10万营收证明分发这条路可行，欢迎有资源的伙伴一起做产品。"
           }
         ]
       },
       {
         "id": "local_market",
         "topic": "县城与下沉市场",
-        "video_count": 7,
+        "video_count": 8,
         "evidence": [
+          {
+            "aweme_id": "7673013072324660089",
+            "url": "https://www.douyin.com/video/7673013072324660089",
+            "created_at": "2026-08-12T07:29:00.000Z",
+            "excerpt": "在下沉市场用AI服务客户是一种降维打击，因为市场需求真实持续，但传统服务成本高。正确的做法是重新切割产品，利用智能体组织执行，满足未被满足的需求，从而将过去无法成交的需求变成可持续交付的生意。"
+          },
           {
             "aweme_id": "7670118101211453413",
             "url": "https://www.douyin.com/video/7670118101211453413",
@@ -7917,8 +8230,14 @@
       {
         "id": "local_information_gap",
         "claim": "县城或下沉市场仍存在 AI 信息差和本地信任机会。",
-        "supporting_video_count": 6,
+        "supporting_video_count": 7,
         "evidence": [
+          {
+            "aweme_id": "7673013072324660089",
+            "url": "https://www.douyin.com/video/7673013072324660089",
+            "created_at": "2026-08-12T07:29:00.000Z",
+            "excerpt": "在下沉市场用AI服务客户是一种降维打击，因为市场需求真实持续，但传统服务成本高。正确的做法是重新切割产品，利用智能体组织执行，满足未被满足的需求，从而将过去无法成交的需求变成可持续交付的生意。"
+          },
           {
             "aweme_id": "7670118101211453413",
             "url": "https://www.douyin.com/video/7670118101211453413",
@@ -7960,8 +8279,14 @@
       {
         "id": "real_cases_drive_product",
         "claim": "真实业务问题、案例和代运营反馈会推动产品迭代。",
-        "supporting_video_count": 5,
+        "supporting_video_count": 6,
         "evidence": [
+          {
+            "aweme_id": "7673013072324660089",
+            "url": "https://www.douyin.com/video/7673013072324660089",
+            "created_at": "2026-08-12T07:29:00.000Z",
+            "excerpt": "在下沉市场用AI服务客户是一种降维打击，因为市场需求真实持续，但传统服务成本高。正确的做法是重新切割产品，利用智能体组织执行，满足未被满足的需求，从而将过去无法成交的需求变成可持续交付的生意。"
+          },
           {
             "aweme_id": "7670118101211453413",
             "url": "https://www.douyin.com/video/7670118101211453413",
@@ -7995,47 +8320,16 @@
         ]
       },
       {
-        "id": "repeatable_growth_system",
-        "claim": "个人创业应构建可重复的获客、交付和第二收入系统。",
+        "id": "ai_reduces_delivery_cost",
+        "claim": "AI/智能体的主要商业价值在于压缩重复劳动或交付成本，而不是技术本身。",
         "supporting_video_count": 5,
         "evidence": [
           {
-            "aweme_id": "7666800690468493007",
-            "url": "https://www.douyin.com/video/7666800690468493007",
-            "created_at": "2026-07-26T11:42:21.000Z",
-            "excerpt": "90后失业者可通过AI实现月入十万，但需先找到已验证的产品，利用AI压缩交付成本，重点关注前端流量和获客，而非学习AI技术。"
+            "aweme_id": "7673013072324660089",
+            "url": "https://www.douyin.com/video/7673013072324660089",
+            "created_at": "2026-08-12T07:29:00.000Z",
+            "excerpt": "在下沉市场用AI服务客户是一种降维打击，因为市场需求真实持续，但传统服务成本高。正确的做法是重新切割产品，利用智能体组织执行，满足未被满足的需求，从而将过去无法成交的需求变成可持续交付的生意。"
           },
-          {
-            "aweme_id": "7666392532125681125",
-            "url": "https://www.douyin.com/video/7666392532125681125",
-            "created_at": "2026-07-25T09:18:28.000Z",
-            "excerpt": "在县城做AI服务可以实现百万营收，但需解决产品稳定交付、持续交付和本地信任等问题。通过压缩重复劳动和交付成本，利用智能体为县城老板提供获客内容，以产品加陪跑的形式持续交付客户。本地信任和标准化产品是关键，成功后可招商开分公司。"
-          },
-          {
-            "aweme_id": "7666060435816912037",
-            "url": "https://www.douyin.com/video/7666060435816912037",
-            "created_at": "2026-07-24T11:49:46.000Z",
-            "excerpt": "智能体产品在一周内实现了2万多的营收，但客户增长速度超过了产品成熟速度。为确保交付质量，团队决定暂停合作，专注于修复问题，实现自动化。产品成熟后，将重新开放合作，以保证客户获得满意的交付结果。"
-          },
-          {
-            "aweme_id": "7663440599442146661",
-            "url": "https://www.douyin.com/video/7663440599442146661",
-            "created_at": "2026-07-17T10:23:28.000Z",
-            "excerpt": "如何在24小时内实现同城源源不断的客户？关键在于将经营判断公开成内容，提前解释、建立信任和筛选客户。通过内容循环，生意产生真实问题，内容建立信任，客户带来新问题，形成良性循环。内容智能体可以帮助解决客户问题并制作公开视频内容，积累信任。"
-          },
-          {
-            "aweme_id": "7656437114968717285",
-            "url": "https://www.douyin.com/video/7656437114968717285",
-            "created_at": "2026-06-28T13:26:22.000Z",
-            "excerpt": "普通人要有自己的第二套赚钱系统"
-          }
-        ]
-      },
-      {
-        "id": "ai_reduces_delivery_cost",
-        "claim": "AI/智能体的主要商业价值在于压缩重复劳动或交付成本，而不是技术本身。",
-        "supporting_video_count": 4,
-        "evidence": [
           {
             "aweme_id": "7666800690468493007",
             "url": "https://www.douyin.com/video/7666800690468493007",
@@ -8059,6 +8353,43 @@
             "url": "https://www.douyin.com/video/7665296033967322617",
             "created_at": "2026-07-22T10:23:30.000Z",
             "excerpt": "智能体领域中，最先赚钱的往往不是懂技术的人，而是手里有客户的人。信任和渠道比技术更重要，产品被拉平后，能把东西递到客户手里的人更具价值。手里有客户、会搞流量或想进入行业的人可关注AI产品，与懂技术的人合作，实现分工。"
+          }
+        ]
+      },
+      {
+        "id": "repeatable_growth_system",
+        "claim": "个人创业应构建可重复的获客、交付和第二收入系统。",
+        "supporting_video_count": 5,
+        "evidence": [
+          {
+            "aweme_id": "7673013072324660089",
+            "url": "https://www.douyin.com/video/7673013072324660089",
+            "created_at": "2026-08-12T07:29:00.000Z",
+            "excerpt": "在下沉市场用AI服务客户是一种降维打击，因为市场需求真实持续，但传统服务成本高。正确的做法是重新切割产品，利用智能体组织执行，满足未被满足的需求，从而将过去无法成交的需求变成可持续交付的生意。"
+          },
+          {
+            "aweme_id": "7666800690468493007",
+            "url": "https://www.douyin.com/video/7666800690468493007",
+            "created_at": "2026-07-26T11:42:21.000Z",
+            "excerpt": "90后失业者可通过AI实现月入十万，但需先找到已验证的产品，利用AI压缩交付成本，重点关注前端流量和获客，而非学习AI技术。"
+          },
+          {
+            "aweme_id": "7666392532125681125",
+            "url": "https://www.douyin.com/video/7666392532125681125",
+            "created_at": "2026-07-25T09:18:28.000Z",
+            "excerpt": "在县城做AI服务可以实现百万营收，但需解决产品稳定交付、持续交付和本地信任等问题。通过压缩重复劳动和交付成本，利用智能体为县城老板提供获客内容，以产品加陪跑的形式持续交付客户。本地信任和标准化产品是关键，成功后可招商开分公司。"
+          },
+          {
+            "aweme_id": "7666060435816912037",
+            "url": "https://www.douyin.com/video/7666060435816912037",
+            "created_at": "2026-07-24T11:49:46.000Z",
+            "excerpt": "智能体产品在一周内实现了2万多的营收，但客户增长速度超过了产品成熟速度。为确保交付质量，团队决定暂停合作，专注于修复问题，实现自动化。产品成熟后，将重新开放合作，以保证客户获得满意的交付结果。"
+          },
+          {
+            "aweme_id": "7663440599442146661",
+            "url": "https://www.douyin.com/video/7663440599442146661",
+            "created_at": "2026-07-17T10:23:28.000Z",
+            "excerpt": "如何在24小时内实现同城源源不断的客户？关键在于将经营判断公开成内容，提前解释、建立信任和筛选客户。通过内容循环，生意产生真实问题，内容建立信任，客户带来新问题，形成良性循环。内容智能体可以帮助解决客户问题并制作公开视频内容，积累信任。"
           }
         ]
       },
@@ -8126,35 +8457,21 @@
         "why_notable": "智能体业务市场热度上升，但部分人利用信息差夸大产品能力，这种行为损害了市场名声。作者希望竞争能促使行业成熟，代运营团队能带来真实问题样本，推动产品进步。他担心行业发展方向被堵死，希望有更多懂业务的人进入行业。"
       },
       {
+        "aweme_id": "7672627965000661876",
+        "url": "https://www.douyin.com/video/7672627965000661876",
+        "created_at": "2026-08-11T06:34:00.000Z",
+        "title": "如何用智能体的能力赚到人生的第一桶金",
+        "why_notable": "如何利用智能体能力赚取人生第一桶金？通过找到已具备完整交付能力的智能体，服务个体或企业的自媒体经营市场。智能体解决内容持续生产和执行问题，OPC的工作是找到客户、判断需求、场景化演示和交付。OPC通过分销智能体赚钱，卖给需要持续做内容的人。"
+      },
+      {
         "aweme_id": "7664199375506400418",
         "url": "https://www.douyin.com/video/7664199375506400418",
         "created_at": "2026-07-19T11:27:54.000Z",
         "title": "深度拆解上个月两天五万的方法",
         "why_notable": "作者回应了关于两天赚5万方法的询问，强调这并非关键，而是产品销售。他解释了自己的业务需要长期打磨和技术投入，建议创业者关注产品本身而非短期方法。对于有实体客户或生意的人，智能体可作为创业或内容获客的第一款产品。"
-      },
-      {
-        "aweme_id": "7657942395305538996",
-        "url": "https://www.douyin.com/video/7657942395305538996",
-        "created_at": "2026-07-02T14:47:37.000Z",
-        "title": "只要你有工作 ai就能帮你多营收一百万",
-        "why_notable": "AI可以帮助实体商家多赚100万，关键在于利用AI将业务模型从线性转变为指数增长。通过将重复的、有明确标准的环节交给AI，商家可以提高效率，抓住更有价值的机遇。AI不是工具，而是无限复制能力的克隆体，能帮助商家实现低成本的能力连接。"
       }
     ],
     "timeline": [
-      {
-        "date": "2026-06-28T13:26:22.000Z",
-        "aweme_id": "7656437114968717285",
-        "url": "https://www.douyin.com/video/7656437114968717285",
-        "title": "普通人要有自己第二套赚钱系统",
-        "summary": "普通人要有自己的第二套赚钱系统"
-      },
-      {
-        "date": "2026-07-02T14:47:37.000Z",
-        "aweme_id": "7657942395305538996",
-        "url": "https://www.douyin.com/video/7657942395305538996",
-        "title": "只要你有工作 ai就能帮你多营收一百万",
-        "summary": "AI可以帮助实体商家多赚100万，关键在于利用AI将业务模型从线性转变为指数增长。通过将重复的、有明确标准的环节交给AI，商家可以提高效率，抓住更有价值的机遇。AI不是工具，而是无限复制能力的克隆体，能帮助商家实现低成本的能力连接。"
-      },
       {
         "date": "2026-07-04T08:40:46.000Z",
         "aweme_id": "7658590025475570063",
@@ -8266,12 +8583,26 @@
         "url": "https://www.douyin.com/video/7670118101211453413",
         "title": "想想真的觉得后怕",
         "summary": "智能体业务市场热度上升，但部分人利用信息差夸大产品能力，这种行为损害了市场名声。作者希望竞争能促使行业成熟，代运营团队能带来真实问题样本，推动产品进步。他担心行业发展方向被堵死，希望有更多懂业务的人进入行业。"
+      },
+      {
+        "date": "2026-08-11T06:34:00.000Z",
+        "aweme_id": "7672627965000661876",
+        "url": "https://www.douyin.com/video/7672627965000661876",
+        "title": "如何用智能体的能力赚到人生的第一桶金",
+        "summary": "如何利用智能体能力赚取人生第一桶金？通过找到已具备完整交付能力的智能体，服务个体或企业的自媒体经营市场。智能体解决内容持续生产和执行问题，OPC的工作是找到客户、判断需求、场景化演示和交付。OPC通过分销智能体赚钱，卖给需要持续做内容的人。"
+      },
+      {
+        "date": "2026-08-12T07:29:00.000Z",
+        "aweme_id": "7673013072324660089",
+        "url": "https://www.douyin.com/video/7673013072324660089",
+        "title": "在下沉市场用ai的能力服务客户这真的…",
+        "summary": "在下沉市场用AI服务客户是一种降维打击，因为市场需求真实持续，但传统服务成本高。正确的做法是重新切割产品，利用智能体组织执行，满足未被满足的需求，从而将过去无法成交的需求变成可持续交付的生意。"
       }
     ],
     "contradictions_or_changes": [
       {
         "type": "delivery_before_scale",
-        "description": "The creator discusses both scaling the business and pausing cooperation when delivery quality lags. This is best read as a conditional change in operating stance, not necessarily a contradiction.",
+        "description": "A delivery-quality pause is followed by a separate video discussing franchise or branch scaling. This suggests a quality gate before growth, not proof that cooperation had already reopened.",
         "evidence": [
           {
             "aweme_id": "7666060435816912037",
@@ -8280,10 +8611,10 @@
             "excerpt": "智能体产品在一周内实现了2万多的营收，但客户增长速度超过了产品成熟速度。为确保交付质量，团队决定暂停合作，专注于修复问题，实现自动化。产品成熟后，将重新开放合作，以保证客户获得满意的交付结果。"
           },
           {
-            "aweme_id": "7666060435816912037",
-            "url": "https://www.douyin.com/video/7666060435816912037",
-            "created_at": "2026-07-24T11:49:46.000Z",
-            "excerpt": "智能体产品在一周内实现了2万多的营收，但客户增长速度超过了产品成熟速度。为确保交付质量，团队决定暂停合作，专注于修复问题，实现自动化。产品成熟后，将重新开放合作，以保证客户获得满意的交付结果。"
+            "aweme_id": "7666392532125681125",
+            "url": "https://www.douyin.com/video/7666392532125681125",
+            "created_at": "2026-07-25T09:18:28.000Z",
+            "excerpt": "在县城做AI服务可以实现百万营收，但需解决产品稳定交付、持续交付和本地信任等问题。通过压缩重复劳动和交付成本，利用智能体为县城老板提供获客内容，以产品加陪跑的形式持续交付客户。本地信任和标准化产品是关键，成功后可招商开分公司。"
           }
         ]
       },
@@ -8527,48 +8858,1004 @@
             "excerpt": "所以500个客户就是这样来的"
           }
         ]
-      },
-      {
-        "claim": "只要你有工作 ai就能帮你多营收一百万",
-        "status": "unverified_creator_claim",
-        "reason": "The public video supplies the assertion but no independent records were available to verify it.",
-        "evidence": [
-          {
-            "aweme_id": "7657942395305538996",
-            "url": "https://www.douyin.com/video/7657942395305538996",
-            "created_at": "2026-07-02T14:47:37.000Z",
-            "excerpt": "只要你有工作 ai就能帮你多营收一百万"
-          }
-        ]
-      },
-      {
-        "claim": "只要你有工作 ai就能帮你多营收一百万 #ai#创业#智能体#实体#实体商家",
-        "status": "unverified_creator_claim",
-        "reason": "The public video supplies the assertion but no independent records were available to verify it.",
-        "evidence": [
-          {
-            "aweme_id": "7657942395305538996",
-            "url": "https://www.douyin.com/video/7657942395305538996",
-            "created_at": "2026-07-02T14:47:37.000Z",
-            "excerpt": "只要你有工作 ai就能帮你多营收一百万 #ai#创业#智能体#实体#实体商家"
-          }
-        ]
-      },
-      {
-        "claim": "可以同时服务300个甚至3000个客户",
-        "status": "unverified_creator_claim",
-        "reason": "The public video supplies the assertion but no independent records were available to verify it.",
-        "evidence": [
-          {
-            "aweme_id": "7657942395305538996",
-            "url": "https://www.douyin.com/video/7657942395305538996",
-            "created_at": "2026-07-02T14:47:37.000Z",
-            "excerpt": "可以同时服务300个甚至3000个客户"
-          }
-        ]
       }
     ],
     "per_video": [
+      {
+        "aweme_id": "7673013072324660089",
+        "url": "https://www.douyin.com/video/7673013072324660089",
+        "created_at": "2026-08-12T07:29:00.000Z",
+        "title": "在下沉市场用ai的能力服务客户这真的…",
+        "summary": "在下沉市场用AI服务客户是一种降维打击，因为市场需求真实持续，但传统服务成本高。正确的做法是重新切割产品，利用智能体组织执行，满足未被满足的需求，从而将过去无法成交的需求变成可持续交付的生意。",
+        "readable_content": {
+          "status": "complete",
+          "text": "在下沉市场,用AI服务客户就是降维打击。接下来的内容,如果你听完了,你一定能发现其中的机会。在下沉市场,用AI服务客户为什么我说是降维打击?不是因为你比其他的商家多知道几个模型,更不是拿着AI的概念去教育别人。如果你把这名生意理解成信息差,那这个机会很快就会消失。真正的代查发生在供给端。过去,市场提供一项专业的服务,最小单位往往是一支团队,比如内容服务,背后需要策划文案,拍摄,剪辑和运营。\n客户想获得稳定的交付\n通常要为整条生产链付费\n问题在于下沉市场里存在一类需求\n它真实持续\n但不足以长期支撑\n一支完整的团队\n其实说白了就是成本太高了\n市场不是没有客户\n而是原来的服务太重了\n便宜的工具只能提供功能\n客户还要自己整理一些资料\n设计一些流程\n判断一些内容\n能不能自己用带运营服务呢\n每接一单\n就会增加一下人力的成本\n两种供给之间\n一直缺少一个更小的服务单位\n这里最容易犯的一个错误\n就是用AI做低价版带运营\n价格虽然降下来了\n但是你的服务边界\n内容定位\n拍摄\n发布\n运营\n最终结果全部你都要负责的\n智能体只能压缩\n其中一部分的执行时间\n剩下的成本仍然会回到人身上\n所以进入这个市场\n不能只降价格\n必须要重新切割产品\n所谓的降维打击\n不是用更便宜的方式\n把原来的服务重新做一遍\n是发现市场里哪些专业服务\n被捆绑的太重\n再把其中能稳定执行的部分拆出来\n做成一个更小更容易购买的产品\n下沉市场更不是低端市场\n它只是更早的暴露了一个问题\n很多需求没有被满足\n不是需求不值钱\n而是旧的生产方式服务不起他们\n谁能用智能体重新组资执行成\n谁就有机会把这些过去无法成交的需求\n变成一门可持续交付的生意",
+          "segments": [
+            {
+              "start_ms": 0,
+              "end_ms": 28520,
+              "text": "在下沉市场,用AI服务客户就是降维打击。接下来的内容,如果你听完了,你一定能发现其中的机会。在下沉市场,用AI服务客户为什么我说是降维打击?不是因为你比其他的商家多知道几个模型,更不是拿着AI的概念去教育别人。如果你把这名生意理解成信息差,那这个机会很快就会消失。真正的代查发生在供给端。过去,市场提供一项专业的服务,最小单位往往是一支团队,比如内容服务,背后需要策划文案,拍摄,剪辑和运营。",
+              "confidence": 0.9159,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 28520,
+              "end_ms": 30280,
+              "text": "客户想获得稳定的交付",
+              "confidence": 0.9326,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 30280,
+              "end_ms": 32000,
+              "text": "通常要为整条生产链付费",
+              "confidence": 0.9326,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 32000,
+              "end_ms": 34460,
+              "text": "问题在于下沉市场里存在一类需求",
+              "confidence": 0.9326,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 34460,
+              "end_ms": 35500,
+              "text": "它真实持续",
+              "confidence": 0.9326,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 35500,
+              "end_ms": 37220,
+              "text": "但不足以长期支撑",
+              "confidence": 0.9326,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 37220,
+              "end_ms": 38400,
+              "text": "一支完整的团队",
+              "confidence": 0.9326,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 38400,
+              "end_ms": 40700,
+              "text": "其实说白了就是成本太高了",
+              "confidence": 0.9326,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 40700,
+              "end_ms": 42000,
+              "text": "市场不是没有客户",
+              "confidence": 0.9326,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 42000,
+              "end_ms": 43760,
+              "text": "而是原来的服务太重了",
+              "confidence": 0.9326,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 43760,
+              "end_ms": 45480,
+              "text": "便宜的工具只能提供功能",
+              "confidence": 0.9326,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 45480,
+              "end_ms": 47440,
+              "text": "客户还要自己整理一些资料",
+              "confidence": 0.9326,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 47440,
+              "end_ms": 48360,
+              "text": "设计一些流程",
+              "confidence": 0.9326,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 48360,
+              "end_ms": 49480,
+              "text": "判断一些内容",
+              "confidence": 0.9326,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 49480,
+              "end_ms": 51220,
+              "text": "能不能自己用带运营服务呢",
+              "confidence": 0.9326,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 51220,
+              "end_ms": 51860,
+              "text": "每接一单",
+              "confidence": 0.9326,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 51860,
+              "end_ms": 53700,
+              "text": "就会增加一下人力的成本",
+              "confidence": 0.9326,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 53700,
+              "end_ms": 54580,
+              "text": "两种供给之间",
+              "confidence": 0.9326,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 54580,
+              "end_ms": 56640,
+              "text": "一直缺少一个更小的服务单位",
+              "confidence": 0.9326,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 56640,
+              "end_ms": 57980,
+              "text": "这里最容易犯的一个错误",
+              "confidence": 0.9214,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 57980,
+              "end_ms": 59960,
+              "text": "就是用AI做低价版带运营",
+              "confidence": 0.9214,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 59960,
+              "end_ms": 61120,
+              "text": "价格虽然降下来了",
+              "confidence": 0.9214,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 61120,
+              "end_ms": 62300,
+              "text": "但是你的服务边界",
+              "confidence": 0.9214,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 62300,
+              "end_ms": 62940,
+              "text": "内容定位",
+              "confidence": 0.9214,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 62940,
+              "end_ms": 63500,
+              "text": "拍摄",
+              "confidence": 0.9214,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 63500,
+              "end_ms": 63900,
+              "text": "发布",
+              "confidence": 0.9214,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 63900,
+              "end_ms": 64280,
+              "text": "运营",
+              "confidence": 0.9214,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 64280,
+              "end_ms": 66340,
+              "text": "最终结果全部你都要负责的",
+              "confidence": 0.9214,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 66340,
+              "end_ms": 67560,
+              "text": "智能体只能压缩",
+              "confidence": 0.9214,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 67560,
+              "end_ms": 69100,
+              "text": "其中一部分的执行时间",
+              "confidence": 0.9214,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 69100,
+              "end_ms": 71440,
+              "text": "剩下的成本仍然会回到人身上",
+              "confidence": 0.9214,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 71440,
+              "end_ms": 72860,
+              "text": "所以进入这个市场",
+              "confidence": 0.9214,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 72860,
+              "end_ms": 74060,
+              "text": "不能只降价格",
+              "confidence": 0.9214,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 74060,
+              "end_ms": 75480,
+              "text": "必须要重新切割产品",
+              "confidence": 0.9214,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 75480,
+              "end_ms": 76480,
+              "text": "所谓的降维打击",
+              "confidence": 0.9214,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 76480,
+              "end_ms": 78040,
+              "text": "不是用更便宜的方式",
+              "confidence": 0.9214,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 78040,
+              "end_ms": 80060,
+              "text": "把原来的服务重新做一遍",
+              "confidence": 0.9214,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 80060,
+              "end_ms": 82480,
+              "text": "是发现市场里哪些专业服务",
+              "confidence": 0.9214,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 82480,
+              "end_ms": 83520,
+              "text": "被捆绑的太重",
+              "confidence": 0.9214,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 83520,
+              "end_ms": 86360,
+              "text": "再把其中能稳定执行的部分拆出来",
+              "confidence": 0.9364,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 86360,
+              "end_ms": 88640,
+              "text": "做成一个更小更容易购买的产品",
+              "confidence": 0.9364,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 88640,
+              "end_ms": 90640,
+              "text": "下沉市场更不是低端市场",
+              "confidence": 0.9364,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 90640,
+              "end_ms": 92780,
+              "text": "它只是更早的暴露了一个问题",
+              "confidence": 0.9364,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 92780,
+              "end_ms": 94200,
+              "text": "很多需求没有被满足",
+              "confidence": 0.9364,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 94200,
+              "end_ms": 95480,
+              "text": "不是需求不值钱",
+              "confidence": 0.9364,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 95480,
+              "end_ms": 97900,
+              "text": "而是旧的生产方式服务不起他们",
+              "confidence": 0.9364,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 97900,
+              "end_ms": 100680,
+              "text": "谁能用智能体重新组资执行成",
+              "confidence": 0.9364,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 100680,
+              "end_ms": 103940,
+              "text": "谁就有机会把这些过去无法成交的需求",
+              "confidence": 0.9364,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 103940,
+              "end_ms": 105820,
+              "text": "变成一门可持续交付的生意",
+              "confidence": 0.9364,
+              "no_speech_probability": 0
+            }
+          ],
+          "language": "zh",
+          "language_probability": 1,
+          "duration_seconds": 105.908,
+          "method": "local_faster_whisper_asr",
+          "model": "large-v3-turbo",
+          "device": "cpu",
+          "compute_type": "int8",
+          "prompt_glossary": "智能体，AI，下沉市场，创业，商业思维，实体商家，获客，交付。",
+          "transcribed_at": "2026-08-22T10:03:11.261869Z",
+          "processing_seconds": 17.966,
+          "confidence": {
+            "kind": "segment_log_probability",
+            "mean": 0.9285
+          },
+          "limitations": [
+            "ASR text can contain recognition or punctuation errors.",
+            "Confidence is derived from model segment log probabilities, not independently calibrated accuracy."
+          ],
+          "normalization": [
+            "segment_boundaries_preserved_as_newlines"
+          ]
+        },
+        "chapters": {
+          "available": true,
+          "generated_by_ai": true,
+          "source": "douyin_ai_chapters",
+          "abstract": "在下沉市场用AI服务客户是一种降维打击，因为市场需求真实持续，但传统服务成本高。正确的做法是重新切割产品，利用智能体组织执行，满足未被满足的需求，从而将过去无法成交的需求变成可持续交付的生意。",
+          "entries": [
+            {
+              "index": 0,
+              "start_ms": 1000,
+              "title": "引言"
+            },
+            {
+              "index": 1,
+              "start_ms": 6000,
+              "title": "信息差与代差",
+              "detail": "用AI服务客户并非信息差，而是代差。"
+            },
+            {
+              "index": 2,
+              "start_ms": 20000,
+              "title": "服务成本与市场需求",
+              "detail": "下沉市场需求真实持续，但服务成本高，市场缺少更小的服务单位。"
+            },
+            {
+              "index": 3,
+              "start_ms": 59000,
+              "title": "错误的做法",
+              "detail": "用AI做低价版代运营不可行，智能体只能压缩部分执行时间。"
+            },
+            {
+              "index": 4,
+              "start_ms": 74000,
+              "title": "正确的做法",
+              "detail": "重新切割产品，用智能体组织执行，满足未被满足的需求。"
+            }
+          ]
+        },
+        "source_evidence": {
+          "description": "在下沉市场用ai的能力服务客户这真的… #智能体#ai#创业#商业思维#下沉市场",
+          "hashtags": [
+            "智能体",
+            "ai",
+            "创业",
+            "商业思维",
+            "下沉市场"
+          ],
+          "engagement": {
+            "plays": 0,
+            "likes": 705,
+            "comments": 10,
+            "shares": 205,
+            "collects": 463
+          }
+        }
+      },
+      {
+        "aweme_id": "7672627965000661876",
+        "url": "https://www.douyin.com/video/7672627965000661876",
+        "created_at": "2026-08-11T06:34:00.000Z",
+        "title": "如何用智能体的能力赚到人生的第一桶金",
+        "summary": "如何利用智能体能力赚取人生第一桶金？通过找到已具备完整交付能力的智能体，服务个体或企业的自媒体经营市场。智能体解决内容持续生产和执行问题，OPC的工作是找到客户、判断需求、场景化演示和交付。OPC通过分销智能体赚钱，卖给需要持续做内容的人。",
+        "readable_content": {
+          "status": "complete",
+          "text": "如何用智能体的能力赚到人生的第一桶金,接下来的内容,如果你听完了,或许能让你赚到你的第一个五位数。\n如果今天让我从零开始\n我不会先学AI\n也不会再造一个智能体\n我会先找到一款\n已经具备完整的交付能力的智能体\n再去服务一个原本就存在的市场\n这个市场就是个体或企业的自媒体应用\n很多老板不是不知道要做内容\n也不是不理解短视频的重要性\n他们真正做不到的是长期稳定的更新\n今天忙业务停工\n明天不知道拍什么了停工\n好不容易找了个员工\n换个人以后\n内容又得重新开始\n最后账号无法形成持续的内容供给\n自媒体真正的商业价值\n不是某一条视频突然爆了\n而是企业或个体\n持续的在潜在客户面前出现\n客户第一次刷到你可能没有反应\n第二次开始愿意了解你做什么\n看的足够久才可能产生信任\n所以持续更新不是流量技巧\n而是在持续的积累客户认识你的机会\n坚持更新能够增加被看见被理解的机会\n但不代表任何账号\n只要一更新就一定能获得客户\n因为产品本身内容的方向\n都会影响账号最后的结果\n而我智能体解决的\n就是在这条链路里最容易中断的部分\n就是内容持续生产和执行\n从内容策划到内容生产\n到最后实际的执行和发布\n都可以由智能体\n按照已经确认的流程完成\n现在智能体的价值\n是把这套重复工作\n变成一条能够稳定执行的流程\n这才是OPC可以分销的产品\nOPC不需要每天去替客户写稿\n也不需要自己承担\n所有在运营的工作\nOPC真正要做的就是这件事\n就是第一找到合适的客户\n第二判断它的需求\n第三把客户转换\n完成场景化的演示\n第四交付要靠标准化的产品\n完成就可以了\n所以OPC靠智能体赚钱\n不是靠AI生成内容\n再去卖原历服务\n也不是重新开发一款产品\n再从零念证市场\n你分销的是一款\n已经能够完全工作的智能体\n客户购买它\n是因为长期的经营自媒体\n你的第一笔钱\n不是因为你会使用AI\n而是因为你把一款\n真正能执行的智能体\n卖给了一个\n确实需要持续做内容的人\n这才是真正的机会",
+          "segments": [
+            {
+              "start_ms": 0,
+              "end_ms": 6640,
+              "text": "如何用智能体的能力赚到人生的第一桶金,接下来的内容,如果你听完了,或许能让你赚到你的第一个五位数。",
+              "confidence": 0.9161,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 6640,
+              "end_ms": 8000,
+              "text": "如果今天让我从零开始",
+              "confidence": 0.9453,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 8000,
+              "end_ms": 9240,
+              "text": "我不会先学AI",
+              "confidence": 0.9453,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 9240,
+              "end_ms": 10960,
+              "text": "也不会再造一个智能体",
+              "confidence": 0.9453,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 10960,
+              "end_ms": 12180,
+              "text": "我会先找到一款",
+              "confidence": 0.9453,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 12180,
+              "end_ms": 14480,
+              "text": "已经具备完整的交付能力的智能体",
+              "confidence": 0.9453,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 14480,
+              "end_ms": 17200,
+              "text": "再去服务一个原本就存在的市场",
+              "confidence": 0.9453,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 17200,
+              "end_ms": 19780,
+              "text": "这个市场就是个体或企业的自媒体应用",
+              "confidence": 0.9453,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 19780,
+              "end_ms": 21860,
+              "text": "很多老板不是不知道要做内容",
+              "confidence": 0.9453,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 21860,
+              "end_ms": 23840,
+              "text": "也不是不理解短视频的重要性",
+              "confidence": 0.9453,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 23840,
+              "end_ms": 26560,
+              "text": "他们真正做不到的是长期稳定的更新",
+              "confidence": 0.9453,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 26560,
+              "end_ms": 27960,
+              "text": "今天忙业务停工",
+              "confidence": 0.9453,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 27960,
+              "end_ms": 29620,
+              "text": "明天不知道拍什么了停工",
+              "confidence": 0.9453,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 29620,
+              "end_ms": 30980,
+              "text": "好不容易找了个员工",
+              "confidence": 0.9453,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 30980,
+              "end_ms": 31780,
+              "text": "换个人以后",
+              "confidence": 0.9453,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 31780,
+              "end_ms": 33400,
+              "text": "内容又得重新开始",
+              "confidence": 0.9453,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 33400,
+              "end_ms": 36120,
+              "text": "最后账号无法形成持续的内容供给",
+              "confidence": 0.9453,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 36120,
+              "end_ms": 38060,
+              "text": "自媒体真正的商业价值",
+              "confidence": 0.9353,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 38060,
+              "end_ms": 39880,
+              "text": "不是某一条视频突然爆了",
+              "confidence": 0.9353,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 39880,
+              "end_ms": 41540,
+              "text": "而是企业或个体",
+              "confidence": 0.9353,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 41540,
+              "end_ms": 43940,
+              "text": "持续的在潜在客户面前出现",
+              "confidence": 0.9353,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 43940,
+              "end_ms": 46020,
+              "text": "客户第一次刷到你可能没有反应",
+              "confidence": 0.9353,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 46020,
+              "end_ms": 48200,
+              "text": "第二次开始愿意了解你做什么",
+              "confidence": 0.9353,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 48200,
+              "end_ms": 50420,
+              "text": "看的足够久才可能产生信任",
+              "confidence": 0.9353,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 50420,
+              "end_ms": 52540,
+              "text": "所以持续更新不是流量技巧",
+              "confidence": 0.9353,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 52540,
+              "end_ms": 54920,
+              "text": "而是在持续的积累客户认识你的机会",
+              "confidence": 0.9353,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 54920,
+              "end_ms": 57740,
+              "text": "坚持更新能够增加被看见被理解的机会",
+              "confidence": 0.9353,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 57740,
+              "end_ms": 58860,
+              "text": "但不代表任何账号",
+              "confidence": 0.9353,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 58860,
+              "end_ms": 60660,
+              "text": "只要一更新就一定能获得客户",
+              "confidence": 0.9353,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 60660,
+              "end_ms": 62600,
+              "text": "因为产品本身内容的方向",
+              "confidence": 0.9353,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 62600,
+              "end_ms": 64340,
+              "text": "都会影响账号最后的结果",
+              "confidence": 0.9353,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 64340,
+              "end_ms": 65500,
+              "text": "而我智能体解决的",
+              "confidence": 0.9353,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 65500,
+              "end_ms": 68200,
+              "text": "就是在这条链路里最容易中断的部分",
+              "confidence": 0.9436,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 68200,
+              "end_ms": 70460,
+              "text": "就是内容持续生产和执行",
+              "confidence": 0.9436,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 70460,
+              "end_ms": 72240,
+              "text": "从内容策划到内容生产",
+              "confidence": 0.9436,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 72240,
+              "end_ms": 74080,
+              "text": "到最后实际的执行和发布",
+              "confidence": 0.9436,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 74080,
+              "end_ms": 75080,
+              "text": "都可以由智能体",
+              "confidence": 0.9436,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 75080,
+              "end_ms": 76720,
+              "text": "按照已经确认的流程完成",
+              "confidence": 0.9436,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 76720,
+              "end_ms": 77940,
+              "text": "现在智能体的价值",
+              "confidence": 0.9436,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 77940,
+              "end_ms": 79240,
+              "text": "是把这套重复工作",
+              "confidence": 0.9436,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 79240,
+              "end_ms": 81120,
+              "text": "变成一条能够稳定执行的流程",
+              "confidence": 0.9436,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 81120,
+              "end_ms": 83260,
+              "text": "这才是OPC可以分销的产品",
+              "confidence": 0.9436,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 83260,
+              "end_ms": 85680,
+              "text": "OPC不需要每天去替客户写稿",
+              "confidence": 0.9436,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 85680,
+              "end_ms": 87020,
+              "text": "也不需要自己承担",
+              "confidence": 0.9436,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 87020,
+              "end_ms": 88040,
+              "text": "所有在运营的工作",
+              "confidence": 0.9436,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 88040,
+              "end_ms": 90000,
+              "text": "OPC真正要做的就是这件事",
+              "confidence": 0.9436,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 90000,
+              "end_ms": 91680,
+              "text": "就是第一找到合适的客户",
+              "confidence": 0.9436,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 91680,
+              "end_ms": 92920,
+              "text": "第二判断它的需求",
+              "confidence": 0.9436,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 92920,
+              "end_ms": 94180,
+              "text": "第三把客户转换",
+              "confidence": 0.9233,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 94180,
+              "end_ms": 95500,
+              "text": "完成场景化的演示",
+              "confidence": 0.9233,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 95500,
+              "end_ms": 97580,
+              "text": "第四交付要靠标准化的产品",
+              "confidence": 0.9233,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 97580,
+              "end_ms": 98380,
+              "text": "完成就可以了",
+              "confidence": 0.9233,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 98380,
+              "end_ms": 100100,
+              "text": "所以OPC靠智能体赚钱",
+              "confidence": 0.9233,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 100100,
+              "end_ms": 101720,
+              "text": "不是靠AI生成内容",
+              "confidence": 0.9233,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 101720,
+              "end_ms": 102900,
+              "text": "再去卖原历服务",
+              "confidence": 0.9233,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 102900,
+              "end_ms": 104520,
+              "text": "也不是重新开发一款产品",
+              "confidence": 0.9233,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 104520,
+              "end_ms": 105660,
+              "text": "再从零念证市场",
+              "confidence": 0.9233,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 105660,
+              "end_ms": 106580,
+              "text": "你分销的是一款",
+              "confidence": 0.9233,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 106580,
+              "end_ms": 108580,
+              "text": "已经能够完全工作的智能体",
+              "confidence": 0.9233,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 108580,
+              "end_ms": 109420,
+              "text": "客户购买它",
+              "confidence": 0.9233,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 109420,
+              "end_ms": 110960,
+              "text": "是因为长期的经营自媒体",
+              "confidence": 0.9233,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 110960,
+              "end_ms": 111700,
+              "text": "你的第一笔钱",
+              "confidence": 0.9233,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 111700,
+              "end_ms": 112920,
+              "text": "不是因为你会使用AI",
+              "confidence": 0.9233,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 112920,
+              "end_ms": 114300,
+              "text": "而是因为你把一款",
+              "confidence": 0.9233,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 114300,
+              "end_ms": 115820,
+              "text": "真正能执行的智能体",
+              "confidence": 0.9233,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 115820,
+              "end_ms": 116680,
+              "text": "卖给了一个",
+              "confidence": 0.9233,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 116680,
+              "end_ms": 118640,
+              "text": "确实需要持续做内容的人",
+              "confidence": 0.9233,
+              "no_speech_probability": 0
+            },
+            {
+              "start_ms": 118640,
+              "end_ms": 120120,
+              "text": "这才是真正的机会",
+              "confidence": 0.9233,
+              "no_speech_probability": 0
+            }
+          ],
+          "language": "zh",
+          "language_probability": 1,
+          "duration_seconds": 120.211,
+          "method": "local_faster_whisper_asr",
+          "model": "large-v3-turbo",
+          "device": "cpu",
+          "compute_type": "int8",
+          "prompt_glossary": "智能体，AI，创业，商业思维，实体商家，获客，交付。",
+          "transcribed_at": "2026-08-22T10:02:39.977123Z",
+          "processing_seconds": 22.954,
+          "confidence": {
+            "kind": "segment_log_probability",
+            "mean": 0.9358
+          },
+          "limitations": [
+            "ASR text can contain recognition or punctuation errors.",
+            "Confidence is derived from model segment log probabilities, not independently calibrated accuracy."
+          ],
+          "normalization": [
+            "segment_boundaries_preserved_as_newlines"
+          ]
+        },
+        "chapters": {
+          "available": true,
+          "generated_by_ai": true,
+          "source": "douyin_ai_chapters",
+          "abstract": "如何利用智能体能力赚取人生第一桶金？通过找到已具备完整交付能力的智能体，服务个体或企业的自媒体经营市场。智能体解决内容持续生产和执行问题，OPC的工作是找到客户、判断需求、场景化演示和交付。OPC通过分销智能体赚钱，卖给需要持续做内容的人。",
+          "entries": [
+            {
+              "index": 0,
+              "start_ms": 2000,
+              "title": "引言"
+            },
+            {
+              "index": 1,
+              "start_ms": 21000,
+              "title": "自媒体经营的挑战",
+              "detail": "自媒体经营面临内容持续更新挑战，持续更新是积累客户认识机会的关键。"
+            },
+            {
+              "index": 2,
+              "start_ms": 70000,
+              "title": "智能体的价值",
+              "detail": "智能体解决内容持续生产和执行问题，将重复工作变成稳定流程。"
+            },
+            {
+              "index": 3,
+              "start_ms": 84000,
+              "title": "OPC的工作内容",
+              "detail": "OPC的工作包括找客户、判断需求、场景化演示和交付。"
+            },
+            {
+              "index": 4,
+              "start_ms": 103000,
+              "title": "赚钱的机会",
+              "detail": "OPC通过分销智能体赚钱，卖给需要持续做内容的人。"
+            }
+          ]
+        },
+        "source_evidence": {
+          "description": "如何用智能体的能力赚到人生的第一桶金 #强者思维逻辑 #智能体#商业思维#商业模式#创业",
+          "hashtags": [
+            "强者思维逻辑",
+            "智能体",
+            "商业思维",
+            "商业模式",
+            "创业"
+          ],
+          "engagement": {
+            "plays": 0,
+            "likes": 123,
+            "comments": 2,
+            "shares": 33,
+            "collects": 70
+          }
+        }
+      },
       {
         "aweme_id": "7670118101211453413",
         "url": "https://www.douyin.com/video/7670118101211453413",
@@ -9195,8 +10482,8 @@
           ],
           "engagement": {
             "plays": 0,
-            "likes": 40,
-            "comments": 3,
+            "likes": 45,
+            "comments": 5,
             "shares": 1,
             "collects": 19
           }
@@ -9842,10 +11129,10 @@
           ],
           "engagement": {
             "plays": 0,
-            "likes": 531,
+            "likes": 653,
             "comments": 13,
-            "shares": 102,
-            "collects": 334
+            "shares": 135,
+            "collects": 413
           }
         }
       },
@@ -10518,10 +11805,10 @@
           ],
           "engagement": {
             "plays": 0,
-            "likes": 146,
+            "likes": 159,
             "comments": 8,
-            "shares": 19,
-            "collects": 53
+            "shares": 23,
+            "collects": 58
           }
         }
       },
@@ -11150,10 +12437,10 @@
           ],
           "engagement": {
             "plays": 0,
-            "likes": 17598,
-            "comments": 256,
-            "shares": 5588,
-            "collects": 13140
+            "likes": 21727,
+            "comments": 373,
+            "shares": 6825,
+            "collects": 16335
           }
         }
       },
@@ -11669,10 +12956,10 @@
           ],
           "engagement": {
             "plays": 0,
-            "likes": 166,
-            "comments": 3,
-            "shares": 16,
-            "collects": 67
+            "likes": 168,
+            "comments": 4,
+            "shares": 18,
+            "collects": 68
           }
         }
       },
@@ -12328,10 +13615,10 @@
           ],
           "engagement": {
             "plays": 0,
-            "likes": 210,
+            "likes": 218,
             "comments": 3,
             "shares": 37,
-            "collects": 102
+            "collects": 104
           }
         }
       },
@@ -12617,9 +13904,9 @@
           ],
           "engagement": {
             "plays": 0,
-            "likes": 42,
+            "likes": 44,
             "comments": 1,
-            "shares": 3,
+            "shares": 4,
             "collects": 12
           }
         }
@@ -13500,10 +14787,10 @@
           ],
           "engagement": {
             "plays": 0,
-            "likes": 196,
+            "likes": 205,
             "comments": 5,
             "shares": 17,
-            "collects": 104
+            "collects": 107
           }
         }
       },
@@ -13847,10 +15134,10 @@
           ],
           "engagement": {
             "plays": 0,
-            "likes": 204,
+            "likes": 205,
             "comments": 4,
-            "shares": 43,
-            "collects": 143
+            "shares": 45,
+            "collects": 144
           }
         }
       },
@@ -14172,10 +15459,10 @@
           ],
           "engagement": {
             "plays": 0,
-            "likes": 314,
+            "likes": 317,
             "comments": 2,
             "shares": 41,
-            "collects": 174
+            "collects": 176
           }
         }
       },
@@ -14426,10 +15713,10 @@
           ],
           "engagement": {
             "plays": 0,
-            "likes": 151,
+            "likes": 152,
             "comments": 2,
             "shares": 13,
-            "collects": 80
+            "collects": 81
           }
         }
       },
@@ -14774,10 +16061,10 @@
           ],
           "engagement": {
             "plays": 0,
-            "likes": 278,
+            "likes": 279,
             "comments": 4,
-            "shares": 31,
-            "collects": 191
+            "shares": 33,
+            "collects": 189
           }
         }
       },
@@ -15232,10 +16519,10 @@
           ],
           "engagement": {
             "plays": 0,
-            "likes": 131,
+            "likes": 135,
             "comments": 3,
-            "shares": 37,
-            "collects": 68
+            "shares": 38,
+            "collects": 69
           }
         }
       },
@@ -16073,686 +17360,10 @@
           ],
           "engagement": {
             "plays": 0,
-            "likes": 504,
+            "likes": 508,
             "comments": 5,
-            "shares": 86,
-            "collects": 282
-          }
-        }
-      },
-      {
-        "aweme_id": "7657942395305538996",
-        "url": "https://www.douyin.com/video/7657942395305538996",
-        "created_at": "2026-07-02T14:47:37.000Z",
-        "title": "只要你有工作 ai就能帮你多营收一百万",
-        "summary": "AI可以帮助实体商家多赚100万，关键在于利用AI将业务模型从线性转变为指数增长。通过将重复的、有明确标准的环节交给AI，商家可以提高效率，抓住更有价值的机遇。AI不是工具，而是无限复制能力的克隆体，能帮助商家实现低成本的能力连接。",
-        "readable_content": {
-          "status": "complete",
-          "text": "只要你有自己的业务,AI就能帮你多赚100万,这可能是我最后一期,也是最详细的一期帮助实体用AI赋能的一篇内容。\n为什么现在有了AI,我们依然没多赚多少钱，如果你现在手里有一门业务,不管是做咨询还是自媒体,AI帮你多赚的这100万,其实就藏在杠杆率里。\n大多数人对AI的理解传错了,把它当成了一个副驾驶,帮你写写文案修修图,以为这就叫提效,错了,省了点体力,这是加法。\n真正想增长一百万\n来自于惩罚\n善战者求之于事\n不择于人\n你的业务只是一个支点\n而AI就是那个杠杆\n很多人赚不到钱\n是因为它的业务模型里\n只有人力这一个变量\n做设计用时间换钱\n做咨询就用精力换钱\n这就像你拼命的\n在推一个方形的轮子\n很努力但阻力很大\nAI的本质是把你的业务模型\n从线形变成指数增长\n我给你举个例子\n以前你做服务\n一对一交付\n一天服务三个客户\n基本上就是极限\n这就是你的天花板\n但如果你用AI把你的服务产品化\n把你脑子里的经验喂给智能体\n训练成一个专属智能体\n它不需要睡觉\n可以同时服务300个甚至3000个客户\n这时候你赚的就不再是实薪\n而是税后收入\n这就是我说的观点\nAI不是工具\nAI是无限复制你能力的克隆体\n过去赚钱靠的是稀缺性\n是你会别人不会\n现在赚钱靠的是连接性\n你能用AI把你的能力\n一成本连接给无数需要的人\n所以我建议所有做业务的人\n从今天起把你业务里\n所有重复的\n有明确标准的环节\n全部交给AA\n你只做决策和搞关系\n把剩下的时间去维护核心的客户\n你把80%的琐事玻璃\n就能腾出手\n去抓住那20%真正值钱的机遇\n如果说你一天拥有了别人10天的效率\n这多出来的100万\n只是顺带的结果\n找到它\n你的杠杆就开始转动了",
-          "segments": [
-            {
-              "start_ms": 0,
-              "end_ms": 6180,
-              "text": "只要你有自己的业务,AI就能帮你多赚100万,这可能是我最后一期,也是最详细的一期帮助实体用AI赋能的一篇内容。",
-              "confidence": 0.893,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 6480,
-              "end_ms": 14960,
-              "text": "为什么现在有了AI,我们依然没多赚多少钱，如果你现在手里有一门业务,不管是做咨询还是自媒体,AI帮你多赚的这100万,其实就藏在杠杆率里。",
-              "confidence": 0.893,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 15160,
-              "end_ms": 22100,
-              "text": "大多数人对AI的理解传错了,把它当成了一个副驾驶,帮你写写文案修修图,以为这就叫提效,错了,省了点体力,这是加法。",
-              "confidence": 0.893,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 22100,
-              "end_ms": 23600,
-              "text": "真正想增长一百万",
-              "confidence": 0.9191,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 23600,
-              "end_ms": 24520,
-              "text": "来自于惩罚",
-              "confidence": 0.9191,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 24520,
-              "end_ms": 25680,
-              "text": "善战者求之于事",
-              "confidence": 0.9191,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 25680,
-              "end_ms": 26320,
-              "text": "不择于人",
-              "confidence": 0.9191,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 26320,
-              "end_ms": 27600,
-              "text": "你的业务只是一个支点",
-              "confidence": 0.9191,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 27600,
-              "end_ms": 28980,
-              "text": "而AI就是那个杠杆",
-              "confidence": 0.9191,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 28980,
-              "end_ms": 29900,
-              "text": "很多人赚不到钱",
-              "confidence": 0.9191,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 29900,
-              "end_ms": 30900,
-              "text": "是因为它的业务模型里",
-              "confidence": 0.9191,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 30900,
-              "end_ms": 32000,
-              "text": "只有人力这一个变量",
-              "confidence": 0.9191,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 32000,
-              "end_ms": 33480,
-              "text": "做设计用时间换钱",
-              "confidence": 0.9191,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 33480,
-              "end_ms": 35060,
-              "text": "做咨询就用精力换钱",
-              "confidence": 0.9191,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 35060,
-              "end_ms": 36140,
-              "text": "这就像你拼命的",
-              "confidence": 0.9191,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 36140,
-              "end_ms": 37240,
-              "text": "在推一个方形的轮子",
-              "confidence": 0.9191,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 37240,
-              "end_ms": 38560,
-              "text": "很努力但阻力很大",
-              "confidence": 0.9191,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 38560,
-              "end_ms": 40140,
-              "text": "AI的本质是把你的业务模型",
-              "confidence": 0.9191,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 40140,
-              "end_ms": 41480,
-              "text": "从线形变成指数增长",
-              "confidence": 0.9191,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 41480,
-              "end_ms": 42140,
-              "text": "我给你举个例子",
-              "confidence": 0.9191,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 42140,
-              "end_ms": 42960,
-              "text": "以前你做服务",
-              "confidence": 0.9191,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 42960,
-              "end_ms": 43620,
-              "text": "一对一交付",
-              "confidence": 0.9191,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 43620,
-              "end_ms": 44720,
-              "text": "一天服务三个客户",
-              "confidence": 0.9191,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 44720,
-              "end_ms": 45700,
-              "text": "基本上就是极限",
-              "confidence": 0.9191,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 45700,
-              "end_ms": 46720,
-              "text": "这就是你的天花板",
-              "confidence": 0.9251,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 46720,
-              "end_ms": 48980,
-              "text": "但如果你用AI把你的服务产品化",
-              "confidence": 0.9251,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 48980,
-              "end_ms": 50480,
-              "text": "把你脑子里的经验喂给智能体",
-              "confidence": 0.9251,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 50480,
-              "end_ms": 51760,
-              "text": "训练成一个专属智能体",
-              "confidence": 0.9251,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 51760,
-              "end_ms": 52620,
-              "text": "它不需要睡觉",
-              "confidence": 0.9251,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 52620,
-              "end_ms": 55260,
-              "text": "可以同时服务300个甚至3000个客户",
-              "confidence": 0.9251,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 55260,
-              "end_ms": 57000,
-              "text": "这时候你赚的就不再是实薪",
-              "confidence": 0.9251,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 57000,
-              "end_ms": 58040,
-              "text": "而是税后收入",
-              "confidence": 0.9251,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 58040,
-              "end_ms": 59160,
-              "text": "这就是我说的观点",
-              "confidence": 0.9251,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 59160,
-              "end_ms": 59920,
-              "text": "AI不是工具",
-              "confidence": 0.9251,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 59920,
-              "end_ms": 62240,
-              "text": "AI是无限复制你能力的克隆体",
-              "confidence": 0.9251,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 62240,
-              "end_ms": 64260,
-              "text": "过去赚钱靠的是稀缺性",
-              "confidence": 0.9251,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 64260,
-              "end_ms": 65540,
-              "text": "是你会别人不会",
-              "confidence": 0.9251,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 65540,
-              "end_ms": 67320,
-              "text": "现在赚钱靠的是连接性",
-              "confidence": 0.9251,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 67320,
-              "end_ms": 68900,
-              "text": "你能用AI把你的能力",
-              "confidence": 0.9251,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 68900,
-              "end_ms": 70540,
-              "text": "一成本连接给无数需要的人",
-              "confidence": 0.9251,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 70540,
-              "end_ms": 72580,
-              "text": "所以我建议所有做业务的人",
-              "confidence": 0.9251,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 72580,
-              "end_ms": 73980,
-              "text": "从今天起把你业务里",
-              "confidence": 0.9251,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 73980,
-              "end_ms": 74920,
-              "text": "所有重复的",
-              "confidence": 0.9247,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 74920,
-              "end_ms": 76200,
-              "text": "有明确标准的环节",
-              "confidence": 0.9247,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 76200,
-              "end_ms": 77040,
-              "text": "全部交给AA",
-              "confidence": 0.9247,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 77040,
-              "end_ms": 78640,
-              "text": "你只做决策和搞关系",
-              "confidence": 0.9247,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 78640,
-              "end_ms": 80760,
-              "text": "把剩下的时间去维护核心的客户",
-              "confidence": 0.9247,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 80760,
-              "end_ms": 82760,
-              "text": "你把80%的琐事玻璃",
-              "confidence": 0.9247,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 82760,
-              "end_ms": 83520,
-              "text": "就能腾出手",
-              "confidence": 0.9247,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 83520,
-              "end_ms": 85960,
-              "text": "去抓住那20%真正值钱的机遇",
-              "confidence": 0.9247,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 85960,
-              "end_ms": 88660,
-              "text": "如果说你一天拥有了别人10天的效率",
-              "confidence": 0.9247,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 88660,
-              "end_ms": 89720,
-              "text": "这多出来的100万",
-              "confidence": 0.9247,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 89720,
-              "end_ms": 90820,
-              "text": "只是顺带的结果",
-              "confidence": 0.9247,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 90820,
-              "end_ms": 91400,
-              "text": "找到它",
-              "confidence": 0.9247,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 91400,
-              "end_ms": 92680,
-              "text": "你的杠杆就开始转动了",
-              "confidence": 0.9247,
-              "no_speech_probability": 0
-            }
-          ],
-          "language": "zh",
-          "language_probability": 1,
-          "duration_seconds": 92.672,
-          "method": "local_faster_whisper_asr",
-          "model": "large-v3-turbo",
-          "device": "cpu",
-          "compute_type": "int8",
-          "transcribed_at": "2026-08-15T04:16:41.770372Z",
-          "processing_seconds": 41.11,
-          "confidence": {
-            "kind": "segment_log_probability",
-            "mean": 0.921
-          },
-          "limitations": [
-            "ASR text can contain recognition or punctuation errors.",
-            "Confidence is derived from model segment log probabilities, not independently calibrated accuracy."
-          ],
-          "normalization": [
-            "segment_boundaries_preserved_as_newlines"
-          ]
-        },
-        "chapters": {
-          "available": true,
-          "generated_by_ai": true,
-          "source": "douyin_ai_chapters",
-          "abstract": "AI可以帮助实体商家多赚100万，关键在于利用AI将业务模型从线性转变为指数增长。通过将重复的、有明确标准的环节交给AI，商家可以提高效率，抓住更有价值的机遇。AI不是工具，而是无限复制能力的克隆体，能帮助商家实现低成本的能力连接。",
-          "entries": [
-            {
-              "index": 0,
-              "start_ms": 1000,
-              "title": "引言"
-            },
-            {
-              "index": 1,
-              "start_ms": 7000,
-              "title": "对AI的误解",
-              "detail": "大多数人误解了AI，把它当成副驾驶，实际上AI是杠杆。"
-            },
-            {
-              "index": 2,
-              "start_ms": 32000,
-              "title": "业务模型的转变",
-              "detail": "AI可以将业务模型从线性变成指数增长，提高效率。"
-            },
-            {
-              "index": 3,
-              "start_ms": 60000,
-              "title": "AI的本质",
-              "detail": "AI是无限复制能力的克隆体，现在赚钱靠连接性。"
-            },
-            {
-              "index": 4,
-              "start_ms": 71000,
-              "title": "建议",
-              "detail": "建议将重复环节交给AI，抓住核心客户和机遇。"
-            }
-          ]
-        },
-        "source_evidence": {
-          "description": "只要你有工作 ai就能帮你多营收一百万 #ai#创业#智能体#实体#实体商家",
-          "hashtags": [
-            "ai",
-            "创业",
-            "智能体",
-            "实体",
-            "实体商家"
-          ],
-          "engagement": {
-            "plays": 0,
-            "likes": 118,
-            "comments": 8,
-            "shares": 9,
-            "collects": 50
-          }
-        }
-      },
-      {
-        "aweme_id": "7656437114968717285",
-        "url": "https://www.douyin.com/video/7656437114968717285",
-        "created_at": "2026-06-28T13:26:22.000Z",
-        "title": "普通人要有自己第二套赚钱系统",
-        "summary": "普通人要有自己的第二套赚钱系统",
-        "readable_content": {
-          "status": "complete",
-          "text": "普通人要有自己的第二套赚钱系统，这句话我最近越想越重要，以前一个人只要有工作就觉得自己是安全的，公司给发工资，领导给任务，你每天只需要把那一小块做完，就能活下去，但AI出来以后，很多人发现自己不是不会努力，是离开了别人的架构系统之后，不知道自己还能靠什么换钱，所以普通人最该做的不是裸辞，也不是冲动创业，而是在公司系统之外，慢慢的搭建一套自己的生存系统，这套系统很简单，你要有一个自己熟悉的问题\n这才是第二套赚钱系统\n它一开始不一定赚钱\n可能只是引发一条内容\n帮别人解决一个小问题\n收到一次咨询\n成交一个小单\n但只要这条链路跑通了\n你就不再是一个等任务的人\n你开始有了自我造写的能力\nAI时代真正危险的\n不是不会用工具\n而是你所有的收入\n都和别人的体系挂购\n公司不要你\n你就没有持续换钱的能力\n所以从今天开始\n别只学AI\n你要搭建你的第二套赚钱系统\n工资负责养活你\n第二套系统负责给你未来留活路",
-          "segments": [
-            {
-              "start_ms": 0,
-              "end_ms": 30000,
-              "text": "普通人要有自己的第二套赚钱系统，这句话我最近越想越重要，以前一个人只要有工作就觉得自己是安全的，公司给发工资，领导给任务，你每天只需要把那一小块做完，就能活下去，但AI出来以后，很多人发现自己不是不会努力，是离开了别人的架构系统之后，不知道自己还能靠什么换钱，所以普通人最该做的不是裸辞，也不是冲动创业，而是在公司系统之外，慢慢的搭建一套自己的生存系统，这套系统很简单，你要有一个自己熟悉的问题",
-              "confidence": 0.9386,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 30000,
-              "end_ms": 31240,
-              "text": "这才是第二套赚钱系统",
-              "confidence": 0.9204,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 31240,
-              "end_ms": 32320,
-              "text": "它一开始不一定赚钱",
-              "confidence": 0.9204,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 32320,
-              "end_ms": 33560,
-              "text": "可能只是引发一条内容",
-              "confidence": 0.9204,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 33560,
-              "end_ms": 34600,
-              "text": "帮别人解决一个小问题",
-              "confidence": 0.9204,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 34600,
-              "end_ms": 35460,
-              "text": "收到一次咨询",
-              "confidence": 0.9204,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 35460,
-              "end_ms": 36360,
-              "text": "成交一个小单",
-              "confidence": 0.9204,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 36360,
-              "end_ms": 37800,
-              "text": "但只要这条链路跑通了",
-              "confidence": 0.9204,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 37800,
-              "end_ms": 39260,
-              "text": "你就不再是一个等任务的人",
-              "confidence": 0.9204,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 39260,
-              "end_ms": 40900,
-              "text": "你开始有了自我造写的能力",
-              "confidence": 0.9204,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 40900,
-              "end_ms": 42200,
-              "text": "AI时代真正危险的",
-              "confidence": 0.9204,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 42200,
-              "end_ms": 43020,
-              "text": "不是不会用工具",
-              "confidence": 0.9204,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 43020,
-              "end_ms": 44260,
-              "text": "而是你所有的收入",
-              "confidence": 0.9204,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 44260,
-              "end_ms": 45660,
-              "text": "都和别人的体系挂购",
-              "confidence": 0.9204,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 45660,
-              "end_ms": 46440,
-              "text": "公司不要你",
-              "confidence": 0.9204,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 46440,
-              "end_ms": 47980,
-              "text": "你就没有持续换钱的能力",
-              "confidence": 0.9204,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 47980,
-              "end_ms": 49000,
-              "text": "所以从今天开始",
-              "confidence": 0.9204,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 49000,
-              "end_ms": 49840,
-              "text": "别只学AI",
-              "confidence": 0.9204,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 49840,
-              "end_ms": 51800,
-              "text": "你要搭建你的第二套赚钱系统",
-              "confidence": 0.9204,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 51800,
-              "end_ms": 52960,
-              "text": "工资负责养活你",
-              "confidence": 0.9204,
-              "no_speech_probability": 0
-            },
-            {
-              "start_ms": 52960,
-              "end_ms": 55020,
-              "text": "第二套系统负责给你未来留活路",
-              "confidence": 0.9204,
-              "no_speech_probability": 0
-            }
-          ],
-          "language": "zh",
-          "language_probability": 1,
-          "duration_seconds": 55.147,
-          "method": "local_faster_whisper_asr",
-          "model": "large-v3-turbo",
-          "device": "cpu",
-          "compute_type": "int8",
-          "transcribed_at": "2026-08-15T04:16:00.658088Z",
-          "processing_seconds": 25.396,
-          "confidence": {
-            "kind": "segment_log_probability",
-            "mean": 0.9213
-          },
-          "limitations": [
-            "ASR text can contain recognition or punctuation errors.",
-            "Confidence is derived from model segment log probabilities, not independently calibrated accuracy."
-          ],
-          "normalization": [
-            "segment_boundaries_preserved_as_newlines"
-          ]
-        },
-        "chapters": {
-          "available": false,
-          "generated_by_ai": false,
-          "source": "douyin_ai_chapters",
-          "abstract": null,
-          "entries": []
-        },
-        "source_evidence": {
-          "description": "普通人要有自己第二套赚钱系统 #商业思维#创业#认知#智能体#ai",
-          "hashtags": [
-            "商业思维",
-            "创业",
-            "认知",
-            "智能体",
-            "ai"
-          ],
-          "engagement": {
-            "plays": 0,
-            "likes": 242,
-            "comments": 1,
-            "shares": 25,
-            "collects": 98
+            "shares": 88,
+            "collects": 283
           }
         }
       }
@@ -16765,19 +17376,19 @@
         "type": "partial_public_profile",
         "message": "登录后查看更多作品",
         "public_items": 18,
-        "displayed_post_count": 21,
-        "inaccessible_count": 3
+        "displayed_post_count": 22,
+        "inaccessible_count": 4
       },
       "source": {
         "provider": "direct_public_web",
-        "captured_at": "2026-08-15T03:45:54.031Z",
+        "captured_at": "2026-08-22T09:44:32.340Z",
         "access_boundary": {
           "code": "LOGIN_REQUIRED_FOR_MORE_POSTS",
           "type": "partial_public_profile",
           "message": "登录后查看更多作品",
           "public_items": 18,
-          "displayed_post_count": 21,
-          "inaccessible_count": 3
+          "displayed_post_count": 22,
+          "inaccessible_count": 4
         }
       }
     }

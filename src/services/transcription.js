@@ -1,7 +1,9 @@
-import { Buffer } from "node:buffer";
+import { createGateway } from "@ai-sdk/gateway";
 
 import { ReaderError } from "../errors.js";
+import { extractMp4Audio } from "./audio-extraction.js";
 import { MediaResolver, safeMediaDiagnostic } from "./media.js";
+import { isTerminalAccessError } from "./provider-chain.js";
 
 const TRANSIENT_HTTP_STATUS = new Set([408, 409, 425, 429, 500, 502, 503, 504]);
 
@@ -266,6 +268,62 @@ function extensionFor(mediaType) {
   return type.startsWith("video/") ? "mp4" : "mp3";
 }
 
+function gatewayBaseUrl(value) {
+  const url = new URL(value);
+  url.pathname = url.pathname.replace(/\/transcription-model\/?$/, "");
+  url.search = "";
+  url.hash = "";
+  return url.href.replace(/\/$/, "");
+}
+
+function providerHttpStatus(error) {
+  const values = [
+    error?.statusCode,
+    error?.status,
+    error?.response?.status,
+    error?.cause?.statusCode,
+    error?.cause?.status
+  ];
+  return values.map(Number).find(Number.isFinite) ?? null;
+}
+
+function isAbortError(error) {
+  return error?.name === "AbortError" || error?.cause?.name === "AbortError";
+}
+
+function extractionDiagnostic(result) {
+  return {
+    method: result.method,
+    codec: result.codec,
+    sample_rate: result.sampleRate,
+    channel_count: result.channelCount,
+    ...(Number.isFinite(result.durationMs) ? { duration_ms: result.durationMs } : {}),
+    input_bytes: result.inputBytes,
+    output_bytes: result.outputBytes
+  };
+}
+
+function isMp4Video(media) {
+  return /^video\/mp4(?:$|;)/i.test(String(media?.mediaType ?? ""));
+}
+
+function publicMediaResolution(source) {
+  if (!source) return null;
+  return {
+    stable_identity: "aweme_id",
+    media_kind: source.kind ?? null,
+    media_type: source.mediaType ?? source.media_type ?? null,
+    acquired_at: source.acquired_at ?? null,
+    validated_at: source.validated_at ?? null,
+    validation: source.diagnostics ?? null
+  };
+}
+
+function attachMediaResolution(result, resolution) {
+  if (result && resolution) result.media_resolution = resolution;
+  return result;
+}
+
 function providerError(code, message, provider, status, cause) {
   return new ReaderError(code, message, {
     status: 502,
@@ -367,7 +425,9 @@ export class TranscriptionService {
     maxCaptionBytes = 5 * 1024 * 1024,
     retries = 1,
     retryDelayMs = 250,
-    sleepImpl = wait
+    sleepImpl = wait,
+    audioExtractor = extractMp4Audio,
+    gatewayFactory = createGateway
   } = {}) {
     if (typeof fetchImpl !== "function") {
       throw new ReaderError("TRANSCRIPTION_NOT_CONFIGURED", "A fetch implementation is required.", {
@@ -390,6 +450,8 @@ export class TranscriptionService {
     this.retries = Math.max(0, Math.floor(retries));
     this.retryDelayMs = Math.max(0, retryDelayMs);
     this.sleepImpl = sleepImpl;
+    this.audioExtractor = audioExtractor;
+    this.gatewayFactory = gatewayFactory;
   }
 
   async _caption(track) {
@@ -551,25 +613,55 @@ export class TranscriptionService {
   async _gateway(media) {
     const token = this.aiGatewayApiKey || this.vercelOidcToken;
     const authMethod = this.aiGatewayApiKey ? "api-key" : "oidc";
-    const result = await this._providerJson({
-      provider: "vercel_ai_gateway",
-      makeRequest: (signal) => this.fetchImpl(this.gatewayUrl, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-          "ai-gateway-protocol-version": "0.0.1",
-          "ai-gateway-auth-method": authMethod,
-          "ai-transcription-model-specification-version": "4",
-          "ai-model-id": this.gatewayModel
-        },
-        body: JSON.stringify({
-          audio: Buffer.from(media.bytes).toString("base64"),
-          mediaType: media.mediaType
-        }),
-        signal
-      })
+    const gateway = this.gatewayFactory({
+      apiKey: token,
+      baseURL: gatewayBaseUrl(this.gatewayUrl),
+      fetch: this.fetchImpl,
+      // createGateway treats an explicitly supplied bearer token as an API
+      // key. The request-scoped Vercel token is still an OIDC credential, so
+      // preserve that distinction for Gateway policy and diagnostics.
+      headers: { "ai-gateway-auth-method": authMethod }
     });
+    const model = gateway.transcriptionModel(this.gatewayModel);
+    let result;
+    let lastError;
+    for (let attempt = 0; attempt <= this.retries; attempt += 1) {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), this.timeoutMs);
+      try {
+        result = await model.doGenerate({
+          audio: media.bytes,
+          mediaType: media.mediaType,
+          providerOptions: {},
+          headers: {},
+          abortSignal: controller.signal
+        });
+        lastError = null;
+        break;
+      } catch (error) {
+        lastError = error;
+        const status = providerHttpStatus(error);
+        if (attempt < this.retries && (status === null || TRANSIENT_HTTP_STATUS.has(status))) {
+          await this.sleepImpl(this.retryDelayMs * (attempt + 1));
+          continue;
+        }
+        break;
+      } finally {
+        clearTimeout(timer);
+      }
+    }
+    if (lastError) {
+      const status = providerHttpStatus(lastError);
+      throw providerError(
+        isAbortError(lastError) ? "ASR_TIMEOUT" : "ASR_PROVIDER_ERROR",
+        isAbortError(lastError)
+          ? "The speech-to-text provider timed out."
+          : "The speech-to-text provider rejected the request.",
+        "vercel_ai_gateway",
+        status,
+        lastError
+      );
+    }
     return normalizedResult(result, {
       method: `vercel_ai_gateway_${this.gatewayModel.replace(/[^a-z0-9]+/gi, "_").toLowerCase()}`,
       limitations: ["provider_confidence_not_provided"],
@@ -618,10 +710,15 @@ export class TranscriptionService {
     }
 
     let media;
+    let resolvedSource;
     try {
-      const source = await this.mediaResolver.resolve(video);
-      media = await this.mediaResolver.fetch(source);
+      resolvedSource = await this.mediaResolver.resolve(video);
+      media = await this.mediaResolver.fetch(resolvedSource);
     } catch (error) {
+      // A current login/private/CAPTCHA/access signal is authoritative. Do not
+      // relabel it as a transient transcription failure or permit another path
+      // to serve content across that boundary.
+      if (isTerminalAccessError(error)) throw error;
       throw new ReaderError("TRANSCRIPTION_MEDIA_UNAVAILABLE", "No readable public media was available for transcription.", {
         status: error instanceof ReaderError ? error.status : 502,
         details: {
@@ -635,12 +732,34 @@ export class TranscriptionService {
 
     const attempts = [];
     const inheritedLimitations = captionAttempts.length ? ["caption_tracks_unusable"] : [];
+    const mediaResolution = publicMediaResolution(resolvedSource);
+    let transcriptionMedia = media;
+    if (isMp4Video(media) && typeof this.audioExtractor === "function") {
+      try {
+        const extracted = await this.audioExtractor(media.bytes);
+        transcriptionMedia = {
+          bytes: extracted.bytes,
+          mediaType: extracted.mediaType,
+          acquired_at: media.acquired_at ?? null,
+          source: {
+            ...media.source,
+            audio_extraction: extractionDiagnostic(extracted)
+          }
+        };
+      } catch (error) {
+        // Some public MP4s use codecs that the lightweight AAC demuxer cannot
+        // handle. Keep the original media as a standards-compliant ASR input;
+        // record only a safe code, never parser internals or source URLs.
+        inheritedLimitations.push("audio_extraction_unavailable");
+        attempts.push(safeAttempt("audio_extraction", error));
+      }
+    }
     if (this.openAiApiKey) {
       try {
-        const result = await this._openAi(media);
+        const result = await this._openAi(transcriptionMedia);
         if (result) {
           result.limitations = [...new Set([...inheritedLimitations, ...result.limitations])];
-          return result;
+          return attachMediaResolution(result, mediaResolution);
         }
         attempts.push({ method: "openai", code: "ASR_EMPTY_RESULT" });
       } catch (error) {
@@ -650,10 +769,10 @@ export class TranscriptionService {
 
     if (this.aiGatewayApiKey || this.vercelOidcToken) {
       try {
-        const result = await this._gateway(media);
+        const result = await this._gateway(transcriptionMedia);
         if (result) {
           result.limitations = [...new Set([...inheritedLimitations, ...result.limitations])];
-          return result;
+          return attachMediaResolution(result, mediaResolution);
         }
         attempts.push({ method: "vercel_ai_gateway", code: "ASR_EMPTY_RESULT" });
       } catch (error) {
@@ -664,17 +783,17 @@ export class TranscriptionService {
     if (typeof this.localAsr === "function") {
       try {
         const local = await this.localAsr({
-          bytes: media.bytes,
-          mediaType: media.mediaType,
+          bytes: transcriptionMedia.bytes,
+          mediaType: transcriptionMedia.mediaType,
           video,
-          source: media.source
+          source: transcriptionMedia.source
         });
         const result = normalizedResult(local, {
           method: "local_asr",
           limitations: inheritedLimitations,
-          source: { type: "asr", provider: "local", media: media.source }
+          source: { type: "asr", provider: "local", media: transcriptionMedia.source }
         });
-        if (result) return result;
+        if (result) return attachMediaResolution(result, mediaResolution);
         attempts.push({ method: "local_asr", code: "ASR_EMPTY_RESULT" });
       } catch (error) {
         attempts.push(safeAttempt("local_asr", error));

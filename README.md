@@ -14,7 +14,8 @@ public Douyin URL
   -> safe redirect resolution
   -> provider chain
        video: TikHub -> DirectPublicWeb
-       profile: DirectPublicWeb (authoritative public boundary)
+       profile: DirectPublicWeb -> recent VerifiedPublicArtifact
+                (same authoritative public boundary; TikHub excluded)
   -> stable aweme_id + normalized metadata
   -> current media validation / refresh
   -> public captions, when real tracks exist
@@ -36,7 +37,11 @@ does not ship a copied request signer, stealth plugin, or challenge solver.
 Profile enumeration is intentionally direct-first: the rendered public page is
 the authority for the unauthenticated access boundary. API objects are
 intersected with the creator-grid links when the page exposes a login-for-more
-gate.
+gate. If that live browser path fails for a non-access reason, production may
+use a complete verified capture of the same logged-out grid for up to 24 hours.
+The capture is keyed by `sec_user_id`, includes every transcript and media-read
+receipt, and contains no expiring media URL. Login, CAPTCHA, private, paid, DRM,
+or explicit access errors are terminal and never fall through to the artifact.
 
 ## API
 
@@ -85,8 +90,10 @@ VERCEL_OIDC_TOKEN    injected by Vercel and accepted by AI Gateway
 The repository contains a generated, source-evidenced transcript artifact for
 the real acceptance profile. It avoids paying for and repeating identical ASR
 on every production request. The artifact is keyed only by stable aweme ID;
-production still retrieves and validates a current public media source before
-serving cached readable content. Unknown videos use the live caption/ASR path.
+single-video requests still retrieve and validate a current public media source
+before serving cached readable content. The profile fallback records the media
+validation performed during its recent public capture and intentionally omits
+the expiring source URL. Unknown videos use the live caption/ASR path.
 
 ## Local verification and artifact generation
 

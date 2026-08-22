@@ -108,12 +108,14 @@ function detectChanges(posts) {
   const results = [];
 
   const pause = ordered.find((video) => /暂停合作|停止合作/u.test(textOf(video)));
-  const scale = ordered.find((video) => /扩大|招商|分公司|重新开放合作|规模/u.test(textOf(video)));
+  const scale = ordered.find((video) =>
+    (video.aweme_id ?? video.id) !== (pause?.aweme_id ?? pause?.id) &&
+    /扩大|招商|分公司|重新开放合作|规模/u.test(textOf(video)));
   if (pause && scale) {
     results.push({
       type: "delivery_before_scale",
-      description: "The creator discusses both scaling the business and pausing cooperation when delivery quality lags. This is best read as a conditional change in operating stance, not necessarily a contradiction.",
-      evidence: [evidenceFor(scale, postSummary(scale)), evidenceFor(pause, postSummary(pause))]
+      description: "A delivery-quality pause is followed by a separate video discussing franchise or branch scaling. This suggests a quality gate before growth, not proof that cooperation had already reopened.",
+      evidence: [evidenceFor(pause, postSummary(pause)), evidenceFor(scale, postSummary(scale))]
     });
   }
 

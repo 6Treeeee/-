@@ -9,7 +9,9 @@ import argparse
 import json
 import math
 import os
+import re
 import time
+import unicodedata
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -23,6 +25,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--model", default="large-v3-turbo")
     parser.add_argument("--device", choices=["cuda", "cpu"], default="cuda")
     parser.add_argument("--compute-type", default=None)
+    parser.add_argument(
+        "--initial-prompt",
+        default="智能体，AI，下沉市场，创业，商业思维，实体商家，获客，交付。",
+    )
     parser.add_argument("--only", action="append", default=[])
     parser.add_argument("--force", action="store_true")
     return parser.parse_args()
@@ -40,9 +46,15 @@ def confidence(avg_logprob: float | None) -> float | None:
 
 def clean_text(value: str) -> str:
     # Some CTranslate2/Whisper tokenizer combinations emit U+FFFD where a
-    # punctuation token should be. Preserve the clause boundary without
-    # presenting a corrupt Unicode replacement glyph as recognized speech.
-    return value.replace("\ufffd", "，").strip()
+    # punctuation token should be, and occasionally emit private-use glyphs or
+    # compatibility punctuation. Preserve clause boundaries without presenting
+    # corrupt tokenizer artifacts as recognized speech.
+    normalized = unicodedata.normalize("NFKC", value).replace("\ufffd", "，")
+    normalized = "".join(
+        "，" if unicodedata.category(character) in {"Co", "Cs"} else character
+        for character in normalized
+    )
+    return re.sub(r"[ \t]+", " ", normalized).strip()
 
 
 def write_output(path: Path, output: dict) -> None:
@@ -107,7 +119,10 @@ def main() -> None:
                 # from silently dropping clauses while still preserving context via
                 # the short domain prompt below.
                 condition_on_previous_text=False,
-                initial_prompt="智能体，人工智能，县城经济，创业，商业思维，实体商家，获客，产品流程PPT，产品验证，交付。",
+                # A short glossary improves domain terms without overloading the
+                # decoder prompt, which can otherwise introduce mixed-language
+                # artifacts in the first timestamp window.
+                initial_prompt=args.initial_prompt,
             )
             normalized_segments = []
             texts = []
@@ -136,6 +151,7 @@ def main() -> None:
                 "model": args.model,
                 "device": args.device,
                 "compute_type": compute_type,
+                "prompt_glossary": args.initial_prompt,
                 "transcribed_at": utc_now(),
                 "processing_seconds": round(elapsed, 3),
                 "confidence": {

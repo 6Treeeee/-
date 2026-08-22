@@ -2,6 +2,7 @@ import { ReaderError } from "../errors.js";
 import { normalizeCreator, normalizeVideo } from "../normalizers/douyin.js";
 import { DirectPublicWebProvider } from "../providers/direct-public-web.js";
 import { TikHubProvider } from "../providers/tikhub.js";
+import { VerifiedPublicArtifactProvider } from "../providers/verified-public-artifact.js";
 import { CreatorAnalyzer } from "../services/analysis.js";
 import { ArtifactStore } from "../services/artifacts.js";
 import { ContentProcessor } from "../services/content-processing.js";
@@ -229,6 +230,7 @@ export class DouyinReader {
   } = {}) {
     this.fetchImpl = fetchImpl;
     this.explicitProviders = Boolean(providers);
+    this.artifactStore = artifactStore;
 
     let configuredProviders = providers;
     if (!configuredProviders) {
@@ -237,10 +239,12 @@ export class DouyinReader {
       if (tikhub.available) configuredProviders.push(tikhub);
       if (directProvider) configuredProviders.push(directProvider);
       else if (!client) configuredProviders.push(new DirectPublicWebProvider());
+      if (!client) {
+        configuredProviders.push(new VerifiedPublicArtifactProvider({ artifactStore }));
+      }
     }
     this.chain = new ProviderChain(configuredProviders);
     this.processContent = processContent ?? !client;
-    this.artifactStore = artifactStore;
     this.processor = processor ?? new ContentProcessor({
       fetchImpl,
       artifactStore,
@@ -256,10 +260,17 @@ export class DouyinReader {
     const ids = this.chain.providers.map((provider) => provider.id);
     if (this.explicitProviders) return ids;
     if (contentType === "profile") {
-      // The rendered public grid is the only provider that can authoritatively
-      // enforce a visible login-for-more boundary. TikHub must not become an
-      // enumeration fallback that exposes IDs beyond that boundary.
-      return ids.includes("direct_public_web") ? ["direct_public_web"] : ids;
+      // The rendered public grid is authoritative. A recent verified capture
+      // of that same logged-out grid may recover transient live-browser
+      // failures; TikHub must never enumerate beyond the visible boundary.
+      const preferred = ["direct_public_web", "verified_public_artifact"];
+      const publicGridProviders = [
+        ...preferred.filter((id) => ids.includes(id)),
+        ...ids.filter((id) => !preferred.includes(id) && id !== "tikhub")
+      ];
+      // Preserve compatibility with an explicitly injected legacy provider
+      // when no public-grid provider exists.
+      return publicGridProviders.length ? publicGridProviders : ids;
     }
     const preferred = ["tikhub", "direct_public_web"];
     return [...preferred.filter((id) => ids.includes(id)), ...ids.filter((id) => !preferred.includes(id))];
@@ -374,11 +385,13 @@ export class DouyinReader {
     }
 
     const raw = retrieval.value;
-    let creator = normalizeCreator(raw.creator);
+    let creator = raw.items_normalized ? raw.creator : normalizeCreator(raw.creator);
     const secUserId = creator.sec_user_id ?? identity.secUserId;
     if (secUserId && !creator.sec_user_id) creator = { ...creator, sec_user_id: secUserId };
     const acquiredAt = raw.meta?.acquired_at ?? new Date().toISOString();
-    let posts = raw.items.map((item) => normalizeVideo(item, { acquiredAt }));
+    let posts = raw.items_normalized
+      ? raw.items.map((item) => ({ ...item }))
+      : raw.items.map((item) => normalizeVideo(item, { acquiredAt }));
     const pagination = canonicalPagination(raw.pagination, creator, posts.length, raw.limitation);
     const warnings = [...(raw.warnings ?? [])];
     if (raw.limitation) {
@@ -396,8 +409,14 @@ export class DouyinReader {
       });
     }
 
-    let processingFailures = [];
-    if (this.processContent) {
+    let processingFailures = raw.content_preprocessed
+      ? posts.filter((post) => post?.readable_content?.status !== "complete").map((post) => ({
+          aweme_id: post.aweme_id ?? post.id,
+          url: post.canonical_url,
+          reason: post.readable_content?.error ?? { code: "CONTENT_READING_FAILED" }
+        }))
+      : [];
+    if (this.processContent && !raw.content_preprocessed) {
       const processed = await this.processor.processProfile(posts, {
         refreshVideo: async (awemeId) => {
           const canonicalUrl = `https://www.douyin.com/video/${awemeId}`;

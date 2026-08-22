@@ -3,6 +3,7 @@ import { dirname, resolve } from "node:path";
 
 import { normalizeCreator, normalizeVideo } from "../src/normalizers/douyin.js";
 import { CreatorAnalyzer } from "../src/services/analysis.js";
+import { validatePublicCaptureInputs } from "../src/services/artifacts.js";
 
 const profilePath = resolve(process.argv[2] ?? "artifacts/douyin/profile.raw.json");
 const transcriptPath = resolve(process.argv[3] ?? "artifacts/douyin/transcripts.raw.json");
@@ -12,7 +13,9 @@ const outputPath = resolve(process.argv[5] ?? "artifacts/douyin/verified-profile
 const profileRaw = JSON.parse(await readFile(profilePath, "utf8"));
 const transcriptRaw = JSON.parse(await readFile(transcriptPath, "utf8"));
 const mediaManifest = JSON.parse(await readFile(manifestPath, "utf8"));
-const mediaById = new Map(mediaManifest.results.map((item) => [String(item.aweme_id), item]));
+// Validate capture identity and every public media receipt before reading any
+// transcript or emitting a replacement artifact.
+const mediaById = validatePublicCaptureInputs({ profileRaw, mediaManifest });
 const creator = normalizeCreator(profileRaw.user);
 const acquiredAt = profileRaw.captured_at;
 
@@ -114,6 +117,7 @@ const artifact = {
         duration_ms: video.media.duration_ms,
         media_read: Boolean(media),
         media_type: media?.media_type ?? null,
+        media_content_type: media?.content_type ?? null,
         media_bytes: media?.bytes ?? null,
         transcript_method: video.readable_content.method,
         transcript_segments: video.readable_content.segments.length

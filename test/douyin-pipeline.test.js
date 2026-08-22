@@ -8,6 +8,7 @@ import {
   DirectPublicWebProvider
 } from "../src/providers/direct-public-web.js";
 import { paginateTikHubPosts, TikHubProvider } from "../src/providers/tikhub.js";
+import { extractMp4Audio } from "../src/services/audio-extraction.js";
 import { ContentProcessor } from "../src/services/content-processing.js";
 import { ArtifactStore } from "../src/services/artifacts.js";
 import { MediaResolver } from "../src/services/media.js";
@@ -947,13 +948,14 @@ test("TranscriptionService falls back from OpenAI failure to Vercel AI Gateway",
         return Response.json({ error: { message: "billing" } }, { status: 402 });
       }
       assert.equal(url, "https://ai-gateway.vercel.sh/v4/ai/transcription-model");
-      assert.equal(init.headers.Authorization, "Bearer gateway-test-secret");
-      assert.equal(init.headers["ai-gateway-protocol-version"], "0.0.1");
-      assert.equal(init.headers["ai-gateway-auth-method"], "api-key");
+      const headers = new Headers(init.headers);
+      assert.equal(headers.get("authorization"), "Bearer gateway-test-secret");
+      assert.equal(headers.get("ai-gateway-protocol-version"), "0.0.1");
+      assert.equal(headers.get("ai-gateway-auth-method"), "api-key");
       return Response.json({
         text: "网关转写成功",
         language: "zh",
-        segments: [{ start: 0, end: 1.25, text: "网关转写成功" }]
+        segments: [{ startSecond: 0, endSecond: 1.25, text: "网关转写成功" }]
       });
     }
   });
@@ -978,9 +980,10 @@ test("TranscriptionService identifies Vercel OIDC authentication to AI Gateway",
     vercelOidcToken: "oidc-test-secret",
     fetchImpl: async (input, init) => {
       assert.equal(String(input), "https://ai-gateway.vercel.sh/v4/ai/transcription-model");
-      assert.equal(init.headers.Authorization, "Bearer oidc-test-secret");
-      assert.equal(init.headers["ai-gateway-protocol-version"], "0.0.1");
-      assert.equal(init.headers["ai-gateway-auth-method"], "oidc");
+      const headers = new Headers(init.headers);
+      assert.equal(headers.get("authorization"), "Bearer oidc-test-secret");
+      assert.equal(headers.get("ai-gateway-protocol-version"), "0.0.1");
+      assert.equal(headers.get("ai-gateway-auth-method"), "oidc");
       return Response.json({ text: "OIDC 网关转写成功", language: "zh", segments: [] });
     }
   });
@@ -994,6 +997,252 @@ test("TranscriptionService identifies Vercel OIDC authentication to AI Gateway",
   assert.equal(result.status, "complete");
   assert.equal(result.text, "OIDC 网关转写成功");
   assert.doesNotMatch(JSON.stringify(result), /oidc-test-secret/);
+});
+
+test("TranscriptionService reports a non-retryable Gateway denial without leaking its body", async () => {
+  let calls = 0;
+  const service = new TranscriptionService({
+    retries: 2,
+    retryDelayMs: 0,
+    openAiApiKey: null,
+    aiGatewayApiKey: "gateway-test-secret",
+    vercelOidcToken: null,
+    fetchImpl: async () => {
+      calls += 1;
+      return Response.json({
+        error: {
+          type: "forbidden",
+          message: "account secret detail that must not be exposed"
+        }
+      }, { status: 403 });
+    }
+  });
+
+  await assert.rejects(
+    service._gateway({
+      bytes: new Uint8Array([1, 2, 3]),
+      mediaType: "audio/mpeg",
+      source: { host: "media.example.test", url_hash: "safe" }
+    }),
+    (error) => {
+      assert.equal(error.code, "ASR_PROVIDER_ERROR");
+      assert.deepEqual(error.details, { provider: "vercel_ai_gateway", http_status: 403 });
+      assert.doesNotMatch(JSON.stringify(error), /gateway-test-secret|account secret detail/);
+      return true;
+    }
+  );
+  assert.equal(calls, 1);
+});
+
+test("TranscriptionService retries a transient Gateway failure once", async () => {
+  let calls = 0;
+  const service = new TranscriptionService({
+    retries: 1,
+    retryDelayMs: 0,
+    sleepImpl: async () => {},
+    openAiApiKey: null,
+    aiGatewayApiKey: "gateway-test-secret",
+    vercelOidcToken: null,
+    fetchImpl: async () => {
+      calls += 1;
+      if (calls === 1) {
+        return Response.json({
+          error: { type: "internal_server_error", message: "temporary" }
+        }, { status: 503 });
+      }
+      return Response.json({ text: "重试后成功", language: "zh", segments: [] });
+    }
+  });
+
+  const result = await service._gateway({
+    bytes: new Uint8Array([1, 2, 3]),
+    mediaType: "audio/mpeg",
+    source: { host: "media.example.test", url_hash: "safe" }
+  });
+
+  assert.equal(result.text, "重试后成功");
+  assert.equal(calls, 2);
+});
+
+test("TranscriptionService demuxes public MP4 audio before hosted ASR", async () => {
+  const originalBytes = new Uint8Array([0, 1, 2, 3, 4, 5]);
+  const audioMp4Bytes = new Uint8Array([0, 0, 0, 16, 0x66, 0x74, 0x79, 0x70, 0x69, 0x73, 0x6f, 0x6d]);
+  let extractionCalls = 0;
+  const service = new TranscriptionService({
+    retries: 0,
+    openAiApiKey: null,
+    aiGatewayApiKey: "gateway-test-secret",
+    vercelOidcToken: null,
+    mediaResolver: {
+      async resolve() {
+        return { url: "https://media.example.test/video.mp4", kind: "video", mediaType: "video/mp4" };
+      },
+      async fetch() {
+        return {
+          bytes: originalBytes,
+          mediaType: "video/mp4",
+          source: { host: "media.example.test", url_hash: "safe" }
+        };
+      }
+    },
+    audioExtractor: async (bytes) => {
+      extractionCalls += 1;
+      assert.equal(bytes, originalBytes);
+      return {
+        bytes: audioMp4Bytes,
+        mediaType: "audio/mp4",
+        method: "mp4_aac_remux",
+        codec: "mp4a.40.2",
+        sampleRate: 44_100,
+        channelCount: 2,
+        inputBytes: originalBytes.byteLength,
+        outputBytes: audioMp4Bytes.byteLength
+      };
+    },
+    fetchImpl: async (_input, init) => {
+      const request = JSON.parse(init.body);
+      assert.equal(request.mediaType, "audio/mp4");
+      assert.deepEqual(new Uint8Array(Buffer.from(request.audio, "base64")), audioMp4Bytes);
+      return Response.json({
+        text: "提取后转写成功",
+        language: "zh",
+        segments: [{ startSecond: 0, endSecond: 1, text: "提取后转写成功" }]
+      });
+    }
+  });
+
+  const result = await service.read({ aweme_id: "mp4-video", captions: { tracks: [] } });
+
+  assert.equal(extractionCalls, 1);
+  assert.equal(result.status, "complete");
+  assert.equal(result.source.media.audio_extraction.method, "mp4_aac_remux");
+  assert.equal(result.source.media.audio_extraction.input_bytes, 6);
+  assert.equal(result.source.media.audio_extraction.output_bytes, 12);
+  assert.doesNotMatch(JSON.stringify(result), /gateway-test-secret/);
+});
+
+test("TranscriptionService safely falls back when MP4 audio demux is unsupported", async () => {
+  const originalBytes = new Uint8Array([4, 5, 6]);
+  const service = new TranscriptionService({
+    retries: 0,
+    openAiApiKey: null,
+    aiGatewayApiKey: null,
+    vercelOidcToken: null,
+    fetchImpl: async () => {
+      throw new Error("No hosted provider should be called");
+    },
+    mediaResolver: {
+      async resolve() {
+        return { url: "https://media.example.test/video.mp4", kind: "video", mediaType: "video/mp4" };
+      },
+      async fetch() {
+        return {
+          bytes: originalBytes,
+          mediaType: "video/mp4",
+          source: { host: "media.example.test", url_hash: "safe" }
+        };
+      }
+    },
+    audioExtractor: async () => {
+      throw new ReaderError("AUDIO_EXTRACTION_UNSUPPORTED_CODEC", "unsupported", {
+        status: 422,
+        details: { source_url: "https://secret.example.test/?token=must-not-leak" }
+      });
+    },
+    localAsr: async ({ bytes, mediaType }) => {
+      assert.equal(bytes, originalBytes);
+      assert.equal(mediaType, "video/mp4");
+      return { text: "原始媒体仍可转写", language: "zh", segments: [] };
+    }
+  });
+
+  const result = await service.read({ aweme_id: "unsupported-audio", captions: { tracks: [] } });
+
+  assert.equal(result.status, "complete");
+  assert.ok(result.limitations.includes("audio_extraction_unavailable"));
+  assert.doesNotMatch(JSON.stringify(result), /must-not-leak|secret\.example/);
+});
+
+test("built-in MP4 audio extractor rejects empty media with a stable safe code", async () => {
+  await assert.rejects(
+    extractMp4Audio(new Uint8Array()),
+    (error) => error instanceof ReaderError && error.code === "AUDIO_EXTRACTION_EMPTY_INPUT"
+  );
+});
+
+test("built-in MP4 audio extractor rejects malformed media without parser data leakage", async () => {
+  await assert.rejects(
+    extractMp4Audio(new Uint8Array([1, 2, 3, 4])),
+    (error) => {
+      assert.equal(error.code, "AUDIO_EXTRACTION_EMPTY_RESULT");
+      assert.equal(error.status, 422);
+      assert.doesNotMatch(JSON.stringify(error), /stack|fileStart|ArrayBuffer/);
+      return true;
+    }
+  );
+});
+
+function mockMp4AudioFile(track, { initialization = [1, 2], segment = [3, 4, 5] } = {}) {
+  return {
+    setSegmentOptions(id, _user, options) {
+      assert.equal(id, track.id);
+      assert.equal(options.rapAlignement, false);
+    },
+    initializeSegmentation(mode) {
+      assert.equal(mode, "per-track");
+      return [{ id: track.id, buffer: Uint8Array.from(initialization).buffer }];
+    },
+    start() {
+      this.onSegment(track.id, null, Uint8Array.from(segment).buffer, 1, true);
+    },
+    appendBuffer() {
+      this.onReady({ audioTracks: [track] });
+    },
+    flush() {}
+  };
+}
+
+test("built-in MP4 audio extractor preserves valid MPEG-4 object type 63 and track duration", async () => {
+  const track = {
+    id: 7,
+    codec: "mp4a.40.63",
+    duration: 52_920,
+    timescale: 1_000,
+    audio: { sample_rate: 48_000, channel_count: 6 }
+  };
+
+  const result = await extractMp4Audio(new Uint8Array([9]), {
+    createFileImpl: () => mockMp4AudioFile(track)
+  });
+
+  assert.equal(result.codec, "mp4a.40.63");
+  assert.equal(result.sampleRate, 48_000);
+  assert.equal(result.channelCount, 6);
+  assert.equal(result.durationMs, 52_920);
+  assert.equal(result.mediaType, "audio/mp4");
+  assert.equal(result.outputBytes, 5);
+  assert.deepEqual(result.bytes, new Uint8Array([1, 2, 3, 4, 5]));
+});
+
+test("built-in MP4 audio extractor rejects MPEG-4 object types above 63", async () => {
+  const track = {
+    id: 8,
+    codec: "mp4a.40.64",
+    duration: 1_000,
+    timescale: 1_000,
+    audio: { sample_rate: 44_100, channel_count: 2 }
+  };
+
+  await assert.rejects(
+    extractMp4Audio(new Uint8Array([9]), {
+      createFileImpl: () => mockMp4AudioFile(track)
+    }),
+    (error) => {
+      assert.equal(error.code, "AUDIO_EXTRACTION_UNSUPPORTED_CODEC");
+      assert.equal(error.details.codec, "mp4a.40.64");
+      return true;
+    }
+  );
 });
 
 test("TranscriptionService uses injected local ASR when hosted credentials are absent", async () => {
@@ -1041,6 +1290,171 @@ test("TranscriptionService uses injected local ASR when hosted credentials are a
   assert.equal(result.source.provider, "local");
 });
 
+test("ContentProcessor preserves public captions across a transient media validation failure", async () => {
+  let resolveCalls = 0;
+  let fetchCalls = 0;
+  const processor = new ContentProcessor({
+    artifactStore: { transcriptFor: async () => null },
+    openAiApiKey: null,
+    aiGatewayApiKey: null,
+    vercelOidcToken: null,
+    fetchImpl: async () => {
+      throw new Error("inline captions must not make a network request");
+    },
+    mediaResolverFactory: () => ({
+      async resolve() {
+        resolveCalls += 1;
+        throw new ReaderError("MEDIA_NETWORK_ERROR", "The CDN was temporarily unavailable.", {
+          status: 502,
+          details: { source_url: "https://media.example.test/a.mp4?token=must-not-leak" }
+        });
+      },
+      async fetch() {
+        fetchCalls += 1;
+        throw new Error("caption success must not fetch the media body");
+      }
+    })
+  });
+
+  const result = await processor.processVideo({
+    aweme_id: "caption-transient-media",
+    media: {},
+    captions: {
+      tracks: [{
+        source: "douyin",
+        language_code: "zh",
+        format: "vtt",
+        content: "WEBVTT\n\n00:00:00.000 --> 00:00:01.500\n字幕仍然可读"
+      }]
+    }
+  });
+
+  assert.equal(resolveCalls, 1);
+  assert.equal(fetchCalls, 0);
+  assert.equal(result.readable_content.status, "complete");
+  assert.equal(result.readable_content.method, "captions");
+  assert.equal(result.readable_content.text, "字幕仍然可读");
+  assert.ok(result.readable_content.limitations.includes("media_validation_unavailable"));
+  assert.equal(result.media.resolved.validation.status, "unavailable");
+  assert.equal(result.media.resolved.validation.code, "MEDIA_NETWORK_ERROR");
+  assert.doesNotMatch(JSON.stringify(result), /must-not-leak|media\.example\.test/);
+});
+
+test("ContentProcessor never serves captions across a terminal media restriction", async () => {
+  let resolveCalls = 0;
+  const processor = new ContentProcessor({
+    artifactStore: { transcriptFor: async () => null },
+    openAiApiKey: null,
+    aiGatewayApiKey: null,
+    vercelOidcToken: null,
+    fetchImpl: async () => {
+      throw new Error("inline captions must not make a network request");
+    },
+    mediaResolverFactory: () => ({
+      async resolve() {
+        resolveCalls += 1;
+        throw new ReaderError("DOUYIN_PRIVATE_CONTENT", "The video is now private.", {
+          status: 422
+        });
+      }
+    })
+  });
+
+  await assert.rejects(
+    processor.processVideo({
+      aweme_id: "caption-now-private",
+      media: {},
+      captions: {
+        tracks: [{
+          format: "vtt",
+          content: "WEBVTT\n\n00:00:00.000 --> 00:00:01.000\n旧字幕"
+        }]
+      }
+    }),
+    (error) => error instanceof ReaderError && error.code === "DOUYIN_PRIVATE_CONTENT"
+  );
+  assert.equal(resolveCalls, 1);
+});
+
+test("TranscriptionService preserves a terminal media restriction before ASR", async () => {
+  const service = new TranscriptionService({
+    openAiApiKey: null,
+    aiGatewayApiKey: null,
+    vercelOidcToken: null,
+    mediaResolver: {
+      async resolve() {
+        throw new ReaderError("DOUYIN_LOGIN_REQUIRED", "Login is required for this media.", {
+          status: 422
+        });
+      },
+      async fetch() {
+        throw new Error("terminal resolution must stop before media fetch");
+      }
+    }
+  });
+
+  await assert.rejects(
+    service.read({ aweme_id: "login-required", captions: { tracks: [] } }),
+    (error) => error instanceof ReaderError && error.code === "DOUYIN_LOGIN_REQUIRED"
+  );
+});
+
+test("ContentProcessor resolves and fetches ASR media exactly once", async () => {
+  let resolveCalls = 0;
+  let fetchCalls = 0;
+  let asrCalls = 0;
+  const resolvedSource = {
+    url: "https://media.example.test/audio.mp3",
+    kind: "audio",
+    mediaType: "audio/mpeg",
+    acquired_at: "2026-08-22T10:00:00.000Z",
+    validated_at: "2026-08-22T10:00:01.000Z",
+    diagnostics: { host: "media.example.test", status: 206, size: 321 }
+  };
+  const processor = new ContentProcessor({
+    artifactStore: { transcriptFor: async () => null },
+    openAiApiKey: null,
+    aiGatewayApiKey: null,
+    vercelOidcToken: null,
+    mediaResolverFactory: () => ({
+      async resolve(video) {
+        resolveCalls += 1;
+        assert.equal(video.aweme_id, "single-resolve-asr");
+        return resolvedSource;
+      },
+      async fetch(source) {
+        fetchCalls += 1;
+        assert.equal(source, resolvedSource);
+        return {
+          bytes: new Uint8Array([1, 2, 3]),
+          mediaType: "audio/mpeg",
+          source: { host: "media.example.test", status: 200, size: 3 }
+        };
+      }
+    }),
+    localAsr: async ({ bytes, mediaType }) => {
+      asrCalls += 1;
+      assert.equal(bytes.byteLength, 3);
+      assert.equal(mediaType, "audio/mpeg");
+      return completedTranscript("只解析一次", "local_asr");
+    }
+  });
+
+  const result = await processor.processVideo({
+    aweme_id: "single-resolve-asr",
+    media: {},
+    captions: { tracks: [] }
+  });
+
+  assert.equal(resolveCalls, 1);
+  assert.equal(fetchCalls, 1);
+  assert.equal(asrCalls, 1);
+  assert.equal(result.readable_content.status, "complete");
+  assert.equal(result.readable_content.method, "local_asr");
+  assert.equal(result.media.resolved.validation.status, 206);
+  assert.equal(result.readable_content.media_resolution.validation.status, 206);
+});
+
 test("ContentProcessor isolates a single-video content-reading failure", async () => {
   const processor = new ContentProcessor({
     artifactStore: { transcriptFor: async () => null },
@@ -1052,9 +1466,10 @@ test("ContentProcessor isolates a single-video content-reading failure", async (
         });
       }
     }),
-    transcriptionFactory: () => ({
-      async read() {
-        throw new Error("transcription must not run");
+    transcriptionFactory: ({ mediaResolver }) => ({
+      async read(video) {
+        await mediaResolver.resolve(video);
+        throw new Error("unreachable after media failure");
       }
     })
   });
@@ -1087,8 +1502,9 @@ test("ContentProcessor continues profile-wide processing when one video fails", 
         };
       }
     }),
-    transcriptionFactory: () => ({
+    transcriptionFactory: ({ mediaResolver }) => ({
       async read(video) {
+        await mediaResolver.resolve(video);
         return completedTranscript(`read ${video.aweme_id}`);
       }
     })

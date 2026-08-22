@@ -1,7 +1,7 @@
 import { errorSummary } from "../errors.js";
 import { ArtifactStore } from "./artifacts.js";
 import { MediaResolver } from "./media.js";
-import { sanitizeDiagnostics } from "./provider-chain.js";
+import { isTerminalAccessError, sanitizeDiagnostics } from "./provider-chain.js";
 import { TranscriptionService } from "./transcription.js";
 
 function readableFailure(video, error) {
@@ -20,6 +20,20 @@ function publicResolution(source) {
     acquired_at: source.acquired_at ?? null,
     validated_at: source.validated_at ?? null,
     validation: source.diagnostics ?? null
+  };
+}
+
+function unavailableResolution(error) {
+  return {
+    stable_identity: "aweme_id",
+    media_kind: null,
+    media_type: null,
+    acquired_at: null,
+    validated_at: null,
+    validation: sanitizeDiagnostics({
+      status: "unavailable",
+      code: error?.code ?? "MEDIA_VALIDATION_FAILED"
+    })
   };
 }
 
@@ -76,12 +90,13 @@ export class ContentProcessor {
   async processVideo(video, { refreshVideo = null, isolateFailure = false } = {}) {
     try {
       const mediaResolver = this.createMediaResolver(refreshVideo);
-      const source = await mediaResolver.resolve(video);
-      const mediaResolution = publicResolution(source);
       const artifact = await this.artifactStore.transcriptFor(video.aweme_id ?? video.id);
 
       let readableContent;
+      let mediaResolution = null;
       if (artifact) {
+        const source = await mediaResolver.resolve(video);
+        mediaResolution = publicResolution(source);
         readableContent = {
           ...artifact,
           source: {
@@ -95,12 +110,46 @@ export class ContentProcessor {
       } else {
         const transcription = this.createTranscriptionService(mediaResolver);
         readableContent = await transcription.read(video);
-        readableContent.media_resolution = mediaResolution;
+        mediaResolution = readableContent.media_resolution ?? null;
+
+        // A real TranscriptionService attaches the source it resolved for ASR,
+        // so this branch is normally caption-only. Keeping the fallback for
+        // injected transcription services preserves the invariant that every
+        // non-caption result has validated media without resolving it twice.
+        if (!mediaResolution) {
+          try {
+            const source = await mediaResolver.resolve(video);
+            mediaResolution = publicResolution(source);
+            readableContent.media_resolution = mediaResolution;
+          } catch (error) {
+            if (isTerminalAccessError(error)) throw error;
+            if (readableContent.method !== "captions") throw error;
+
+            // Captions are independently readable public content. A transient
+            // CDN/media failure is diagnostic, not a reason to discard them.
+            mediaResolution = unavailableResolution(error);
+            readableContent.media_resolution = mediaResolution;
+            readableContent.limitations = [...new Set([
+              ...(readableContent.limitations ?? []),
+              "media_validation_unavailable"
+            ])];
+            readableContent.source = {
+              ...readableContent.source,
+              media_validation: sanitizeDiagnostics({
+                status: "unavailable",
+                code: error?.code ?? "MEDIA_VALIDATION_FAILED"
+              })
+            };
+          }
+        }
       }
 
       return {
         ...video,
-        media: { ...video.media, resolved: mediaResolution },
+        media: {
+          ...video.media,
+          ...(mediaResolution ? { resolved: mediaResolution } : {})
+        },
         readable_content: readableContent
       };
     } catch (error) {
