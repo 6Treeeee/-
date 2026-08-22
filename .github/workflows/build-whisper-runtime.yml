@@ -18,23 +18,31 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Build fixed whisper.cpp commit without OpenMP
+      - name: Build fixed whisper.cpp commit without OpenMP on AL2023
         shell: bash
         run: |
           set -euo pipefail
-          commit=371b5a7561823ab2bb32142d2751e35e7534727b
-          git clone --filter=blob:none https://github.com/ggml-org/whisper.cpp.git whisper-source
-          git -C whisper-source checkout --detach "$commit"
-          cmake -S whisper-source -B whisper-build \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DGGML_NATIVE=OFF \
-            -DGGML_BACKEND_DL=ON \
-            -DGGML_CPU_ALL_VARIANTS=ON \
-            -DGGML_OPENMP=OFF \
-            -DWHISPER_BUILD_TESTS=OFF \
-            -DWHISPER_BUILD_EXAMPLES=ON \
-            -DWHISPER_BUILD_SERVER=OFF
-          cmake --build whisper-build --config Release --parallel 2 --target whisper-cli
+          docker run --rm \
+            -v "$PWD:/work" \
+            -w /work \
+            amazonlinux:2023 \
+            bash -lc '
+              set -euo pipefail
+              dnf install -y git cmake gcc-c++ make findutils binutils
+              rm -rf whisper-source whisper-build
+              git clone --filter=blob:none https://github.com/ggml-org/whisper.cpp.git whisper-source
+              git -C whisper-source checkout --detach 371b5a7561823ab2bb32142d2751e35e7534727b
+              cmake -S whisper-source -B whisper-build \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DGGML_NATIVE=OFF \
+                -DGGML_BACKEND_DL=ON \
+                -DGGML_CPU_ALL_VARIANTS=ON \
+                -DGGML_OPENMP=OFF \
+                -DWHISPER_BUILD_TESTS=OFF \
+                -DWHISPER_BUILD_EXAMPLES=ON \
+                -DWHISPER_BUILD_SERVER=OFF
+              cmake --build whisper-build --config Release --parallel 2 --target whisper-cli
+            '
 
       - name: Package and verify self-contained runtime
         shell: bash
@@ -63,6 +71,14 @@ jobs:
           fi
           LD_LIBRARY_PATH="$stage" "$stage/whisper-cli" --help >/dev/null
 
+          required_glibc="$(find "$stage" -maxdepth 1 -type f -print0 | \
+            xargs -0 -r strings | grep -oE 'GLIBC_[0-9]+\.[0-9]+' | sort -V | tail -1)"
+          test -n "$required_glibc"
+          if [[ "$(printf '%s\n%s\n' "$required_glibc" 'GLIBC_2.34' | sort -V | tail -1)" != 'GLIBC_2.34' ]]; then
+            echo "Runtime requires $required_glibc, newer than AL2023 GLIBC_2.34" >&2
+            exit 1
+          fi
+
           archive=assets/whisper/whisper-bin-ubuntu-x64-b4938-no-openmp.tar.gz
           tar --sort=name --mtime='UTC 2026-08-22' --owner=0 --group=0 --numeric-owner \
             -C "$RUNNER_TEMP/stage" -czf "$archive" whisper-bin-ubuntu-x64
@@ -76,6 +92,8 @@ jobs:
           archive_bytes=$archive_bytes
           archive_sha256=$archive_sha
           cli_sha256=$cli_sha
+          runtime_base=amazonlinux:2023
+          maximum_glibc=$required_glibc
           GGML_NATIVE=OFF
           GGML_BACKEND_DL=ON
           GGML_CPU_ALL_VARIANTS=ON
