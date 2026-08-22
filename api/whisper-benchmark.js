@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 
+import { ReaderError } from "../src/errors.js";
 import { createLocalWhisperAsr } from "../src/services/local-whisper.js";
 
 const AUDIO_URL = "https://sf11-cdn-tos.douyinstatic.com/obj/ies-music/7669061106578082603.mp3";
@@ -15,6 +16,29 @@ function monotonic(segments) {
     previousEnd = segment.end_ms;
   }
   return true;
+}
+
+function safeFailure(error) {
+  if (error instanceof ReaderError) return { code: error.code, kind: "reader_error" };
+  if (typeof error?.code === "string") return { code: error.code, kind: "node_error" };
+  const name = ["Error", "TypeError", "RangeError", "SyntaxError", "TimeoutError"]
+    .includes(error?.name) ? error.name : "UnknownError";
+  const message = String(error?.message ?? "");
+  const reason = message.includes("is not iterable")
+    ? "NOT_ITERABLE"
+    : message.includes("is not a function")
+      ? "NOT_A_FUNCTION"
+      : message.includes("Cannot read properties")
+        ? "PROPERTY_ACCESS"
+        : message.includes("Unexpected token")
+          ? "JSON_SYNTAX"
+          : "UNCLASSIFIED";
+  return {
+    code: `BENCHMARK_${name.replace(/([a-z])([A-Z])/g, "$1_$2").toUpperCase()}`,
+    kind: "runtime_error",
+    reason,
+    fingerprint: createHash("sha256").update(message).digest("hex").slice(0, 16)
+  };
 }
 
 async function downloadExactAudio() {
@@ -53,19 +77,23 @@ export default async function handler(request, response) {
 
   const startedAt = performance.now();
   let diagnostic = null;
+  let phase = "media_fetch";
   try {
     const media = await downloadExactAudio();
+    phase = "engine_create";
     const inferenceStartedAt = performance.now();
     const localAsr = createLocalWhisperAsr({
       threadCount: threads,
       timeoutMs: 240_000,
       diagnosticSink: (value) => { diagnostic = value; }
     });
+    phase = "transcribe";
     const transcript = await localAsr.transcribe({
       bytes: media.bytes,
       mediaType: media.mediaType,
       video: { media: { duration_ms: DURATION_MS } }
     });
+    phase = "summarize";
     return response.status(200).json({
       ok: true,
       target: "douyin_video_7669061012259179785_original_audio",
@@ -83,11 +111,21 @@ export default async function handler(request, response) {
       cpu_backend: diagnostic?.cpu_backend ?? null
     });
   } catch (error) {
+    const failure = safeFailure(error);
+    console.error("whisper_benchmark_failed", {
+      phase,
+      ...failure,
+      stage: typeof error?.details?.stage === "string" ? error.details.stage : null
+    });
     return response.status(500).json({
       ok: false,
       threads,
       elapsed_ms: Math.round(performance.now() - startedAt),
-      error: typeof error?.code === "string" ? error.code : "BENCHMARK_FAILED",
+      phase,
+      error: failure.code,
+      error_kind: failure.kind,
+      ...(failure.reason ? { reason: failure.reason } : {}),
+      ...(failure.fingerprint ? { fingerprint: failure.fingerprint } : {}),
       stage: typeof error?.details?.stage === "string" ? error.details.stage : null,
       cpu_backend: diagnostic?.cpu_backend ?? null
     });
