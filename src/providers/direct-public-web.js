@@ -1,4 +1,4 @@
-import { ReaderError } from "../errors.js";
+import { ReaderError, sanitizeDiagnostics } from "../errors.js";
 import {
   extractAweme,
   extractPostPage,
@@ -489,10 +489,23 @@ function isTransientError(error) {
       .test(String(error?.message ?? ""));
 }
 
+function causeDiagnostic(cause) {
+  if (!cause) return null;
+  return sanitizeDiagnostics({
+    name: cause?.name ?? "Error",
+    code: cause?.code ?? null,
+    message: cause?.message ?? "The browser operation failed."
+  });
+}
+
 function transientError(cause, target, message = "The public Douyin browser request failed transiently.") {
   return new ReaderError("DOUYIN_PUBLIC_WEB_TRANSIENT", message, {
     status: 502,
-    details: { provider: PROVIDER, target: targetDiagnostic(target) },
+    details: {
+      provider: PROVIDER,
+      target: targetDiagnostic(target),
+      ...(cause ? { cause: causeDiagnostic(cause) } : {})
+    },
     cause
   });
 }

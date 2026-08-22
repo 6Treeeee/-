@@ -12,10 +12,64 @@ import { ContentProcessor } from "../src/services/content-processing.js";
 import { ArtifactStore } from "../src/services/artifacts.js";
 import { MediaResolver } from "../src/services/media.js";
 import { ProviderChain, sanitizeDiagnostics } from "../src/services/provider-chain.js";
+import { PublicBrowserService } from "../src/services/public-browser.js";
 import { TIKHUB_ROUTES } from "../src/services/tikhub.js";
 import { TranscriptionService } from "../src/services/transcription.js";
 
 const NOW = Date.parse("2026-08-15T04:00:00.000Z");
+
+test("Sparticuz Chromium uses shell mode and the fresh default browser context", async () => {
+  let createContextCalls = 0;
+  let launchOptions;
+  let defaultArgsInput;
+  let closed = false;
+  const page = {
+    setDefaultNavigationTimeout() {},
+    setDefaultTimeout() {},
+    async setViewport() {},
+    async setUserAgent() {},
+    async setExtraHTTPHeaders() {}
+  };
+  const defaultContext = {
+    async newPage() { return page; },
+    async close() { throw new Error("the default context must not be closed directly"); }
+  };
+  const browser = {
+    defaultBrowserContext() { return defaultContext; },
+    async createBrowserContext() {
+      createContextCalls += 1;
+      return defaultContext;
+    },
+    async userAgent() { return "HeadlessChrome/149.0"; },
+    async close() { closed = true; }
+  };
+  const service = new PublicBrowserService({
+    env: { VERCEL: "1" },
+    chromiumImpl: {
+      args: ["--no-sandbox"],
+      async executablePath() { return "/tmp/chromium"; }
+    },
+    puppeteerImpl: {
+      async defaultArgs(input) {
+        defaultArgsInput = input;
+        return [...input.args, "--puppeteer-default"];
+      },
+      async launch(options) {
+        launchOptions = options;
+        return browser;
+      }
+    }
+  });
+
+  const runtime = await service.withPage(async ({ runtime: value }) => value);
+
+  assert.equal(runtime.kind, "sparticuz_chromium");
+  assert.equal(createContextCalls, 0);
+  assert.deepEqual(defaultArgsInput, { args: ["--no-sandbox"], headless: "shell" });
+  assert.equal(launchOptions.headless, "shell");
+  assert.deepEqual(launchOptions.args, ["--no-sandbox", "--puppeteer-default"]);
+  assert.equal(closed, true);
+});
 
 function aweme(id, overrides = {}) {
   return {

@@ -102,7 +102,9 @@ export async function resolvePublicBrowserRuntime({
     return {
       executablePath: resolvedExecutable,
       args: [...(chromium.args ?? [])],
-      headless: chromium.headless ?? true,
+      // Sparticuz ships chrome-headless-shell, which does not support Chrome's
+      // newer headless mode. Puppeteer documents the explicit "shell" mode.
+      headless: "shell",
       kind: "sparticuz_chromium"
     };
   }
@@ -172,15 +174,24 @@ export class PublicBrowserService {
     let browser;
     let context;
     try {
+      const launchArgs = runtime.kind === "sparticuz_chromium" &&
+          typeof this.puppeteer.defaultArgs === "function"
+        ? await this.puppeteer.defaultArgs({ args: runtime.args, headless: runtime.headless })
+        : runtime.args;
       browser = await this.puppeteer.launch({
         executablePath: runtime.executablePath,
-        args: runtime.args,
+        args: launchArgs,
         headless: runtime.headless,
         protocolTimeout: this.protocolTimeoutMs,
         ...this.launchOptions
       });
 
-      context = typeof browser.createBrowserContext === "function"
+      // A newly launched serverless browser is already isolated. Sparticuz
+      // explicitly warns that creating an additional BrowserContext can close
+      // the target, so use its fresh default context in that runtime.
+      context = runtime.kind === "sparticuz_chromium"
+        ? browser.defaultBrowserContext()
+        : typeof browser.createBrowserContext === "function"
         ? await browser.createBrowserContext()
         : browser.defaultBrowserContext();
       const page = await context.newPage();
