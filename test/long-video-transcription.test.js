@@ -114,3 +114,35 @@ test("short videos retain hosted Gateway priority before local fallback", async 
   assert.equal(localCalls, 0);
   assert.match(result.method, /^vercel_ai_gateway_/);
 });
+
+test("unknown-duration browser media tries measurable local ASR before hosted Gateway", async () => {
+  let gatewayCalls = 0;
+  let localCalls = 0;
+  const service = new TranscriptionService({
+    openAiApiKey: null,
+    aiGatewayApiKey: null,
+    vercelOidcToken: "test-oidc-token",
+    mediaResolver: publicMp3Resolver(),
+    gatewayFactory() {
+      gatewayCalls += 1;
+      throw new Error("Gateway must not consume an unmeasured media deadline first");
+    },
+    localAsr: async () => {
+      localCalls += 1;
+      return {
+        text: "浏览器解码后完成",
+        method: "local_whisper_cpp_base_q5_1",
+        segments: [{ start_ms: 0, end_ms: 10_000, text: "浏览器解码后完成" }]
+      };
+    }
+  });
+
+  const result = await service.read({
+    aweme_id: "duration-missing",
+    captions: { tracks: [] }
+  });
+
+  assert.equal(localCalls, 1);
+  assert.equal(gatewayCalls, 0);
+  assert.equal(result.method, "local_whisper_cpp_base_q5_1");
+});

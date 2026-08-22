@@ -978,8 +978,9 @@ export class TranscriptionService {
     // Prefer one complete local CLI invocation here; whisper.cpp performs its
     // own internal windows and preserves timestamps without repeated model
     // startup. A fast local failure still falls through to hosted providers.
+    const knownDuration = knownVideoDurationMs(video);
     const preferLocalForLongMedia = typeof this.localAsr === "function" &&
-      knownVideoDurationMs(video) > LONG_MEDIA_LOCAL_PRIORITY_MS;
+      (knownDuration === null || knownDuration > LONG_MEDIA_LOCAL_PRIORITY_MS);
     if (preferLocalForLongMedia) {
       const local = await attemptLocalAsr();
       if (local) return local;

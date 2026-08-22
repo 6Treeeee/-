@@ -213,6 +213,41 @@ test("LocalWhisperAsr decodes AAC MP4 to bounded PCM WAV before inference", asyn
   assert.equal(result.audio_preprocessing.duration_ms, 10_000);
 });
 
+test("LocalWhisperAsr accepts unknown-duration MP4 only after the decoder measures it", async () => {
+  let invocation;
+  const engine = new LocalWhisperAsr({
+    platform: "linux",
+    arch: "x64",
+    runtimeProvider: async () => runtime(),
+    runImpl: async (input) => { invocation = input; return RAW_RESULT; },
+    audioDecoder: {
+      async decode(bytes) {
+        return {
+          bytes: new Uint8Array([82, 73, 70, 70]),
+          mediaType: "audio/wav",
+          method: "browser_offline_audio_context_pcm16_wav",
+          sampleRate: 16_000,
+          channelCount: 1,
+          sourceChannelCount: 2,
+          durationMs: 10_000,
+          inputBytes: bytes.byteLength,
+          outputBytes: 4,
+          diagnostics: { runtime: "sparticuz_chromium" }
+        };
+      }
+    }
+  });
+
+  await engine.transcribe({
+    bytes: new Uint8Array([9, 8, 7]),
+    mediaType: "video/mp4",
+    video: { aweme_id: "duration-missing" }
+  });
+
+  assert.equal(invocation.extension, ".wav");
+  assert.equal(invocation.durationMs, 10_000);
+});
+
 test("LocalWhisperAsr rejects overlong media before preparing or running the engine", async () => {
   let prepared = 0;
   let ran = 0;

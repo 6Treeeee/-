@@ -670,15 +670,18 @@ export class LocalWhisperAsr {
         { status: 422, details: { size: input.byteLength, max_bytes: this.maxInputBytes } }
       );
     }
-    const duration = durationMs(video);
-    if (duration === null) {
+    let duration = durationMs(video);
+    const inputMediaType = canonicalMediaType(mediaType);
+    const directExtension = SAFE_INPUT_TYPES.get(inputMediaType);
+    const canMeasureDuringDecode = !directExtension && DECODE_INPUT_TYPES.has(inputMediaType);
+    if (duration === null && !canMeasureDuringDecode) {
       throw new ReaderError(
         "LOCAL_ASR_DURATION_UNKNOWN",
         "The public media duration is required for bounded local speech-to-text.",
         { status: 422 }
       );
     }
-    if (duration > this.maxDurationMs) {
+    if (duration !== null && duration > this.maxDurationMs) {
       throw new ReaderError(
         "LOCAL_ASR_DURATION_LIMIT",
         "The public media is longer than the synchronous local speech-to-text limit.",
@@ -689,10 +692,10 @@ export class LocalWhisperAsr {
     const startedAt = Date.now();
     try {
       let preparedBytes = input;
-      let extension = SAFE_INPUT_TYPES.get(canonicalMediaType(mediaType));
+      let extension = directExtension;
       let audioPreprocessing = null;
       let boundedDurationMs = duration;
-      if (!extension && DECODE_INPUT_TYPES.has(canonicalMediaType(mediaType))) {
+      if (canMeasureDuringDecode) {
         const decoded = await this.audioDecoder.decode(input);
         if (decoded.durationMs > this.maxDurationMs + 2_000) {
           throw new ReaderError(
@@ -707,6 +710,7 @@ export class LocalWhisperAsr {
         preparedBytes = binaryInput(decoded.bytes);
         extension = ".wav";
         audioPreprocessing = decoderDiagnostic(decoded);
+        duration ??= decoded.durationMs;
         boundedDurationMs = Math.min(this.maxDurationMs, Math.max(duration, decoded.durationMs));
       }
       if (!extension) {
