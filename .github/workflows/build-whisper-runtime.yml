@@ -1,0 +1,94 @@
+name: Build pinned OpenMP-free Whisper runtime
+
+on:
+  push:
+    branches:
+      - codex/build-whisper-openmp-off
+    paths:
+      - .github/workflows/build-whisper-runtime.yml
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build fixed whisper.cpp commit without OpenMP
+        shell: bash
+        run: |
+          set -euo pipefail
+          commit=371b5a7561823ab2bb32142d2751e35e7534727b
+          git clone --filter=blob:none https://github.com/ggml-org/whisper.cpp.git whisper-source
+          git -C whisper-source checkout --detach "$commit"
+          cmake -S whisper-source -B whisper-build \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DGGML_NATIVE=OFF \
+            -DGGML_BACKEND_DL=ON \
+            -DGGML_CPU_ALL_VARIANTS=ON \
+            -DGGML_OPENMP=OFF \
+            -DWHISPER_BUILD_TESTS=OFF \
+            -DWHISPER_BUILD_EXAMPLES=ON \
+            -DWHISPER_BUILD_SERVER=OFF
+          cmake --build whisper-build --config Release --parallel 2 --target whisper-cli
+
+      - name: Package and verify self-contained runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          stage="$RUNNER_TEMP/stage/whisper-bin-ubuntu-x64"
+          mkdir -p "$stage" assets/whisper
+          cli="$(find whisper-build -type f -name whisper-cli -perm -u+x -print -quit)"
+          test -n "$cli"
+          cp "$cli" "$stage/whisper-cli"
+          while IFS= read -r -d '' library; do
+            cp -a "$library" "$stage/"
+          done < <(find whisper-build \( -type f -o -type l \) -name '*.so*' -print0)
+          cp whisper-source/LICENSE "$stage/LICENSE"
+          chmod 0755 "$stage/whisper-cli"
+
+          if find "$stage" -maxdepth 1 -type f -print0 | xargs -0 -r readelf -d 2>/dev/null | grep -Fq 'libgomp.so.1'; then
+            echo 'OpenMP dependency remains in packaged runtime' >&2
+            exit 1
+          fi
+          dependencies="$(LD_LIBRARY_PATH="$stage" ldd "$stage/whisper-cli")"
+          printf '%s\n' "$dependencies"
+          if grep -Fq 'not found' <<<"$dependencies" || grep -Fq 'libgomp.so.1' <<<"$dependencies"; then
+            echo 'Packaged runtime has an unresolved or OpenMP dependency' >&2
+            exit 1
+          fi
+          LD_LIBRARY_PATH="$stage" "$stage/whisper-cli" --help >/dev/null
+
+          archive=assets/whisper/whisper-bin-ubuntu-x64-b4938-no-openmp.tar.gz
+          tar --sort=name --mtime='UTC 2026-08-22' --owner=0 --group=0 --numeric-owner \
+            -C "$RUNNER_TEMP/stage" -czf "$archive" whisper-bin-ubuntu-x64
+          cli_sha="$(sha256sum "$stage/whisper-cli" | cut -d' ' -f1)"
+          archive_sha="$(sha256sum "$archive" | cut -d' ' -f1)"
+          archive_bytes="$(stat -c %s "$archive")"
+          cat > assets/whisper/OPENMP_OFF_BUILD.txt <<EOF
+          commit=371b5a7561823ab2bb32142d2751e35e7534727b
+          release=b4938
+          archive=$(basename "$archive")
+          archive_bytes=$archive_bytes
+          archive_sha256=$archive_sha
+          cli_sha256=$cli_sha
+          GGML_NATIVE=OFF
+          GGML_BACKEND_DL=ON
+          GGML_CPU_ALL_VARIANTS=ON
+          GGML_OPENMP=OFF
+          EOF
+
+      - name: Commit reproducible runtime artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add assets/whisper/whisper-bin-ubuntu-x64-b4938-no-openmp.tar.gz \
+            assets/whisper/OPENMP_OFF_BUILD.txt
+          git commit -m 'Build pinned OpenMP-free Whisper runtime'
+          git push origin HEAD:codex/build-whisper-openmp-off
