@@ -8,7 +8,7 @@ on:
       - .github/workflows/benchmark-whisper-runtime.yml
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   benchmark:
@@ -41,6 +41,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          set +e
           docker run --rm \
             -v "$PWD:/work:ro" \
             -w /work \
@@ -83,4 +84,18 @@ jobs:
                 test "$status" -eq 0
                 test -s "${output}.json"
               done
-            '
+            ' 2>&1 | tee .benchmark/runtime-output.txt
+          status=${PIPESTATUS[0]}
+          set -e
+          exit "$status"
+
+      - name: Publish benchmark evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp .benchmark/runtime-output.txt .github/WHISPER_BENCHMARK.txt
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add .github/WHISPER_BENCHMARK.txt
+          git commit -m 'Record pinned Whisper runtime benchmark'
+          git push
