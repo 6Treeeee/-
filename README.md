@@ -20,7 +20,8 @@ public Douyin URL
   -> current media validation / refresh
   -> public captions, when real tracks exist
   -> otherwise ASR (OpenAI -> Vercel AI Gateway
-     [openai/gpt-4o-mini-transcribe -> openai/whisper-1] -> injected local ASR)
+     [openai/gpt-4o-mini-transcribe -> openai/whisper-1]
+     -> local whisper.cpp base-q5_1)
   -> timestamped readable content
   -> failure-isolated creator analysis
 ```
@@ -77,6 +78,22 @@ not contain bearer tokens, cookies, signed media query strings, or API keys.
 Functional media URLs remain in normalized video data because downstream media
 reading requires them; they are treated as expiring addresses, not identities.
 
+For videos without usable captions, the media resolver first prefers a public
+creator-original-sound MP3 only when its duration matches the video. Otherwise
+the pipeline demuxes AAC from the public MP4; the local fallback converts that
+audio to a 16 kHz mono WAV in the already-shipped logged-out Chromium runtime.
+The pinned, OpenMP-free `whisper.cpp` Linux engine and multilingual quantized
+base model are then run one at a time, without runtime downloads. One bounded
+waiter may queue behind the active CPU job; excess or expired waiters receive a
+retryable busy result. Local ASR is bounded to 180-second / 25 MiB single-video
+inputs and reports its lower-accuracy model limitation.
+
+Synchronous multi-video profile requests keep captions, hosted ASR, and verified
+artifacts, but deliberately do not enqueue local Whisper work. Serially
+transcribing an unknown creator's full public grid cannot fit truthfully inside
+one 300-second Function request; the response exposes this policy and reports
+content-processing completeness separately from public-feed completeness.
+
 ## Configuration
 
 All credentials are optional:
@@ -87,6 +104,11 @@ OPENAI_API_KEY       preferred cloud ASR when configured
 AI_GATEWAY_API_KEY   Vercel AI Gateway ASR
 VERCEL_OIDC_TOKEN    injected by Vercel and accepted by AI Gateway
 ```
+
+On Vercel's Linux x64 runtime the checked-in, checksummed local Whisper assets
+are an additional credential-free fallback. The health response distinguishes
+platform support from an asset and executable startup preflight. No local-ASR
+environment variable is required.
 
 The repository contains a generated, source-evidenced transcript artifact for
 the real acceptance profile. It avoids paying for and repeating identical ASR
@@ -112,6 +134,10 @@ node scripts/build-verified-artifact.mjs
 `faster-whisper` uses PyAV, so an external FFmpeg executable is not required for
 the local acceptance pipeline. Media and raw captures are ignored by Git; the
 committed verified artifact excludes expiring media URLs and credentials.
+
+The deployable local fallback uses the pinned assets documented in
+`assets/whisper/ASSET_MANIFEST.json`. Their hashes are verified both by tests
+and once per cold runtime before inference.
 
 See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for runtime dependencies
 and open-source research references.

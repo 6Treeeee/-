@@ -4,7 +4,8 @@
   "functions": {
     "api/index.js": {
       "maxDuration": 300,
-      "includeFiles": "artifacts/douyin/verified-profile.json"
+      "maxConcurrency": 1,
+      "includeFiles": "{artifacts/douyin/verified-profile.json,assets/whisper/ASSET_MANIFEST.json,assets/whisper/LICENSE-whisper.cpp,assets/whisper/LICENSE-OpenAI-Whisper,assets/whisper/ggml-base-q5_1.bin,assets/whisper/whisper-bin-ubuntu-x64-b4938-no-openmp.tar.gz}"
     }
   }
 }

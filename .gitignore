@@ -13,3 +13,6 @@ artifacts/douyin/tmp/
 *.m4a
 *.webm
 *.wav
+
+# Superseded upstream binary; kept locally only to preserve the handed-off worktree.
+assets/whisper/whisper-bin-ubuntu-x64-b4938.tar.gz

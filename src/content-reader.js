@@ -13,7 +13,9 @@ export function serviceDescription({
   tikhubConfigured = false,
   directPublicWebAvailable = true,
   openaiConfigured = false,
-  gatewayConfigured = false
+  gatewayConfigured = false,
+  localWhisperConfigured = false,
+  localWhisperStatus = null
 } = {}) {
   return {
     service: "Content Reader",
@@ -32,6 +34,12 @@ export function serviceDescription({
       asr: {
         openai: openaiConfigured,
         vercel_ai_gateway: gatewayConfigured,
+        local_whisper_cpp: localWhisperConfigured,
+        local_whisper_cpp_platform_supported: Boolean(localWhisperStatus?.platform_supported),
+        local_whisper_cpp_runtime_verified: Boolean(localWhisperStatus?.runtime_verified),
+        local_whisper_cpp_scope: localWhisperStatus?.scope ?? "single_video",
+        synchronous_profile_local_asr: false,
+        ...(localWhisperStatus?.error ? { local_whisper_cpp_error: localWhisperStatus.error } : {}),
         verified_artifact_cache: true
       },
       creator_analysis: true

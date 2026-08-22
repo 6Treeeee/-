@@ -881,6 +881,79 @@ test("MediaResolver sends browser-compatible public headers for validation and d
   assert.equal(requests[1].init.headers.Range, undefined);
 });
 
+test("MediaResolver prefers a duration-matched public creator original-sound MP3", async () => {
+  const requests = [];
+  const resolver = new MediaResolver({
+    retries: 0,
+    now: () => NOW,
+    fetchImpl: async (url, options) => {
+      requests.push({ url: String(url), options });
+      return new Response(new Uint8Array([1]), {
+        status: 206,
+        headers: {
+          "content-type": "audio/mpeg",
+          "content-range": "bytes 0-0/876664"
+        }
+      });
+    }
+  });
+
+  const source = await resolver.resolve({
+    aweme_id: "original-sound-video",
+    acquired_at: new Date(NOW).toISOString(),
+    media: {
+      duration_ms: 54_720,
+      playback: [{ url: "https://video.example.test/full.mp4", media_type: "video/mp4" }]
+    },
+    music: {
+      title: "@公开作者创作的原声",
+      duration_ms: 54_000,
+      play_urls: ["https://music.douyinstatic.com/original.mp3?token=expiring"]
+    }
+  });
+
+  assert.equal(source.kind, "audio");
+  assert.equal(source.mediaType, "audio/mpeg");
+  assert.match(requests[0].url, /original\.mp3/);
+  assert.doesNotMatch(JSON.stringify(source.diagnostics), /expiring/);
+});
+
+test("MediaResolver never substitutes unrelated music for the spoken video track", async () => {
+  const requested = [];
+  const resolver = new MediaResolver({
+    retries: 0,
+    now: () => NOW,
+    fetchImpl: async (url) => {
+      requested.push(String(url));
+      return new Response(new Uint8Array([1]), {
+        status: 206,
+        headers: {
+          "content-type": "video/mp4",
+          "content-range": "bytes 0-0/1000"
+        }
+      });
+    }
+  });
+
+  const source = await resolver.resolve({
+    aweme_id: "background-music-video",
+    acquired_at: new Date(NOW).toISOString(),
+    media: {
+      duration_ms: 60_000,
+      playback: [{ url: "https://video.example.test/full.mp4", media_type: "video/mp4" }]
+    },
+    music: {
+      title: "Background track",
+      duration_ms: 180_000,
+      play_urls: ["https://music.example.test/wrong.mp3"]
+    }
+  });
+
+  assert.equal(source.kind, "video");
+  assert.equal(requested.length, 1);
+  assert.match(requested[0], /full\.mp4/);
+});
+
 test("TranscriptionService prefers real subtitle tracks and preserves timestamps", async () => {
   const vtt = [
     "WEBVTT",
@@ -1346,7 +1419,11 @@ test("built-in MP4 audio extractor rejects malformed media without parser data l
   );
 });
 
-function mockMp4AudioFile(track, { initialization = [1, 2], segment = [3, 4, 5] } = {}) {
+function mockMp4AudioFile(track, {
+  initialization = [1, 2],
+  segment = [3, 4, 5],
+  container = {}
+} = {}) {
   return {
     setSegmentOptions(id, _user, options) {
       assert.equal(id, track.id);
@@ -1360,7 +1437,7 @@ function mockMp4AudioFile(track, { initialization = [1, 2], segment = [3, 4, 5] 
       this.onSegment(track.id, null, Uint8Array.from(segment).buffer, 1, true);
     },
     appendBuffer() {
-      this.onReady({ audioTracks: [track] });
+      this.onReady({ ...container, audioTracks: [track] });
     },
     flush() {}
   };
@@ -1386,6 +1463,24 @@ test("built-in MP4 audio extractor preserves valid MPEG-4 object type 63 and tra
   assert.equal(result.mediaType, "audio/mp4");
   assert.equal(result.outputBytes, 5);
   assert.deepEqual(result.bytes, new Uint8Array([1, 2, 3, 4, 5]));
+});
+
+test("built-in MP4 audio extractor uses movie duration for fragmented audio tracks", async () => {
+  const track = {
+    id: 9,
+    codec: "mp4a.40.2",
+    duration: 0,
+    timescale: 48_000,
+    audio: { sample_rate: 48_000, channel_count: 2 }
+  };
+
+  const result = await extractMp4Audio(new Uint8Array([9]), {
+    createFileImpl: () => mockMp4AudioFile(track, {
+      container: { movie_duration: 92_648, movie_timescale: 1_000 }
+    })
+  });
+
+  assert.equal(result.durationMs, 92_648);
 });
 
 test("built-in MP4 audio extractor rejects MPEG-4 object types above 63", async () => {
@@ -1452,6 +1547,54 @@ test("TranscriptionService uses injected local ASR when hosted credentials are a
   assert.equal(result.method, "local_asr");
   assert.equal(result.confidence, 0.91);
   assert.equal(result.source.provider, "local");
+});
+
+test("TranscriptionService preserves retryable local ASR queue backpressure", async () => {
+  const service = new TranscriptionService({
+    openAiApiKey: null,
+    aiGatewayApiKey: null,
+    vercelOidcToken: null,
+    mediaResolver: {
+      async resolve() {
+        return { url: "https://media.example.test/a.mp3", kind: "audio", mediaType: "audio/mpeg" };
+      },
+      async fetch() {
+        return {
+          bytes: new Uint8Array([8, 9]),
+          mediaType: "audio/mpeg",
+          source: { host: "media.example.test", url_hash: "safe" }
+        };
+      }
+    },
+    localAsr: async () => {
+      throw new ReaderError("LOCAL_ASR_BUSY", "The local speech-to-text queue is full.", {
+        status: 503,
+        details: { stage: "queue", reason: "full" }
+      });
+    }
+  });
+
+  await assert.rejects(
+    () => service.read({ aweme_id: "busy-video", captions: { tracks: [] } }),
+    (error) => {
+      assert.equal(error.code, "LOCAL_ASR_BUSY");
+      assert.equal(error.status, 503);
+      assert.deepEqual(error.details, { stage: "queue", reason: "full" });
+      return true;
+    }
+  );
+});
+
+test("TranscriptionService reserves request time for local ASR after hosted Gateway failure", () => {
+  const withLocalFallback = new TranscriptionService({
+    localAsr: async () => ({ text: "local" })
+  });
+  assert.equal(withLocalFallback.gatewayTimeoutMs, 10_000);
+  assert.equal(withLocalFallback.gatewayRetries, 0);
+
+  const hostedOnly = new TranscriptionService({ timeoutMs: 42_000, retries: 2 });
+  assert.equal(hostedOnly.gatewayTimeoutMs, 42_000);
+  assert.equal(hostedOnly.gatewayRetries, 2);
 });
 
 test("ContentProcessor preserves public captions across a transient media validation failure", async () => {
@@ -1690,6 +1833,275 @@ test("ContentProcessor continues profile-wide processing when one video fails", 
   assert.equal(result.posts[2].readable_content.text, "read 3");
   assert.deepEqual(result.failures.map((item) => item.aweme_id), ["2"]);
   assert.equal(result.failures[0].reason.code, "MEDIA_UNAVAILABLE");
+  assert.equal(result.status, "partial");
+  assert.equal(result.complete, false);
+});
+
+test("ContentProcessor disables local ASR for a multi-video synchronous profile while preserving artifacts and captions", async () => {
+  let localAsrCalls = 0;
+  const processor = new ContentProcessor({
+    profileConcurrency: 3,
+    artifactStore: {
+      async transcriptFor(awemeId) {
+        return awemeId === "artifact"
+          ? completedTranscript("verified artifact", "verified_artifact")
+          : null;
+      }
+    },
+    mediaResolverFactory: () => ({
+      async resolve(video) {
+        return {
+          url: `https://media.example.test/${video.aweme_id}.mp3`,
+          kind: "audio",
+          mediaType: "audio/mpeg",
+          acquired_at: "2026-08-15T04:00:00.000Z",
+          validated_at: "2026-08-15T04:00:01.000Z",
+          diagnostics: { host: "media.example.test", status: 206, size: 1 }
+        };
+      },
+      async fetch() {
+        return {
+          bytes: new Uint8Array([1]),
+          mediaType: "audio/mpeg",
+          acquired_at: "2026-08-15T04:00:00.000Z",
+          source: { host: "media.example.test", status: 200, size: 1 }
+        };
+      }
+    }),
+    localAsr: async () => {
+      localAsrCalls += 1;
+      return completedTranscript("local transcript", "local_test");
+    },
+    openAiApiKey: null,
+    aiGatewayApiKey: null,
+    vercelOidcToken: null
+  });
+
+  const result = await processor.processProfile([
+    { aweme_id: "artifact", canonical_url: "https://www.douyin.com/video/artifact", media: {} },
+    {
+      aweme_id: "caption",
+      canonical_url: "https://www.douyin.com/video/caption",
+      media: {},
+      captions: {
+        tracks: [{
+          format: "vtt",
+          content: "WEBVTT\n\n00:00.000 --> 00:01.000\npublic caption"
+        }]
+      }
+    },
+    { aweme_id: "local-only", canonical_url: "https://www.douyin.com/video/local-only", media: {} }
+  ]);
+
+  assert.equal(localAsrCalls, 0);
+  assert.equal(result.policy.code, "PROFILE_LOCAL_ASR_DISABLED");
+  assert.equal(result.policy.mode, "synchronous_multi_video");
+  assert.equal(result.policy.local_asr.allowed, false);
+  assert.equal(result.policy.local_asr.invoked, false);
+  assert.equal(result.status, "partial");
+  assert.equal(result.complete, false);
+  assert.deepEqual(result.posts.map((post) => post.readable_content.status), [
+    "complete",
+    "complete",
+    "failed"
+  ]);
+  assert.equal(result.posts[0].readable_content.source.provider, "verified_local_artifact");
+  assert.equal(result.posts[1].readable_content.method, "captions");
+  assert.equal(result.posts[2].readable_content.error.code, "TRANSCRIPTION_UNAVAILABLE");
+  assert.equal(result.posts[2].readable_content.error.policy_code, "PROFILE_LOCAL_ASR_DISABLED");
+  assert.equal(result.failures[0].reason.policy_code, "PROFILE_LOCAL_ASR_DISABLED");
+});
+
+test("ContentProcessor preserves hosted ASR while local ASR is disabled for a multi-video profile", async () => {
+  let hostedAsrCalls = 0;
+  let localAsrCalls = 0;
+  const processor = new ContentProcessor({
+    artifactStore: { transcriptFor: async () => null },
+    mediaResolverFactory: () => ({
+      async resolve(video) {
+        return {
+          url: `https://media.example.test/${video.aweme_id}.mp3`,
+          kind: "audio",
+          mediaType: "audio/mpeg",
+          acquired_at: "2026-08-15T04:00:00.000Z",
+          validated_at: "2026-08-15T04:00:01.000Z",
+          diagnostics: { host: "media.example.test", status: 206, size: 1 }
+        };
+      },
+      async fetch() {
+        return {
+          bytes: new Uint8Array([1]),
+          mediaType: "audio/mpeg",
+          acquired_at: "2026-08-15T04:00:00.000Z",
+          source: { host: "media.example.test", status: 200, size: 1 }
+        };
+      }
+    }),
+    fetchImpl: async () => {
+      hostedAsrCalls += 1;
+      return new Response(JSON.stringify({
+        text: "hosted transcript",
+        language: "zh",
+        segments: [{ start: 0, end: 1, text: "hosted transcript", avg_logprob: -0.1 }]
+      }), {
+        status: 200,
+        headers: { "content-type": "application/json" }
+      });
+    },
+    openAiApiKey: "hosted-test-key",
+    aiGatewayApiKey: null,
+    vercelOidcToken: null,
+    localAsr: async () => {
+      localAsrCalls += 1;
+      return completedTranscript("local transcript", "local_test");
+    }
+  });
+
+  const result = await processor.processProfile([
+    { aweme_id: "hosted-1", canonical_url: "https://www.douyin.com/video/hosted-1", media: {} },
+    { aweme_id: "hosted-2", canonical_url: "https://www.douyin.com/video/hosted-2", media: {} }
+  ]);
+
+  assert.equal(hostedAsrCalls, 2);
+  assert.equal(localAsrCalls, 0);
+  assert.equal(result.status, "complete");
+  assert.equal(result.complete, true);
+  assert.equal(result.policy.code, "PROFILE_LOCAL_ASR_DISABLED");
+  assert.deepEqual(result.posts.map((post) => post.readable_content.method), [
+    "openai_whisper_1",
+    "openai_whisper_1"
+  ]);
+});
+
+test("ContentProcessor permits local ASR for a single-video profile", async () => {
+  let localAsrCalls = 0;
+  const processor = new ContentProcessor({
+    artifactStore: { transcriptFor: async () => null },
+    mediaResolverFactory: () => ({
+      async resolve() {
+        return {
+          url: "https://media.example.test/single.mp3",
+          kind: "audio",
+          mediaType: "audio/mpeg",
+          diagnostics: { host: "media.example.test", status: 206, size: 1 }
+        };
+      },
+      async fetch() {
+        return {
+          bytes: new Uint8Array([1]),
+          mediaType: "audio/mpeg",
+          source: { host: "media.example.test", status: 200, size: 1 }
+        };
+      }
+    }),
+    openAiApiKey: null,
+    aiGatewayApiKey: null,
+    vercelOidcToken: null,
+    localAsr: async () => {
+      localAsrCalls += 1;
+      return {
+        text: "single local transcript",
+        segments: [{ start_ms: 0, end_ms: 1_000, text: "single local transcript" }],
+        method: "local_test"
+      };
+    }
+  });
+
+  const result = await processor.processProfile([
+    {
+      aweme_id: "single",
+      canonical_url: "https://www.douyin.com/video/single",
+      media: { duration_ms: 1_000 }
+    }
+  ]);
+
+  assert.equal(localAsrCalls, 1);
+  assert.equal(result.policy, undefined);
+  assert.equal(result.status, "complete");
+  assert.equal(result.complete, true);
+  assert.equal(result.posts[0].readable_content.method, "local_test");
+});
+
+test("DouyinReader exposes profile processing status, completion, and bounded local-ASR policy", async () => {
+  const policy = {
+    code: "PROFILE_LOCAL_ASR_DISABLED",
+    mode: "synchronous_multi_video",
+    reason: "bounded_request_budget",
+    post_count: 2,
+    local_asr: { allowed: false, invoked: false }
+  };
+  const posts = ["1", "2"].map((awemeId) => ({
+    id: awemeId,
+    aweme_id: awemeId,
+    canonical_url: `https://www.douyin.com/video/${awemeId}`,
+    media: {},
+    captions: { available: false, tracks: [] }
+  }));
+  const reader = new DouyinReader({
+    providers: [{
+      id: "direct_public_web",
+      available: true,
+      async readProfile() {
+        return {
+          creator: {
+            id: "public-user",
+            sec_user_id: "public-user",
+            display_name: "Public creator",
+            stats: { post_count: 2 }
+          },
+          items: posts,
+          items_normalized: true,
+          pagination: {
+            complete: true,
+            public_access_exhausted: true,
+            upstream_exhausted: true,
+            unique_posts: 2
+          },
+          meta: { provider: "direct_public_web" }
+        };
+      }
+    }],
+    fetchImpl: publicResolutionFetch,
+    processContent: true,
+    processor: {
+      async processProfile(input) {
+        const error = {
+          code: "TRANSCRIPTION_UNAVAILABLE",
+          message: "No synchronous method produced a transcript.",
+          policy_code: policy.code
+        };
+        return {
+          posts: [
+            { ...input[0], readable_content: completedTranscript("complete post") },
+            { ...input[1], readable_content: { status: "failed", error } }
+          ],
+          failures: [{
+            aweme_id: input[1].aweme_id,
+            url: input[1].canonical_url,
+            reason: error
+          }],
+          status: "partial",
+          complete: false,
+          policy
+        };
+      }
+    }
+  });
+
+  const result = await reader.read({
+    url: "https://www.douyin.com/user/public-user",
+    type: "profile"
+  });
+
+  assert.equal(result.content.pagination.complete, true);
+  assert.equal(result.content.processing.status, "partial");
+  assert.equal(result.content.processing.complete, false);
+  assert.equal(result.content.processing.attempted_posts, 2);
+  assert.equal(result.content.processing.successfully_content_read, 1);
+  assert.equal(result.content.processing.failed_posts.length, 1);
+  assert.equal(result.content.processing.policy.code, "PROFILE_LOCAL_ASR_DISABLED");
+  assert.equal(result.content.processing.failed_posts[0].reason.policy_code,
+    "PROFILE_LOCAL_ASR_DISABLED");
 });
 
 test("ArtifactStore shares one in-flight load across concurrent profile workers", async () => {

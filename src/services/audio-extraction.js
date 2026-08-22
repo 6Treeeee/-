@@ -12,14 +12,20 @@ function concat(chunks, total) {
   return output;
 }
 
-function audioConfig(track) {
+function audioConfig(track, container) {
   const codecMatch = String(track?.codec ?? "").match(/^mp4a\.40\.(\d+)$/i);
   const objectType = Number(codecMatch?.[1]);
   const sampleRate = Number(track?.audio?.sample_rate);
   const channelCount = Number(track?.audio?.channel_count);
-  const durationMs = Number(track?.duration) >= 0 && Number(track?.timescale) > 0
+  const trackDurationMs = Number(track?.duration) > 0 && Number(track?.timescale) > 0
     ? Math.round((Number(track.duration) / Number(track.timescale)) * 1000)
     : null;
+  const movieDurationMs = Number(container?.duration) > 0 && Number(container?.timescale) > 0
+    ? Math.round((Number(container.duration) / Number(container.timescale)) * 1000)
+    : Number(container?.movie_duration) > 0 && Number(container?.movie_timescale) > 0
+      ? Math.round((Number(container.movie_duration) / Number(container.movie_timescale)) * 1000)
+      : null;
+  const durationMs = trackDurationMs ?? movieDurationMs;
   if (!Number.isInteger(objectType) || objectType < 1 || objectType > 63 ||
       !Number.isFinite(sampleRate) || sampleRate <= 0 ||
       !Number.isInteger(channelCount) || channelCount < 1) {
@@ -103,7 +109,7 @@ export async function extractMp4Audio(bytes, {
             { status: 422 }
           );
         }
-        config = audioConfig(track);
+        config = audioConfig(track, info);
         trackId = track.id;
         file.setSegmentOptions(track.id, null, {
           nbSamples: 1_000,

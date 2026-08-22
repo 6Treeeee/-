@@ -225,6 +225,7 @@ export class DouyinReader {
     openAiApiKey = process.env.OPENAI_API_KEY,
     aiGatewayApiKey = process.env.AI_GATEWAY_API_KEY,
     vercelOidcToken = process.env.VERCEL_OIDC_TOKEN,
+    localAsr = null,
     processContent,
     profileConcurrency = 3
   } = {}) {
@@ -251,6 +252,7 @@ export class DouyinReader {
       openAiApiKey,
       aiGatewayApiKey,
       vercelOidcToken,
+      localAsr,
       profileConcurrency
     });
     this.analyzer = analyzer;
@@ -416,6 +418,7 @@ export class DouyinReader {
           reason: post.readable_content?.error ?? { code: "CONTENT_READING_FAILED" }
         }))
       : [];
+    let processingPolicy = null;
     if (this.processContent && !raw.content_preprocessed) {
       const processed = await this.processor.processProfile(posts, {
         refreshVideo: async (awemeId) => {
@@ -433,7 +436,22 @@ export class DouyinReader {
       });
       posts = processed.posts;
       processingFailures = processed.failures;
+      processingPolicy = processed.policy ?? null;
     }
+
+    const processingPerformed = Boolean(raw.content_preprocessed || this.processContent);
+    const attemptedPosts = processingPerformed ? posts.length : 0;
+    const successfullyContentRead = processingPerformed
+      ? Math.max(0, posts.length - processingFailures.length)
+      : 0;
+    const processingComplete = processingPerformed && processingFailures.length === 0;
+    const processingStatus = !processingPerformed
+      ? "not_attempted"
+      : processingComplete
+        ? "complete"
+        : successfullyContentRead > 0
+          ? "partial"
+          : "failed";
 
     const accessFailures = accessFailureRecord(raw.limitation);
     const analysis = this.analyzer.analyze({
@@ -466,9 +484,12 @@ export class DouyinReader {
         limitation: raw.limitation ?? null,
         warnings,
         processing: {
-          attempted_posts: posts.length,
-          successfully_content_read: posts.length - processingFailures.length,
-          failed_posts: processingFailures
+          status: processingStatus,
+          complete: processingComplete,
+          attempted_posts: attemptedPosts,
+          successfully_content_read: successfullyContentRead,
+          failed_posts: processingFailures,
+          ...(processingPolicy ? { policy: processingPolicy } : {})
         },
         analysis
       }

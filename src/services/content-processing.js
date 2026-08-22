@@ -37,6 +37,38 @@ function unavailableResolution(error) {
   };
 }
 
+function synchronousProfilePolicy(postCount, localAsr) {
+  if (postCount <= 1 || typeof localAsr !== "function") return null;
+  return {
+    code: "PROFILE_LOCAL_ASR_DISABLED",
+    mode: "synchronous_multi_video",
+    reason: "bounded_request_budget",
+    post_count: postCount,
+    local_asr: {
+      allowed: false,
+      invoked: false
+    }
+  };
+}
+
+function attachPolicyToFailure(video, policy) {
+  const readable = video?.readable_content;
+  if (!policy || readable?.status === "complete" ||
+      readable?.error?.code !== "TRANSCRIPTION_UNAVAILABLE") {
+    return video;
+  }
+  return {
+    ...video,
+    readable_content: {
+      ...readable,
+      error: {
+        ...readable.error,
+        policy_code: policy.code
+      }
+    }
+  };
+}
+
 export class ContentProcessor {
   constructor({
     fetchImpl = globalThis.fetch,
@@ -73,21 +105,29 @@ export class ContentProcessor {
     });
   }
 
-  createTranscriptionService(mediaResolver) {
+  createTranscriptionService(mediaResolver, { localAsr = this.localAsr } = {}) {
     if (this.transcriptionFactory) {
-      return this.transcriptionFactory({ mediaResolver, fetchImpl: this.fetchImpl });
+      return this.transcriptionFactory({
+        mediaResolver,
+        fetchImpl: this.fetchImpl,
+        localAsr
+      });
     }
     return new TranscriptionService({
       fetchImpl: this.fetchImpl,
       mediaResolver,
-      localAsr: this.localAsr,
+      localAsr,
       openAiApiKey: this.openAiApiKey,
       aiGatewayApiKey: this.aiGatewayApiKey,
       vercelOidcToken: this.vercelOidcToken
     });
   }
 
-  async processVideo(video, { refreshVideo = null, isolateFailure = false } = {}) {
+  async processVideo(video, {
+    refreshVideo = null,
+    isolateFailure = false,
+    localAsr = this.localAsr
+  } = {}) {
     try {
       const mediaResolver = this.createMediaResolver(refreshVideo);
       const artifact = await this.artifactStore.transcriptFor(video.aweme_id ?? video.id);
@@ -108,7 +148,7 @@ export class ContentProcessor {
           media_resolution: mediaResolution
         };
       } else {
-        const transcription = this.createTranscriptionService(mediaResolver);
+        const transcription = this.createTranscriptionService(mediaResolver, { localAsr });
         readableContent = await transcription.read(video);
         mediaResolution = readableContent.media_resolution ?? null;
 
@@ -161,6 +201,12 @@ export class ContentProcessor {
   async processProfile(posts, { refreshVideo = null } = {}) {
     const input = Array.isArray(posts) ? posts : [];
     const output = new Array(input.length);
+    // A profile request must finish inside one bounded synchronous Function
+    // invocation. Running or queueing multiple CPU-bound local Whisper jobs
+    // cannot truthfully satisfy that contract, so multi-video profiles retain
+    // captions, hosted ASR, and verified artifacts but do not invoke local ASR.
+    const policy = synchronousProfilePolicy(input.length, this.localAsr);
+    const profileLocalAsr = policy ? null : this.localAsr;
     let nextIndex = 0;
 
     const worker = async () => {
@@ -168,10 +214,12 @@ export class ContentProcessor {
         const index = nextIndex;
         nextIndex += 1;
         if (index >= input.length) return;
-        output[index] = await this.processVideo(input[index], {
+        const processed = await this.processVideo(input[index], {
           refreshVideo,
-          isolateFailure: true
+          isolateFailure: true,
+          localAsr: profileLocalAsr
         });
+        output[index] = attachPolicyToFailure(processed, policy);
       }
     };
     await Promise.all(Array.from(
@@ -186,6 +234,15 @@ export class ContentProcessor {
         url: video.canonical_url,
         reason: video.readable_content?.error ?? { code: "CONTENT_READING_FAILED" }
       }));
-    return { posts: output, failures };
+    const successfullyContentRead = output.length - failures.length;
+    const complete = failures.length === 0;
+    const status = complete ? "complete" : successfullyContentRead > 0 ? "partial" : "failed";
+    return {
+      posts: output,
+      failures,
+      status,
+      complete,
+      ...(policy ? { policy } : {})
+    };
   }
 }

@@ -158,10 +158,54 @@ function addEntries(output, seen, entries, kind, inheritedAcquiredAt) {
   }
 }
 
+function durationMs(video) {
+  const millisecondValues = [
+    video?.duration_ms,
+    video?.media?.duration_ms,
+  ];
+  for (const value of millisecondValues) {
+    const number = Number(value);
+    if (!Number.isFinite(number) || number <= 0) continue;
+    return number;
+  }
+  for (const value of [video?.duration, video?.video?.duration]) {
+    const number = Number(value);
+    if (!Number.isFinite(number) || number <= 0) continue;
+    return number >= 1_000 ? number : number * 1000;
+  }
+  return null;
+}
+
+function originalSoundEntries(video, acquiredAt) {
+  const music = video?.music;
+  const title = String(music?.title ?? "");
+  if (!/(?:创作的原声|original\s+sound)/i.test(title)) return [];
+
+  const videoDuration = durationMs(video);
+  const musicDuration = Number(music?.duration_ms ??
+    (Number.isFinite(Number(music?.duration)) ? Number(music.duration) * 1000 : NaN));
+  if (!Number.isFinite(videoDuration) || !Number.isFinite(musicDuration)) return [];
+  const allowedDifference = Math.max(2_000, videoDuration * 0.03);
+  if (Math.abs(videoDuration - musicDuration) > allowedDifference) return [];
+
+  return (music.play_urls ?? music.url_list ?? []).map((url) => ({
+    url,
+    media_type: "audio/mpeg",
+    acquired_at: acquisitionTime(music) ?? acquiredAt,
+    source_role: "original_sound"
+  }));
+}
+
 function mediaCandidates(video, acquiredAt) {
   const media = video?.media ?? {};
   const output = [];
   const seen = new Set();
+
+  // Douyin exposes the complete soundtrack for creator-recorded videos as a
+  // public MP3. Use it only when the page labels it as the creator's original
+  // sound and its duration matches the video; ordinary background music must
+  // never replace the video's spoken track.
+  addEntries(output, seen, originalSoundEntries(video, acquiredAt), "audio", acquiredAt);
 
   // Explicit audio-only assets preserve speech while avoiding unnecessary video transfer.
   for (const entries of [

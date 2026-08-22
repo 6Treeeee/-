@@ -2,10 +2,16 @@ import { getVercelOidcToken } from "@vercel/oidc";
 
 import { readPublicContent, serviceDescription } from "../src/content-reader.js";
 import { publicError } from "../src/errors.js";
+import { createLocalWhisperAsr } from "../src/services/local-whisper.js";
 
 export const config = {
   maxDuration: 300
 };
+
+// The engine prepares and integrity-checks its pinned assets lazily on first
+// use. One instance also enforces one CPU transcription at a time per warm
+// Function process.
+const localWhisper = createLocalWhisperAsr();
 
 function setCommonHeaders(res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -73,6 +79,7 @@ export default async function handler(req, res) {
   const gatewayAuth = await resolveRuntimeGatewayAuth();
 
   if (!input.url) {
+    const localWhisperStatus = await localWhisper.status();
     return reply(res, 200, {
       ok: true,
       request_id: id,
@@ -80,7 +87,9 @@ export default async function handler(req, res) {
         tikhubConfigured: Boolean(process.env.TIKHUB_API_KEY),
         directPublicWebAvailable: true,
         openaiConfigured: Boolean(process.env.OPENAI_API_KEY),
-        gatewayConfigured: Boolean(gatewayAuth.aiGatewayApiKey || gatewayAuth.vercelOidcToken)
+        gatewayConfigured: Boolean(gatewayAuth.aiGatewayApiKey || gatewayAuth.vercelOidcToken),
+        localWhisperConfigured: localWhisperStatus.runtime_verified,
+        localWhisperStatus
       })
     });
   }
@@ -94,7 +103,8 @@ export default async function handler(req, res) {
       requestId: id,
       openAiApiKey: process.env.OPENAI_API_KEY,
       aiGatewayApiKey: gatewayAuth.aiGatewayApiKey,
-      vercelOidcToken: gatewayAuth.vercelOidcToken
+      vercelOidcToken: gatewayAuth.vercelOidcToken,
+      localAsr: localWhisper.available ? localWhisper.transcribe : null
     });
 
     console.info(JSON.stringify({
