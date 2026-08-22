@@ -530,7 +530,7 @@ function accessError(access, { hasPublicContent = false } = {}) {
       details: { provider: PROVIDER, reason: "public_content_unavailable" }
     });
   }
-  if ((access.loginRequired || access.explicitMoreGate) && !hasPublicContent) {
+  if (access.loginRequired && !hasPublicContent) {
     return new ReaderError("DOUYIN_LOGIN_REQUIRED", "Douyin requires login for this content.", {
       status: 422,
       details: { provider: PROVIDER, reason: "login_required" }
@@ -942,6 +942,13 @@ export class DirectPublicWebProvider {
           hasPublicContent: items.length > 0 || (explicitBoundary && readableProfileMetadata)
         });
         if (failure) throw failure;
+
+        if (explicitBoundary && items.length === 0 && !readableProfileMetadata) {
+          throw new ReaderError("DOUYIN_LOGIN_REQUIRED", "Douyin requires login for this content.", {
+            status: 422,
+            details: { provider: PROVIDER, reason: "login_required" }
+          });
+        }
 
         if (!dom.listPresent && items.length === 0 && !readableProfileMetadata) {
           throw new ReaderError(
