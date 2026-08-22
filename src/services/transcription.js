@@ -499,6 +499,55 @@ function normalizedResult(result, {
   };
 }
 
+function localAsrSource(result, mediaSource) {
+  const engine = result?.engine;
+  const model = result?.model;
+  const isWhisperCpp = engine?.name === "whisper.cpp";
+  const preprocessing = result?.audio_preprocessing;
+  return {
+    type: "asr",
+    provider: isWhisperCpp ? "local_whisper_cpp" : "local",
+    ...(isWhisperCpp ? {
+      engine: {
+        name: "whisper.cpp",
+        ...(/^[A-Za-z0-9._-]{1,40}$/.test(String(engine.release ?? ""))
+          ? { release: String(engine.release) }
+          : {}),
+        ...(/^[a-f0-9]{40}$/.test(String(engine.commit ?? ""))
+          ? { commit: String(engine.commit) }
+          : {})
+      }
+    } : {}),
+    ...(isWhisperCpp && model && typeof model === "object" ? {
+      model: {
+        ...(/^[A-Za-z0-9._-]{1,100}$/.test(String(model.name ?? ""))
+          ? { name: String(model.name) }
+          : { name: "unknown" }),
+        ...(/^[a-f0-9]{64}$/.test(String(model.sha256 ?? ""))
+          ? { sha256: String(model.sha256) }
+          : {})
+      }
+    } : {}),
+    ...(Number.isFinite(result?.processing_ms) ? { processing_ms: Math.round(result.processing_ms) } : {}),
+    ...(isWhisperCpp && preprocessing && typeof preprocessing === "object"
+      ? { audio_preprocessing: {
+        method: String(preprocessing.method ?? "unknown").slice(0, 80),
+        ...(["local_chrome", "local_edge", "sparticuz_chromium", "unknown"]
+          .includes(preprocessing.runtime) ? { runtime: preprocessing.runtime } : {}),
+        ...(Number.isFinite(preprocessing.sample_rate) ? { sample_rate: preprocessing.sample_rate } : {}),
+        ...(Number.isFinite(preprocessing.channel_count) ? { channel_count: preprocessing.channel_count } : {}),
+        ...(Number.isFinite(preprocessing.source_channel_count)
+          ? { source_channel_count: preprocessing.source_channel_count }
+          : {}),
+        ...(Number.isFinite(preprocessing.duration_ms) ? { duration_ms: preprocessing.duration_ms } : {}),
+        ...(Number.isFinite(preprocessing.input_bytes) ? { input_bytes: preprocessing.input_bytes } : {}),
+        ...(Number.isFinite(preprocessing.output_bytes) ? { output_bytes: preprocessing.output_bytes } : {})
+      } }
+      : {}),
+    media: mediaSource
+  };
+}
+
 export class TranscriptionService {
   constructor({
     fetchImpl = globalThis.fetch,
@@ -517,9 +566,11 @@ export class TranscriptionService {
     openAiUrl = "https://api.openai.com/v1/audio/transcriptions",
     gatewayUrl = "https://ai-gateway.vercel.sh/v4/ai/transcription-model",
     timeoutMs = 120_000,
+    gatewayTimeoutMs,
     captionTimeoutMs = 20_000,
     maxCaptionBytes = 5 * 1024 * 1024,
     retries = 1,
+    gatewayRetries,
     retryDelayMs = 250,
     sleepImpl = wait,
     audioExtractor = extractMp4Audio,
@@ -544,9 +595,15 @@ export class TranscriptionService {
     this.openAiUrl = openAiUrl;
     this.gatewayUrl = gatewayUrl;
     this.timeoutMs = timeoutMs;
+    // Preserve enough of the 300-second Function budget for the credential-free
+    // local fallback when hosted Gateway access is slow or unavailable.
+    this.gatewayTimeoutMs = gatewayTimeoutMs ?? (typeof localAsr === "function" ? 10_000 : timeoutMs);
     this.captionTimeoutMs = captionTimeoutMs;
     this.maxCaptionBytes = maxCaptionBytes;
     this.retries = Math.max(0, Math.floor(retries));
+    this.gatewayRetries = Math.max(0, Math.floor(
+      gatewayRetries ?? (typeof localAsr === "function" ? 0 : this.retries)
+    ));
     this.retryDelayMs = Math.max(0, retryDelayMs);
     this.sleepImpl = sleepImpl;
     this.audioExtractor = audioExtractor;
@@ -726,9 +783,9 @@ export class TranscriptionService {
       const model = gateway.transcriptionModel(gatewayModel);
       let result;
       let lastError;
-      for (let attempt = 0; attempt <= this.retries; attempt += 1) {
+      for (let attempt = 0; attempt <= this.gatewayRetries; attempt += 1) {
         const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), this.timeoutMs);
+        const timer = setTimeout(() => controller.abort(), this.gatewayTimeoutMs);
         try {
           result = await model.doGenerate({
             audio: media.bytes,
@@ -742,7 +799,7 @@ export class TranscriptionService {
         } catch (error) {
           lastError = error;
           const status = providerHttpStatus(error);
-          if (attempt < this.retries && (status === null || TRANSIENT_HTTP_STATUS.has(status))) {
+          if (attempt < this.gatewayRetries && (status === null || TRANSIENT_HTTP_STATUS.has(status))) {
             await this.sleepImpl(this.retryDelayMs * (attempt + 1));
             continue;
           }
@@ -903,11 +960,15 @@ export class TranscriptionService {
         const result = normalizedResult(local, {
           method: "local_asr",
           limitations: inheritedLimitations,
-          source: { type: "asr", provider: "local", media: transcriptionMedia.source }
+          source: localAsrSource(local, transcriptionMedia.source)
         });
         if (result) return attachMediaResolution(result, mediaResolution);
         attempts.push({ method: "local_asr", code: "ASR_EMPTY_RESULT" });
       } catch (error) {
+        // Queue saturation is an operational backpressure signal. Preserve it
+        // so a caller can retry instead of hiding it inside a generic provider
+        // exhaustion error.
+        if (error instanceof ReaderError && error.code === "LOCAL_ASR_BUSY") throw error;
         attempts.push(safeAttempt("local_asr", error));
       }
     }

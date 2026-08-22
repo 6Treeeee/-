@@ -11,6 +11,8 @@ preserved.
 | `puppeteer-core` | 25.7.0 | Apache-2.0 | Ordinary logged-out browser automation |
 | `@sparticuz/chromium` | 149.0.0 | MIT | Serverless Chromium runtime |
 | `mp4box` | 2.4.1 | BSD-3-Clause | AAC remux from public MP4 into audio-only MP4 |
+| `whisper.cpp` | b4938 (`371b5a7`) | MIT | Local CPU speech-to-text engine |
+| OpenAI Whisper multilingual base q5_1 weights | revision `5359861` | MIT | Local speech-to-text model |
 
 The Apache-2.0 packages are distributed under the Apache License, Version 2.0.
 You may obtain a copy at <https://www.apache.org/licenses/LICENSE-2.0>.
@@ -70,6 +72,21 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
 ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+## whisper.cpp engine and OpenAI Whisper model — MIT
+
+The local engine is rebuilt from the pinned `whisper.cpp` release `b4938`,
+commit `371b5a7561823ab2bb32142d2751e35e7534727b`, with OpenMP disabled so the
+runtime does not depend on an unbundled `libgomp.so.1`. The multilingual
+`ggml-base-q5_1.bin` model is pinned to repository revision
+`5359861c739e955e79d9a303bcbc70fb988958b1`. Exact source URLs, sizes, and
+SHA-256 hashes and reproducible build flags are recorded in
+`assets/whisper/ASSET_MANIFEST.json`.
+
+Both are distributed under the MIT License. Complete license copies are
+included as `assets/whisper/LICENSE-whisper.cpp` and
+`assets/whisper/LICENSE-OpenAI-Whisper` and must remain with redistributed
+assets. No engine or model is downloaded at request time.
 
 ## Research references
 
