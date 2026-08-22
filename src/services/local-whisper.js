@@ -28,8 +28,12 @@ const MODEL_FILE = "ggml-base-q5_1.bin";
 const MODEL_SHA256 = "422f1ae452ade6f30a004d7e5c6a43195e4433bc370bf23fac9cc591f01a8898";
 const MODEL_NAME = "whisper-base-q5_1-multilingual";
 const DEFAULT_MAX_INPUT_BYTES = 25 * 1024 * 1024;
-const DEFAULT_MAX_DURATION_MS = 180_000;
-const DEFAULT_TIMEOUT_MS = 220_000;
+// The pinned CLI already processes complete inputs through internal 30-second
+// Whisper windows. Keep one process/model load for bounded long videos instead
+// of spawning application-level chunks, which would consume the same CPU while
+// repeatedly loading the model inside the Function deadline.
+const DEFAULT_MAX_DURATION_MS = 280_000;
+const DEFAULT_TIMEOUT_MS = 280_000;
 const DEFAULT_THREADS = Math.max(1, Math.min(2, availableParallelism()));
 const DEFAULT_RESPONSE_RESERVE_MS = 5_000;
 const DEFAULT_QUEUE_WAIT_MS = 20_000;
@@ -92,8 +96,7 @@ function canonicalMediaType(value) {
 function durationMs(video) {
   const millisecondCandidates = [
     video?.media?.duration_ms,
-    video?.duration_ms,
-    video?.music?.duration_ms
+    video?.duration_ms
   ];
   for (const value of millisecondCandidates) {
     const number = Number(value);
@@ -106,6 +109,10 @@ function durationMs(video) {
     // Raw Douyin video.duration values are milliseconds; small generic values
     // are commonly seconds. Normalized inputs always use media.duration_ms.
     return number >= 1_000 ? Math.round(number) : Math.round(number * 1000);
+  }
+  const musicMilliseconds = Number(video?.music?.duration_ms);
+  if (Number.isFinite(musicMilliseconds) && musicMilliseconds > 0) {
+    return Math.round(musicMilliseconds);
   }
   return null;
 }
@@ -339,7 +346,7 @@ async function defaultProbeImpl({ runtime, timeoutMs }) {
   });
 }
 
-async function defaultRunImpl({ runtime, bytes, extension, timeoutMs, threads }) {
+async function defaultRunImpl({ runtime, bytes, extension, durationMs: boundedDurationMs, timeoutMs, threads }) {
   const jobRoot = join(tmpdir(), `content-reader-asr-${randomUUID()}`);
   const inputPath = join(jobRoot, `input${extension}`);
   const outputPrefix = join(jobRoot, "result");
@@ -353,6 +360,9 @@ async function defaultRunImpl({ runtime, bytes, extension, timeoutMs, threads })
         "-m", runtime.modelPath,
         "-f", inputPath,
         "-l", "auto",
+        // The pinned b4938 CLI accepts millisecond duration windows. Bound the
+        // actual decoded input as well as trusting the public page metadata.
+        "-d", String(boundedDurationMs),
         "-t", String(threads),
         "-ng",
         "-ojf",
@@ -681,6 +691,7 @@ export class LocalWhisperAsr {
       let preparedBytes = input;
       let extension = SAFE_INPUT_TYPES.get(canonicalMediaType(mediaType));
       let audioPreprocessing = null;
+      let boundedDurationMs = duration;
       if (!extension && DECODE_INPUT_TYPES.has(canonicalMediaType(mediaType))) {
         const decoded = await this.audioDecoder.decode(input);
         if (decoded.durationMs > this.maxDurationMs + 2_000) {
@@ -696,6 +707,7 @@ export class LocalWhisperAsr {
         preparedBytes = binaryInput(decoded.bytes);
         extension = ".wav";
         audioPreprocessing = decoderDiagnostic(decoded);
+        boundedDurationMs = Math.min(this.maxDurationMs, Math.max(duration, decoded.durationMs));
       }
       if (!extension) {
         throw new ReaderError(
@@ -727,6 +739,7 @@ export class LocalWhisperAsr {
         runtime,
         bytes: preparedBytes,
         extension,
+        durationMs: boundedDurationMs,
         timeoutMs: Math.min(this.timeoutMs, remainingMs),
         threads: this.threads
       });

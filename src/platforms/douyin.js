@@ -448,7 +448,7 @@ export class DouyinReader {
         }))
       : [];
     let processingPolicy = null;
-    if (this.processContent && !raw.content_preprocessed) {
+    if (this.processContent && !raw.content_preprocessed && posts.length > 0) {
       const processed = await this.processor.processProfile(posts, {
         refreshVideo: async (awemeId) => {
           const canonicalUrl = `https://www.douyin.com/video/${awemeId}`;
@@ -468,8 +468,12 @@ export class DouyinReader {
       processingPolicy = processed.policy ?? null;
     }
 
-    const processingPerformed = Boolean(raw.content_preprocessed || this.processContent);
-    const attemptedPosts = processingPerformed ? posts.length : 0;
+    const processingEnabled = Boolean(raw.content_preprocessed || this.processContent);
+    const attemptedPosts = processingEnabled ? posts.length : 0;
+    // An enabled processor did not actually process content when the public
+    // unauthenticated boundary exposed no posts. Keep access-scope completion
+    // in pagination and report content processing as not attempted.
+    const processingPerformed = processingEnabled && attemptedPosts > 0;
     const successfullyContentRead = processingPerformed
       ? Math.max(0, posts.length - processingFailures.length)
       : 0;

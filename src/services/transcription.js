@@ -22,6 +22,7 @@ const DEFAULT_GATEWAY_MODELS = Object.freeze([
   "openai/gpt-4o-mini-transcribe",
   "openai/whisper-1"
 ]);
+const LONG_MEDIA_LOCAL_PRIORITY_MS = 180_000;
 
 function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -548,6 +549,26 @@ function localAsrSource(result, mediaSource) {
   };
 }
 
+function knownVideoDurationMs(video) {
+  for (const value of [
+    video?.media?.duration_ms,
+    video?.duration_ms
+  ]) {
+    const number = Number(value);
+    if (Number.isFinite(number) && number > 0) return Math.round(number);
+  }
+  for (const value of [video?.duration, video?.video?.duration]) {
+    const number = Number(value);
+    if (!Number.isFinite(number) || number <= 0) continue;
+    return number >= 1_000 ? Math.round(number) : Math.round(number * 1_000);
+  }
+  const musicMilliseconds = Number(video?.music?.duration_ms);
+  if (Number.isFinite(musicMilliseconds) && musicMilliseconds > 0) {
+    return Math.round(musicMilliseconds);
+  }
+  return null;
+}
+
 export class TranscriptionService {
   constructor({
     fetchImpl = globalThis.fetch,
@@ -925,6 +946,45 @@ export class TranscriptionService {
         attempts.push(safeAttempt("audio_extraction", error));
       }
     }
+
+    const attemptLocalAsr = async () => {
+      try {
+        const local = await this.localAsr({
+          bytes: transcriptionMedia.bytes,
+          mediaType: transcriptionMedia.mediaType,
+          video,
+          source: transcriptionMedia.source,
+          deadlineAt: this.requestDeadlineAt
+        });
+        const result = normalizedResult(local, {
+          method: "local_asr",
+          limitations: inheritedLimitations,
+          source: localAsrSource(local, transcriptionMedia.source)
+        });
+        if (result) return attachMediaResolution(result, mediaResolution);
+        attempts.push({ method: "local_asr", code: "ASR_EMPTY_RESULT" });
+      } catch (error) {
+        // Queue saturation is an operational backpressure signal. Preserve it
+        // so a caller can retry instead of hiding it inside a generic provider
+        // exhaustion error.
+        if (error instanceof ReaderError && error.code === "LOCAL_ASR_BUSY") throw error;
+        attempts.push(safeAttempt("local_asr", error));
+      }
+      return null;
+    };
+
+    // A bounded long video leaves too little of the synchronous Function
+    // deadline to spend on hosted models before the credential-free fallback.
+    // Prefer one complete local CLI invocation here; whisper.cpp performs its
+    // own internal windows and preserves timestamps without repeated model
+    // startup. A fast local failure still falls through to hosted providers.
+    const preferLocalForLongMedia = typeof this.localAsr === "function" &&
+      knownVideoDurationMs(video) > LONG_MEDIA_LOCAL_PRIORITY_MS;
+    if (preferLocalForLongMedia) {
+      const local = await attemptLocalAsr();
+      if (local) return local;
+    }
+
     if (this.openAiApiKey) {
       try {
         const result = await this._openAi(transcriptionMedia);
@@ -951,29 +1011,9 @@ export class TranscriptionService {
       }
     }
 
-    if (typeof this.localAsr === "function") {
-      try {
-        const local = await this.localAsr({
-          bytes: transcriptionMedia.bytes,
-          mediaType: transcriptionMedia.mediaType,
-          video,
-          source: transcriptionMedia.source,
-          deadlineAt: this.requestDeadlineAt
-        });
-        const result = normalizedResult(local, {
-          method: "local_asr",
-          limitations: inheritedLimitations,
-          source: localAsrSource(local, transcriptionMedia.source)
-        });
-        if (result) return attachMediaResolution(result, mediaResolution);
-        attempts.push({ method: "local_asr", code: "ASR_EMPTY_RESULT" });
-      } catch (error) {
-        // Queue saturation is an operational backpressure signal. Preserve it
-        // so a caller can retry instead of hiding it inside a generic provider
-        // exhaustion error.
-        if (error instanceof ReaderError && error.code === "LOCAL_ASR_BUSY") throw error;
-        attempts.push(safeAttempt("local_asr", error));
-      }
+    if (!preferLocalForLongMedia && typeof this.localAsr === "function") {
+      const local = await attemptLocalAsr();
+      if (local) return local;
     }
 
     throw new ReaderError("TRANSCRIPTION_UNAVAILABLE", "No configured speech-to-text method produced a transcript.", {

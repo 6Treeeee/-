@@ -14,6 +14,12 @@ const PROFILE_PATH = "/aweme/v1/web/user/profile/other/";
 const PLAY_PATH = "/aweme/v1/play/";
 const LOGIN_REQUIRED_TEXT_PATTERN_SOURCE =
   "请先登录|登录后(?:才可|方可|即可|可)?(?:观看|查看)";
+const PROFILE_POSTS_LOGIN_BOUNDARY_PATTERN_SOURCE =
+  "^(?:登录后查看更多作品|登录后免费畅享高清视频)$";
+const PROFILE_POSTS_LOGIN_BOUNDARY_TEXTS = [
+  "登录后查看更多作品",
+  "登录后免费畅享高清视频"
+];
 const TERMINAL_ACCESS_CODES = new Set([
   "DOUYIN_LOGIN_REQUIRED",
   "DOUYIN_PRIVATE_CONTENT",
@@ -31,6 +37,11 @@ function delay(ms) {
 
 export function detectsLoginRequiredText(value) {
   return new RegExp(LOGIN_REQUIRED_TEXT_PATTERN_SOURCE).test(String(value ?? ""));
+}
+
+export function detectsProfilePostsLoginBoundaryText(value) {
+  return new RegExp(PROFILE_POSTS_LOGIN_BOUNDARY_PATTERN_SOURCE)
+    .test(String(value ?? "").replace(/\s+/g, ""));
 }
 
 function safeUrl(value) {
@@ -265,7 +276,7 @@ function createCapture({ expectedAwemeId = null, expectedSecUserId = null } = {}
 }
 
 async function pageAccessSnapshot(page) {
-  return page.evaluate((loginPatternSource) => {
+  return page.evaluate((patterns) => {
     function visible(element) {
       if (!element) return false;
       const style = window.getComputedStyle(element);
@@ -275,10 +286,14 @@ async function pageAccessSnapshot(page) {
     }
 
     const visibleText = document.body?.innerText ?? "";
-    const explicitMoreGate = [...document.querySelectorAll("body *")].some((element) =>
+    const profileBoundaryElement = [...document.querySelectorAll("body *")].find((element) =>
       element.children.length === 0 && visible(element) &&
-      element.textContent?.trim() === "登录后查看更多作品"
+      new RegExp(patterns.profilePostsBoundary)
+        .test((element.textContent ?? "").replace(/\s+/g, ""))
     );
+    const compactVisibleText = visibleText.replace(/\s+/g, "");
+    const profilePostsBoundaryText = profileBoundaryElement?.textContent?.trim() ??
+      patterns.profilePostsBoundaryTexts.find((text) => compactVisibleText.includes(text)) ?? null;
     const visibleChallengeElement = [
       "#captcha_container",
       "iframe[src*='captcha']",
@@ -287,14 +302,19 @@ async function pageAccessSnapshot(page) {
     ].some((selector) => [...document.querySelectorAll(selector)].some(visible));
 
     return {
-      explicitMoreGate,
+      explicitMoreGate: Boolean(profilePostsBoundaryText),
+      profilePostsBoundaryText,
       securityChallenge: visibleChallengeElement ||
         /安全验证|验证后继续|请完成(?:下列)?验证|拖动.{0,12}滑块/.test(visibleText),
       privateContent: /该账号为私密账号|私密账号.{0,20}作品|私密作品|仅自己可见|作者仅允许/.test(visibleText),
       unavailable: /作品已删除|内容不存在|视频不见了|当前作品不可见|暂时无法观看/.test(visibleText),
-      loginRequired: new RegExp(loginPatternSource).test(visibleText)
+      loginRequired: new RegExp(patterns.loginRequired).test(visibleText)
     };
-  }, LOGIN_REQUIRED_TEXT_PATTERN_SOURCE);
+  }, {
+    loginRequired: LOGIN_REQUIRED_TEXT_PATTERN_SOURCE,
+    profilePostsBoundary: PROFILE_POSTS_LOGIN_BOUNDARY_PATTERN_SOURCE,
+    profilePostsBoundaryTexts: PROFILE_POSTS_LOGIN_BOUNDARY_TEXTS
+  });
 }
 
 async function videoDomSnapshot(page) {
@@ -407,7 +427,7 @@ function fallbackAweme({ awemeId, dom, mediaUrls }) {
 }
 
 async function profileDomSnapshot(page) {
-  return page.evaluate(() => {
+  return page.evaluate((profileBoundaryPatterns) => {
     function visible(element) {
       if (!element) return false;
       const style = window.getComputedStyle(element);
@@ -445,15 +465,20 @@ async function profileDomSnapshot(page) {
     const nickname = title ?? pageTitle?.match(/^(.+?)的抖音/)?.[1] ?? null;
     const description = document.querySelector("meta[name='description']")?.content ?? null;
     const signature = document.querySelector("[data-e2e='user-signature']")?.textContent?.trim() ?? null;
-    const explicitMoreGate = [...document.querySelectorAll("body *")].some((element) =>
+    const profileBoundaryElement = [...document.querySelectorAll("body *")].find((element) =>
       element.children.length === 0 && visible(element) &&
-      element.textContent?.trim() === "登录后查看更多作品"
+      new RegExp(profileBoundaryPatterns.source)
+        .test((element.textContent ?? "").replace(/\s+/g, ""))
     );
+    const compactVisibleText = (document.body?.innerText ?? "").replace(/\s+/g, "");
+    const profilePostsBoundaryText = profileBoundaryElement?.textContent?.trim() ??
+      profileBoundaryPatterns.texts.find((text) => compactVisibleText.includes(text)) ?? null;
 
     return {
       listPresent: Boolean(list),
       links,
-      explicitMoreGate,
+      explicitMoreGate: Boolean(profilePostsBoundaryText),
+      profilePostsBoundaryText,
       pageTitle,
       description,
       creator: {
@@ -463,7 +488,26 @@ async function profileDomSnapshot(page) {
         aweme_count_text: countElement?.textContent?.trim() ?? null
       }
     };
+  }, {
+    source: PROFILE_POSTS_LOGIN_BOUNDARY_PATTERN_SOURCE,
+    texts: PROFILE_POSTS_LOGIN_BOUNDARY_TEXTS
   });
+}
+
+function hasReadableCreatorMetadata(creator) {
+  const meaningfulText = (value) => {
+    const text = String(value ?? "").trim();
+    return Boolean(text) && !detectsLoginRequiredText(text) &&
+      !detectsProfilePostsLoginBoundaryText(text) &&
+      !/^(?:抖音|Douyin|登录)$/i.test(text);
+  };
+  const count = creator?.aweme_count;
+  return meaningfulText(creator?.nickname) || meaningfulText(creator?.signature) ||
+    (count !== null && count !== undefined && Number.isFinite(Number(count)));
+}
+
+function hasReadableProfileMetadata(dom, capturedUser = null) {
+  return hasReadableCreatorMetadata(dom?.creator) || hasReadableCreatorMetadata(capturedUser);
 }
 
 function accessError(access, { hasPublicContent = false } = {}) {
@@ -486,7 +530,7 @@ function accessError(access, { hasPublicContent = false } = {}) {
       details: { provider: PROVIDER, reason: "public_content_unavailable" }
     });
   }
-  if (access.loginRequired && !hasPublicContent) {
+  if ((access.loginRequired || access.explicitMoreGate) && !hasPublicContent) {
     return new ReaderError("DOUYIN_LOGIN_REQUIRED", "Douyin requires login for this content.", {
       status: 422,
       details: { provider: PROVIDER, reason: "login_required" }
@@ -673,8 +717,6 @@ export class DirectPublicWebProvider {
       await delay(this.settleMs);
 
       const access = await pageAccessSnapshot(page);
-      const failure = accessError(access);
-      if (failure) throw failure;
       const pageState = await page.evaluate(() => ({
         url: location.href,
         canonical: document.querySelector("link[rel='canonical']")?.href ?? null
@@ -685,6 +727,12 @@ export class DirectPublicWebProvider {
         })
         .find((value) => contentTypeFromUrl(value) !== "unknown");
       const contentType = contentTypeFromUrl(candidate);
+      const failure = accessError(access, {
+        // Resolution only identifies the public route. readProfile performs
+        // the stricter metadata check before accepting an empty gated feed.
+        hasPublicContent: contentType === "profile" && access.explicitMoreGate
+      });
+      if (failure) throw failure;
       if (!candidate || contentType === "unknown") {
         throw new ReaderError(
           "DOUYIN_PUBLIC_WEB_EMPTY_RESULT",
@@ -838,9 +886,14 @@ export class DirectPublicWebProvider {
           dom = await profileDomSnapshot(page);
           for (const link of dom.links) if (!domLinks.has(link.id)) domLinks.set(link.id, link);
           const access = await pageAccessSnapshot(page);
-          const failure = accessError(access, { hasPublicContent: domLinks.size > 0 });
+          const visibleProfileBoundary = Boolean(dom.explicitMoreGate || access.explicitMoreGate);
+          const capturedProfileUser = capture.state.profilePayloads.map(extractUser).find(Boolean);
+          const failure = accessError(access, {
+            hasPublicContent: domLinks.size > 0 ||
+              (visibleProfileBoundary && hasReadableProfileMetadata(dom, capturedProfileUser))
+          });
           if (failure) throw failure;
-          if (dom.explicitMoreGate || access.explicitMoreGate) break;
+          if (visibleProfileBoundary) break;
 
           const pagination = paginationState(capture.state.postPages);
           if (pagination.exhausted && stableRounds >= 1) break;
@@ -864,6 +917,7 @@ export class DirectPublicWebProvider {
         const access = await pageAccessSnapshot(page);
         const explicitBoundary = Boolean(dom.explicitMoreGate || access.explicitMoreGate);
         const profileUser = capture.state.profilePayloads.map(extractUser).find(Boolean);
+        const readableProfileMetadata = hasReadableProfileMetadata(dom, profileUser);
         const firstAuthor = capture.state.postPages
           .flatMap((pageResult) => pageResult.items)
           .find((item) => item?.author)?.author;
@@ -884,10 +938,12 @@ export class DirectPublicWebProvider {
         });
         const combinedAccess = { ...access };
         mergeSignals(combinedAccess, capture.state.signals);
-        const failure = accessError(combinedAccess, { hasPublicContent: items.length > 0 });
+        const failure = accessError(combinedAccess, {
+          hasPublicContent: items.length > 0 || (explicitBoundary && readableProfileMetadata)
+        });
         if (failure) throw failure;
 
-        if (!dom.listPresent && items.length === 0) {
+        if (!dom.listPresent && items.length === 0 && !readableProfileMetadata) {
           throw new ReaderError(
             "DOUYIN_PUBLIC_WEB_EMPTY_RESULT",
             "The public Douyin page did not yield a readable creator profile.",
@@ -937,10 +993,12 @@ export class DirectPublicWebProvider {
         const displayCount = Number.isFinite(Number(creator.aweme_count))
           ? Number(creator.aweme_count)
           : dom.creator.aweme_count;
+        const boundaryMessage = dom.profilePostsBoundaryText ?? access.profilePostsBoundaryText ??
+          "登录后查看更多作品";
         const limitation = explicitBoundary ? {
           code: "LOGIN_REQUIRED_FOR_MORE_POSTS",
           type: "partial_public_profile",
-          message: "登录后查看更多作品",
+          message: boundaryMessage,
           scope: "public_unauthenticated",
           public_items: items.length,
           displayed_post_count: displayCount,
@@ -958,7 +1016,9 @@ export class DirectPublicWebProvider {
             upstream_exhausted: cursors.exhausted,
             stopped_by_access_boundary: explicitBoundary,
             stop_reason: explicitBoundary
-              ? "login_required_for_more"
+              ? items.length > 0
+                ? "login_required_for_more"
+                : "login_required_for_posts"
               : cursors.exhausted
                 ? "has_more_false"
                 : "browser_dom_stable",

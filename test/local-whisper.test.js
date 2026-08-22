@@ -112,6 +112,36 @@ test("LocalWhisperAsr passes duration-matched public MP3 directly to whisper.cpp
   assert.equal(result.audio_preprocessing, undefined);
 });
 
+test("LocalWhisperAsr keeps a bounded 273-second MP3 in one CLI invocation", async () => {
+  const invocations = [];
+  const engine = new LocalWhisperAsr({
+    platform: "linux",
+    arch: "x64",
+    runtimeProvider: async () => runtime(),
+    runImpl: async (input) => {
+      invocations.push(input);
+      return RAW_RESULT;
+    }
+  });
+
+  const result = await engine.transcribe({
+    bytes: new Uint8Array([1, 2, 3]),
+    mediaType: "audio/mpeg",
+    video: {
+      aweme_id: "7665909560732851961",
+      duration: 273_834,
+      music: { duration_ms: 60_000 }
+    }
+  });
+
+  assert.equal(invocations.length, 1);
+  assert.equal(invocations[0].extension, ".mp3");
+  assert.equal(invocations[0].durationMs, 273_834);
+  assert.equal(invocations[0].timeoutMs, 280_000);
+  assert.equal(result.method, "local_whisper_cpp_base_q5_1");
+  assert.deepEqual(result.segments.map((segment) => segment.start_ms), [0, 2_360]);
+});
+
 test("LocalWhisperAsr caps inference at the request deadline with a response reserve", async () => {
   let invocation;
   const deadlineAt = Date.now() + 20_000;
@@ -172,11 +202,12 @@ test("LocalWhisperAsr decodes AAC MP4 to bounded PCM WAV before inference", asyn
   const result = await engine.transcribe({
     bytes: new Uint8Array([9, 8, 7]),
     mediaType: "audio/mp4",
-    video: { media: { duration_ms: 10_000 } }
+    video: { media: { duration_ms: 9_000 } }
   });
 
   assert.deepEqual([...decoderInput], [9, 8, 7]);
   assert.equal(invocation.extension, ".wav");
+  assert.equal(invocation.durationMs, 10_000);
   assert.deepEqual([...invocation.bytes], [82, 73, 70, 70]);
   assert.equal(result.audio_preprocessing.runtime, "sparticuz_chromium");
   assert.equal(result.audio_preprocessing.duration_ms, 10_000);

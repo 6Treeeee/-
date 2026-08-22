@@ -5,6 +5,7 @@ import { publicError, ReaderError } from "../src/errors.js";
 import { DouyinReader, resolveDouyinUrl } from "../src/platforms/douyin.js";
 import {
   detectsLoginRequiredText,
+  detectsProfilePostsLoginBoundaryText,
   DirectPublicWebProvider
 } from "../src/providers/direct-public-web.js";
 import { paginateTikHubPosts, TikHubProvider } from "../src/providers/tikhub.js";
@@ -376,6 +377,31 @@ test("DirectPublicWebProvider resolves content type in an ordinary public browse
   assert.equal(result.meta.method, "public_unauthenticated_browser_resolution");
 });
 
+test("DirectPublicWebProvider resolves a public profile route before enforcing its post-login boundary", async () => {
+  const profileUrl = "https://www.douyin.com/user/public-gated-user";
+  const fake = fakeBrowserPage({
+    resolutionDom: { url: profileUrl, canonical: profileUrl },
+    access: {
+      explicitMoreGate: true,
+      profilePostsBoundaryText: "登录后免费畅享高清视频",
+      securityChallenge: false,
+      privateContent: false,
+      unavailable: false,
+      loginRequired: true
+    }
+  });
+  const provider = new DirectPublicWebProvider({
+    browserService: fake.browserService,
+    retries: 0,
+    settleMs: 0
+  });
+
+  const result = await provider.resolveContent({ inputUrl: "https://v.douyin.com/public-profile/" });
+
+  assert.equal(result.contentType, "profile");
+  assert.equal(result.finalUrl, profileUrl);
+});
+
 test("DouyinReader uses browser resolution when a short URL remains unknown", async () => {
   let browserResolutionCalls = 0;
   const direct = {
@@ -680,6 +706,101 @@ test("DirectPublicWebProvider records the explicit login-for-more public boundar
   assert.equal(result.limitation.inaccessible_count, 1);
 });
 
+test("a profile-wide login gate preserves visible creator metadata and a zero-post public boundary", async () => {
+  const profileDom = {
+    listPresent: false,
+    links: [],
+    explicitMoreGate: true,
+    profilePostsBoundaryText: "登录后免费畅享高清视频",
+    pageTitle: "南飞的彦（业务看主页）的抖音",
+    description: "南飞的彦（业务看主页）的公开主页",
+    creator: {
+      nickname: "南飞的彦（业务看主页）",
+      signature: null,
+      aweme_count: 27,
+      aweme_count_text: "27"
+    }
+  };
+  const access = {
+    explicitMoreGate: true,
+    profilePostsBoundaryText: "登录后免费畅享高清视频",
+    securityChallenge: false,
+    privateContent: false,
+    unavailable: false,
+    loginRequired: true
+  };
+  const fake = fakeBrowserPage({ profileDom, access });
+  const provider = new DirectPublicWebProvider({
+    browserService: fake.browserService,
+    retries: 0,
+    contentWaitMs: 0,
+    settleMs: 0,
+    maxScrollRounds: 1
+  });
+  const reader = new DouyinReader({ providers: [provider], processContent: false });
+
+  const result = await reader.read({
+    url: "https://www.douyin.com/user/public-gated-user",
+    type: "profile"
+  });
+
+  assert.equal(result.content.creator.display_name, "南飞的彦（业务看主页）");
+  assert.deepEqual(result.content.posts, []);
+  assert.equal(result.content.pagination.complete, true);
+  assert.equal(result.content.pagination.scope, "public_unauthenticated");
+  assert.equal(result.content.pagination.public_access_exhausted, true);
+  assert.equal(result.content.pagination.upstream_exhausted, false);
+  assert.equal(result.content.pagination.stopped_by_access_boundary, true);
+  assert.equal(result.content.pagination.stop_reason, "login_required_for_posts");
+  assert.equal(result.content.pagination.expected_posts, 27);
+  assert.equal(result.content.pagination.unique_posts, 0);
+  assert.equal(result.content.pagination.profile_count_gap, 27);
+  assert.equal(result.content.pagination.count_consistent, false);
+  assert.equal(result.content.limitation.code, "LOGIN_REQUIRED_FOR_MORE_POSTS");
+  assert.equal(result.content.limitation.public_items, 0);
+  assert.equal(result.content.limitation.inaccessible_count, 27);
+  assert.equal(result.content.limitation.message, "登录后免费畅享高清视频");
+});
+
+test("a profile login gate without trustworthy public metadata remains a terminal login boundary", async () => {
+  const fake = fakeBrowserPage({
+    profileDom: {
+      listPresent: false,
+      links: [],
+      explicitMoreGate: true,
+      profilePostsBoundaryText: "登录后免费畅享高清视频",
+      pageTitle: "抖音",
+      description: null,
+      creator: {
+        nickname: null,
+        signature: null,
+        aweme_count: null,
+        aweme_count_text: null
+      }
+    },
+    access: {
+      explicitMoreGate: true,
+      profilePostsBoundaryText: "登录后免费畅享高清视频",
+      securityChallenge: false,
+      privateContent: false,
+      unavailable: false,
+      loginRequired: false
+    }
+  });
+  const provider = new DirectPublicWebProvider({
+    browserService: fake.browserService,
+    retries: 0,
+    contentWaitMs: 0,
+    settleMs: 0,
+    maxScrollRounds: 1
+  });
+
+  await assert.rejects(
+    provider.readProfile({ resolvedUrl: "https://www.douyin.com/user/public-gated-user" }),
+    (error) => error?.code === "DOUYIN_LOGIN_REQUIRED" && error?.status === 422
+  );
+});
+
 test("DirectPublicWebProvider recovers when DOM is readable after navigation timeout", async () => {
   const timeout = new Error("Navigation timeout of 35000 ms exceeded");
   timeout.name = "TimeoutError";
@@ -902,6 +1023,10 @@ test("direct public access detection recognizes login-after-viewing wording", ()
   assert.equal(detectsLoginRequiredText("登录后即可观看完整视频"), true);
   assert.equal(detectsLoginRequiredText("请先登录"), true);
   assert.equal(detectsLoginRequiredText("登录后可获得更多推荐"), false);
+  assert.equal(detectsProfilePostsLoginBoundaryText("登录后查看更多作品"), true);
+  assert.equal(detectsProfilePostsLoginBoundaryText("登录后免费畅享高清视频"), true);
+  assert.equal(detectsProfilePostsLoginBoundaryText("登录后 免费畅享 高清视频"), true);
+  assert.equal(detectsProfilePostsLoginBoundaryText("登录后可获得更多推荐"), false);
 });
 
 test("MediaResolver sends browser-compatible public headers for validation and download", async () => {
