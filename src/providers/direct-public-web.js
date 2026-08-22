@@ -35,6 +35,25 @@ function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+function isExecutionContextRace(error) {
+  return /Execution context was destroyed|Cannot find context with specified id|Inspected target navigated or closed/i
+    .test(String(error?.message ?? ""));
+}
+
+async function evaluateStable(page, operation, argument) {
+  let lastError;
+  for (let attempt = 0; attempt < 4; attempt += 1) {
+    try {
+      return await page.evaluate(operation, argument);
+    } catch (error) {
+      if (!isExecutionContextRace(error)) throw error;
+      lastError = error;
+      if (attempt < 3) await delay(250 * (attempt + 1));
+    }
+  }
+  throw lastError;
+}
+
 export function detectsLoginRequiredText(value) {
   return new RegExp(LOGIN_REQUIRED_TEXT_PATTERN_SOURCE).test(String(value ?? ""));
 }
@@ -276,7 +295,7 @@ function createCapture({ expectedAwemeId = null, expectedSecUserId = null } = {}
 }
 
 async function pageAccessSnapshot(page) {
-  return page.evaluate((patterns) => {
+  return evaluateStable(page, (patterns) => {
     function visible(element) {
       if (!element) return false;
       const style = window.getComputedStyle(element);
@@ -318,7 +337,7 @@ async function pageAccessSnapshot(page) {
 }
 
 async function videoDomSnapshot(page) {
-  return page.evaluate(() => {
+  return evaluateStable(page, () => {
     const media = [];
     for (const element of document.querySelectorAll("video, video source, audio, audio source")) {
       for (const value of [element.currentSrc, element.src, element.getAttribute?.("src")]) {
@@ -427,7 +446,7 @@ function fallbackAweme({ awemeId, dom, mediaUrls }) {
 }
 
 async function profileDomSnapshot(page) {
-  return page.evaluate((profileBoundaryPatterns) => {
+  return evaluateStable(page, (profileBoundaryPatterns) => {
     function visible(element) {
       if (!element) return false;
       const style = window.getComputedStyle(element);
@@ -592,7 +611,7 @@ async function recoverReadableNavigationTimeout(page, error) {
   const current = safeUrl(typeof page.url === "function" ? page.url() : null);
   if (!current || !isDouyinHost(current.host)) return false;
   try {
-    return Boolean(await page.evaluate(() =>
+    return Boolean(await evaluateStable(page, () =>
       Boolean(document.documentElement && document.body)));
   } catch {
     return false;
@@ -717,7 +736,7 @@ export class DirectPublicWebProvider {
       await delay(this.settleMs);
 
       const access = await pageAccessSnapshot(page);
-      const pageState = await page.evaluate(() => ({
+      const pageState = await evaluateStable(page, () => ({
         url: location.href,
         canonical: document.querySelector("link[rel='canonical']")?.href ?? null
       }));
@@ -902,7 +921,7 @@ export class DirectPublicWebProvider {
           previousCount = domLinks.size;
 
           if (stableRounds >= this.stableScrollRounds && Date.now() >= deadline) break;
-          await page.evaluate(() => {
+          await evaluateStable(page, () => {
             const list = document.querySelector("[data-e2e='user-post-list']");
             const last = list?.querySelector("a[href]:last-of-type");
             if (last) last.scrollIntoView({ block: "end" });

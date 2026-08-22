@@ -129,11 +129,13 @@ function fakeBrowserPage({
   resolutionDom = null,
   access = null,
   gotoError = null,
+  evaluateErrors = [],
   currentUrl = "https://www.douyin.com/"
 }) {
   const responseListeners = new Set();
   let listenerAttachedBeforeNavigation = false;
   let navigatedTo = null;
+  const pendingEvaluateErrors = [...evaluateErrors];
   const safeAccess = access ?? {
     explicitMoreGate: false,
     securityChallenge: false,
@@ -162,6 +164,7 @@ function fakeBrowserPage({
       return currentUrl;
     },
     async evaluate(operation) {
+      if (pendingEvaluateErrors.length) throw pendingEvaluateErrors.shift();
       const source = operation.toString();
       if (source.includes("document.documentElement && document.body")) return true;
       if (source.includes("durationSeconds")) {
@@ -472,6 +475,42 @@ test("DirectPublicWebProvider returns captured public video metadata and media",
   assert.equal(result.meta.method, "public_unauthenticated_browser");
   assert.equal(result.meta.attempts, 1);
   assert.equal(fake.listenerWasAttached(), true);
+});
+
+test("DirectPublicWebProvider survives a transient execution-context navigation race", async () => {
+  const id = "7670118101211453413";
+  const publicMedia = `https://v3-dy-o.douyinvod.com/${id}.mp4`;
+  const contextRace = new Error("Execution context was destroyed, most likely because of a navigation.");
+  const fake = fakeBrowserPage({
+    responses: [
+      jsonResponse(`https://www.douyin.com/aweme/v1/web/aweme/detail/?aweme_id=${id}`, {
+        aweme_detail: aweme(id)
+      }),
+      mediaResponse(publicMedia)
+    ],
+    evaluateErrors: [contextRace],
+    videoDom: {
+      canonical: `https://www.douyin.com/video/${id}`,
+      title: "A public video - 抖音",
+      description: "Public description",
+      media: [publicMedia],
+      durationSeconds: 12,
+      width: 1080,
+      height: 1920,
+      hydration: []
+    }
+  });
+  const provider = new DirectPublicWebProvider({
+    browserService: fake.browserService,
+    retries: 0,
+    contentWaitMs: 0,
+    settleMs: 0
+  });
+
+  const result = await provider.readVideo({ awemeId: id });
+
+  assert.equal(result.aweme.aweme_id, id);
+  assert.equal(result.meta.attempts, 1);
 });
 
 test("DirectPublicWebProvider ignores lookalike API and play responses from non-Douyin hosts", async () => {
