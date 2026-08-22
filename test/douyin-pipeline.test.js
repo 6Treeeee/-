@@ -656,6 +656,27 @@ test("DirectPublicWebProvider recovers when DOM is readable after navigation tim
   assert.equal(result.limitation.code, "LOGIN_REQUIRED_FOR_MORE_POSTS");
 });
 
+test("DirectPublicWebProvider makes a third bounded attempt for transient browser failures", async () => {
+  const provider = new DirectPublicWebProvider({
+    browserService: {},
+    retryDelayMs: 0
+  });
+  let calls = 0;
+
+  const result = await provider.runWithRetry(async () => {
+    calls += 1;
+    if (calls < 3) {
+      throw new ReaderError("DOUYIN_PUBLIC_WEB_TRANSIENT", "Temporary public browser failure.", {
+        status: 502
+      });
+    }
+    return { meta: { provider: "direct_public_web" } };
+  }, "https://www.douyin.com/video/1234567890123456789");
+
+  assert.equal(calls, 3);
+  assert.equal(result.meta.attempts, 3);
+});
+
 test("DirectPublicWebProvider prefers Douyin's resolved public share-profile route", async () => {
   const profileDom = {
     listPresent: true,
@@ -963,7 +984,7 @@ test("TranscriptionService falls back from OpenAI failure to Vercel AI Gateway",
   const result = await service.read({ aweme_id: "gateway-video", captions: { tracks: [] } });
 
   assert.equal(result.status, "complete");
-  assert.equal(result.method, "vercel_ai_gateway_openai_whisper_1");
+  assert.equal(result.method, "vercel_ai_gateway_openai_gpt_4o_mini_transcribe");
   assert.equal(result.source.provider, "vercel_ai_gateway");
   assert.deepEqual(result.segments, [
     { start_ms: 0, end_ms: 1_250, text: "网关转写成功" }
@@ -999,7 +1020,131 @@ test("TranscriptionService identifies Vercel OIDC authentication to AI Gateway",
   assert.doesNotMatch(JSON.stringify(result), /oidc-test-secret/);
 });
 
-test("TranscriptionService reports a non-retryable Gateway denial without leaking its body", async () => {
+test("TranscriptionService falls back between current Gateway transcription models", async () => {
+  const models = [];
+  const service = new TranscriptionService({
+    retries: 0,
+    openAiApiKey: null,
+    aiGatewayApiKey: "gateway-model-fallback-secret",
+    vercelOidcToken: null,
+    gatewayFactory: ({ apiKey }) => {
+      assert.equal(apiKey, "gateway-model-fallback-secret");
+      return {
+        transcriptionModel(modelId) {
+          models.push(modelId);
+          return {
+            async doGenerate() {
+              if (modelId === "openai/gpt-4o-mini-transcribe") {
+                const error = new Error("provider body token=must-not-leak");
+                error.statusCode = 403;
+                error.type = "forbidden";
+                error.ruleId = "model-access-policy";
+                error.responseBody = '{"token":"must-not-leak"}';
+                throw error;
+              }
+              return {
+                text: "后备模型转写成功",
+                language: "zh",
+                segments: [{ startSecond: 0, endSecond: 1.5, text: "后备模型转写成功" }]
+              };
+            }
+          };
+        }
+      };
+    }
+  });
+
+  const result = await service._gateway({
+    bytes: new Uint8Array([1, 2, 3]),
+    mediaType: "audio/mpeg",
+    source: { host: "media.example.test", url_hash: "safe" }
+  });
+
+  assert.deepEqual(models, ["openai/gpt-4o-mini-transcribe", "openai/whisper-1"]);
+  assert.equal(result.method, "vercel_ai_gateway_openai_whisper_1");
+  assert.equal(result.source.model, "openai/whisper-1");
+  assert.deepEqual(result.source.model_attempts, [{
+    model: "openai/gpt-4o-mini-transcribe",
+    code: "ASR_PROVIDER_ERROR",
+    http_status: 403,
+    error_type: "forbidden",
+    rule_id: "model-access-policy"
+  }]);
+  assert.doesNotMatch(JSON.stringify(result), /gateway-model-fallback-secret|must-not-leak|responseBody/);
+});
+
+test("TranscriptionService exposes only safe per-model Gateway failure diagnostics", async () => {
+  const service = new TranscriptionService({
+    retries: 0,
+    openAiApiKey: null,
+    aiGatewayApiKey: "gateway-all-fail-secret",
+    vercelOidcToken: null,
+    mediaResolver: {
+      async resolve() {
+        return { url: "https://media.example.test/audio.mp3", kind: "audio", mediaType: "audio/mpeg" };
+      },
+      async fetch() {
+        return {
+          bytes: new Uint8Array([1, 2, 3]),
+          mediaType: "audio/mpeg",
+          source: { host: "media.example.test", url_hash: "safe" }
+        };
+      }
+    },
+    gatewayFactory: () => ({
+      transcriptionModel(modelId) {
+        return {
+          async doGenerate() {
+            const error = new Error(`secret provider message for ${modelId}`);
+            error.statusCode = modelId.includes("mini") ? 403 : 404;
+            error.type = modelId.includes("mini") ? "forbidden" : "model_not_found";
+            if (modelId.includes("mini")) error.ruleId = "blocked-model-rule";
+            error.responseBody = JSON.stringify({
+              error: { type: "body-secret", message: "body-token" },
+              authorization: "Bearer response-authorization-secret"
+            });
+            error.requestBodyValues = { token: "request-token" };
+            throw error;
+          }
+        };
+      }
+    })
+  });
+
+  await assert.rejects(
+    service.read({ aweme_id: "gateway-all-fail", captions: { tracks: [] } }),
+    (error) => {
+      assert.equal(error.code, "TRANSCRIPTION_UNAVAILABLE");
+      assert.deepEqual(error.details.attempts, [{
+        method: "vercel_ai_gateway",
+        code: "ASR_PROVIDER_ERROR",
+        http_status: 404,
+        model_attempts: [
+          {
+            model: "openai/gpt-4o-mini-transcribe",
+            code: "ASR_PROVIDER_ERROR",
+            http_status: 403,
+            error_type: "forbidden",
+            rule_id: "blocked-model-rule"
+          },
+          {
+            model: "openai/whisper-1",
+            code: "ASR_PROVIDER_ERROR",
+            http_status: 404,
+            error_type: "model_not_found"
+          }
+        ]
+      }]);
+      assert.doesNotMatch(
+        JSON.stringify(error),
+        /gateway-all-fail-secret|secret provider message|body-secret|body-token|response-authorization-secret|request-token|responseBody|requestBodyValues/
+      );
+      return true;
+    }
+  );
+});
+
+test("TranscriptionService extracts only allowlisted diagnostics from the SDK access_denied body", async () => {
   let calls = 0;
   const service = new TranscriptionService({
     retries: 2,
@@ -1007,13 +1152,19 @@ test("TranscriptionService reports a non-retryable Gateway denial without leakin
     openAiApiKey: null,
     aiGatewayApiKey: "gateway-test-secret",
     vercelOidcToken: null,
+    gatewayModel: "openai/whisper-1",
     fetchImpl: async () => {
       calls += 1;
       return Response.json({
         error: {
-          type: "forbidden",
-          message: "account secret detail that must not be exposed"
-        }
+          type: "access_denied",
+          message: "account secret detail that must not be exposed",
+          param: {
+            ruleId: "team-entitlement-policy",
+            token: "nested-body-secret"
+          }
+        },
+        authorization: "Bearer outer-body-secret"
       }, { status: 403 });
     }
   });
@@ -1026,8 +1177,21 @@ test("TranscriptionService reports a non-retryable Gateway denial without leakin
     }),
     (error) => {
       assert.equal(error.code, "ASR_PROVIDER_ERROR");
-      assert.deepEqual(error.details, { provider: "vercel_ai_gateway", http_status: 403 });
-      assert.doesNotMatch(JSON.stringify(error), /gateway-test-secret|account secret detail/);
+      assert.deepEqual(error.details, {
+        provider: "vercel_ai_gateway",
+        http_status: 403,
+        model_attempts: [{
+          model: "openai/whisper-1",
+          code: "ASR_PROVIDER_ERROR",
+          http_status: 403,
+          error_type: "access_denied",
+          rule_id: "team-entitlement-policy"
+        }]
+      });
+      assert.doesNotMatch(
+        JSON.stringify(error),
+        /gateway-test-secret|account secret detail|nested-body-secret|outer-body-secret|responseBody/
+      );
       return true;
     }
   );

@@ -602,7 +602,7 @@ function mergeProfileItems({ postPages, domLinks, creator, visibleBoundary }) {
 export class DirectPublicWebProvider {
   constructor({
     browserService,
-    retries = 1,
+    retries = 2,
     retryDelayMs = 350,
     contentWaitMs = 22_000,
     settleMs = 700,

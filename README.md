@@ -19,7 +19,8 @@ public Douyin URL
   -> stable aweme_id + normalized metadata
   -> current media validation / refresh
   -> public captions, when real tracks exist
-  -> otherwise ASR (OpenAI -> Vercel AI Gateway -> injected local ASR)
+  -> otherwise ASR (OpenAI -> Vercel AI Gateway
+     [openai/gpt-4o-mini-transcribe -> openai/whisper-1] -> injected local ASR)
   -> timestamped readable content
   -> failure-isolated creator analysis
 ```

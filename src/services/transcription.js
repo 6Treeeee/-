@@ -6,6 +6,22 @@ import { MediaResolver, safeMediaDiagnostic } from "./media.js";
 import { isTerminalAccessError } from "./provider-chain.js";
 
 const TRANSIENT_HTTP_STATUS = new Set([408, 409, 425, 429, 500, 502, 503, 504]);
+const SAFE_GATEWAY_ERROR_TYPES = new Set([
+  "access_denied",
+  "authentication_error",
+  "failed_dependency",
+  "forbidden",
+  "internal_server_error",
+  "invalid_request_error",
+  "model_not_found",
+  "not_found",
+  "rate_limit_exceeded",
+  "response_error"
+]);
+const DEFAULT_GATEWAY_MODELS = Object.freeze([
+  "openai/gpt-4o-mini-transcribe",
+  "openai/whisper-1"
+]);
 
 function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -287,6 +303,82 @@ function providerHttpStatus(error) {
   return values.map(Number).find(Number.isFinite) ?? null;
 }
 
+function safeDiagnosticIdentifier(value) {
+  if (typeof value !== "string" && typeof value !== "number") return null;
+  const text = String(value).trim();
+  if (!text || text.length > 128 || !/^[a-z0-9][a-z0-9._:/-]*$/i.test(text)) return "[redacted]";
+  return text;
+}
+
+function gatewayResponseBodyDiagnostic(responseBody) {
+  // The SDK preserves unknown Gateway error types (notably access_denied) only
+  // inside its cause.responseBody. Parse a deliberately small JSON body and
+  // copy two allowlisted identifiers; never retain the body, message, headers,
+  // provider payload, or any other field.
+  if (typeof responseBody !== "string" || responseBody.length > 8_192) return null;
+  let parsed;
+  try {
+    parsed = JSON.parse(responseBody);
+  } catch {
+    return null;
+  }
+  const providerError = parsed?.error;
+  if (!providerError || typeof providerError !== "object") return null;
+  const errorType = safeDiagnosticIdentifier(providerError.type);
+  const ruleId = safeDiagnosticIdentifier(
+    providerError?.param?.ruleId ?? providerError?.param?.rule_id ?? providerError.ruleId ?? providerError.rule_id
+  );
+  return {
+    ...(errorType && SAFE_GATEWAY_ERROR_TYPES.has(errorType) ? { error_type: errorType } : {}),
+    ...(ruleId ? { rule_id: ruleId } : {})
+  };
+}
+
+function gatewayErrorDiagnostic(error, model) {
+  const code = isAbortError(error) ? "ASR_TIMEOUT" : "ASR_PROVIDER_ERROR";
+  const diagnostic = { model, code };
+  const status = providerHttpStatus(error);
+  if (Number.isFinite(status)) diagnostic.http_status = status;
+
+  const visited = new Set();
+  let current = error;
+  for (let depth = 0; current && typeof current === "object" && depth < 4; depth += 1) {
+    if (visited.has(current)) break;
+    visited.add(current);
+    if (diagnostic.error_type === undefined) {
+      const errorType = safeDiagnosticIdentifier(current.type);
+      if (errorType && SAFE_GATEWAY_ERROR_TYPES.has(errorType)) diagnostic.error_type = errorType;
+    }
+    if (diagnostic.rule_id === undefined) {
+      const ruleId = safeDiagnosticIdentifier(current.ruleId ?? current.rule_id);
+      if (ruleId) diagnostic.rule_id = ruleId;
+    }
+    const responseDiagnostic = gatewayResponseBodyDiagnostic(current.responseBody);
+    // A parsed server type is more authoritative than the SDK's fallback
+    // classification (unknown access_denied currently becomes
+    // internal_server_error in @ai-sdk/gateway 4.x).
+    if (responseDiagnostic?.error_type) diagnostic.error_type = responseDiagnostic.error_type;
+    if (responseDiagnostic?.rule_id) diagnostic.rule_id = responseDiagnostic.rule_id;
+    current = current.cause;
+  }
+  return diagnostic;
+}
+
+function gatewayModelList(gatewayModels, gatewayModel) {
+  const configured = gatewayModels !== undefined
+    ? (Array.isArray(gatewayModels) ? gatewayModels : [gatewayModels])
+    : gatewayModel !== undefined
+      ? [gatewayModel]
+      : DEFAULT_GATEWAY_MODELS;
+  const models = [];
+  for (const value of configured) {
+    const model = safeDiagnosticIdentifier(value);
+    if (!model || model === "[redacted]" || models.includes(model)) continue;
+    models.push(model);
+  }
+  return models.length ? models : [...DEFAULT_GATEWAY_MODELS];
+}
+
 function isAbortError(error) {
   return error?.name === "AbortError" || error?.cause?.name === "AbortError";
 }
@@ -338,6 +430,9 @@ function safeAttempt(method, error) {
     code: error instanceof ReaderError ? error.code : "TRANSCRIPTION_PROVIDER_ERROR",
     ...(Number.isFinite(error?.details?.http_status)
       ? { http_status: error.details.http_status }
+      : {}),
+    ...(Array.isArray(error?.details?.model_attempts)
+      ? { model_attempts: error.details.model_attempts }
       : {})
   };
 }
@@ -417,7 +512,8 @@ export class TranscriptionService {
     vercelOidcToken = process.env.VERCEL_OIDC_TOKEN,
     oidcToken,
     openAiModel = "whisper-1",
-    gatewayModel = "openai/whisper-1",
+    gatewayModel,
+    gatewayModels,
     openAiUrl = "https://api.openai.com/v1/audio/transcriptions",
     gatewayUrl = "https://ai-gateway.vercel.sh/v4/ai/transcription-model",
     timeoutMs = 120_000,
@@ -441,7 +537,10 @@ export class TranscriptionService {
     this.aiGatewayApiKey = gatewayApiKey ?? aiGatewayApiKey;
     this.vercelOidcToken = oidcToken ?? vercelOidcToken;
     this.openAiModel = openAiModel;
-    this.gatewayModel = gatewayModel;
+    this.gatewayModels = gatewayModelList(gatewayModels, gatewayModel);
+    // Keep the singular property for callers that inspect the configured
+    // primary model; Gateway execution itself uses the ordered model list.
+    this.gatewayModel = this.gatewayModels[0];
     this.openAiUrl = openAiUrl;
     this.gatewayUrl = gatewayUrl;
     this.timeoutMs = timeoutMs;
@@ -622,54 +721,67 @@ export class TranscriptionService {
       // preserve that distinction for Gateway policy and diagnostics.
       headers: { "ai-gateway-auth-method": authMethod }
     });
-    const model = gateway.transcriptionModel(this.gatewayModel);
-    let result;
-    let lastError;
-    for (let attempt = 0; attempt <= this.retries; attempt += 1) {
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), this.timeoutMs);
-      try {
-        result = await model.doGenerate({
-          audio: media.bytes,
-          mediaType: media.mediaType,
-          providerOptions: {},
-          headers: {},
-          abortSignal: controller.signal
-        });
-        lastError = null;
-        break;
-      } catch (error) {
-        lastError = error;
-        const status = providerHttpStatus(error);
-        if (attempt < this.retries && (status === null || TRANSIENT_HTTP_STATUS.has(status))) {
-          await this.sleepImpl(this.retryDelayMs * (attempt + 1));
-          continue;
+    const modelAttempts = [];
+    for (const gatewayModel of this.gatewayModels) {
+      const model = gateway.transcriptionModel(gatewayModel);
+      let result;
+      let lastError;
+      for (let attempt = 0; attempt <= this.retries; attempt += 1) {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), this.timeoutMs);
+        try {
+          result = await model.doGenerate({
+            audio: media.bytes,
+            mediaType: media.mediaType,
+            providerOptions: {},
+            headers: {},
+            abortSignal: controller.signal
+          });
+          lastError = null;
+          break;
+        } catch (error) {
+          lastError = error;
+          const status = providerHttpStatus(error);
+          if (attempt < this.retries && (status === null || TRANSIENT_HTTP_STATUS.has(status))) {
+            await this.sleepImpl(this.retryDelayMs * (attempt + 1));
+            continue;
+          }
+          break;
+        } finally {
+          clearTimeout(timer);
         }
-        break;
-      } finally {
-        clearTimeout(timer);
       }
+
+      if (lastError) {
+        modelAttempts.push(gatewayErrorDiagnostic(lastError, gatewayModel));
+        continue;
+      }
+
+      const normalized = normalizedResult(result, {
+        method: `vercel_ai_gateway_${gatewayModel.replace(/[^a-z0-9]+/gi, "_").toLowerCase()}`,
+        limitations: ["provider_confidence_not_provided"],
+        source: {
+          type: "asr",
+          provider: "vercel_ai_gateway",
+          model: gatewayModel,
+          ...(modelAttempts.length ? { model_attempts: modelAttempts } : {}),
+          media: media.source
+        }
+      });
+      if (normalized) return normalized;
+      modelAttempts.push({ model: gatewayModel, code: "ASR_EMPTY_RESULT" });
     }
-    if (lastError) {
-      const status = providerHttpStatus(lastError);
-      throw providerError(
-        isAbortError(lastError) ? "ASR_TIMEOUT" : "ASR_PROVIDER_ERROR",
-        isAbortError(lastError)
-          ? "The speech-to-text provider timed out."
-          : "The speech-to-text provider rejected the request.",
-        "vercel_ai_gateway",
-        status,
-        lastError
-      );
-    }
-    return normalizedResult(result, {
-      method: `vercel_ai_gateway_${this.gatewayModel.replace(/[^a-z0-9]+/gi, "_").toLowerCase()}`,
-      limitations: ["provider_confidence_not_provided"],
-      source: {
-        type: "asr",
+
+    const lastStatus = [...modelAttempts]
+      .reverse()
+      .map((attempt) => Number(attempt.http_status))
+      .find(Number.isFinite);
+    throw new ReaderError("ASR_PROVIDER_ERROR", "The speech-to-text provider rejected the request.", {
+      status: 502,
+      details: {
         provider: "vercel_ai_gateway",
-        model: this.gatewayModel,
-        media: media.source
+        ...(Number.isFinite(lastStatus) ? { http_status: lastStatus } : {}),
+        model_attempts: modelAttempts
       }
     });
   }
