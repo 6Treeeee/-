@@ -1,9 +1,11 @@
 commit=371b5a7561823ab2bb32142d2751e35e7534727b
 release=b4938
 archive=whisper-bin-ubuntu-x64-b4938-no-openmp.tar.gz
-archive_bytes=7066834
-archive_sha256=1ad3035ed13b446ed0d51f8794b164f4841ff1e156cba451399145f80286fe12
-cli_sha256=d9c3fcf6f67e1f631ef0e44388b166ed4b3c5fb87ad1e1617e93ff6dd79acbb3
+archive_bytes=6324441
+archive_sha256=5b016d00d2f845c582b63cedefd4d5f881a29f94c546087d306e717758215d16
+cli_sha256=9892707815b8063b02bc7def10ea8393487069a1bb10ef1bb174abd878553d34
+runtime_base=amazonlinux:2023
+maximum_glibc=GLIBC_2.34
 GGML_NATIVE=OFF
 GGML_BACKEND_DL=ON
 GGML_CPU_ALL_VARIANTS=ON
