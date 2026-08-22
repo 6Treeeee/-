@@ -1,7 +1,7 @@
 import { getVercelOidcToken } from "@vercel/oidc";
 
 import { readPublicContent, serviceDescription } from "../src/content-reader.js";
-import { publicError } from "../src/errors.js";
+import { publicError, ReaderError } from "../src/errors.js";
 import { createLocalWhisperAsr } from "../src/services/local-whisper.js";
 
 export const config = {
@@ -12,6 +12,26 @@ export const config = {
 // use. One instance also enforces one CPU transcription at a time per warm
 // Function process.
 const localWhisper = createLocalWhisperAsr();
+
+export function withRequestDeadline(operation, deadlineAt) {
+  const remainingMs = Math.floor(Number(deadlineAt) - Date.now());
+  if (!Number.isFinite(remainingMs) || remainingMs <= 0) {
+    return Promise.reject(new ReaderError(
+      "REQUEST_DEADLINE_EXCEEDED",
+      "The bounded content-reading request ran out of time.",
+      { status: 503, details: { stage: "request" } }
+    ));
+  }
+  let timer;
+  const deadline = new Promise((_, reject) => {
+    timer = setTimeout(() => reject(new ReaderError(
+      "REQUEST_DEADLINE_EXCEEDED",
+      "The bounded content-reading request ran out of time.",
+      { status: 503, details: { stage: "request" } }
+    )), remainingMs);
+  });
+  return Promise.race([operation, deadline]).finally(() => clearTimeout(timer));
+}
 
 function setCommonHeaders(res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -74,6 +94,11 @@ export default async function handler(req, res) {
 
   const input = requestInput(req);
   const id = requestId(req);
+  const startedAt = Date.now();
+  // Asset hashing/extraction and the CLI startup probe share the same cached
+  // runtime promise used by transcription. Start them concurrently with public
+  // retrieval on cold requests instead of paying both cold starts serially.
+  if (input.url && localWhisper.available) void localWhisper.status();
   // Vercel Functions deliver OIDC through the per-request context header, so
   // this must be resolved inside the handler rather than at module load time.
   const gatewayAuth = await resolveRuntimeGatewayAuth();
@@ -94,18 +119,18 @@ export default async function handler(req, res) {
     });
   }
 
-  const startedAt = Date.now();
-
   try {
-    const result = await readPublicContent(input, {
+    const requestDeadlineAt = startedAt + 285_000;
+    const result = await withRequestDeadline(readPublicContent(input, {
       apiKey: process.env.TIKHUB_API_KEY,
       fetchImpl: globalThis.fetch,
       requestId: id,
       openAiApiKey: process.env.OPENAI_API_KEY,
       aiGatewayApiKey: gatewayAuth.aiGatewayApiKey,
       vercelOidcToken: gatewayAuth.vercelOidcToken,
-      localAsr: localWhisper.available ? localWhisper.transcribe : null
-    });
+      localAsr: localWhisper.available ? localWhisper.transcribe : null,
+      requestDeadlineAt
+    }), requestDeadlineAt);
 
     console.info(JSON.stringify({
       event: "content_reader.completed",

@@ -89,6 +89,7 @@ test("LocalWhisperAsr passes duration-matched public MP3 directly to whisper.cpp
   const engine = new LocalWhisperAsr({
     platform: "linux",
     arch: "x64",
+    threads: 2,
     runtimeProvider: async () => runtime(),
     runImpl: async (input) => {
       invocation = input;
@@ -105,9 +106,37 @@ test("LocalWhisperAsr passes duration-matched public MP3 directly to whisper.cpp
 
   assert.equal(decoded, 0);
   assert.equal(invocation.extension, ".mp3");
+  assert.equal(invocation.threads, 2);
   assert.deepEqual([...invocation.bytes], [1, 2, 3]);
   assert.equal(result.language, "zh");
   assert.equal(result.audio_preprocessing, undefined);
+});
+
+test("LocalWhisperAsr caps inference at the request deadline with a response reserve", async () => {
+  let invocation;
+  const deadlineAt = Date.now() + 20_000;
+  const engine = new LocalWhisperAsr({
+    platform: "linux",
+    arch: "x64",
+    timeoutMs: 220_000,
+    threads: 2,
+    responseReserveMs: 5_000,
+    runtimeProvider: async () => runtime(),
+    runImpl: async (input) => {
+      invocation = input;
+      return RAW_RESULT;
+    }
+  });
+
+  await engine.transcribe({
+    bytes: new Uint8Array([1]),
+    mediaType: "audio/mpeg",
+    video: { media: { duration_ms: 1_000 } },
+    deadlineAt
+  });
+
+  assert.ok(invocation.timeoutMs > 13_000 && invocation.timeoutMs <= 15_000);
+  assert.equal(invocation.threads, 2);
 });
 
 test("LocalWhisperAsr decodes AAC MP4 to bounded PCM WAV before inference", async () => {

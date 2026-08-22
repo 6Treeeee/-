@@ -605,6 +605,8 @@ export class DirectPublicWebProvider {
     retries = 2,
     retryDelayMs = 350,
     contentWaitMs = 22_000,
+    videoContentWaitMs = contentWaitMs,
+    videoNavigationTimeoutMs = null,
     settleMs = 700,
     maxScrollRounds = 30,
     stableScrollRounds = 3
@@ -615,9 +617,19 @@ export class DirectPublicWebProvider {
     this.retries = Math.max(0, retries);
     this.retryDelayMs = retryDelayMs;
     this.contentWaitMs = contentWaitMs;
+    this.videoContentWaitMs = Math.max(0, Number(videoContentWaitMs));
+    this.videoNavigationTimeoutMs = videoNavigationTimeoutMs !== null &&
+      videoNavigationTimeoutMs !== undefined && Number.isFinite(Number(videoNavigationTimeoutMs))
+      ? Math.max(1_000, Number(videoNavigationTimeoutMs))
+      : null;
     this.settleMs = settleMs;
     this.maxScrollRounds = maxScrollRounds;
     this.stableScrollRounds = stableScrollRounds;
+  }
+
+  async prepare() {
+    if (typeof this.browser?.prepare !== "function") return null;
+    return this.browser.prepare();
   }
 
   async runWithRetry(operation, target) {
@@ -703,7 +715,10 @@ export class DirectPublicWebProvider {
       try {
         let navigationResponse;
         try {
-          navigationResponse = await page.goto(selected.target, { waitUntil: "domcontentloaded" });
+          navigationResponse = await page.goto(selected.target, {
+            waitUntil: "domcontentloaded",
+            ...(this.videoNavigationTimeoutMs ? { timeout: this.videoNavigationTimeoutMs } : {})
+          });
         } catch (error) {
           if (!await recoverReadableNavigationTimeout(page, error)) {
             throw transientError(error, selected.target, "The public Douyin video page did not load in time.");
@@ -712,7 +727,7 @@ export class DirectPublicWebProvider {
         const statusError = responseStatusError(navigationResponse, selected.target);
         if (statusError) throw statusError;
 
-        const deadline = Date.now() + this.contentWaitMs;
+        const deadline = Date.now() + this.videoContentWaitMs;
         let dom = await videoDomSnapshot(page);
         while (Date.now() < deadline) {
           await capture.drain();

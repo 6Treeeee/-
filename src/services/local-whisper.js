@@ -9,7 +9,7 @@ import {
   stat,
   writeFile
 } from "node:fs/promises";
-import { tmpdir } from "node:os";
+import { availableParallelism, tmpdir } from "node:os";
 import { basename, dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawn } from "node:child_process";
@@ -29,7 +29,9 @@ const MODEL_SHA256 = "422f1ae452ade6f30a004d7e5c6a43195e4433bc370bf23fac9cc591f0
 const MODEL_NAME = "whisper-base-q5_1-multilingual";
 const DEFAULT_MAX_INPUT_BYTES = 25 * 1024 * 1024;
 const DEFAULT_MAX_DURATION_MS = 180_000;
-const DEFAULT_TIMEOUT_MS = 190_000;
+const DEFAULT_TIMEOUT_MS = 220_000;
+const DEFAULT_THREADS = Math.max(1, Math.min(2, availableParallelism()));
+const DEFAULT_RESPONSE_RESERVE_MS = 5_000;
 const DEFAULT_QUEUE_WAIT_MS = 20_000;
 const DEFAULT_MAX_QUEUED = 1;
 const DEFAULT_PREFLIGHT_TIMEOUT_MS = 10_000;
@@ -337,7 +339,7 @@ async function defaultProbeImpl({ runtime, timeoutMs }) {
   });
 }
 
-async function defaultRunImpl({ runtime, bytes, extension, timeoutMs }) {
+async function defaultRunImpl({ runtime, bytes, extension, timeoutMs, threads }) {
   const jobRoot = join(tmpdir(), `content-reader-asr-${randomUUID()}`);
   const inputPath = join(jobRoot, `input${extension}`);
   const outputPrefix = join(jobRoot, "result");
@@ -351,7 +353,7 @@ async function defaultRunImpl({ runtime, bytes, extension, timeoutMs }) {
         "-m", runtime.modelPath,
         "-f", inputPath,
         "-l", "auto",
-        "-t", "1",
+        "-t", String(threads),
         "-ng",
         "-ojf",
         "-of", outputPrefix,
@@ -510,6 +512,8 @@ export class LocalWhisperAsr {
     maxInputBytes = DEFAULT_MAX_INPUT_BYTES,
     maxDurationMs = DEFAULT_MAX_DURATION_MS,
     timeoutMs = DEFAULT_TIMEOUT_MS,
+    threads = DEFAULT_THREADS,
+    responseReserveMs = DEFAULT_RESPONSE_RESERVE_MS,
     queueWaitMs = DEFAULT_QUEUE_WAIT_MS,
     maxQueued = DEFAULT_MAX_QUEUED,
     preflightTimeoutMs = DEFAULT_PREFLIGHT_TIMEOUT_MS
@@ -530,6 +534,12 @@ export class LocalWhisperAsr {
     });
     this.timeoutMs = integerOption(timeoutMs, {
       field: "timeoutMs", minimum: 1_000, maximum: 285_000
+    });
+    this.threads = integerOption(threads, {
+      field: "threads", minimum: 1, maximum: 8
+    });
+    this.responseReserveMs = integerOption(responseReserveMs, {
+      field: "responseReserveMs", minimum: 1_000, maximum: 30_000
     });
     this.queueWaitMs = integerOption(queueWaitMs, {
       field: "queueWaitMs", minimum: 1, maximum: 120_000
@@ -629,7 +639,7 @@ export class LocalWhisperAsr {
     return this.preflightPromise;
   }
 
-  async transcribe({ bytes: value, mediaType, video } = {}) {
+  async transcribe({ bytes: value, mediaType, video, deadlineAt = null } = {}) {
     if (!this.available) {
       throw new ReaderError(
         "LOCAL_ASR_RUNTIME_UNAVAILABLE",
@@ -700,11 +710,25 @@ export class LocalWhisperAsr {
         runtimeTempRoot: this.runtimeTempRoot,
         inflateImpl: inflate
       });
+      const numericDeadline = Number(deadlineAt);
+      const hasDeadline = deadlineAt !== null && deadlineAt !== undefined &&
+        Number.isFinite(numericDeadline);
+      const remainingMs = hasDeadline
+        ? Math.floor(numericDeadline - Date.now() - this.responseReserveMs)
+        : this.timeoutMs;
+      if (remainingMs < 1_000) {
+        throw new ReaderError(
+          "LOCAL_ASR_DEADLINE_EXCEEDED",
+          "Not enough request time remains for bounded local speech-to-text.",
+          { status: 503, details: { stage: "deadline" } }
+        );
+      }
       const raw = await this.runImpl({
         runtime,
         bytes: preparedBytes,
         extension,
-        timeoutMs: this.timeoutMs
+        timeoutMs: Math.min(this.timeoutMs, remainingMs),
+        threads: this.threads
       });
       return parseWhisperJson(raw, {
         processingMs: Date.now() - startedAt,

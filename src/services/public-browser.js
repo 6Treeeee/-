@@ -84,6 +84,10 @@ export async function resolvePublicBrowserRuntime({
 } = {}) {
   if (isVercelRuntime(env)) {
     const chromium = await loadSparticuzChromium(chromiumImpl);
+    // DOM/network capture and OfflineAudioContext do not require WebGL. Turning
+    // graphics off prevents Sparticuz from inflating its SwiftShader bundle on
+    // every cold Function instance and adds the matching disable-WebGL flags.
+    chromium.setGraphicsMode = false;
     let resolvedExecutable;
     try {
       resolvedExecutable = executablePath ?? await chromium.executablePath();
@@ -161,15 +165,24 @@ export class PublicBrowserService {
     this.navigationTimeoutMs = navigationTimeoutMs;
     this.protocolTimeoutMs = protocolTimeoutMs;
     this.viewport = viewport;
+    this.runtimePromise = null;
   }
 
-  async withPage(operation) {
-    const runtime = await resolvePublicBrowserRuntime({
+  async prepare() {
+    this.runtimePromise ??= resolvePublicBrowserRuntime({
       executablePath: this.executablePath,
       chromiumImpl: this.chromiumImpl,
       env: this.env,
       platform: this.platform
+    }).catch((error) => {
+      this.runtimePromise = null;
+      throw error;
     });
+    return this.runtimePromise;
+  }
+
+  async withPage(operation) {
+    const runtime = await this.prepare();
 
     let browser;
     let context;

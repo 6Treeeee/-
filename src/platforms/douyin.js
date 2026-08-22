@@ -75,6 +75,13 @@ export async function resolveDouyinUrl(
   { retries = 2, retryDelayMs = 250, sleepImpl = wait } = {}
 ) {
   let current = validatedDouyinUrl(value);
+  // Stable canonical content URLs already carry the identity needed by the
+  // public provider. Fetching the same HTML once here only duplicates the
+  // later browser navigation and can consume the transcription time budget.
+  if (/^\/(?:video|note)\/\d+\/?$/i.test(current.pathname) ||
+      /^\/user\/[^/]+\/?$/i.test(current.pathname)) {
+    return { finalUrl: current.href, resolved: false, hops: [] };
+  }
   const visited = new Set();
   const hops = [];
 
@@ -226,20 +233,34 @@ export class DouyinReader {
     aiGatewayApiKey = process.env.AI_GATEWAY_API_KEY,
     vercelOidcToken = process.env.VERCEL_OIDC_TOKEN,
     localAsr = null,
+    requestDeadlineAt = null,
     processContent,
     profileConcurrency = 3
   } = {}) {
     this.fetchImpl = fetchImpl;
     this.explicitProviders = Boolean(providers);
     this.artifactStore = artifactStore;
+    this.hasLocalFallback = typeof localAsr === "function";
 
     let configuredProviders = providers;
     if (!configuredProviders) {
-      const tikhub = tikhubProvider ?? new TikHubProvider({ apiKey, fetchImpl, client });
+      const hasLocalFallback = typeof localAsr === "function";
+      const tikhub = tikhubProvider ?? new TikHubProvider({
+        apiKey,
+        fetchImpl,
+        client,
+        ...(hasLocalFallback ? { clientOptions: { timeoutMs: 6_000, retries: 0 } } : {})
+      });
       configuredProviders = [];
       if (tikhub.available) configuredProviders.push(tikhub);
       if (directProvider) configuredProviders.push(directProvider);
-      else if (!client) configuredProviders.push(new DirectPublicWebProvider());
+      else if (!client) configuredProviders.push(new DirectPublicWebProvider(
+        hasLocalFallback ? {
+          videoNavigationTimeoutMs: 12_000,
+          videoContentWaitMs: 8_000,
+          retryDelayMs: 200
+        } : {}
+      ));
       if (!client) {
         configuredProviders.push(new VerifiedPublicArtifactProvider({ artifactStore }));
       }
@@ -253,6 +274,7 @@ export class DouyinReader {
       aiGatewayApiKey,
       vercelOidcToken,
       localAsr,
+      requestDeadlineAt,
       profileConcurrency
     });
     this.analyzer = analyzer;
@@ -279,6 +301,13 @@ export class DouyinReader {
   }
 
   async retrieveVideo(context, order = this.orderFor("video")) {
+    // On a cold serverless instance Chromium extraction dominates this path.
+    // Start preparing the ordinary logged-out browser while the optional
+    // TikHub provider is attempted, so fallback setup is not serialized.
+    if (this.hasLocalFallback && order.includes("direct_public_web")) {
+      const direct = this.chain.get("direct_public_web");
+      if (typeof direct?.prepare === "function") void direct.prepare().catch(() => null);
+    }
     try {
       return await this.chain.run("readVideo", context, {
         order,

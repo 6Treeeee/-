@@ -142,10 +142,10 @@ function unavailable(message, attempts, cause) {
 }
 
 export class TikHubProvider {
-  constructor({ apiKey, fetchImpl = globalThis.fetch, client } = {}) {
+  constructor({ apiKey, fetchImpl = globalThis.fetch, client, clientOptions = {} } = {}) {
     this.id = "tikhub";
     this.fetchImpl = fetchImpl;
-    this.client = client ?? (apiKey ? new TikHubClient({ apiKey, fetchImpl }) : null);
+    this.client = client ?? (apiKey ? new TikHubClient({ ...clientOptions, apiKey, fetchImpl }) : null);
     this.available = Boolean(this.client);
   }
 

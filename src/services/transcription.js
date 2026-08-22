@@ -567,6 +567,7 @@ export class TranscriptionService {
     gatewayUrl = "https://ai-gateway.vercel.sh/v4/ai/transcription-model",
     timeoutMs = 120_000,
     gatewayTimeoutMs,
+    requestDeadlineAt = null,
     captionTimeoutMs = 20_000,
     maxCaptionBytes = 5 * 1024 * 1024,
     retries = 1,
@@ -597,7 +598,8 @@ export class TranscriptionService {
     this.timeoutMs = timeoutMs;
     // Preserve enough of the 300-second Function budget for the credential-free
     // local fallback when hosted Gateway access is slow or unavailable.
-    this.gatewayTimeoutMs = gatewayTimeoutMs ?? (typeof localAsr === "function" ? 10_000 : timeoutMs);
+    this.gatewayTimeoutMs = gatewayTimeoutMs ?? (typeof localAsr === "function" ? 4_000 : timeoutMs);
+    this.requestDeadlineAt = requestDeadlineAt;
     this.captionTimeoutMs = captionTimeoutMs;
     this.maxCaptionBytes = maxCaptionBytes;
     this.retries = Math.max(0, Math.floor(retries));
@@ -955,7 +957,8 @@ export class TranscriptionService {
           bytes: transcriptionMedia.bytes,
           mediaType: transcriptionMedia.mediaType,
           video,
-          source: transcriptionMedia.source
+          source: transcriptionMedia.source,
+          deadlineAt: this.requestDeadlineAt
         });
         const result = normalizedResult(local, {
           method: "local_asr",

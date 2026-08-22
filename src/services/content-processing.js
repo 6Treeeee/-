@@ -79,6 +79,7 @@ export class ContentProcessor {
     openAiApiKey = process.env.OPENAI_API_KEY,
     aiGatewayApiKey = process.env.AI_GATEWAY_API_KEY,
     vercelOidcToken = process.env.VERCEL_OIDC_TOKEN,
+    requestDeadlineAt = null,
     maxMediaBytes = 25 * 1024 * 1024,
     profileConcurrency = 3
   } = {}) {
@@ -90,18 +91,25 @@ export class ContentProcessor {
     this.openAiApiKey = openAiApiKey;
     this.aiGatewayApiKey = aiGatewayApiKey;
     this.vercelOidcToken = vercelOidcToken;
+    this.requestDeadlineAt = requestDeadlineAt;
     this.maxMediaBytes = maxMediaBytes;
     this.profileConcurrency = Math.max(1, Math.min(8, Math.floor(profileConcurrency)));
   }
 
-  createMediaResolver(refreshVideo) {
+  createMediaResolver(refreshVideo, { localAsr = this.localAsr } = {}) {
+    const boundedForLocal = typeof localAsr === "function";
     if (this.mediaResolverFactory) {
-      return this.mediaResolverFactory({ refreshVideo, fetchImpl: this.fetchImpl });
+      return this.mediaResolverFactory({
+        refreshVideo,
+        fetchImpl: this.fetchImpl,
+        ...(boundedForLocal ? { timeoutMs: 12_000, retries: 0 } : {})
+      });
     }
     return new MediaResolver({
       fetchImpl: this.fetchImpl,
       refreshVideo,
-      maxBytes: this.maxMediaBytes
+      maxBytes: this.maxMediaBytes,
+      ...(boundedForLocal ? { timeoutMs: 12_000, retries: 0 } : {})
     });
   }
 
@@ -110,7 +118,8 @@ export class ContentProcessor {
       return this.transcriptionFactory({
         mediaResolver,
         fetchImpl: this.fetchImpl,
-        localAsr
+        localAsr,
+        requestDeadlineAt: this.requestDeadlineAt
       });
     }
     return new TranscriptionService({
@@ -119,7 +128,8 @@ export class ContentProcessor {
       localAsr,
       openAiApiKey: this.openAiApiKey,
       aiGatewayApiKey: this.aiGatewayApiKey,
-      vercelOidcToken: this.vercelOidcToken
+      vercelOidcToken: this.vercelOidcToken,
+      requestDeadlineAt: this.requestDeadlineAt
     });
   }
 
@@ -129,7 +139,7 @@ export class ContentProcessor {
     localAsr = this.localAsr
   } = {}) {
     try {
-      const mediaResolver = this.createMediaResolver(refreshVideo);
+      const mediaResolver = this.createMediaResolver(refreshVideo, { localAsr });
       const artifact = await this.artifactStore.transcriptFor(video.aweme_id ?? video.id);
 
       let readableContent;

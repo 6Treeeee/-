@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { resolveRuntimeGatewayAuth } from "../api/index.js";
+import { resolveRuntimeGatewayAuth, withRequestDeadline } from "../api/index.js";
 import { readPublicContent } from "../src/content-reader.js";
 import { DouyinReader } from "../src/platforms/douyin.js";
 import { TikHubClient, TIKHUB_ROUTES } from "../src/services/tikhub.js";
@@ -35,6 +35,23 @@ test("an explicit Gateway API key takes priority over request-scoped OIDC", asyn
 
   assert.equal(calls, 0);
   assert.deepEqual(auth, { aiGatewayApiKey: "gateway-key", vercelOidcToken: null });
+});
+
+test("the request deadline returns a safe service error before the platform timeout", async () => {
+  await assert.rejects(
+    withRequestDeadline(new Promise(() => {}), Date.now() - 1),
+    (error) => {
+      assert.equal(error.code, "REQUEST_DEADLINE_EXCEEDED");
+      assert.equal(error.status, 503);
+      assert.deepEqual(error.details, { stage: "request" });
+      return true;
+    }
+  );
+
+  assert.equal(
+    await withRequestDeadline(Promise.resolve("complete"), Date.now() + 1_000),
+    "complete"
+  );
 });
 
 test("request-scoped ASR credentials reach the content processor", () => {

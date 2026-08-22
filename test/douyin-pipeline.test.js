@@ -24,6 +24,7 @@ test("Sparticuz Chromium uses shell mode and the fresh default browser context",
   let launchOptions;
   let defaultArgsInput;
   let closed = false;
+  let executablePathCalls = 0;
   const page = {
     setDefaultNavigationTimeout() {},
     setDefaultTimeout() {},
@@ -48,7 +49,7 @@ test("Sparticuz Chromium uses shell mode and the fresh default browser context",
     env: { VERCEL: "1" },
     chromiumImpl: {
       args: ["--no-sandbox"],
-      async executablePath() { return "/tmp/chromium"; }
+      async executablePath() { executablePathCalls += 1; return "/tmp/chromium"; }
     },
     puppeteerImpl: {
       async defaultArgs(input) {
@@ -62,9 +63,12 @@ test("Sparticuz Chromium uses shell mode and the fresh default browser context",
     }
   });
 
+  await service.prepare();
   const runtime = await service.withPage(async ({ runtime: value }) => value);
 
   assert.equal(runtime.kind, "sparticuz_chromium");
+  assert.equal(executablePathCalls, 1);
+  assert.equal(service.chromiumImpl.setGraphicsMode, false);
   assert.equal(createContextCalls, 0);
   assert.deepEqual(defaultArgsInput, { args: ["--no-sandbox"], headless: "shell" });
   assert.equal(launchOptions.headless, "shell");
@@ -264,6 +268,54 @@ test("TikHub HTTP 402 falls through ProviderChain/DouyinReader to the direct pro
   assert.doesNotMatch(JSON.stringify(result.source.provider_attempts), /tikhub-secret/);
 });
 
+test("DouyinReader reserves a bounded retrieval window when local ASR is available", () => {
+  const defaultDirect = new DirectPublicWebProvider({ browserService: {} });
+  assert.equal(defaultDirect.videoNavigationTimeoutMs, null);
+
+  const reader = new DouyinReader({
+    apiKey: "configured-tikhub-key",
+    localAsr: async () => ({ text: "local" }),
+    processContent: false
+  });
+
+  const tikhub = reader.chain.get("tikhub");
+  const direct = reader.chain.get("direct_public_web");
+  assert.equal(tikhub.client.timeoutMs, 6_000);
+  assert.equal(tikhub.client.retries, 0);
+  assert.equal(direct.videoNavigationTimeoutMs, 12_000);
+  assert.equal(direct.videoContentWaitMs, 8_000);
+  assert.equal(direct.retries, 2);
+});
+
+test("DouyinReader starts cold browser preparation while the first video provider runs", async () => {
+  let prepareCalls = 0;
+  const direct = {
+    id: "direct_public_web",
+    available: true,
+    async prepare() { prepareCalls += 1; },
+    async readVideo() { throw new Error("TikHub succeeds in this timing test"); }
+  };
+  const reader = new DouyinReader({
+    providers: [{
+      id: "tikhub",
+      available: true,
+      async readVideo() {
+        assert.equal(prepareCalls, 1);
+        return { aweme: aweme("7669061012259179785") };
+      }
+    }, direct],
+    localAsr: async () => ({ text: "local" }),
+    processContent: false
+  });
+
+  const result = await reader.read({
+    url: "https://www.douyin.com/video/7669061012259179785",
+    type: "video"
+  });
+  assert.equal(result.content.aweme_id, "7669061012259179785");
+  assert.equal(prepareCalls, 1);
+});
+
 test("resolveDouyinUrl retries transient public redirect failures", async () => {
   let calls = 0;
   const result = await resolveDouyinUrl(
@@ -286,6 +338,20 @@ test("resolveDouyinUrl retries transient public redirect failures", async () => 
   assert.equal(result.finalUrl, "https://www.douyin.com/video/7670118101211453413");
   assert.equal(result.resolved, true);
   assert.equal(result.hops[0].attempts, 3);
+});
+
+test("resolveDouyinUrl does not refetch an already stable canonical video URL", async () => {
+  let calls = 0;
+  const value = "https://www.douyin.com/video/7669061012259179785";
+  const result = await resolveDouyinUrl(value, async () => {
+    calls += 1;
+    throw new Error("canonical URLs must not spend the request budget on duplicate HTML fetches");
+  });
+
+  assert.equal(calls, 0);
+  assert.equal(result.finalUrl, value);
+  assert.equal(result.resolved, false);
+  assert.deepEqual(result.hops, []);
 });
 
 test("DirectPublicWebProvider resolves content type in an ordinary public browser", async () => {
@@ -1506,10 +1572,12 @@ test("built-in MP4 audio extractor rejects MPEG-4 object types above 63", async 
 
 test("TranscriptionService uses injected local ASR when hosted credentials are absent", async () => {
   let localCalls = 0;
+  const requestDeadlineAt = Date.now() + 285_000;
   const service = new TranscriptionService({
     openAiApiKey: null,
     aiGatewayApiKey: null,
     vercelOidcToken: null,
+    requestDeadlineAt,
     retries: 0,
     fetchImpl: async () => {
       throw new Error("No hosted provider should be called");
@@ -1526,11 +1594,12 @@ test("TranscriptionService uses injected local ASR when hosted credentials are a
         };
       }
     },
-    localAsr: async ({ bytes, mediaType, video }) => {
+    localAsr: async ({ bytes, mediaType, video, deadlineAt }) => {
       localCalls += 1;
       assert.equal(bytes.byteLength, 2);
       assert.equal(mediaType, "audio/mpeg");
       assert.equal(video.aweme_id, "local-video");
+      assert.equal(deadlineAt, requestDeadlineAt);
       return {
         text: "本地转写成功",
         language: "zh",
@@ -1589,7 +1658,7 @@ test("TranscriptionService reserves request time for local ASR after hosted Gate
   const withLocalFallback = new TranscriptionService({
     localAsr: async () => ({ text: "local" })
   });
-  assert.equal(withLocalFallback.gatewayTimeoutMs, 10_000);
+  assert.equal(withLocalFallback.gatewayTimeoutMs, 4_000);
   assert.equal(withLocalFallback.gatewayRetries, 0);
 
   const hostedOnly = new TranscriptionService({ timeoutMs: 42_000, retries: 2 });
@@ -1975,25 +2044,29 @@ test("ContentProcessor preserves hosted ASR while local ASR is disabled for a mu
 
 test("ContentProcessor permits local ASR for a single-video profile", async () => {
   let localAsrCalls = 0;
+  let mediaOptions;
   const processor = new ContentProcessor({
     artifactStore: { transcriptFor: async () => null },
-    mediaResolverFactory: () => ({
-      async resolve() {
-        return {
-          url: "https://media.example.test/single.mp3",
-          kind: "audio",
-          mediaType: "audio/mpeg",
-          diagnostics: { host: "media.example.test", status: 206, size: 1 }
-        };
-      },
-      async fetch() {
-        return {
-          bytes: new Uint8Array([1]),
-          mediaType: "audio/mpeg",
-          source: { host: "media.example.test", status: 200, size: 1 }
-        };
-      }
-    }),
+    mediaResolverFactory: (options) => {
+      mediaOptions = options;
+      return {
+        async resolve() {
+          return {
+            url: "https://media.example.test/single.mp3",
+            kind: "audio",
+            mediaType: "audio/mpeg",
+            diagnostics: { host: "media.example.test", status: 206, size: 1 }
+          };
+        },
+        async fetch() {
+          return {
+            bytes: new Uint8Array([1]),
+            mediaType: "audio/mpeg",
+            source: { host: "media.example.test", status: 200, size: 1 }
+          };
+        }
+      };
+    },
     openAiApiKey: null,
     aiGatewayApiKey: null,
     vercelOidcToken: null,
@@ -2016,6 +2089,8 @@ test("ContentProcessor permits local ASR for a single-video profile", async () =
   ]);
 
   assert.equal(localAsrCalls, 1);
+  assert.equal(mediaOptions.timeoutMs, 12_000);
+  assert.equal(mediaOptions.retries, 0);
   assert.equal(result.policy, undefined);
   assert.equal(result.status, "complete");
   assert.equal(result.complete, true);
