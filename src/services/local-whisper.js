@@ -229,7 +229,22 @@ function safeMissingDependency(stderr) {
   return SAFE_RUNTIME_DEPENDENCIES.find((dependency) => output.includes(dependency)) ?? null;
 }
 
-async function spawnWhisper({ binaryPath, args, cwd, env, timeoutMs, stage = "inference" }) {
+function safeCpuBackend(stderr) {
+  const match = String(stderr ?? "").match(
+    /loaded CPU backend from [^\r\n]*[\\/](libggml-cpu-[a-z0-9_-]+\.so)/i
+  );
+  return match?.[1] ?? null;
+}
+
+async function spawnWhisper({
+  binaryPath,
+  args,
+  cwd,
+  env,
+  timeoutMs,
+  stage = "inference",
+  diagnosticSink = null
+}) {
   return new Promise((resolvePromise, reject) => {
     let settled = false;
     let timedOut = false;
@@ -316,6 +331,9 @@ async function spawnWhisper({ binaryPath, args, cwd, env, timeoutMs, stage = "in
         ));
         return;
       }
+      if (typeof diagnosticSink === "function") {
+        diagnosticSink({ cpu_backend: safeCpuBackend(stderr) });
+      }
       finish();
     });
   });
@@ -337,7 +355,14 @@ async function defaultProbeImpl({ runtime, timeoutMs }) {
   });
 }
 
-async function defaultRunImpl({ runtime, bytes, extension, timeoutMs }) {
+async function defaultRunImpl({
+  runtime,
+  bytes,
+  extension,
+  timeoutMs,
+  threadCount = 1,
+  diagnosticSink = null
+}) {
   const jobRoot = join(tmpdir(), `content-reader-asr-${randomUUID()}`);
   const inputPath = join(jobRoot, `input${extension}`);
   const outputPrefix = join(jobRoot, "result");
@@ -351,7 +376,7 @@ async function defaultRunImpl({ runtime, bytes, extension, timeoutMs }) {
         "-m", runtime.modelPath,
         "-f", inputPath,
         "-l", "auto",
-        "-t", "1",
+        "-t", String(threadCount),
         "-ng",
         "-ojf",
         "-of", outputPrefix,
@@ -364,7 +389,8 @@ async function defaultRunImpl({ runtime, bytes, extension, timeoutMs }) {
           .filter(Boolean)
           .join(":")
       },
-      timeoutMs
+      timeoutMs,
+      diagnosticSink
     });
     let metadata;
     try {
@@ -512,7 +538,9 @@ export class LocalWhisperAsr {
     timeoutMs = DEFAULT_TIMEOUT_MS,
     queueWaitMs = DEFAULT_QUEUE_WAIT_MS,
     maxQueued = DEFAULT_MAX_QUEUED,
-    preflightTimeoutMs = DEFAULT_PREFLIGHT_TIMEOUT_MS
+    preflightTimeoutMs = DEFAULT_PREFLIGHT_TIMEOUT_MS,
+    threadCount = 1,
+    diagnosticSink = null
   } = {}) {
     this.platform = platform;
     this.arch = arch;
@@ -540,6 +568,10 @@ export class LocalWhisperAsr {
     this.preflightTimeoutMs = integerOption(preflightTimeoutMs, {
       field: "preflightTimeoutMs", minimum: 1_000, maximum: 30_000
     });
+    this.threadCount = integerOption(threadCount, {
+      field: "threadCount", minimum: 1, maximum: 16
+    });
+    this.diagnosticSink = typeof diagnosticSink === "function" ? diagnosticSink : null;
     this.active = false;
     this.waiters = [];
     this.preflightPromise = null;
@@ -704,7 +736,9 @@ export class LocalWhisperAsr {
         runtime,
         bytes: preparedBytes,
         extension,
-        timeoutMs: this.timeoutMs
+        timeoutMs: this.timeoutMs,
+        threadCount: this.threadCount,
+        diagnosticSink: this.diagnosticSink
       });
       return parseWhisperJson(raw, {
         processingMs: Date.now() - startedAt,
