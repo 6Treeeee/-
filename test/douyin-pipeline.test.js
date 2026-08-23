@@ -299,6 +299,197 @@ test("DouyinReader reserves a bounded retrieval window when local ASR is availab
   assert.equal(direct.videoNavigationTimeoutMs, 15_000);
   assert.equal(direct.videoContentWaitMs, 15_000);
   assert.equal(direct.retries, 1);
+  assert.deepEqual(reader.orderFor("video").slice(0, 2), ["direct_public_web", "tikhub"]);
+});
+
+test("local ASR uses the canonical public page before TikHub video metadata", async () => {
+  const id = "7665909560732851961";
+  let directCalls = 0;
+  let tikhubCalls = 0;
+  let processedDuration = null;
+  const direct = {
+    id: "direct_public_web",
+    available: true,
+    async readVideo() {
+      directCalls += 1;
+      return {
+        aweme: aweme(id, {
+          video: {
+            duration: 273_834,
+            play_addr: { url_list: [`https://media.example.test/${id}-public.mp4`] }
+          }
+        }),
+        meta: { provider: "direct_public_web" }
+      };
+    }
+  };
+  const tikhub = {
+    id: "tikhub",
+    available: true,
+    async readVideo() {
+      tikhubCalls += 1;
+      return {
+        aweme: aweme(id, {
+          video: {
+            duration: 682_714,
+            play_addr: { url_list: [`https://media.example.test/${id}-mismatch.mp4`] }
+          }
+        }),
+        meta: { provider: "tikhub" }
+      };
+    }
+  };
+  const reader = new DouyinReader({
+    tikhubProvider: tikhub,
+    directProvider: direct,
+    localAsr: async () => ({ text: "local" }),
+    processor: {
+      async processVideo(video) {
+        processedDuration = video.media.duration_ms;
+        return { ...video, readable_content: completedTranscript("public page audio") };
+      }
+    }
+  });
+
+  const result = await reader.read({
+    url: `https://www.douyin.com/video/${id}`,
+    type: "video"
+  });
+
+  assert.equal(result.content.aweme_id, id);
+  assert.equal(processedDuration, 273_834);
+  assert.equal(directCalls, 1);
+  assert.equal(tikhubCalls, 0);
+  assert.equal(result.source.retrieval.provider, "direct_public_web");
+});
+
+test("local ASR falls back to TikHub only after a transient public-page failure", async () => {
+  const id = "7665909560732851961";
+  let tikhubCalls = 0;
+  const reader = new DouyinReader({
+    tikhubProvider: {
+      id: "tikhub",
+      available: true,
+      async readVideo() {
+        tikhubCalls += 1;
+        return { aweme: aweme(id), meta: { provider: "tikhub" } };
+      }
+    },
+    directProvider: {
+      id: "direct_public_web",
+      available: true,
+      async readVideo() {
+        throw new ReaderError("DOUYIN_PUBLIC_WEB_TRANSIENT", "temporary", { status: 502 });
+      }
+    },
+    localAsr: async () => ({ text: "local" }),
+    processContent: false
+  });
+
+  const result = await reader.read({
+    url: `https://www.douyin.com/video/${id}`,
+    type: "video"
+  });
+
+  assert.equal(result.content.aweme_id, id);
+  assert.equal(tikhubCalls, 1);
+  assert.deepEqual(result.source.provider_attempts.map((entry) => entry.provider), [
+    "direct_public_web",
+    "tikhub"
+  ]);
+});
+
+test("a terminal public-page boundary never falls through to TikHub", async () => {
+  const id = "7665909560732851961";
+  let tikhubCalls = 0;
+  const reader = new DouyinReader({
+    tikhubProvider: {
+      id: "tikhub",
+      available: true,
+      async readVideo() { tikhubCalls += 1; return { aweme: aweme(id) }; }
+    },
+    directProvider: {
+      id: "direct_public_web",
+      available: true,
+      async readVideo() {
+        throw new ReaderError("DOUYIN_SECURITY_VERIFICATION_REQUIRED", "verification", {
+          status: 422
+        });
+      }
+    },
+    localAsr: async () => ({ text: "local" }),
+    processContent: false
+  });
+
+  await assert.rejects(
+    reader.read({ url: `https://www.douyin.com/video/${id}`, type: "video" }),
+    (error) => error.code === "DOUYIN_SECURITY_VERIFICATION_REQUIRED"
+  );
+  assert.equal(tikhubCalls, 0);
+});
+
+test("TikHubProvider rejects a different video identity for a known aweme_id", async () => {
+  const expectedId = "7665909560732851961";
+  const receivedId = "7669061012259179785";
+  const provider = new TikHubProvider({
+    client: {
+      async get(route) {
+        return {
+          data: { aweme_detail: aweme(receivedId) },
+          meta: { route, request_id: `mismatch-${route}` }
+        };
+      }
+    }
+  });
+
+  await assert.rejects(
+    provider.readVideo({
+      inputUrl: `https://www.douyin.com/video/${expectedId}`,
+      awemeId: expectedId
+    }),
+    (error) => error.code === "DOUYIN_PROVIDER_UNAVAILABLE" &&
+      error.details?.attempts?.length === 2 &&
+      error.details.attempts.every((entry) =>
+        entry.error?.code === "VIDEO_ID_MISMATCH" &&
+        entry.error?.expected_aweme_id === expectedId &&
+        entry.error?.received_aweme_id === receivedId)
+  );
+});
+
+test("TikHubProvider never changes internal routes after a mismatched restricted result", async () => {
+  const expectedId = "7665909560732851961";
+  const receivedId = "7669061012259179785";
+  const routes = [];
+  const provider = new TikHubProvider({
+    client: {
+      async get(route) {
+        routes.push(route);
+        if (routes.length === 1) {
+          return {
+            data: {
+              aweme_detail: aweme(receivedId),
+              filter_list: [{ reason: 5 }]
+            },
+            meta: { route, request_id: "restricted-mismatch" }
+          };
+        }
+        return {
+          data: { aweme_detail: aweme(expectedId) },
+          meta: { route, request_id: "must-not-run" }
+        };
+      }
+    }
+  });
+
+  await assert.rejects(
+    provider.readVideo({
+      inputUrl: `https://www.douyin.com/video/${expectedId}`,
+      awemeId: expectedId
+    }),
+    (error) => error.code === "DOUYIN_PROVIDER_RESTRICTION_UNVERIFIED" &&
+      error.details?.restriction?.reason === 5
+  );
+  assert.deepEqual(routes, [TIKHUB_ROUTES.videoApp]);
 });
 
 test("DouyinReader starts cold browser preparation while the first video provider runs", async () => {

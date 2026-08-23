@@ -297,7 +297,12 @@ export class DouyinReader {
       // when no public-grid provider exists.
       return publicGridProviders.length ? publicGridProviders : ids;
     }
-    const preferred = ["tikhub", "direct_public_web"];
+    // Local transcription needs the same media an ordinary logged-out viewer
+    // receives. Prefer Douyin's canonical public page when that path is
+    // available, while retaining TikHub as a bounded transient fallback.
+    const preferred = this.hasLocalFallback
+      ? ["direct_public_web", "tikhub"]
+      : ["tikhub", "direct_public_web"];
     return [...preferred.filter((id) => ids.includes(id)), ...ids.filter((id) => !preferred.includes(id))];
   }
 

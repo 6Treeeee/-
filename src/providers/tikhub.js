@@ -170,10 +170,13 @@ export class TikHubProvider {
     return { secUserId, meta: response.meta };
   }
 
-  async readVideo({ inputUrl }) {
+  async readVideo({ inputUrl, awemeId = null }) {
     if (!this.client) throw unavailable("TikHub is not configured.", []);
 
     const attempts = [];
+    const expectedAwemeId = awemeId === null || awemeId === undefined
+      ? null
+      : String(awemeId);
     for (const route of [TIKHUB_ROUTES.videoApp, TIKHUB_ROUTES.videoWeb]) {
       const result = await attempt(() => this.client.get(route, { share_url: inputUrl }));
       if (!result.ok) {
@@ -182,7 +185,9 @@ export class TikHubProvider {
       }
 
       const aweme = extractAweme(result.value.data);
-      if (aweme) {
+      const receivedAwemeId = postIdentity(aweme);
+      const restriction = restrictionReason(result.value.data);
+      if (aweme && (!expectedAwemeId || receivedAwemeId === expectedAwemeId)) {
         return {
           aweme,
           meta: {
@@ -193,8 +198,36 @@ export class TikHubProvider {
           }
         };
       }
+      if (aweme && expectedAwemeId && receivedAwemeId !== expectedAwemeId) {
+        if (restriction && [5, 10].includes(restriction.reason)) {
+          throw new ReaderError(
+            "DOUYIN_PROVIDER_RESTRICTION_UNVERIFIED",
+            "TikHub returned a restriction marker that requires confirmation from the public page.",
+            {
+              status: 502,
+              details: {
+                provider: this.id,
+                authoritative: false,
+                route,
+                request_id: result.value.meta?.request_id ?? null,
+                restriction
+              }
+            }
+          );
+        }
+        attempts.push({
+          route,
+          request_id: result.value.meta?.request_id ?? null,
+          error: {
+            code: "VIDEO_ID_MISMATCH",
+            message: "TikHub returned a different video identity.",
+            expected_aweme_id: expectedAwemeId,
+            received_aweme_id: receivedAwemeId
+          }
+        });
+        continue;
+      }
 
-      const restriction = restrictionReason(result.value.data);
       if (restriction && [5, 10].includes(restriction.reason)) {
         throw new ReaderError(
           "DOUYIN_PROVIDER_RESTRICTION_UNVERIFIED",
