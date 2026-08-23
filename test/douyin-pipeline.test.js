@@ -124,6 +124,7 @@ function mediaResponse(url, { status = 206, mediaType = "video/mp4" } = {}) {
 
 function fakeBrowserPage({
   responses = [],
+  playbackResponses = [],
   videoDom = null,
   profileDom = null,
   resolutionDom = null,
@@ -135,6 +136,7 @@ function fakeBrowserPage({
   const responseListeners = new Set();
   let listenerAttachedBeforeNavigation = false;
   let navigatedTo = null;
+  let playbackPrimeCalls = 0;
   const pendingEvaluateErrors = [...evaluateErrors];
   const safeAccess = access ?? {
     explicitMoreGate: false,
@@ -167,6 +169,13 @@ function fakeBrowserPage({
       if (pendingEvaluateErrors.length) throw pendingEvaluateErrors.shift();
       const source = operation.toString();
       if (source.includes("document.documentElement && document.body")) return true;
+      if (source.includes('video.preload = "auto"')) {
+        playbackPrimeCalls += 1;
+        for (const response of playbackResponses) {
+          for (const listener of responseListeners) listener(response);
+        }
+        return true;
+      }
       if (source.includes("durationSeconds")) {
         if (!videoDom) throw new Error("Unexpected video DOM snapshot");
         return videoDom;
@@ -193,7 +202,8 @@ function fakeBrowserPage({
       }
     },
     listenerWasAttached: () => listenerAttachedBeforeNavigation,
-    navigatedTo: () => navigatedTo
+    navigatedTo: () => navigatedTo,
+    playbackPrimeCalls: () => playbackPrimeCalls
   };
 }
 
@@ -286,9 +296,9 @@ test("DouyinReader reserves a bounded retrieval window when local ASR is availab
   const direct = reader.chain.get("direct_public_web");
   assert.equal(tikhub.client.timeoutMs, 6_000);
   assert.equal(tikhub.client.retries, 0);
-  assert.equal(direct.videoNavigationTimeoutMs, 12_000);
-  assert.equal(direct.videoContentWaitMs, 8_000);
-  assert.equal(direct.retries, 2);
+  assert.equal(direct.videoNavigationTimeoutMs, 15_000);
+  assert.equal(direct.videoContentWaitMs, 15_000);
+  assert.equal(direct.retries, 1);
 });
 
 test("DouyinReader starts cold browser preparation while the first video provider runs", async () => {
@@ -577,16 +587,54 @@ test("DirectPublicWebProvider accepts usable play_addr media when the browser do
   const provider = new DirectPublicWebProvider({
     browserService: fake.browserService,
     retries: 0,
-    contentWaitMs: 0,
+    videoContentWaitMs: 1_500,
     settleMs: 0
   });
 
+  const startedAt = Date.now();
   const result = await provider.readVideo({ awemeId: id });
 
   assert.equal(result.aweme.aweme_id, id);
   assert.deepEqual(result.aweme.video.play_addr.url_list, [embeddedMedia]);
   assert.deepEqual(result.networkMediaUrls, []);
   assert.equal(result.meta.network_media_count, 0);
+  assert.ok(Date.now() - startedAt < 1_000);
+});
+
+test("DirectPublicWebProvider primes ordinary muted playback once to expose public media", async () => {
+  const id = "7670118101211453413";
+  const publicMedia = `https://v3-dy-o.douyinvod.com/${id}.mp4?signature=playback`;
+  const fake = fakeBrowserPage({
+    playbackResponses: [
+      jsonResponse(`https://www.douyin.com/aweme/v1/web/aweme/detail/?aweme_id=${id}`, {
+        aweme_detail: aweme(id)
+      }),
+      mediaResponse(publicMedia)
+    ],
+    videoDom: {
+      canonical: `https://www.douyin.com/video/${id}`,
+      title: "Public metadata",
+      description: "Public description",
+      media: [],
+      videoPresent: true,
+      durationSeconds: null,
+      width: null,
+      height: null,
+      hydration: []
+    }
+  });
+  const provider = new DirectPublicWebProvider({
+    browserService: fake.browserService,
+    retries: 0,
+    videoContentWaitMs: 1_500,
+    settleMs: 0
+  });
+
+  const result = await provider.readVideo({ awemeId: id });
+
+  assert.equal(fake.playbackPrimeCalls(), 1);
+  assert.equal(result.aweme.aweme_id, id);
+  assert.deepEqual(result.networkMediaUrls, [publicMedia]);
 });
 
 test("paginateTikHubPosts stops only when the public upstream is exhausted", async () => {

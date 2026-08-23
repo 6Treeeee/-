@@ -358,6 +358,7 @@ async function videoDomSnapshot(page) {
       title: metaTitle,
       description: metaDescription,
       media: [...new Set(media)],
+      videoPresent: Boolean(video),
       durationSeconds: Number.isFinite(video?.duration) ? video.duration : null,
       width: video?.videoWidth || null,
       height: video?.videoHeight || null,
@@ -510,6 +511,27 @@ async function profileDomSnapshot(page) {
   }, {
     source: PROFILE_POSTS_LOGIN_BOUNDARY_PATTERN_SOURCE,
     texts: PROFILE_POSTS_LOGIN_BOUNDARY_TEXTS
+  });
+}
+
+async function primePublicVideoPlayback(page) {
+  return evaluateStable(page, () => {
+    const video = document.querySelector("video");
+    if (!video) return false;
+    video.muted = true;
+    video.preload = "auto";
+    const declaredSource = video.getAttribute("src") ||
+      video.querySelector("source")?.getAttribute("src");
+    try {
+      if (!video.currentSrc && declaredSource) video.load();
+      const playback = video.play();
+      if (playback && typeof playback.catch === "function") {
+        playback.catch(() => {});
+      }
+    } catch {
+      // Autoplay policies may reject playback; passive capture continues.
+    }
+    return true;
   });
 }
 
@@ -796,6 +818,7 @@ export class DirectPublicWebProvider {
 
         const deadline = Date.now() + this.videoContentWaitMs;
         let dom = await videoDomSnapshot(page);
+        let playbackPrimed = false;
         while (Date.now() < deadline) {
           await capture.drain();
           dom = await videoDomSnapshot(page);
@@ -803,7 +826,11 @@ export class DirectPublicWebProvider {
           const visibleMedia = dom.media.length > 0 || capture.state.media.size > 0;
           const failure = accessError(access, { hasPublicContent: Boolean(capture.state.aweme || visibleMedia) });
           if (failure) throw failure;
-          if (capture.state.aweme && visibleMedia) break;
+          const embeddedMedia = embeddedAwemeMediaUrls(capture.state.aweme);
+          if (capture.state.aweme && (visibleMedia || embeddedMedia.length > 0)) break;
+          if (!playbackPrimed && dom.videoPresent) {
+            playbackPrimed = await primePublicVideoPlayback(page);
+          }
           await delay(250);
         }
 

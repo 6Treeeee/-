@@ -9,7 +9,7 @@ import {
   stat,
   writeFile
 } from "node:fs/promises";
-import { availableParallelism, tmpdir } from "node:os";
+import { tmpdir } from "node:os";
 import { basename, dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawn } from "node:child_process";
@@ -34,8 +34,11 @@ const DEFAULT_MAX_INPUT_BYTES = 25 * 1024 * 1024;
 // repeatedly loading the model inside the Function deadline.
 const DEFAULT_MAX_DURATION_MS = 280_000;
 const DEFAULT_TIMEOUT_MS = 280_000;
-const DEFAULT_THREADS = Math.max(1, Math.min(2, availableParallelism()));
-const DEFAULT_RESPONSE_RESERVE_MS = 5_000;
+// The Vercel runtime may report one available CPU even though the pinned
+// whisper.cpp binary is measurably faster with two worker threads there. The
+// process-local queue below still limits inference to one job at a time.
+const DEFAULT_THREADS = 2;
+const DEFAULT_RESPONSE_RESERVE_MS = 4_000;
 const DEFAULT_QUEUE_WAIT_MS = 20_000;
 const DEFAULT_MAX_QUEUED = 1;
 const DEFAULT_PREFLIGHT_TIMEOUT_MS = 10_000;
@@ -60,6 +63,11 @@ const DEFAULT_ASSET_ROOT = resolve(
 );
 
 let defaultRuntimePromise = null;
+
+function logLocalAsr(event, details = {}) {
+  if (!process.env.VERCEL) return;
+  console.info(JSON.stringify({ event, ...details }));
+}
 
 function integerOption(value, { field, minimum, maximum }) {
   const number = Number(value);
@@ -691,6 +699,12 @@ export class LocalWhisperAsr {
     const release = await this._acquireSlot();
     const startedAt = Date.now();
     try {
+      logLocalAsr("local_asr.started", {
+        input_bytes: input.byteLength,
+        media_type: inputMediaType || "unknown",
+        duration_ms: duration,
+        threads: this.threads
+      });
       let preparedBytes = input;
       let extension = directExtension;
       let audioPreprocessing = null;
@@ -739,18 +753,38 @@ export class LocalWhisperAsr {
           { status: 503, details: { stage: "deadline" } }
         );
       }
+      const inferenceTimeoutMs = Math.min(this.timeoutMs, remainingMs);
+      logLocalAsr("local_asr.inference_started", {
+        prepared_bytes: preparedBytes.byteLength,
+        duration_ms: boundedDurationMs,
+        timeout_ms: inferenceTimeoutMs,
+        threads: this.threads,
+        elapsed_ms: Date.now() - startedAt
+      });
       const raw = await this.runImpl({
         runtime,
         bytes: preparedBytes,
         extension,
         durationMs: boundedDurationMs,
-        timeoutMs: Math.min(this.timeoutMs, remainingMs),
+        timeoutMs: inferenceTimeoutMs,
         threads: this.threads
       });
-      return parseWhisperJson(raw, {
+      const result = parseWhisperJson(raw, {
         processingMs: Date.now() - startedAt,
         audioPreprocessing
       });
+      logLocalAsr("local_asr.completed", {
+        duration_ms: boundedDurationMs,
+        segment_count: result.segments.length,
+        processing_ms: result.processing_ms
+      });
+      return result;
+    } catch (error) {
+      logLocalAsr("local_asr.failed", {
+        code: error?.code ?? "LOCAL_ASR_INTERNAL",
+        elapsed_ms: Date.now() - startedAt
+      });
+      throw error;
     } finally {
       release();
     }

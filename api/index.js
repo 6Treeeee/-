@@ -8,6 +8,8 @@ export const config = {
   maxDuration: 300
 };
 
+export const REQUEST_BUDGET_MS = 292_000;
+
 // The engine prepares and integrity-checks its pinned assets lazily on first
 // use. One instance also enforces one CPU transcription at a time per warm
 // Function process.
@@ -120,7 +122,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const requestDeadlineAt = startedAt + 285_000;
+    const requestDeadlineAt = startedAt + REQUEST_BUDGET_MS;
     const result = await withRequestDeadline(readPublicContent(input, {
       apiKey: process.env.TIKHUB_API_KEY,
       fetchImpl: globalThis.fetch,

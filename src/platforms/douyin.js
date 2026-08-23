@@ -256,8 +256,9 @@ export class DouyinReader {
       if (directProvider) configuredProviders.push(directProvider);
       else if (!client) configuredProviders.push(new DirectPublicWebProvider(
         hasLocalFallback ? {
-          videoNavigationTimeoutMs: 12_000,
-          videoContentWaitMs: 8_000,
+          videoNavigationTimeoutMs: 15_000,
+          videoContentWaitMs: 15_000,
+          retries: 1,
           retryDelayMs: 200
         } : {}
       ));

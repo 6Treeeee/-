@@ -135,6 +135,7 @@ test("LocalWhisperAsr keeps a bounded 273-second MP3 in one CLI invocation", asy
   });
 
   assert.equal(invocations.length, 1);
+  assert.equal(invocations[0].threads, 2);
   assert.equal(invocations[0].extension, ".mp3");
   assert.equal(invocations[0].durationMs, 273_834);
   assert.equal(invocations[0].timeoutMs, 280_000);

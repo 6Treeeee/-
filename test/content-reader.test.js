@@ -1,7 +1,12 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { resolveRuntimeGatewayAuth, withRequestDeadline } from "../api/index.js";
+import {
+  config,
+  REQUEST_BUDGET_MS,
+  resolveRuntimeGatewayAuth,
+  withRequestDeadline
+} from "../api/index.js";
 import { readPublicContent } from "../src/content-reader.js";
 import { DouyinReader } from "../src/platforms/douyin.js";
 import { TikHubClient, TIKHUB_ROUTES } from "../src/services/tikhub.js";
@@ -38,6 +43,7 @@ test("an explicit Gateway API key takes priority over request-scoped OIDC", asyn
 });
 
 test("the request deadline returns a safe service error before the platform timeout", async () => {
+  assert.equal(REQUEST_BUDGET_MS, config.maxDuration * 1_000 - 8_000);
   await assert.rejects(
     withRequestDeadline(new Promise(() => {}), Date.now() - 1),
     (error) => {
