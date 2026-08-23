@@ -1121,6 +1121,91 @@ test("DirectPublicWebProvider recovers when DOM is readable after navigation tim
   assert.equal(result.limitation.code, "LOGIN_REQUIRED_FOR_MORE_POSTS");
 });
 
+test("DirectPublicWebProvider recovers from a detached profile frame during navigation", async () => {
+  const detached = new Error("Attempted to use detached Frame 'A1B2C3'.");
+  const profileDom = {
+    listPresent: true,
+    links: [{ id: "100", kind: "video", title: "Public post" }],
+    explicitMoreGate: true,
+    pageTitle: "Creator的抖音",
+    description: "A public creator",
+    creator: {
+      nickname: "Creator",
+      signature: "Public signature",
+      aweme_count: 2,
+      aweme_count_text: "2"
+    }
+  };
+  const fake = fakeBrowserPage({
+    profileDom,
+    evaluateErrors: [detached],
+    access: {
+      explicitMoreGate: true,
+      securityChallenge: false,
+      privateContent: false,
+      unavailable: false,
+      loginRequired: false
+    }
+  });
+  const provider = new DirectPublicWebProvider({
+    browserService: fake.browserService,
+    retries: 0,
+    contentWaitMs: 0,
+    settleMs: 0,
+    maxScrollRounds: 1
+  });
+
+  const result = await provider.readProfile({ secUserId: "public-user" });
+
+  assert.deepEqual(result.items.map((item) => item.aweme_id), ["100"]);
+  assert.equal(result.meta.attempts, 1);
+});
+
+test("DirectPublicWebProvider retries a fresh page after persistent frame navigation races", async () => {
+  const profileDom = {
+    listPresent: true,
+    links: [{ id: "100", kind: "video", title: "Public post" }],
+    explicitMoreGate: true,
+    pageTitle: "Creator的抖音",
+    description: "A public creator",
+    creator: {
+      nickname: "Creator",
+      signature: "Public signature",
+      aweme_count: 2,
+      aweme_count_text: "2"
+    }
+  };
+  const fake = fakeBrowserPage({
+    profileDom,
+    evaluateErrors: [
+      new Error("Attempted to use detached Frame 'A'."),
+      new Error("Execution context is not available in detached frame or worker 'B'."),
+      new Error("Waiting failed: Frame detached"),
+      new Error("Requesting main frame too early!")
+    ],
+    access: {
+      explicitMoreGate: true,
+      securityChallenge: false,
+      privateContent: false,
+      unavailable: false,
+      loginRequired: false
+    }
+  });
+  const provider = new DirectPublicWebProvider({
+    browserService: fake.browserService,
+    retries: 1,
+    retryDelayMs: 0,
+    contentWaitMs: 0,
+    settleMs: 0,
+    maxScrollRounds: 1
+  });
+
+  const result = await provider.readProfile({ secUserId: "public-user" });
+
+  assert.deepEqual(result.items.map((item) => item.aweme_id), ["100"]);
+  assert.equal(result.meta.attempts, 2);
+});
+
 test("DirectPublicWebProvider makes a third bounded attempt for transient browser failures", async () => {
   const provider = new DirectPublicWebProvider({
     browserService: {},

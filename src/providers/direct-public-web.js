@@ -36,7 +36,7 @@ function delay(ms) {
 }
 
 function isExecutionContextRace(error) {
-  return /Execution context was destroyed|Cannot find context with specified id|Inspected target navigated or closed/i
+  return /Execution context was destroyed|Cannot find context with specified id|Inspected target navigated or closed|detached frame|frame(?: was| is)? detached|Requesting main frame too early/i
     .test(String(error?.message ?? ""));
 }
 
@@ -582,8 +582,8 @@ function accessError(access, { hasPublicContent = false } = {}) {
 
 function isTransientError(error) {
   if (error instanceof ReaderError) return RETRYABLE_CODES.has(error.code);
-  return error?.name === "TimeoutError" ||
-    /Navigation|Target closed|Session closed|Protocol error|net::ERR_|Execution context was destroyed/i
+  return error?.name === "TimeoutError" || isExecutionContextRace(error) ||
+    /Navigation|Target closed|Session closed|Protocol error|net::ERR_/i
       .test(String(error?.message ?? ""));
 }
 
@@ -731,7 +731,11 @@ export class DirectPublicWebProvider {
           if (error instanceof ReaderError) throw error;
           throw new ReaderError("DOUYIN_PUBLIC_WEB_FAILED", "The public Douyin browser request failed.", {
             status: 502,
-            details: { provider: PROVIDER, target: targetDiagnostic(target) },
+            details: {
+              provider: PROVIDER,
+              target: targetDiagnostic(target),
+              cause: causeDiagnostic(error)
+            },
             cause: error
           });
         }
