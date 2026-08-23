@@ -258,7 +258,7 @@ export class DouyinReader {
         hasLocalFallback ? {
           videoNavigationTimeoutMs: 15_000,
           videoContentWaitMs: 15_000,
-          retries: 1,
+          retries: 2,
           retryDelayMs: 200
         } : {}
       ));

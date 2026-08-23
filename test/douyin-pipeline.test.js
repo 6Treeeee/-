@@ -298,7 +298,7 @@ test("DouyinReader reserves a bounded retrieval window when local ASR is availab
   assert.equal(tikhub.client.retries, 0);
   assert.equal(direct.videoNavigationTimeoutMs, 15_000);
   assert.equal(direct.videoContentWaitMs, 15_000);
-  assert.equal(direct.retries, 1);
+  assert.equal(direct.retries, 2);
   assert.deepEqual(reader.orderFor("video").slice(0, 2), ["direct_public_web", "tikhub"]);
 });
 
