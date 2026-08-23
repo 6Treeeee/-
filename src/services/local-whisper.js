@@ -354,6 +354,34 @@ async function defaultProbeImpl({ runtime, timeoutMs }) {
   });
 }
 
+export function buildWhisperCliArgs({
+  modelPath,
+  inputPath,
+  outputPrefix,
+  durationMs,
+  threads
+}) {
+  return [
+    "-m", modelPath,
+    "-f", inputPath,
+    "-l", "auto",
+    // The pinned b4938 CLI accepts millisecond duration windows. Bound the
+    // actual decoded input as well as trusting the public page metadata.
+    "-d", String(durationMs),
+    "-t", String(threads),
+    // The CLI otherwise selects five-beam decoding and full token alignment.
+    // One greedy candidate plus segment-level JSON keeps long synchronous
+    // videos bounded while preserving complete text and segment timestamps.
+    "-bs", "1",
+    "-bo", "1",
+    "-nf",
+    "-ng",
+    "-oj",
+    "-of", outputPrefix,
+    "-np"
+  ];
+}
+
 async function defaultRunImpl({ runtime, bytes, extension, durationMs: boundedDurationMs, timeoutMs, threads }) {
   const jobRoot = join(tmpdir(), `content-reader-asr-${randomUUID()}`);
   const inputPath = join(jobRoot, `input${extension}`);
@@ -364,19 +392,13 @@ async function defaultRunImpl({ runtime, bytes, extension, durationMs: boundedDu
     await writeFile(inputPath, bytes, { mode: 0o600 });
     await spawnWhisper({
       binaryPath: runtime.binaryPath,
-      args: [
-        "-m", runtime.modelPath,
-        "-f", inputPath,
-        "-l", "auto",
-        // The pinned b4938 CLI accepts millisecond duration windows. Bound the
-        // actual decoded input as well as trusting the public page metadata.
-        "-d", String(boundedDurationMs),
-        "-t", String(threads),
-        "-ng",
-        "-ojf",
-        "-of", outputPrefix,
-        "-np"
-      ],
+      args: buildWhisperCliArgs({
+        modelPath: runtime.modelPath,
+        inputPath,
+        outputPrefix,
+        durationMs: boundedDurationMs,
+        threads
+      }),
       cwd: runtime.libraryPath,
       env: {
         ...process.env,
@@ -474,15 +496,19 @@ export function parseWhisperJson(payload, {
     previousEnd = end;
     return { ...segment, start_ms: start, end_ms: end };
   });
+  const overallConfidence = probability(confidences);
   return {
     text: compactText(segments.map((segment) => segment.text).join("\n")),
     segments,
     language: compactText(payload?.result?.language) || null,
     method: "local_whisper_cpp_base_q5_1",
-    confidence: probability(confidences),
+    confidence: overallConfidence,
     limitations: [
       "quantized_base_model_lower_accuracy",
-      "confidence_is_mean_token_probability",
+      overallConfidence === null
+        ? "confidence_unavailable_without_token_alignment"
+        : "confidence_is_mean_token_probability",
+      "bounded_single_candidate_decode",
       "domain_terms_and_homophones_may_be_inaccurate"
     ],
     engine: {

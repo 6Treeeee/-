@@ -5,6 +5,7 @@ import test from "node:test";
 
 import { publicError, ReaderError } from "../src/errors.js";
 import {
+  buildWhisperCliArgs,
   createLocalWhisperAsr,
   isLocalWhisperAvailable,
   LocalWhisperAsr,
@@ -40,6 +41,24 @@ function runtime() {
     modelName: "whisper-base-q5_1-multilingual"
   };
 }
+
+test("bounded Whisper CLI decoding preserves segment JSON without five-beam token alignment", () => {
+  const args = buildWhisperCliArgs({
+    modelPath: "/runtime/model.bin",
+    inputPath: "/tmp/input.mp3",
+    outputPrefix: "/tmp/result",
+    durationMs: 273_834,
+    threads: 2
+  });
+
+  assert.deepEqual(args.slice(args.indexOf("-bs"), args.indexOf("-bs") + 7), [
+    "-bs", "1", "-bo", "1", "-nf", "-ng", "-oj"
+  ]);
+  assert.equal(args.includes("-ojf"), false);
+  assert.deepEqual(args.slice(args.indexOf("-d"), args.indexOf("-d") + 4), [
+    "-d", "273834", "-t", "2"
+  ]);
+});
 
 test("parseWhisperJson preserves timestamps and reports real token probability", () => {
   const result = parseWhisperJson(RAW_RESULT, { processingMs: 1234 });
@@ -81,6 +100,9 @@ test("parseWhisperJson sorts and clamps overlapping segments to monotonic timest
     { start_ms: 1200, end_ms: 2000 },
     { start_ms: 2000, end_ms: 3000 }
   ]);
+  assert.equal(result.confidence, null);
+  assert.ok(result.limitations.includes("confidence_unavailable_without_token_alignment"));
+  assert.ok(result.limitations.includes("bounded_single_candidate_decode"));
 });
 
 test("LocalWhisperAsr passes duration-matched public MP3 directly to whisper.cpp", async () => {
