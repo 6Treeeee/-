@@ -28,7 +28,8 @@ const TERMINAL_ACCESS_CODES = new Set([
 ]);
 const RETRYABLE_CODES = new Set([
   "DOUYIN_PUBLIC_WEB_TRANSIENT",
-  "DOUYIN_PUBLIC_WEB_EMPTY_RESULT"
+  "DOUYIN_PUBLIC_WEB_EMPTY_RESULT",
+  "DOUYIN_PUBLIC_WEB_IDENTITY_MISMATCH"
 ]);
 
 function delay(ms) {
@@ -109,8 +110,14 @@ function secUserIdFromUrl(value) {
 
 function videoTarget({ inputUrl, resolvedUrl, awemeId }) {
   const id = String(awemeId ?? awemeIdFromUrl(resolvedUrl) ?? awemeIdFromUrl(inputUrl) ?? "");
-  if (/^\d+$/.test(id)) return { target: `https://www.douyin.com/video/${id}`, awemeId: id };
-  return { target: validatedTarget(resolvedUrl ?? inputUrl), awemeId: null };
+  if (/^\d+$/.test(id)) {
+    return {
+      target: `https://www.douyin.com/video/${id}`,
+      retryTarget: `https://www.iesdouyin.com/share/video/${id}`,
+      awemeId: id
+    };
+  }
+  return { target: validatedTarget(resolvedUrl ?? inputUrl), retryTarget: null, awemeId: null };
 }
 
 function profileTarget({ inputUrl, resolvedUrl, secUserId }) {
@@ -204,6 +211,7 @@ function mergeSignals(target, source) {
 function createCapture({ expectedAwemeId = null, expectedSecUserId = null } = {}) {
   const state = {
     aweme: null,
+    mismatchedAwemeIds: [],
     profilePayloads: [],
     postPages: [],
     media: new Map(),
@@ -248,7 +256,11 @@ function createCapture({ expectedAwemeId = null, expectedSecUserId = null } = {}
     if (parsed.path === DETAIL_PATH) {
       const aweme = extractAweme(payload);
       const id = postIdentity(aweme);
-      if (aweme && (!expectedAwemeId || !id || id === expectedAwemeId)) state.aweme = aweme;
+      if (aweme && expectedAwemeId && id !== expectedAwemeId) {
+        if (!state.mismatchedAwemeIds.includes(id ?? null)) state.mismatchedAwemeIds.push(id ?? null);
+      } else if (aweme) {
+        state.aweme = aweme;
+      }
       return;
     }
 
@@ -628,6 +640,33 @@ function responseStatusError(response, target) {
   return null;
 }
 
+async function responseStatusErrorWithAccess(page, response, target) {
+  const statusError = responseStatusError(response, target);
+  if (!statusError || response?.status?.() !== 403) return statusError;
+  try {
+    return accessError(await pageAccessSnapshot(page), { hasPublicContent: false }) ?? statusError;
+  } catch {
+    return statusError;
+  }
+}
+
+function identityMismatchError(target, expectedAwemeId, observedAwemeId, source) {
+  return new ReaderError(
+    "DOUYIN_PUBLIC_WEB_IDENTITY_MISMATCH",
+    "The public Douyin page returned a different video identity.",
+    {
+      status: 502,
+      details: {
+        provider: PROVIDER,
+        target: targetDiagnostic(target),
+        expected_aweme_id: expectedAwemeId,
+        observed_aweme_id: observedAwemeId,
+        source
+      }
+    }
+  );
+}
+
 async function recoverReadableNavigationTimeout(page, error) {
   if (error?.name !== "TimeoutError") return false;
   const current = safeUrl(typeof page.url === "function" ? page.url() : null);
@@ -720,8 +759,9 @@ export class DirectPublicWebProvider {
   async runWithRetry(operation, target) {
     let lastError;
     for (let attempt = 0; attempt <= this.retries; attempt += 1) {
+      const attemptTarget = typeof target === "function" ? target(attempt) : target;
       try {
-        const result = await operation();
+        const result = await operation(attempt, attemptTarget);
         result.meta = { ...result.meta, attempts: attempt + 1 };
         return result;
       } catch (error) {
@@ -733,13 +773,13 @@ export class DirectPublicWebProvider {
             status: 502,
             details: {
               provider: PROVIDER,
-              target: targetDiagnostic(target),
+              target: targetDiagnostic(attemptTarget),
               cause: causeDiagnostic(error)
             },
             cause: error
           });
         }
-        lastError = error instanceof ReaderError ? error : transientError(error, target);
+        lastError = error instanceof ReaderError ? error : transientError(error, attemptTarget);
         if (attempt < this.retries) await delay(this.retryDelayMs * (attempt + 1));
       }
     }
@@ -801,23 +841,23 @@ export class DirectPublicWebProvider {
 
   async readVideo({ inputUrl, resolvedUrl, awemeId } = {}) {
     const selected = videoTarget({ inputUrl, resolvedUrl, awemeId });
-    return this.runWithRetry(() => this.browser.withPage(async ({ page, runtime }) => {
+    return this.runWithRetry((_attempt, target) => this.browser.withPage(async ({ page, runtime }) => {
       const capture = createCapture({ expectedAwemeId: selected.awemeId });
       capture.attach(page);
       const acquiredAt = new Date().toISOString();
       try {
         let navigationResponse;
         try {
-          navigationResponse = await page.goto(selected.target, {
+          navigationResponse = await page.goto(target, {
             waitUntil: "domcontentloaded",
             ...(this.videoNavigationTimeoutMs ? { timeout: this.videoNavigationTimeoutMs } : {})
           });
         } catch (error) {
           if (!await recoverReadableNavigationTimeout(page, error)) {
-            throw transientError(error, selected.target, "The public Douyin video page did not load in time.");
+            throw transientError(error, target, "The public Douyin video page did not load in time.");
           }
         }
-        const statusError = responseStatusError(navigationResponse, selected.target);
+        const statusError = await responseStatusErrorWithAccess(page, navigationResponse, target);
         if (statusError) throw statusError;
 
         const deadline = Date.now() + this.videoContentWaitMs;
@@ -842,16 +882,43 @@ export class DirectPublicWebProvider {
         await capture.drain();
         dom = await videoDomSnapshot(page);
         const access = await pageAccessSnapshot(page);
-        const observedMediaUrls = [...new Set([
+        const rawObservedMediaUrls = [...new Set([
           ...capture.state.media.keys(),
           ...dom.media.filter((value) => /^https?:\/\//i.test(value))
         ])];
-        const hydration = hydratedAweme(dom.hydration);
-        const aweme = capture.state.aweme ?? hydration ?? fallbackAweme({
-          awemeId: selected.awemeId,
-          dom,
-          mediaUrls: observedMediaUrls
-        });
+        const canonicalPageId = awemeIdFromUrl(dom.canonical);
+        const finalUrlId = awemeIdFromUrl(typeof page.url === "function" ? page.url() : null);
+        if (selected.awemeId && canonicalPageId && canonicalPageId !== selected.awemeId) {
+          throw identityMismatchError(target, selected.awemeId, canonicalPageId, "canonical");
+        }
+        if (selected.awemeId && finalUrlId && finalUrlId !== selected.awemeId) {
+          throw identityMismatchError(target, selected.awemeId, finalUrlId, "page_url");
+        }
+        const finalPageId = canonicalPageId ?? finalUrlId;
+        const rawHydration = hydratedAweme(dom.hydration);
+        const hydrationId = postIdentity(rawHydration);
+        const hydrationMismatch = Boolean(
+          selected.awemeId && rawHydration && hydrationId !== selected.awemeId
+        );
+        if (hydrationMismatch && !capture.state.aweme) {
+          throw identityMismatchError(target, selected.awemeId, hydrationId, "hydration");
+        }
+        const detailMismatchId = capture.state.mismatchedAwemeIds[0];
+        if (selected.awemeId && capture.state.mismatchedAwemeIds.length > 0 &&
+            !capture.state.aweme && !(rawHydration && hydrationId === selected.awemeId)) {
+          throw identityMismatchError(target, selected.awemeId, detailMismatchId, "detail_response");
+        }
+        const hydration = !selected.awemeId || hydrationId === selected.awemeId ? rawHydration : null;
+        const hasIdentityConflict = hydrationMismatch || capture.state.mismatchedAwemeIds.length > 0;
+        const observedMediaUrls = hasIdentityConflict ? [] : rawObservedMediaUrls;
+        const fallback = (!selected.awemeId || finalPageId === selected.awemeId) && !hasIdentityConflict
+          ? fallbackAweme({ awemeId: selected.awemeId, dom, mediaUrls: observedMediaUrls })
+          : null;
+        const aweme = capture.state.aweme ?? hydration ?? fallback;
+        const observedAwemeId = postIdentity(aweme);
+        if (selected.awemeId && aweme && observedAwemeId !== selected.awemeId) {
+          throw identityMismatchError(target, selected.awemeId, observedAwemeId, "metadata");
+        }
         const usableMediaUrls = [...new Set([
           ...observedMediaUrls,
           ...embeddedAwemeMediaUrls(aweme)
@@ -871,7 +938,7 @@ export class DirectPublicWebProvider {
               status: 502,
               details: {
                 provider: PROVIDER,
-                target: targetDiagnostic(selected.target),
+                target: targetDiagnostic(target),
                 metadata_found: Boolean(aweme),
                 media_found: usableMediaUrls.length > 0
               }
@@ -886,7 +953,7 @@ export class DirectPublicWebProvider {
             provider: PROVIDER,
             method: "public_unauthenticated_browser",
             acquired_at: acquiredAt,
-            target: targetDiagnostic(selected.target),
+            target: targetDiagnostic(target),
             browser: runtime,
             endpoints_observed: [...capture.state.endpointPaths],
             network_media_count: capture.state.media.size,
@@ -904,7 +971,7 @@ export class DirectPublicWebProvider {
       } finally {
         capture.detach();
       }
-    }), selected.target);
+    }), (attempt) => attempt > 0 && selected.retryTarget ? selected.retryTarget : selected.target);
   }
 
   async readProfile({ inputUrl, resolvedUrl, secUserId } = {}) {
