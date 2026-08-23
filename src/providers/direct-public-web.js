@@ -36,6 +36,34 @@ function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+async function settleBeforeDeadline(promise, deadline) {
+  const guarded = Promise.resolve(promise).then(
+    (value) => ({ completed: true, value }),
+    () => ({ completed: true, value: null })
+  );
+  const remainingMs = deadline - Date.now();
+  if (remainingMs <= 0) return { completed: false, value: null };
+  let timer;
+  try {
+    return await Promise.race([
+      guarded,
+      new Promise((resolve) => {
+        timer = setTimeout(() => resolve({ completed: false, value: null }), remainingMs);
+      })
+    ]);
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function boundedPageAccessSnapshot(page, deadline, maxWaitMs = 750) {
+  const remainingMs = deadline - Date.now();
+  if (remainingMs <= 0) return null;
+  const snapshotDeadline = Date.now() + Math.min(maxWaitMs, remainingMs);
+  const result = await settleBeforeDeadline(pageAccessSnapshot(page), snapshotDeadline);
+  return result.completed ? result.value : null;
+}
+
 function isExecutionContextRace(error) {
   return /Execution context was destroyed|Cannot find context with specified id|Inspected target navigated or closed|detached frame|frame(?: was| is)? detached|Requesting main frame too early/i
     .test(String(error?.message ?? ""));
@@ -76,6 +104,20 @@ function safeUrl(value) {
 function isDouyinHost(host) {
   return host === "douyin.com" || host.endsWith(".douyin.com") ||
     host === "iesdouyin.com" || host.endsWith(".iesdouyin.com");
+}
+
+function exactPublicVideoPage(value, awemeId) {
+  const id = String(awemeId ?? "");
+  if (!/^\d+$/.test(id)) return null;
+  const parsed = safeUrl(value);
+  if (!parsed || parsed.url.protocol !== "https:" || parsed.url.username ||
+      parsed.url.password || parsed.url.port) return null;
+  const expectedPath = parsed.host === "www.douyin.com"
+    ? `/video/${id}`
+    : parsed.host === "www.iesdouyin.com"
+      ? `/share/video/${id}`
+      : null;
+  return expectedPath && parsed.path === expectedPath ? parsed : null;
 }
 
 function validatedTarget(value) {
@@ -216,6 +258,7 @@ function createCapture({ expectedAwemeId = null, expectedSecUserId = null } = {}
     postPages: [],
     media: new Map(),
     endpointPaths: new Set(),
+    mainDocument: null,
     signals: {
       loginRequired: false,
       securityChallenge: false,
@@ -230,6 +273,17 @@ function createCapture({ expectedAwemeId = null, expectedSecUserId = null } = {}
     const value = response.url();
     const parsed = safeUrl(value);
     if (!parsed) return;
+
+    try {
+      const request = response.request?.();
+      const frame = request?.frame?.();
+      const mainFrame = page?.mainFrame?.();
+      if (request?.isNavigationRequest?.() && frame && mainFrame && frame === mainFrame) {
+        state.mainDocument = { url: value, status: response.status() };
+      }
+    } catch {
+      // Navigation response diagnostics are optional; content capture continues.
+    }
 
     if (isMediaResponse(value, response)) {
       state.media.set(value, {
@@ -334,6 +388,7 @@ async function pageAccessSnapshot(page) {
     ].some((selector) => [...document.querySelectorAll(selector)].some(visible));
 
     return {
+      documentReadable: Boolean(document.documentElement && document.body),
       explicitMoreGate: Boolean(profilePostsBoundaryText),
       profilePostsBoundaryText,
       securityChallenge: visibleChallengeElement ||
@@ -641,20 +696,36 @@ function responseStatusError(response, target) {
   return null;
 }
 
-async function fetchPublicVideoDetail(page, awemeId, { timeoutMs = 6_000, maxBytes = 2_000_000 } = {}) {
+async function fetchPublicVideoDetail(page, awemeId, {
+  timeoutMs = 6_000,
+  totalTimeoutMs = 7_500,
+  maxBytes = 2_000_000,
+  exactPage = false
+} = {}) {
   if (!/^\d+$/.test(String(awemeId ?? ""))) return null;
+  let outerTimer;
   try {
-    return await evaluateStable(page, async ({ id, timeout, byteLimit }) => {
-      const host = location.hostname.toLowerCase();
-      const trustedOrigin = location.protocol === "https:" && (
+    const evaluation = evaluateStable(page, async ({ id, timeout, byteLimit, requireExactPage }) => {
+      const current = new URL(location.href);
+      const host = current.hostname.toLowerCase();
+      const trustedOrigin = current.protocol === "https:" && (
         host === "douyin.com" || host.endsWith(".douyin.com") ||
         host === "iesdouyin.com" || host.endsWith(".iesdouyin.com")
       );
       if (!trustedOrigin) return null;
+      if (requireExactPage) {
+        const expectedPath = host === "www.douyin.com"
+          ? `/video/${id}`
+          : host === "www.iesdouyin.com"
+            ? `/share/video/${id}`
+            : null;
+        if (!expectedPath || current.pathname !== expectedPath || current.username ||
+            current.password || current.port) return null;
+      }
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), timeout);
       try {
-        const endpoint = new URL("/aweme/v1/web/aweme/detail/", location.origin);
+        const endpoint = new URL("/aweme/v1/web/aweme/detail/", current.origin);
         endpoint.searchParams.set("aweme_id", id);
         const response = await fetch(endpoint, {
           method: "GET",
@@ -700,9 +771,20 @@ async function fetchPublicVideoDetail(page, awemeId, { timeoutMs = 6_000, maxByt
       } finally {
         clearTimeout(timer);
       }
-    }, { id: String(awemeId), timeout: timeoutMs, byteLimit: maxBytes });
+    }, {
+      id: String(awemeId),
+      timeout: Math.max(1, Number(timeoutMs)),
+      byteLimit: maxBytes,
+      requireExactPage: Boolean(exactPage)
+    });
+    const outerTimeout = new Promise((resolve) => {
+      outerTimer = setTimeout(() => resolve(null), Math.max(1, Number(totalTimeoutMs)));
+    });
+    return await Promise.race([evaluation, outerTimeout]);
   } catch {
     return null;
+  } finally {
+    clearTimeout(outerTimer);
   }
 }
 
@@ -761,6 +843,87 @@ async function recoverReadableNavigationTimeout(page, error) {
   }
 }
 
+async function recoverExactVideoDetailAfterNavigationTimeout({
+  page,
+  capture,
+  error,
+  expectedAwemeId,
+  target,
+  detailTimeoutMs,
+  detailTotalTimeoutMs
+}) {
+  if (error?.name !== "TimeoutError" || !/^\d+$/.test(String(expectedAwemeId ?? ""))) {
+    return null;
+  }
+  const configuredTotalMs = Number(detailTotalTimeoutMs);
+  const deadline = Date.now() + (
+    Number.isFinite(configuredTotalMs) ? Math.max(1, configuredTotalMs) : 7_500
+  );
+  const current = exactPublicVideoPage(
+    typeof page.url === "function" ? page.url() : null,
+    expectedAwemeId
+  );
+  if (!current) return null;
+
+  const responseTurn = await settleBeforeDeadline(delay(0), deadline);
+  if (!responseTurn.completed) return null;
+  const initialDrain = await settleBeforeDeadline(capture.drain(), deadline);
+  if (!initialDrain.completed) return null;
+  const mainDocument = capture.state.mainDocument;
+  if (mainDocument?.status !== 200 ||
+      !exactPublicVideoPage(mainDocument.url, expectedAwemeId)) return null;
+
+  const preDetailAccess = await boundedPageAccessSnapshot(page, deadline);
+  const combinedAccess = { ...capture.state.signals };
+  if (preDetailAccess) mergeSignals(combinedAccess, preDetailAccess);
+  const capturedFailure = accessError(combinedAccess, { hasPublicContent: false });
+  if (capturedFailure) throw capturedFailure;
+
+  const remainingDetailMs = deadline - Date.now();
+  if (remainingDetailMs <= 0) return null;
+
+  const publicDetail = await fetchPublicVideoDetail(page, expectedAwemeId, {
+    timeoutMs: Math.min(detailTimeoutMs, remainingDetailMs),
+    totalTimeoutMs: remainingDetailMs,
+    exactPage: true
+  });
+  if (Date.now() >= deadline) return null;
+  const finalDrain = await settleBeforeDeadline(capture.drain(), deadline);
+  if (!finalDrain.completed) return null;
+
+  const validPayload = publicDetail?.payload && typeof publicDetail.payload === "object" &&
+    !Array.isArray(publicDetail.payload);
+  if (validPayload) mergeSignals(combinedAccess, readAccessSignals(publicDetail.payload));
+  mergeSignals(combinedAccess, capture.state.signals);
+  const postDetailAccess = await boundedPageAccessSnapshot(page, deadline);
+  if (!postDetailAccess) return null;
+  mergeSignals(combinedAccess, postDetailAccess);
+  const detailFailure = accessError(combinedAccess, { hasPublicContent: false });
+  if (detailFailure) throw detailFailure;
+  if (postDetailAccess.documentReadable !== true) return null;
+  const finalPage = exactPublicVideoPage(
+    typeof page.url === "function" ? page.url() : null,
+    expectedAwemeId
+  );
+  if (Date.now() >= deadline || !finalPage) return null;
+  if (publicDetail?.status !== 200 || !validPayload) return null;
+
+  const aweme = extractAweme(publicDetail.payload);
+  const observedAwemeId = postIdentity(aweme);
+  if (aweme && observedAwemeId !== expectedAwemeId) {
+    throw identityMismatchError(
+      target,
+      expectedAwemeId,
+      observedAwemeId,
+      "navigation_timeout_detail"
+    );
+  }
+  if (!aweme || embeddedAwemeMediaUrls(aweme).length === 0) return null;
+
+  capture.state.endpointPaths.add(DETAIL_PATH);
+  return { aweme, current: finalPage };
+}
+
 function paginationState(postPages) {
   const seenRequestCursors = new Set();
   let repeatedCursor = null;
@@ -813,6 +976,8 @@ export class DirectPublicWebProvider {
     contentWaitMs = 22_000,
     videoContentWaitMs = contentWaitMs,
     videoNavigationTimeoutMs = null,
+    videoDetailTimeoutMs = 6_000,
+    videoDetailTotalTimeoutMs = 7_500,
     settleMs = 700,
     maxScrollRounds = 30,
     stableScrollRounds = 3
@@ -828,6 +993,12 @@ export class DirectPublicWebProvider {
       videoNavigationTimeoutMs !== undefined && Number.isFinite(Number(videoNavigationTimeoutMs))
       ? Math.max(1_000, Number(videoNavigationTimeoutMs))
       : null;
+    this.videoDetailTimeoutMs = Number.isFinite(Number(videoDetailTimeoutMs))
+      ? Math.max(1, Number(videoDetailTimeoutMs))
+      : 6_000;
+    this.videoDetailTotalTimeoutMs = Number.isFinite(Number(videoDetailTotalTimeoutMs))
+      ? Math.max(1, Number(videoDetailTotalTimeoutMs))
+      : 7_500;
     this.settleMs = settleMs;
     this.maxScrollRounds = maxScrollRounds;
     this.stableScrollRounds = stableScrollRounds;
@@ -929,6 +1100,7 @@ export class DirectPublicWebProvider {
       const acquiredAt = new Date().toISOString();
       try {
         let navigationResponse;
+        let timeoutDetailRecovery = null;
         try {
           navigationResponse = await page.goto(target, {
             waitUntil: "domcontentloaded",
@@ -936,8 +1108,42 @@ export class DirectPublicWebProvider {
           });
         } catch (error) {
           if (!await recoverReadableNavigationTimeout(page, error)) {
-            throw transientError(error, target, "The public Douyin video page did not load in time.");
+            timeoutDetailRecovery = await recoverExactVideoDetailAfterNavigationTimeout({
+              page,
+              capture,
+              error,
+              expectedAwemeId: selected.awemeId,
+              target,
+              detailTimeoutMs: this.videoDetailTimeoutMs,
+              detailTotalTimeoutMs: this.videoDetailTotalTimeoutMs
+            });
+            if (!timeoutDetailRecovery) {
+              throw transientError(error, target, "The public Douyin video page did not load in time.");
+            }
           }
+        }
+        if (timeoutDetailRecovery) {
+          return {
+            aweme: timeoutDetailRecovery.aweme,
+            networkMediaUrls: [],
+            meta: {
+              provider: PROVIDER,
+              method: "public_unauthenticated_browser",
+              acquired_at: acquiredAt,
+              target: targetDiagnostic(target),
+              browser: runtime,
+              endpoints_observed: [...capture.state.endpointPaths],
+              network_media_count: 0,
+              network_media_hosts: [],
+              navigation_timeout_recovery: "same_origin_public_detail",
+              page: {
+                title: null,
+                description: null,
+                canonical_host: timeoutDetailRecovery.current.host,
+                canonical_path: timeoutDetailRecovery.current.path
+              }
+            }
+          };
         }
         const statusError = await responseStatusErrorWithAccess(page, navigationResponse, target);
         if (statusError) throw statusError;
@@ -1013,7 +1219,10 @@ export class DirectPublicWebProvider {
           (embeddedAwemeMediaUrls(preliminaryAweme).length === 0 && preliminaryMediaUrls.length === 0)
         );
         if (needsExplicitDetail) {
-          const publicDetail = await fetchPublicVideoDetail(page, selected.awemeId);
+          const publicDetail = await fetchPublicVideoDetail(page, selected.awemeId, {
+            timeoutMs: this.videoDetailTimeoutMs,
+            totalTimeoutMs: this.videoDetailTotalTimeoutMs
+          });
           if (publicDetail?.payload) {
             mergeSignals(capture.state.signals, readAccessSignals(publicDetail.payload));
             if (publicDetail.status === 200) {

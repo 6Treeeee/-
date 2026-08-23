@@ -129,21 +129,40 @@ function fakeBrowserPage({
   profileDom = null,
   resolutionDom = null,
   access = null,
+  accessResponses = [],
+  accessEvaluateRejectAfterMs = null,
+  accessEvaluateSyncDelayMs = 0,
   gotoError = null,
   gotoStatus = 200,
+  mainDocumentStatus = null,
+  mainDocumentUrl = null,
+  mainDocumentResponseMicrotaskDelay = 0,
   publicDetail = null,
   publicDetailResponse = null,
+  publicDetailResponseJsonNever = false,
+  publicDetailNever = false,
+  pageContextUrl = null,
+  currentUrlAfterPublicDetail = null,
+  pageContextUrlAfterPublicDetail = null,
+  navigationReadable = true,
   videoDomResponses = [],
   evaluateErrors = [],
   currentUrl = "https://www.douyin.com/"
 }) {
   const responseListeners = new Set();
+  const mainFrame = {};
   let listenerAttachedBeforeNavigation = false;
   let navigatedTo = null;
   let playbackPrimeCalls = 0;
+  let publicDetailCalls = 0;
+  let videoDomCalls = 0;
+  let activeCurrentUrl = currentUrl;
+  let activePageContextUrl = pageContextUrl ?? currentUrl;
   const pendingEvaluateErrors = [...evaluateErrors];
   const pendingVideoDomResponses = [...videoDomResponses];
+  const pendingAccessResponses = [...accessResponses];
   const safeAccess = access ?? {
+    documentReadable: true,
     explicitMoreGate: false,
     securityChallenge: false,
     privateContent: false,
@@ -161,6 +180,29 @@ function fakeBrowserPage({
     async goto(value) {
       navigatedTo = String(value);
       listenerAttachedBeforeNavigation = responseListeners.size > 0;
+      if (mainDocumentStatus !== null && mainDocumentStatus !== undefined) {
+        const response = {
+          url: () => mainDocumentUrl ?? activeCurrentUrl,
+          status: () => mainDocumentStatus,
+          headers: () => ({ "content-type": "text/html" }),
+          request: () => ({
+            isNavigationRequest: () => true,
+            frame: () => mainFrame
+          })
+        };
+        const emitMainDocument = () => {
+          for (const listener of responseListeners) listener(response);
+        };
+        if (mainDocumentResponseMicrotaskDelay > 0) {
+          let delivery = Promise.resolve();
+          for (let index = 0; index < mainDocumentResponseMicrotaskDelay; index += 1) {
+            delivery = delivery.then(() => undefined);
+          }
+          void delivery.then(emitMainDocument);
+        } else {
+          emitMainDocument();
+        }
+      }
       for (const response of responses) {
         for (const listener of responseListeners) listener(response);
       }
@@ -168,12 +210,16 @@ function fakeBrowserPage({
       return { status: () => gotoStatus };
     },
     url() {
-      return currentUrl;
+      return activeCurrentUrl;
     },
-    async evaluate(operation) {
+    mainFrame() {
+      return mainFrame;
+    },
+    async evaluate(operation, argument) {
       if (pendingEvaluateErrors.length) throw pendingEvaluateErrors.shift();
       const source = operation.toString();
-      if (source.includes("document.documentElement && document.body")) return true;
+      if (source.includes("document.documentElement && document.body") &&
+          !source.includes("visibleChallengeElement")) return navigationReadable;
       if (source.includes('video.preload = "auto"')) {
         playbackPrimeCalls += 1;
         for (const response of playbackResponses) {
@@ -182,6 +228,7 @@ function fakeBrowserPage({
         return true;
       }
       if (source.includes("durationSeconds")) {
+        videoDomCalls += 1;
         if (!videoDom) throw new Error("Unexpected video DOM snapshot");
         const response = pendingVideoDomResponses.shift();
         if (response) {
@@ -190,8 +237,38 @@ function fakeBrowserPage({
         return videoDom;
       }
       if (source.includes('endpoint.searchParams.set("aweme_id"')) {
+        publicDetailCalls += 1;
+        if (argument?.requireExactPage) {
+          let context;
+          try {
+            context = new URL(activePageContextUrl);
+          } catch {
+            return null;
+          }
+          const expectedPath = context.hostname === "www.douyin.com"
+            ? `/video/${argument.id}`
+            : context.hostname === "www.iesdouyin.com"
+              ? `/share/video/${argument.id}`
+              : null;
+          if (context.protocol !== "https:" || context.username || context.password ||
+              context.port || !expectedPath || context.pathname !== expectedPath) return null;
+        }
+        if (publicDetailNever) return new Promise(() => {});
         if (publicDetailResponse) {
-          for (const listener of responseListeners) listener(publicDetailResponse);
+          const emittedResponse = publicDetailResponseJsonNever
+            ? {
+                url: () => publicDetailResponse.url(),
+                status: () => publicDetailResponse.status(),
+                headers: () => publicDetailResponse.headers(),
+                request: () => publicDetailResponse.request?.(),
+                json: () => new Promise(() => {})
+              }
+            : publicDetailResponse;
+          for (const listener of responseListeners) listener(emittedResponse);
+        }
+        if (currentUrlAfterPublicDetail !== null) activeCurrentUrl = currentUrlAfterPublicDetail;
+        if (pageContextUrlAfterPublicDetail !== null) {
+          activePageContextUrl = pageContextUrlAfterPublicDetail;
         }
         return publicDetail;
       }
@@ -203,7 +280,23 @@ function fakeBrowserPage({
         if (!resolutionDom) throw new Error("Unexpected resolution DOM snapshot");
         return resolutionDom;
       }
-      if (source.includes("visibleChallengeElement")) return safeAccess;
+      if (source.includes("visibleChallengeElement")) {
+        if (accessEvaluateRejectAfterMs !== null) {
+          const rejection = new Promise((_, reject) => {
+            setTimeout(
+              () => reject(new Error("late page access evaluation failure")),
+              accessEvaluateRejectAfterMs
+            );
+          });
+          const blockedUntil = Date.now() + accessEvaluateSyncDelayMs;
+          while (Date.now() < blockedUntil) {
+            // Make the recovery deadline expire after evaluate starts but before it returns.
+          }
+          return rejection;
+        }
+        const nextAccess = pendingAccessResponses.length ? pendingAccessResponses.shift() : safeAccess;
+        return typeof nextAccess === "function" ? nextAccess() : nextAccess;
+      }
       if (source.includes("scrollIntoView")) return null;
       throw new Error(`Unexpected browser evaluate operation: ${source.slice(0, 80)}`);
     }
@@ -218,7 +311,9 @@ function fakeBrowserPage({
     },
     listenerWasAttached: () => listenerAttachedBeforeNavigation,
     navigatedTo: () => navigatedTo,
-    playbackPrimeCalls: () => playbackPrimeCalls
+    playbackPrimeCalls: () => playbackPrimeCalls,
+    publicDetailCalls: () => publicDetailCalls,
+    videoDomCalls: () => videoDomCalls
   };
 }
 
@@ -735,6 +830,647 @@ test("DirectPublicWebProvider fetches same-page public detail when cloud playbac
   assert.deepEqual(result.aweme.video.play_addr.url_list, [publicMedia]);
   assert.deepEqual(result.networkMediaUrls, []);
   assert.deepEqual(result.meta.endpoints_observed, ["/aweme/v1/web/aweme/detail/"]);
+});
+
+test("DirectPublicWebProvider recovers an exact public video from detail after navigation timeout", async (t) => {
+  const id = "7665909560732851961";
+  const timeout = new Error("Navigation timeout of 15000 ms exceeded");
+  timeout.name = "TimeoutError";
+
+  for (const [label, currentUrl] of [
+    ["www video", `https://www.douyin.com/video/${id}`],
+    ["ies share video", `https://www.iesdouyin.com/share/video/${id}`]
+  ]) {
+    await t.test(label, async () => {
+      const publicMedia = `https://v3-dy-o.douyinvod.com/${id}-${label.replaceAll(" ", "-")}.mp4`;
+      const fake = fakeBrowserPage({
+        gotoError: timeout,
+        mainDocumentStatus: 200,
+        navigationReadable: false,
+        currentUrl,
+        publicDetail: {
+          status: 200,
+          payload: {
+            aweme_detail: aweme(id, {
+              video: {
+                duration: 273_834,
+                play_addr: { url_list: [publicMedia] }
+              }
+            })
+          }
+        }
+      });
+      const provider = new DirectPublicWebProvider({
+        browserService: fake.browserService,
+        retries: 0,
+        retryDelayMs: 0,
+        videoContentWaitMs: 0,
+        settleMs: 0
+      });
+
+      const result = await provider.readVideo({ awemeId: id });
+
+      assert.equal(result.aweme.aweme_id, id);
+      assert.deepEqual(result.aweme.video.play_addr.url_list, [publicMedia]);
+      assert.deepEqual(result.networkMediaUrls, []);
+      assert.equal(fake.publicDetailCalls(), 1);
+      assert.equal(fake.videoDomCalls(), 0);
+    });
+  }
+});
+
+test("DirectPublicWebProvider never fetches timeout detail from an inexact page or failed document", async (t) => {
+  const id = "7665909560732851961";
+  const timeout = new Error("Navigation timeout of 15000 ms exceeded");
+  timeout.name = "TimeoutError";
+  const cases = [
+    ["lookalike host", `https://www.douyin.com.attacker.example/video/${id}`, 200],
+    ["unencrypted page", `http://www.douyin.com/video/${id}`, 200],
+    ["wrong path identity", "https://www.iesdouyin.com/share/video/7645519843839544630", 200],
+    ["non-200 main document", `https://www.iesdouyin.com/share/video/${id}`, 403]
+  ];
+
+  for (const [label, currentUrl, mainDocumentStatus] of cases) {
+    await t.test(label, async () => {
+      const fake = fakeBrowserPage({
+        gotoError: timeout,
+        mainDocumentStatus,
+        navigationReadable: false,
+        currentUrl,
+        publicDetail: {
+          status: 200,
+          payload: { aweme_detail: aweme(id) }
+        }
+      });
+      const provider = new DirectPublicWebProvider({
+        browserService: fake.browserService,
+        retries: 0,
+        retryDelayMs: 0,
+        videoContentWaitMs: 0,
+        settleMs: 0
+      });
+
+      await assert.rejects(
+        provider.readVideo({ awemeId: id }),
+        (error) => error instanceof ReaderError && error.code === "DOUYIN_PUBLIC_WEB_TRANSIENT"
+      );
+      assert.equal(fake.publicDetailCalls(), 0);
+      assert.equal(fake.videoDomCalls(), 0);
+    });
+  }
+});
+
+test("DirectPublicWebProvider preserves verification returned during timeout detail recovery", async () => {
+  const id = "7665909560732851961";
+  const currentUrl = `https://www.iesdouyin.com/share/video/${id}`;
+  const detailUrl = `https://www.iesdouyin.com/aweme/v1/web/aweme/detail/?aweme_id=${id}`;
+  const timeout = new Error("Navigation timeout of 15000 ms exceeded");
+  timeout.name = "TimeoutError";
+  const restrictedPayload = {
+    verify_ticket: "public-security-challenge",
+    aweme_detail: aweme(id)
+  };
+  const fake = fakeBrowserPage({
+    gotoError: timeout,
+    mainDocumentStatus: 200,
+    navigationReadable: false,
+    currentUrl,
+    publicDetail: { status: 403, payload: restrictedPayload },
+    publicDetailResponse: jsonResponse(detailUrl, restrictedPayload, { status: 403 })
+  });
+  let pageCalls = 0;
+  const provider = new DirectPublicWebProvider({
+    browserService: {
+      async withPage(operation) {
+        pageCalls += 1;
+        return fake.browserService.withPage(operation);
+      }
+    },
+    retries: 2,
+    retryDelayMs: 0,
+    videoContentWaitMs: 0,
+    settleMs: 0
+  });
+
+  await assert.rejects(
+    provider.readVideo({ awemeId: id }),
+    (error) => error instanceof ReaderError &&
+      error.code === "DOUYIN_SECURITY_VERIFICATION_REQUIRED"
+  );
+  assert.equal(pageCalls, 1);
+  assert.equal(fake.publicDetailCalls(), 1);
+  assert.equal(fake.videoDomCalls(), 0);
+});
+
+test("DirectPublicWebProvider never accepts HTTP 403 detail after navigation timeout", async () => {
+  const id = "7665909560732851961";
+  const currentUrl = `https://www.iesdouyin.com/share/video/${id}`;
+  const publicMedia = `https://v3-dy-o.douyinvod.com/${id}.mp4`;
+  const timeout = new Error("Navigation timeout of 15000 ms exceeded");
+  timeout.name = "TimeoutError";
+  const payload = {
+    aweme_detail: aweme(id, {
+      video: { duration: 273_834, play_addr: { url_list: [publicMedia] } }
+    })
+  };
+  const fake = fakeBrowserPage({
+    gotoError: timeout,
+    mainDocumentStatus: 200,
+    navigationReadable: false,
+    currentUrl,
+    publicDetail: { status: 403, payload },
+    publicDetailResponse: jsonResponse(
+      `https://www.iesdouyin.com/aweme/v1/web/aweme/detail/?aweme_id=${id}`,
+      payload,
+      { status: 403 }
+    )
+  });
+  const provider = new DirectPublicWebProvider({
+    browserService: fake.browserService,
+    retries: 0,
+    retryDelayMs: 0,
+    videoContentWaitMs: 0,
+    settleMs: 0
+  });
+
+  await assert.rejects(
+    provider.readVideo({ awemeId: id }),
+    (error) => error instanceof ReaderError && error.code === "DOUYIN_PUBLIC_WEB_TRANSIENT"
+  );
+  assert.equal(fake.publicDetailCalls(), 1);
+  assert.equal(fake.videoDomCalls(), 0);
+});
+
+test("DirectPublicWebProvider rejects unusable timeout detail identities and media", async (t) => {
+  const id = "7665909560732851961";
+  const wrongId = "7645519843839544630";
+  const currentUrl = `https://www.iesdouyin.com/share/video/${id}`;
+  const timeout = new Error("Navigation timeout of 15000 ms exceeded");
+  timeout.name = "TimeoutError";
+  const cases = [
+    [
+      "wrong detail identity",
+      { status: 200, payload: { aweme_detail: aweme(wrongId) } },
+      "DOUYIN_PUBLIC_WEB_IDENTITY_MISMATCH"
+    ],
+    [
+      "missing embedded media",
+      {
+        status: 200,
+        payload: {
+          aweme_detail: aweme(id, {
+            video: { duration: 273_834, play_addr: { url_list: [] } }
+          })
+        }
+      },
+      "DOUYIN_PUBLIC_WEB_TRANSIENT"
+    ]
+  ];
+
+  for (const [label, publicDetail, expectedCode] of cases) {
+    await t.test(label, async () => {
+      const fake = fakeBrowserPage({
+        gotoError: timeout,
+        mainDocumentStatus: 200,
+        navigationReadable: false,
+        currentUrl,
+        publicDetail
+      });
+      const provider = new DirectPublicWebProvider({
+        browserService: fake.browserService,
+        retries: 0,
+        retryDelayMs: 0,
+        videoContentWaitMs: 0,
+        settleMs: 0
+      });
+
+      await assert.rejects(
+        provider.readVideo({ awemeId: id }),
+        (error) => error instanceof ReaderError && error.code === expectedCode
+      );
+      assert.equal(fake.publicDetailCalls(), 1);
+      assert.equal(fake.videoDomCalls(), 0);
+    });
+  }
+});
+
+test("DirectPublicWebProvider rejects an in-page identity change during timeout recovery", async () => {
+  const id = "7665909560732851961";
+  const currentUrl = `https://www.iesdouyin.com/share/video/${id}`;
+  const timeout = new Error("Navigation timeout of 15000 ms exceeded");
+  timeout.name = "TimeoutError";
+  const fake = fakeBrowserPage({
+    gotoError: timeout,
+    mainDocumentStatus: 200,
+    navigationReadable: false,
+    currentUrl,
+    pageContextUrl: "https://www.iesdouyin.com/share/video/7645519843839544630",
+    publicDetail: { status: 200, payload: { aweme_detail: aweme(id) } }
+  });
+  const provider = new DirectPublicWebProvider({
+    browserService: fake.browserService,
+    retries: 0,
+    retryDelayMs: 0,
+    videoContentWaitMs: 0,
+    settleMs: 0
+  });
+
+  await assert.rejects(
+    provider.readVideo({ awemeId: id }),
+    (error) => error instanceof ReaderError && error.code === "DOUYIN_PUBLIC_WEB_TRANSIENT"
+  );
+  assert.equal(fake.publicDetailCalls(), 1);
+  assert.equal(fake.videoDomCalls(), 0);
+});
+
+test("DirectPublicWebProvider bounds a stalled page evaluation during timeout recovery", async () => {
+  const id = "7665909560732851961";
+  const currentUrl = `https://www.iesdouyin.com/share/video/${id}`;
+  const timeout = new Error("Navigation timeout of 15000 ms exceeded");
+  timeout.name = "TimeoutError";
+  const fake = fakeBrowserPage({
+    gotoError: timeout,
+    mainDocumentStatus: 200,
+    navigationReadable: false,
+    currentUrl,
+    publicDetailNever: true
+  });
+  const provider = new DirectPublicWebProvider({
+    browserService: fake.browserService,
+    retries: 0,
+    retryDelayMs: 0,
+    videoContentWaitMs: 0,
+    videoDetailTimeoutMs: 1_000,
+    videoDetailTotalTimeoutMs: 50,
+    settleMs: 0
+  });
+  const startedAt = Date.now();
+  let hardTimer;
+  const hardTestTimeout = new Promise((_, reject) => {
+    hardTimer = setTimeout(() => reject(new Error("timeout recovery exceeded its outer bound")), 1_000);
+  });
+
+  try {
+    await assert.rejects(
+      Promise.race([provider.readVideo({ awemeId: id }), hardTestTimeout]),
+      (error) => error instanceof ReaderError && error.code === "DOUYIN_PUBLIC_WEB_TRANSIENT"
+    );
+  } finally {
+    clearTimeout(hardTimer);
+  }
+  assert.ok(Date.now() - startedAt < 750);
+  assert.equal(fake.publicDetailCalls(), 1);
+  assert.equal(fake.videoDomCalls(), 0);
+});
+
+test("DirectPublicWebProvider handles a page access rejection after its recovery deadline", async () => {
+  const id = "7665909560732851961";
+  const currentUrl = `https://www.iesdouyin.com/share/video/${id}`;
+  const timeout = new Error("Navigation timeout of 15000 ms exceeded");
+  timeout.name = "TimeoutError";
+  const fake = fakeBrowserPage({
+    gotoError: timeout,
+    mainDocumentStatus: 200,
+    navigationReadable: false,
+    currentUrl,
+    accessEvaluateRejectAfterMs: 1,
+    accessEvaluateSyncDelayMs: 30
+  });
+  const provider = new DirectPublicWebProvider({
+    browserService: fake.browserService,
+    retries: 0,
+    retryDelayMs: 0,
+    videoContentWaitMs: 0,
+    videoDetailTotalTimeoutMs: 20,
+    settleMs: 0
+  });
+  const unhandled = [];
+  const onUnhandledRejection = (reason) => unhandled.push(reason);
+  process.on("unhandledRejection", onUnhandledRejection);
+
+  try {
+    await assert.rejects(
+      provider.readVideo({ awemeId: id }),
+      (error) => error instanceof ReaderError && error.code === "DOUYIN_PUBLIC_WEB_TRANSIENT"
+    );
+    await new Promise((resolve) => setTimeout(resolve, 25));
+    assert.deepEqual(unhandled, []);
+  } finally {
+    process.off("unhandledRejection", onUnhandledRejection);
+  }
+  assert.equal(fake.publicDetailCalls(), 0);
+  assert.equal(fake.videoDomCalls(), 0);
+});
+
+test("DirectPublicWebProvider requires a completed post-detail access snapshot", async (t) => {
+  const id = "7665909560732851961";
+  const currentUrl = `https://www.iesdouyin.com/share/video/${id}`;
+  const publicMedia = `https://v3-dy-o.douyinvod.com/${id}.mp4`;
+  const timeout = new Error("Navigation timeout of 15000 ms exceeded");
+  timeout.name = "TimeoutError";
+  const safeAccess = {
+    documentReadable: true,
+    explicitMoreGate: false,
+    securityChallenge: false,
+    privateContent: false,
+    unavailable: false,
+    loginRequired: false
+  };
+  const cases = [
+    ["never completes", () => new Promise(() => {}), 75],
+    [
+      "rejects after detail",
+      () => new Promise((_, reject) => {
+        setTimeout(() => reject(new Error("late post-detail access failure")), 10);
+      }),
+      250
+    ]
+  ];
+
+  for (const [label, postAccess, totalTimeoutMs] of cases) {
+    await t.test(label, async () => {
+      const fake = fakeBrowserPage({
+        gotoError: timeout,
+        mainDocumentStatus: 200,
+        navigationReadable: false,
+        currentUrl,
+        accessResponses: [safeAccess, postAccess],
+        publicDetail: {
+          status: 200,
+          payload: {
+            aweme_detail: aweme(id, {
+              video: {
+                duration: 273_834,
+                play_addr: { url_list: [publicMedia] }
+              }
+            })
+          }
+        }
+      });
+      const provider = new DirectPublicWebProvider({
+        browserService: fake.browserService,
+        retries: 0,
+        retryDelayMs: 0,
+        videoContentWaitMs: 0,
+        videoDetailTotalTimeoutMs: totalTimeoutMs,
+        settleMs: 0
+      });
+      const unhandled = [];
+      const onUnhandledRejection = (reason) => unhandled.push(reason);
+      let hardTimer;
+      const hardTestTimeout = new Promise((_, reject) => {
+        hardTimer = setTimeout(() => reject(new Error("post-detail access check exceeded its bound")), 1_000);
+      });
+      process.on("unhandledRejection", onUnhandledRejection);
+
+      try {
+        await assert.rejects(
+          Promise.race([provider.readVideo({ awemeId: id }), hardTestTimeout]),
+          (error) => error instanceof ReaderError && error.code === "DOUYIN_PUBLIC_WEB_TRANSIENT"
+        );
+        await new Promise((resolve) => setTimeout(resolve, 25));
+        assert.deepEqual(unhandled, []);
+      } finally {
+        clearTimeout(hardTimer);
+        process.off("unhandledRejection", onUnhandledRejection);
+      }
+      assert.equal(fake.publicDetailCalls(), 1);
+      assert.equal(fake.videoDomCalls(), 0);
+    });
+  }
+});
+
+test("DirectPublicWebProvider stops when an access boundary appears after timeout detail", async (t) => {
+  const id = "7665909560732851961";
+  const currentUrl = `https://www.iesdouyin.com/share/video/${id}`;
+  const publicMedia = `https://v3-dy-o.douyinvod.com/${id}.mp4`;
+  const timeout = new Error("Navigation timeout of 15000 ms exceeded");
+  timeout.name = "TimeoutError";
+  const safeAccess = {
+    documentReadable: true,
+    explicitMoreGate: false,
+    securityChallenge: false,
+    privateContent: false,
+    unavailable: false,
+    loginRequired: false
+  };
+  const cases = [
+    ["CAPTCHA", { securityChallenge: true }, "DOUYIN_SECURITY_VERIFICATION_REQUIRED"],
+    ["login", { loginRequired: true }, "DOUYIN_LOGIN_REQUIRED"],
+    ["private", { privateContent: true }, "DOUYIN_PRIVATE_CONTENT"]
+  ];
+
+  for (const [label, lateSignal, expectedCode] of cases) {
+    await t.test(label, async () => {
+      const fake = fakeBrowserPage({
+        gotoError: timeout,
+        mainDocumentStatus: 200,
+        navigationReadable: false,
+        currentUrl,
+        accessResponses: [safeAccess, { ...safeAccess, ...lateSignal }],
+        publicDetail: {
+          status: 200,
+          payload: {
+            aweme_detail: aweme(id, {
+              video: {
+                duration: 273_834,
+                play_addr: { url_list: [publicMedia] }
+              }
+            })
+          }
+        }
+      });
+      let pageCalls = 0;
+      const provider = new DirectPublicWebProvider({
+        browserService: {
+          async withPage(operation) {
+            pageCalls += 1;
+            return fake.browserService.withPage(operation);
+          }
+        },
+        retries: 2,
+        retryDelayMs: 0,
+        videoContentWaitMs: 0,
+        videoDetailTotalTimeoutMs: 250,
+        settleMs: 0
+      });
+
+      await assert.rejects(
+        provider.readVideo({ awemeId: id }),
+        (error) => error instanceof ReaderError && error.code === expectedCode
+      );
+      assert.equal(pageCalls, 1);
+      assert.equal(fake.publicDetailCalls(), 1);
+      assert.equal(fake.videoDomCalls(), 0);
+    });
+  }
+});
+
+test("DirectPublicWebProvider rejects a page change after exact timeout detail completes", async (t) => {
+  const id = "7665909560732851961";
+  const initialUrl = `https://www.iesdouyin.com/share/video/${id}`;
+  const publicMedia = `https://v3-dy-o.douyinvod.com/${id}.mp4`;
+  const timeout = new Error("Navigation timeout of 15000 ms exceeded");
+  timeout.name = "TimeoutError";
+  const safeAccess = {
+    documentReadable: true,
+    explicitMoreGate: false,
+    securityChallenge: false,
+    privateContent: false,
+    unavailable: false,
+    loginRequired: false
+  };
+  const cases = [
+    [
+      "wrong video identity",
+      "https://www.iesdouyin.com/share/video/7645519843839544630",
+      safeAccess,
+      "DOUYIN_PUBLIC_WEB_TRANSIENT"
+    ],
+    [
+      "external origin",
+      "https://attacker.example/video/7665909560732851961",
+      safeAccess,
+      "DOUYIN_PUBLIC_WEB_TRANSIENT"
+    ],
+    [
+      "login page",
+      "https://www.douyin.com/?login=1",
+      { ...safeAccess, loginRequired: true },
+      "DOUYIN_LOGIN_REQUIRED"
+    ]
+  ];
+
+  for (const [label, afterUrl, postAccess, expectedCode] of cases) {
+    await t.test(label, async () => {
+      const fake = fakeBrowserPage({
+        gotoError: timeout,
+        mainDocumentStatus: 200,
+        navigationReadable: false,
+        currentUrl: initialUrl,
+        currentUrlAfterPublicDetail: afterUrl,
+        pageContextUrlAfterPublicDetail: afterUrl,
+        accessResponses: [safeAccess, postAccess],
+        publicDetail: {
+          status: 200,
+          payload: {
+            aweme_detail: aweme(id, {
+              video: {
+                duration: 273_834,
+                play_addr: { url_list: [publicMedia] }
+              }
+            })
+          }
+        }
+      });
+      const provider = new DirectPublicWebProvider({
+        browserService: fake.browserService,
+        retries: 0,
+        retryDelayMs: 0,
+        videoContentWaitMs: 0,
+        videoDetailTotalTimeoutMs: 250,
+        settleMs: 0
+      });
+
+      await assert.rejects(
+        provider.readVideo({ awemeId: id }),
+        (error) => error instanceof ReaderError && error.code === expectedCode
+      );
+      assert.equal(fake.publicDetailCalls(), 1);
+      assert.equal(fake.videoDomCalls(), 0);
+    });
+  }
+});
+
+test("DirectPublicWebProvider bounds a stalled response listener during timeout recovery", async () => {
+  const id = "7665909560732851961";
+  const currentUrl = `https://www.iesdouyin.com/share/video/${id}`;
+  const publicMedia = `https://v3-dy-o.douyinvod.com/${id}.mp4`;
+  const detailUrl = `https://www.iesdouyin.com/aweme/v1/web/aweme/detail/?aweme_id=${id}`;
+  const timeout = new Error("Navigation timeout of 15000 ms exceeded");
+  timeout.name = "TimeoutError";
+  const payload = {
+    aweme_detail: aweme(id, {
+      video: { duration: 273_834, play_addr: { url_list: [publicMedia] } }
+    })
+  };
+  const fake = fakeBrowserPage({
+    gotoError: timeout,
+    mainDocumentStatus: 200,
+    navigationReadable: false,
+    currentUrl,
+    publicDetail: { status: 200, payload },
+    publicDetailResponse: jsonResponse(detailUrl, payload),
+    publicDetailResponseJsonNever: true
+  });
+  const provider = new DirectPublicWebProvider({
+    browserService: fake.browserService,
+    retries: 0,
+    retryDelayMs: 0,
+    videoContentWaitMs: 0,
+    videoDetailTimeoutMs: 1_000,
+    videoDetailTotalTimeoutMs: 75,
+    settleMs: 0
+  });
+  const startedAt = Date.now();
+  let hardTimer;
+  const hardTestTimeout = new Promise((_, reject) => {
+    hardTimer = setTimeout(() => reject(new Error("response listener exceeded its outer bound")), 1_000);
+  });
+
+  try {
+    await assert.rejects(
+      Promise.race([provider.readVideo({ awemeId: id }), hardTestTimeout]),
+      (error) => error instanceof ReaderError && error.code === "DOUYIN_PUBLIC_WEB_TRANSIENT"
+    );
+  } finally {
+    clearTimeout(hardTimer);
+  }
+  assert.ok(Date.now() - startedAt < 750);
+  assert.equal(fake.publicDetailCalls(), 1);
+  assert.equal(fake.videoDomCalls(), 0);
+});
+
+test("DirectPublicWebProvider accepts a main document registered on the next microtask", async () => {
+  const id = "7665909560732851961";
+  const currentUrl = `https://www.iesdouyin.com/share/video/${id}`;
+  const publicMedia = `https://v3-dy-o.douyinvod.com/${id}.mp4`;
+  const timeout = new Error("Navigation timeout of 15000 ms exceeded");
+  timeout.name = "TimeoutError";
+  const fake = fakeBrowserPage({
+    gotoError: timeout,
+    mainDocumentStatus: 200,
+    mainDocumentResponseMicrotaskDelay: 1,
+    navigationReadable: false,
+    currentUrl,
+    publicDetail: {
+      status: 200,
+      payload: {
+        aweme_detail: aweme(id, {
+          video: {
+            duration: 273_834,
+            play_addr: { url_list: [publicMedia] }
+          }
+        })
+      }
+    }
+  });
+  const provider = new DirectPublicWebProvider({
+    browserService: fake.browserService,
+    retries: 0,
+    retryDelayMs: 0,
+    videoContentWaitMs: 0,
+    videoDetailTotalTimeoutMs: 250,
+    settleMs: 0
+  });
+
+  const result = await provider.readVideo({ awemeId: id });
+
+  assert.equal(result.aweme.aweme_id, id);
+  assert.deepEqual(result.aweme.video.play_addr.url_list, [publicMedia]);
+  assert.deepEqual(result.networkMediaUrls, []);
+  assert.equal(fake.publicDetailCalls(), 1);
+  assert.equal(fake.videoDomCalls(), 0);
 });
 
 test("DirectPublicWebProvider ignores a recommended canonical video when explicit detail matches", async () => {
