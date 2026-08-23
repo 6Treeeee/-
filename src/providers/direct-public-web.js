@@ -241,7 +241,7 @@ function createCapture({ expectedAwemeId = null, expectedSecUserId = null } = {}
       return;
     }
 
-    if (!isDouyinHost(parsed.host) ||
+    if (parsed.url.protocol !== "https:" || !isDouyinHost(parsed.host) ||
         ![DETAIL_PATH, POSTS_PATH, PROFILE_PATH].includes(parsed.path)) return;
     state.endpointPaths.add(parsed.path);
 
@@ -254,6 +254,7 @@ function createCapture({ expectedAwemeId = null, expectedSecUserId = null } = {}
     mergeSignals(state.signals, readAccessSignals(payload));
 
     if (parsed.path === DETAIL_PATH) {
+      if (response.status() !== 200) return;
       const aweme = extractAweme(payload);
       const id = postIdentity(aweme);
       if (aweme && expectedAwemeId && id !== expectedAwemeId) {
@@ -963,6 +964,16 @@ export class DirectPublicWebProvider {
         await capture.drain();
         dom = await videoDomSnapshot(page);
         const access = await pageAccessSnapshot(page);
+        const combinedAccess = { ...access };
+        mergeSignals(combinedAccess, capture.state.signals);
+        const capturedAccessFailure = () => {
+          const trustedMediaUrls = embeddedAwemeMediaUrls(capture.state.aweme);
+          return accessError(combinedAccess, {
+            hasPublicContent: Boolean(
+              capture.state.aweme && (trustedMediaUrls.length || capture.state.aweme.images)
+            )
+          });
+        };
         const rawObservedMediaUrls = [...new Set([
           ...capture.state.media.keys(),
           ...dom.media.filter((value) => /^https?:\/\//i.test(value))
@@ -978,10 +989,12 @@ export class DirectPublicWebProvider {
         }
         const canonicalPageId = awemeIdFromUrl(canonicalPage?.url?.href);
         const finalUrlId = awemeIdFromUrl(finalPage.url.href);
-        if (selected.awemeId && canonicalPageId && canonicalPageId !== selected.awemeId) {
-          throw identityMismatchError(target, selected.awemeId, canonicalPageId, "canonical");
-        }
+        const canonicalMismatch = Boolean(
+          selected.awemeId && canonicalPageId && canonicalPageId !== selected.awemeId
+        );
         if (selected.awemeId && finalUrlId && finalUrlId !== selected.awemeId) {
+          const accessFailure = capturedAccessFailure();
+          if (accessFailure) throw accessFailure;
           throw identityMismatchError(target, selected.awemeId, finalUrlId, "page_url");
         }
         const finalPageId = canonicalPageId ?? finalUrlId;
@@ -992,10 +1005,14 @@ export class DirectPublicWebProvider {
         );
         const preliminaryAweme = capture.state.aweme ??
           (!selected.awemeId || hydrationId === selected.awemeId ? rawHydration : null);
-        const preliminaryConflict = hydrationMismatch || capture.state.mismatchedAwemeIds.length > 0;
+        const preliminaryConflict = canonicalMismatch || hydrationMismatch ||
+          capture.state.mismatchedAwemeIds.length > 0;
         const preliminaryMediaUrls = preliminaryConflict ? [] : rawObservedMediaUrls;
-        if (selected.awemeId && embeddedAwemeMediaUrls(preliminaryAweme).length === 0 &&
-            preliminaryMediaUrls.length === 0) {
+        const needsExplicitDetail = selected.awemeId && (
+          (canonicalMismatch && !capture.state.aweme) ||
+          (embeddedAwemeMediaUrls(preliminaryAweme).length === 0 && preliminaryMediaUrls.length === 0)
+        );
+        if (needsExplicitDetail) {
           const publicDetail = await fetchPublicVideoDetail(page, selected.awemeId);
           if (publicDetail?.payload) {
             mergeSignals(capture.state.signals, readAccessSignals(publicDetail.payload));
@@ -1012,6 +1029,16 @@ export class DirectPublicWebProvider {
             }
           }
         }
+        const hasIdentityConflict = canonicalMismatch || hydrationMismatch ||
+          capture.state.mismatchedAwemeIds.length > 0;
+        mergeSignals(combinedAccess, capture.state.signals);
+        if (hasIdentityConflict) {
+          const accessFailure = capturedAccessFailure();
+          if (accessFailure) throw accessFailure;
+        }
+        if (canonicalMismatch && !capture.state.aweme) {
+          throw identityMismatchError(target, selected.awemeId, canonicalPageId, "canonical");
+        }
         if (hydrationMismatch && !capture.state.aweme) {
           throw identityMismatchError(target, selected.awemeId, hydrationId, "hydration");
         }
@@ -1021,7 +1048,6 @@ export class DirectPublicWebProvider {
           throw identityMismatchError(target, selected.awemeId, detailMismatchId, "detail_response");
         }
         const hydration = !selected.awemeId || hydrationId === selected.awemeId ? rawHydration : null;
-        const hasIdentityConflict = hydrationMismatch || capture.state.mismatchedAwemeIds.length > 0;
         const observedMediaUrls = hasIdentityConflict ? [] : rawObservedMediaUrls;
         const fallback = (!selected.awemeId || finalPageId === selected.awemeId) && !hasIdentityConflict
           ? fallbackAweme({ awemeId: selected.awemeId, dom, mediaUrls: observedMediaUrls })
@@ -1035,8 +1061,6 @@ export class DirectPublicWebProvider {
           ...observedMediaUrls,
           ...embeddedAwemeMediaUrls(aweme)
         ])];
-        const combinedAccess = { ...access };
-        mergeSignals(combinedAccess, capture.state.signals);
         const failure = accessError(combinedAccess, {
           hasPublicContent: Boolean(aweme && (usableMediaUrls.length || aweme.images))
         });

@@ -132,6 +132,8 @@ function fakeBrowserPage({
   gotoError = null,
   gotoStatus = 200,
   publicDetail = null,
+  publicDetailResponse = null,
+  videoDomResponses = [],
   evaluateErrors = [],
   currentUrl = "https://www.douyin.com/"
 }) {
@@ -140,6 +142,7 @@ function fakeBrowserPage({
   let navigatedTo = null;
   let playbackPrimeCalls = 0;
   const pendingEvaluateErrors = [...evaluateErrors];
+  const pendingVideoDomResponses = [...videoDomResponses];
   const safeAccess = access ?? {
     explicitMoreGate: false,
     securityChallenge: false,
@@ -180,9 +183,18 @@ function fakeBrowserPage({
       }
       if (source.includes("durationSeconds")) {
         if (!videoDom) throw new Error("Unexpected video DOM snapshot");
+        const response = pendingVideoDomResponses.shift();
+        if (response) {
+          for (const listener of responseListeners) listener(response);
+        }
         return videoDom;
       }
-      if (source.includes('endpoint.searchParams.set("aweme_id"')) return publicDetail;
+      if (source.includes('endpoint.searchParams.set("aweme_id"')) {
+        if (publicDetailResponse) {
+          for (const listener of responseListeners) listener(publicDetailResponse);
+        }
+        return publicDetail;
+      }
       if (source.includes("compactCount")) {
         if (!profileDom) throw new Error("Unexpected profile DOM snapshot");
         return profileDom;
@@ -725,11 +737,157 @@ test("DirectPublicWebProvider fetches same-page public detail when cloud playbac
   assert.deepEqual(result.meta.endpoints_observed, ["/aweme/v1/web/aweme/detail/"]);
 });
 
+test("DirectPublicWebProvider ignores a recommended canonical video when explicit detail matches", async () => {
+  const id = "7665909560732851961";
+  const recommendedId = "7645519843839544630";
+  const expectedMedia = `https://v3-dy-o.douyinvod.com/${id}.mp4`;
+  const recommendedMedia = `https://v3-dy-o.douyinvod.com/${recommendedId}.mp4`;
+  const fake = fakeBrowserPage({
+    currentUrl: `https://www.iesdouyin.com/share/video/${id}`,
+    publicDetail: {
+      status: 200,
+      payload: {
+        aweme_detail: aweme(id, {
+          video: {
+            duration: 273_834,
+            play_addr: { url_list: [expectedMedia] }
+          }
+        })
+      }
+    },
+    videoDom: {
+      canonical: `https://www.douyin.com/video/${recommendedId}`,
+      title: "A recommended video - 抖音",
+      description: "Recommended description",
+      media: [recommendedMedia],
+      videoPresent: true,
+      durationSeconds: 12,
+      width: 1080,
+      height: 1920,
+      hydration: []
+    }
+  });
+  const provider = new DirectPublicWebProvider({
+    browserService: fake.browserService,
+    retries: 0,
+    videoContentWaitMs: 0,
+    settleMs: 0
+  });
+
+  const result = await provider.readVideo({ awemeId: id });
+
+  assert.equal(result.aweme.aweme_id, id);
+  assert.equal(result.aweme.video.duration, 273_834);
+  assert.deepEqual(result.aweme.video.play_addr.url_list, [expectedMedia]);
+  assert.deepEqual(result.networkMediaUrls, []);
+  assert.doesNotMatch(JSON.stringify(result.aweme), new RegExp(recommendedId));
+});
+
+test("DirectPublicWebProvider preserves a security boundary from conflicting public detail", async () => {
+  const id = "7665909560732851961";
+  const recommendedId = "7645519843839544630";
+  const detailUrl = `https://www.iesdouyin.com/aweme/v1/web/aweme/detail/?aweme_id=${id}`;
+  const restrictedPayload = {
+    verify_ticket: "public-security-challenge",
+    aweme_detail: aweme(id)
+  };
+  const fake = fakeBrowserPage({
+    currentUrl: `https://www.iesdouyin.com/share/video/${id}`,
+    publicDetail: { status: 403, payload: restrictedPayload },
+    publicDetailResponse: jsonResponse(detailUrl, restrictedPayload, { status: 403 }),
+    videoDom: {
+      canonical: `https://www.douyin.com/video/${recommendedId}`,
+      title: "A recommended video - 抖音",
+      description: "Recommended description",
+      media: [`https://v3-dy-o.douyinvod.com/${recommendedId}.mp4`],
+      videoPresent: true,
+      durationSeconds: 12,
+      width: 1080,
+      height: 1920,
+      hydration: []
+    }
+  });
+  let pageCalls = 0;
+  const provider = new DirectPublicWebProvider({
+    browserService: {
+      async withPage(operation) {
+        pageCalls += 1;
+        return fake.browserService.withPage(operation);
+      }
+    },
+    retries: 2,
+    retryDelayMs: 0,
+    videoContentWaitMs: 0,
+    settleMs: 0
+  });
+
+  await assert.rejects(
+    provider.readVideo({ awemeId: id }),
+    (error) => error instanceof ReaderError &&
+      error.code === "DOUYIN_SECURITY_VERIFICATION_REQUIRED"
+  );
+  assert.equal(pageCalls, 1);
+});
+
+test("DirectPublicWebProvider preserves a security boundary before rejecting the page URL identity", async () => {
+  const id = "7665909560732851961";
+  const wrongId = "7645519843839544630";
+  const detailUrl = `https://www.douyin.com/aweme/v1/web/aweme/detail/?aweme_id=${id}`;
+  const restrictedPayload = {
+    verify_ticket: "public-security-challenge",
+    aweme_detail: aweme(id)
+  };
+  const fake = fakeBrowserPage({
+    currentUrl: `https://www.douyin.com/video/${wrongId}`,
+    videoDomResponses: [jsonResponse(detailUrl, restrictedPayload, { status: 403 })],
+    videoDom: {
+      canonical: `https://www.douyin.com/video/${id}`,
+      title: "A public video - 抖音",
+      description: "Public description",
+      media: [],
+      videoPresent: false,
+      durationSeconds: null,
+      width: null,
+      height: null,
+      hydration: []
+    }
+  });
+  let pageCalls = 0;
+  const provider = new DirectPublicWebProvider({
+    browserService: {
+      async withPage(operation) {
+        pageCalls += 1;
+        return fake.browserService.withPage(operation);
+      }
+    },
+    retries: 2,
+    retryDelayMs: 0,
+    videoContentWaitMs: 0,
+    settleMs: 0
+  });
+
+  await assert.rejects(
+    provider.readVideo({ awemeId: id }),
+    (error) => error instanceof ReaderError &&
+      error.code === "DOUYIN_SECURITY_VERIFICATION_REQUIRED"
+  );
+  assert.equal(pageCalls, 1);
+});
+
 test("DirectPublicWebProvider never accepts public detail media from an HTTP 403 response", async () => {
   const id = "7665909560732851961";
   const publicMedia = `https://v3-dy-o.douyinvod.com/${id}.mp4`;
   const fake = fakeBrowserPage({
     currentUrl: `https://www.douyin.com/video/${id}`,
+    responses: [jsonResponse(
+      `https://www.douyin.com/aweme/v1/web/aweme/detail/?aweme_id=${id}`,
+      {
+        aweme_detail: aweme(id, {
+          video: { duration: 273_834, play_addr: { url_list: [publicMedia] } }
+        })
+      },
+      { status: 403 }
+    )],
     publicDetail: {
       status: 403,
       payload: {
