@@ -640,6 +640,71 @@ function responseStatusError(response, target) {
   return null;
 }
 
+async function fetchPublicVideoDetail(page, awemeId, { timeoutMs = 6_000, maxBytes = 2_000_000 } = {}) {
+  if (!/^\d+$/.test(String(awemeId ?? ""))) return null;
+  try {
+    return await evaluateStable(page, async ({ id, timeout, byteLimit }) => {
+      const host = location.hostname.toLowerCase();
+      const trustedOrigin = location.protocol === "https:" && (
+        host === "douyin.com" || host.endsWith(".douyin.com") ||
+        host === "iesdouyin.com" || host.endsWith(".iesdouyin.com")
+      );
+      if (!trustedOrigin) return null;
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), timeout);
+      try {
+        const endpoint = new URL("/aweme/v1/web/aweme/detail/", location.origin);
+        endpoint.searchParams.set("aweme_id", id);
+        const response = await fetch(endpoint, {
+          method: "GET",
+          credentials: "same-origin",
+          redirect: "error",
+          signal: controller.signal
+        });
+        const declaredLength = Number(response.headers.get("content-length"));
+        if (Number.isFinite(declaredLength) && declaredLength > byteLimit) {
+          await response.body?.cancel();
+          return { status: response.status, payload: null };
+        }
+        const reader = response.body?.getReader();
+        if (!reader) return { status: response.status, payload: null };
+        const chunks = [];
+        let total = 0;
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          total += value.byteLength;
+          if (total > byteLimit) {
+            await reader.cancel();
+            controller.abort();
+            return { status: response.status, payload: null };
+          }
+          chunks.push(value);
+        }
+        const bytes = new Uint8Array(total);
+        let offset = 0;
+        for (const chunk of chunks) {
+          bytes.set(chunk, offset);
+          offset += chunk.byteLength;
+        }
+        let payload = null;
+        try {
+          payload = JSON.parse(new TextDecoder().decode(bytes));
+        } catch {
+          // A public HTML/WAF response is not usable video detail data.
+        }
+        return { status: response.status, payload };
+      } catch {
+        return null;
+      } finally {
+        clearTimeout(timer);
+      }
+    }, { id: String(awemeId), timeout: timeoutMs, byteLimit: maxBytes });
+  } catch {
+    return null;
+  }
+}
+
 async function responseStatusErrorWithAccess(page, response, target) {
   const statusError = responseStatusError(response, target);
   if (!statusError || response?.status?.() !== 403) return statusError;
@@ -661,6 +726,22 @@ function identityMismatchError(target, expectedAwemeId, observedAwemeId, source)
         target: targetDiagnostic(target),
         expected_aweme_id: expectedAwemeId,
         observed_aweme_id: observedAwemeId,
+        source
+      }
+    }
+  );
+}
+
+function originMismatchError(target, observedUrl, source) {
+  return new ReaderError(
+    "DOUYIN_PUBLIC_WEB_IDENTITY_MISMATCH",
+    "The public Douyin navigation left the trusted public origin.",
+    {
+      status: 502,
+      details: {
+        provider: PROVIDER,
+        target: targetDiagnostic(target),
+        observed_target: targetDiagnostic(observedUrl),
         source
       }
     }
@@ -886,8 +967,17 @@ export class DirectPublicWebProvider {
           ...capture.state.media.keys(),
           ...dom.media.filter((value) => /^https?:\/\//i.test(value))
         ])];
-        const canonicalPageId = awemeIdFromUrl(dom.canonical);
-        const finalUrlId = awemeIdFromUrl(typeof page.url === "function" ? page.url() : null);
+        const canonicalPage = safeUrl(dom.canonical);
+        const finalPage = safeUrl(typeof page.url === "function" ? page.url() : null);
+        if (!finalPage || finalPage.url.protocol !== "https:" || !isDouyinHost(finalPage.host)) {
+          throw originMismatchError(target, finalPage?.url?.href, "page_origin");
+        }
+        if (dom.canonical && (!canonicalPage || canonicalPage.url.protocol !== "https:" ||
+            !isDouyinHost(canonicalPage.host))) {
+          throw originMismatchError(target, dom.canonical, "canonical_origin");
+        }
+        const canonicalPageId = awemeIdFromUrl(canonicalPage?.url?.href);
+        const finalUrlId = awemeIdFromUrl(finalPage.url.href);
         if (selected.awemeId && canonicalPageId && canonicalPageId !== selected.awemeId) {
           throw identityMismatchError(target, selected.awemeId, canonicalPageId, "canonical");
         }
@@ -900,6 +990,28 @@ export class DirectPublicWebProvider {
         const hydrationMismatch = Boolean(
           selected.awemeId && rawHydration && hydrationId !== selected.awemeId
         );
+        const preliminaryAweme = capture.state.aweme ??
+          (!selected.awemeId || hydrationId === selected.awemeId ? rawHydration : null);
+        const preliminaryConflict = hydrationMismatch || capture.state.mismatchedAwemeIds.length > 0;
+        const preliminaryMediaUrls = preliminaryConflict ? [] : rawObservedMediaUrls;
+        if (selected.awemeId && embeddedAwemeMediaUrls(preliminaryAweme).length === 0 &&
+            preliminaryMediaUrls.length === 0) {
+          const publicDetail = await fetchPublicVideoDetail(page, selected.awemeId);
+          if (publicDetail?.payload) {
+            mergeSignals(capture.state.signals, readAccessSignals(publicDetail.payload));
+            if (publicDetail.status === 200) {
+              capture.state.endpointPaths.add(DETAIL_PATH);
+              const refreshedAweme = extractAweme(publicDetail.payload);
+              const refreshedId = postIdentity(refreshedAweme);
+              if (refreshedAweme && refreshedId === selected.awemeId) {
+                capture.state.aweme = refreshedAweme;
+              } else if (refreshedAweme &&
+                  !capture.state.mismatchedAwemeIds.includes(refreshedId ?? null)) {
+                capture.state.mismatchedAwemeIds.push(refreshedId ?? null);
+              }
+            }
+          }
+        }
         if (hydrationMismatch && !capture.state.aweme) {
           throw identityMismatchError(target, selected.awemeId, hydrationId, "hydration");
         }
