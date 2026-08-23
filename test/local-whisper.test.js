@@ -285,7 +285,7 @@ test("LocalWhisperAsr rejects overlong media before preparing or running the eng
   await assert.rejects(
     engine.transcribe({
       bytes: new Uint8Array([1]),
-      mediaType: "audio/mpeg",
+      mediaType: "audio/wav",
       video: { media: { duration_ms: 180_001 } }
     }),
     (error) => error.code === "LOCAL_ASR_DURATION_LIMIT"
@@ -294,7 +294,75 @@ test("LocalWhisperAsr rejects overlong media before preparing or running the eng
   assert.equal(ran, 0);
 });
 
-test("LocalWhisperAsr serializes one bounded waiter instead of dropping concurrent work", async () => {
+test("LocalWhisperAsr reconciles an overlong MP3 page duration with decoded media", async () => {
+  let invocation;
+  let decoded = 0;
+  const engine = new LocalWhisperAsr({
+    platform: "linux",
+    arch: "x64",
+    maxDurationMs: 280_000,
+    runtimeProvider: async () => runtime(),
+    runImpl: async (input) => { invocation = input; return RAW_RESULT; },
+    audioDecoder: {
+      async decode() {
+        decoded += 1;
+        return {
+          bytes: new Uint8Array([82, 73, 70, 70]),
+          method: "browser_offline_audio_context_pcm16_wav",
+          sampleRate: 16_000,
+          channelCount: 1,
+          sourceChannelCount: 2,
+          durationMs: 273_834,
+          inputBytes: 4,
+          outputBytes: 4,
+          diagnostics: { runtime: "sparticuz_chromium" }
+        };
+      }
+    }
+  });
+
+  const result = await engine.transcribe({
+    bytes: new Uint8Array([1, 2, 3, 4]),
+    mediaType: "audio/mpeg",
+    video: { media: { duration_ms: 300_000 } }
+  });
+
+  assert.equal(decoded, 1);
+  assert.equal(invocation.extension, ".wav");
+  assert.equal(invocation.durationMs, 273_834);
+  assert.equal(result.audio_preprocessing.duration_ms, 273_834);
+});
+
+test("LocalWhisperAsr still rejects MP3 media that is truly over the decoded limit", async () => {
+  let ran = 0;
+  const engine = new LocalWhisperAsr({
+    platform: "linux",
+    arch: "x64",
+    maxDurationMs: 180_000,
+    runImpl: async () => { ran += 1; return RAW_RESULT; },
+    audioDecoder: {
+      async decode() {
+        return {
+          bytes: new Uint8Array([82, 73, 70, 70]),
+          durationMs: 180_001
+        };
+      }
+    }
+  });
+
+  await assert.rejects(
+    engine.transcribe({
+      bytes: new Uint8Array([1, 2, 3, 4]),
+      mediaType: "audio/mpeg",
+      video: { media: { duration_ms: 300_000 } }
+    }),
+    (error) => error.code === "LOCAL_ASR_DURATION_LIMIT" &&
+      error.details?.duration_ms === 180_001
+  );
+  assert.equal(ran, 0);
+});
+
+test("LocalWhisperAsr coalesces identical concurrent media into one inference", async () => {
   let release;
   const gate = new Promise((resolve) => { release = resolve; });
   let startedFirst;
@@ -332,8 +400,113 @@ test("LocalWhisperAsr serializes one bounded waiter instead of dropping concurre
   release();
   const results = await Promise.all([first, second]);
   assert.equal(results.length, 2);
-  assert.equal(calls, 2);
+  assert.equal(calls, 1);
   assert.equal(maxRunning, 1);
+});
+
+test("LocalWhisperAsr does not coalesce identical media with different declared durations", async () => {
+  let release;
+  const gate = new Promise((resolve) => { release = resolve; });
+  let started;
+  const firstStarted = new Promise((resolve) => { started = resolve; });
+  let calls = 0;
+  const durations = [];
+  const engine = new LocalWhisperAsr({
+    platform: "linux",
+    arch: "x64",
+    runtimeProvider: async () => runtime(),
+    runImpl: async ({ durationMs: declaredDuration }) => {
+      calls += 1;
+      durations.push(declaredDuration);
+      if (calls === 1) {
+        started();
+        await gate;
+      }
+      return RAW_RESULT;
+    }
+  });
+  const media = {
+    bytes: new Uint8Array([7]),
+    mediaType: "audio/mpeg"
+  };
+
+  const first = engine.transcribe({
+    ...media,
+    video: { media: { duration_ms: 1_000 } }
+  });
+  await firstStarted;
+  const second = engine.transcribe({
+    ...media,
+    video: { media: { duration_ms: 120_000 } }
+  });
+  release();
+
+  await Promise.all([first, second]);
+  assert.equal(calls, 2);
+  assert.deepEqual(durations, [1_000, 120_000]);
+});
+
+test("LocalWhisperAsr retries shared media when a fresher request outlives a deadline failure", async () => {
+  let release;
+  const gate = new Promise((resolve) => { release = resolve; });
+  let started;
+  const firstStarted = new Promise((resolve) => { started = resolve; });
+  let calls = 0;
+  const engine = new LocalWhisperAsr({
+    platform: "linux",
+    arch: "x64",
+    runtimeProvider: async () => runtime(),
+    runImpl: async () => {
+      calls += 1;
+      if (calls === 1) {
+        started();
+        await gate;
+        throw new ReaderError("LOCAL_ASR_TIMEOUT", "bounded timeout", { status: 503 });
+      }
+      return RAW_RESULT;
+    }
+  });
+  const base = {
+    bytes: new Uint8Array([9]),
+    mediaType: "audio/mpeg",
+    video: { media: { duration_ms: 1_000 } }
+  };
+
+  const first = engine.transcribe({ ...base, deadlineAt: Date.now() + 60_000 });
+  const firstFailure = assert.rejects(first, (error) => error.code === "LOCAL_ASR_TIMEOUT");
+  await firstStarted;
+  const second = engine.transcribe({ ...base, deadlineAt: Date.now() + 120_000 });
+  release();
+
+  await firstFailure;
+  const result = await second;
+  assert.equal(result.method, "local_whisper_cpp_base_q5_1");
+  assert.equal(calls, 2);
+});
+
+test("LocalWhisperAsr refuses browser duration measurement without its bounded deadline budget", async () => {
+  let decoded = 0;
+  const engine = new LocalWhisperAsr({
+    platform: "linux",
+    arch: "x64",
+    responseReserveMs: 4_000,
+    audioDecoder: {
+      timeoutMs: 30_000,
+      async decode() { decoded += 1; throw new Error("not expected"); }
+    }
+  });
+
+  await assert.rejects(
+    engine.transcribe({
+      bytes: new Uint8Array([1, 2, 3]),
+      mediaType: "audio/mpeg",
+      video: { media: { duration_ms: 300_000 } },
+      deadlineAt: Date.now() + 34_500
+    }),
+    (error) => error.code === "LOCAL_ASR_DEADLINE_EXCEEDED" &&
+      error.details?.stage === "decode"
+  );
+  assert.equal(decoded, 0);
 });
 
 test("LocalWhisperAsr keeps its CPU queue bounded", async () => {
@@ -356,17 +529,17 @@ test("LocalWhisperAsr keeps its CPU queue bounded", async () => {
       return RAW_RESULT;
     }
   });
-  const input = {
-    bytes: new Uint8Array([1]),
+  const input = (byte) => ({
+    bytes: new Uint8Array([byte]),
     mediaType: "audio/mpeg",
     video: { media: { duration_ms: 1_000 } }
-  };
+  });
 
-  const first = engine.transcribe(input);
+  const first = engine.transcribe(input(1));
   await firstStarted;
-  const second = engine.transcribe(input);
+  const second = engine.transcribe(input(2));
   await assert.rejects(
-    engine.transcribe(input),
+    engine.transcribe(input(3)),
     (error) => error.code === "LOCAL_ASR_BUSY" && error.details?.reason === "full"
   );
   release();

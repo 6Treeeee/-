@@ -42,6 +42,7 @@ const DEFAULT_RESPONSE_RESERVE_MS = 4_000;
 const DEFAULT_QUEUE_WAIT_MS = 20_000;
 const DEFAULT_MAX_QUEUED = 1;
 const DEFAULT_PREFLIGHT_TIMEOUT_MS = 10_000;
+const DEFAULT_AUDIO_DECODE_TIMEOUT_MS = 30_000;
 const MAX_RESULT_BYTES = 5 * 1024 * 1024;
 const MAX_STDERR_BYTES = 16 * 1024;
 const SAFE_RUNTIME_DEPENDENCIES = Object.freeze(["libgomp.so.1"]);
@@ -54,7 +55,13 @@ const SAFE_INPUT_TYPES = new Map([
 const DECODE_INPUT_TYPES = new Set([
   "audio/mp4",
   "audio/x-m4a",
-  "video/mp4"
+  "video/mp4",
+  "audio/mpeg",
+  "audio/mp3"
+]);
+const SHARED_DEADLINE_RETRY_CODES = new Set([
+  "LOCAL_ASR_TIMEOUT",
+  "LOCAL_ASR_DEADLINE_EXCEEDED"
 ]);
 
 const DEFAULT_ASSET_ROOT = resolve(
@@ -596,6 +603,7 @@ export class LocalWhisperAsr {
     });
     this.active = false;
     this.waiters = [];
+    this.inflightTranscriptions = new Map();
     this.preflightPromise = null;
   }
 
@@ -683,7 +691,66 @@ export class LocalWhisperAsr {
     return this.preflightPromise;
   }
 
-  async transcribe({ bytes: value, mediaType, video, deadlineAt = null } = {}) {
+  async transcribe(options = {}) {
+    if (!this.available) {
+      throw new ReaderError(
+        "LOCAL_ASR_RUNTIME_UNAVAILABLE",
+        "The local speech-to-text runtime is unavailable on this platform.",
+        { status: 503, details: { platform: "unsupported" } }
+      );
+    }
+    const input = binaryInput(options.bytes);
+    if (input.byteLength === 0) {
+      throw new ReaderError("LOCAL_ASR_EMPTY_INPUT", "The public audio media was empty.", {
+        status: 422
+      });
+    }
+    if (input.byteLength > this.maxInputBytes) {
+      throw new ReaderError(
+        "LOCAL_ASR_INPUT_TOO_LARGE",
+        "The public audio media exceeds the local speech-to-text size limit.",
+        { status: 422, details: { size: input.byteLength, max_bytes: this.maxInputBytes } }
+      );
+    }
+    const declaredDuration = durationMs(options.video);
+    const key = createHash("sha256")
+      .update(input)
+      .update(`\0${canonicalMediaType(options.mediaType)}\0${declaredDuration ?? "unknown"}`)
+      .digest("hex");
+    const requestedDeadline = Number(options.deadlineAt);
+    const requestedDeadlineAt = options.deadlineAt !== null && options.deadlineAt !== undefined &&
+      Number.isFinite(requestedDeadline) ? requestedDeadline : Number.POSITIVE_INFINITY;
+
+    for (;;) {
+      const existing = this.inflightTranscriptions.get(key);
+      if (existing) {
+        try {
+          return await existing.promise;
+        } catch (error) {
+          const canRetryWithFresherDeadline = requestedDeadlineAt > existing.deadlineAt &&
+            SHARED_DEADLINE_RETRY_CODES.has(error?.code);
+          if (!canRetryWithFresherDeadline) throw error;
+          if (this.inflightTranscriptions.get(key) === existing) {
+            this.inflightTranscriptions.delete(key);
+          }
+          continue;
+        }
+      }
+
+      const operation = this._transcribeOnce({ ...options, bytes: input });
+      const entry = { promise: operation, deadlineAt: requestedDeadlineAt };
+      this.inflightTranscriptions.set(key, entry);
+      try {
+        return await operation;
+      } finally {
+        if (this.inflightTranscriptions.get(key) === entry) {
+          this.inflightTranscriptions.delete(key);
+        }
+      }
+    }
+  }
+
+  async _transcribeOnce({ bytes: value, mediaType, video, deadlineAt = null } = {}) {
     if (!this.available) {
       throw new ReaderError(
         "LOCAL_ASR_RUNTIME_UNAVAILABLE",
@@ -707,7 +774,9 @@ export class LocalWhisperAsr {
     let duration = durationMs(video);
     const inputMediaType = canonicalMediaType(mediaType);
     const directExtension = SAFE_INPUT_TYPES.get(inputMediaType);
-    const canMeasureDuringDecode = !directExtension && DECODE_INPUT_TYPES.has(inputMediaType);
+    const durationNeedsMeasurement = duration === null || duration > this.maxDurationMs;
+    const canMeasureDuringDecode = DECODE_INPUT_TYPES.has(inputMediaType) &&
+      (!directExtension || durationNeedsMeasurement);
     if (duration === null && !canMeasureDuringDecode) {
       throw new ReaderError(
         "LOCAL_ASR_DURATION_UNKNOWN",
@@ -715,7 +784,7 @@ export class LocalWhisperAsr {
         { status: 422 }
       );
     }
-    if (duration !== null && duration > this.maxDurationMs) {
+    if (duration !== null && duration > this.maxDurationMs && !canMeasureDuringDecode) {
       throw new ReaderError(
         "LOCAL_ASR_DURATION_LIMIT",
         "The public media is longer than the synchronous local speech-to-text limit.",
@@ -725,6 +794,19 @@ export class LocalWhisperAsr {
     const release = await this._acquireSlot();
     const startedAt = Date.now();
     try {
+      const numericDeadline = Number(deadlineAt);
+      const hasDeadline = deadlineAt !== null && deadlineAt !== undefined &&
+        Number.isFinite(numericDeadline);
+      const remainingAfterQueueMs = hasDeadline
+        ? Math.floor(numericDeadline - Date.now() - this.responseReserveMs)
+        : null;
+      if (remainingAfterQueueMs !== null && remainingAfterQueueMs < 1_000) {
+        throw new ReaderError(
+          "LOCAL_ASR_DEADLINE_EXCEEDED",
+          "Not enough request time remains for bounded local speech-to-text.",
+          { status: 503, details: { stage: "queue" } }
+        );
+      }
       logLocalAsr("local_asr.started", {
         input_bytes: input.byteLength,
         media_type: inputMediaType || "unknown",
@@ -736,8 +818,20 @@ export class LocalWhisperAsr {
       let audioPreprocessing = null;
       let boundedDurationMs = duration;
       if (canMeasureDuringDecode) {
+        const configuredDecodeTimeout = Number(this.audioDecoder?.timeoutMs);
+        const decodeTimeoutMs = Number.isFinite(configuredDecodeTimeout) && configuredDecodeTimeout > 0
+          ? configuredDecodeTimeout
+          : DEFAULT_AUDIO_DECODE_TIMEOUT_MS;
+        if (remainingAfterQueueMs !== null && remainingAfterQueueMs < decodeTimeoutMs + 1_000) {
+          throw new ReaderError(
+            "LOCAL_ASR_DEADLINE_EXCEEDED",
+            "Not enough request time remains to measure public audio safely.",
+            { status: 503, details: { stage: "decode" } }
+          );
+        }
+        const declaredDurationMs = duration;
         const decoded = await this.audioDecoder.decode(input);
-        if (decoded.durationMs > this.maxDurationMs + 2_000) {
+        if (decoded.durationMs > this.maxDurationMs) {
           throw new ReaderError(
             "LOCAL_ASR_DURATION_LIMIT",
             "The decoded public media is longer than the synchronous local speech-to-text limit.",
@@ -750,8 +844,14 @@ export class LocalWhisperAsr {
         preparedBytes = binaryInput(decoded.bytes);
         extension = ".wav";
         audioPreprocessing = decoderDiagnostic(decoded);
-        duration ??= decoded.durationMs;
-        boundedDurationMs = Math.min(this.maxDurationMs, Math.max(duration, decoded.durationMs));
+        if (duration === null || duration > this.maxDurationMs) {
+          duration = decoded.durationMs;
+          logLocalAsr("local_asr.duration_reconciled", {
+            declared_duration_ms: declaredDurationMs,
+            decoded_duration_ms: decoded.durationMs
+          });
+        }
+        boundedDurationMs = Math.max(duration, decoded.durationMs);
       }
       if (!extension) {
         throw new ReaderError(
@@ -766,9 +866,6 @@ export class LocalWhisperAsr {
         runtimeTempRoot: this.runtimeTempRoot,
         inflateImpl: inflate
       });
-      const numericDeadline = Number(deadlineAt);
-      const hasDeadline = deadlineAt !== null && deadlineAt !== undefined &&
-        Number.isFinite(numericDeadline);
       const remainingMs = hasDeadline
         ? Math.floor(numericDeadline - Date.now() - this.responseReserveMs)
         : this.timeoutMs;
