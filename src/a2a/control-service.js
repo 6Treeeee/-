@@ -231,23 +231,10 @@ export class WorkflowControlService {
       principal_id: principalId,
       created_at: createdAt,
     });
-
-    return {
-      ...input,
-      task_id: taskId,
-      goal: input.owner_goal || input.goal,
-      owner_goal: input.owner_goal || input.goal,
-      execution_goal: input.execution_goal || input.current_goal || input.goal,
-      current_goal: input.current_goal || input.execution_goal || input.goal,
-      status: "submitted",
-      current_stage: "executor",
-      attempts: [],
-      evidence: [],
-      blockers: [],
-      next_decision_required: false,
-      created_at: createdAt,
-      updated_at: createdAt,
-    };
+    // The inbox hook can become visible just before the first durable state
+    // snapshot. Do not let an Executor claim a synthetic task during that
+    // initialization window.
+    return waitForTaskWorkspace(this, taskId, input.workspace_id);
   }
 
   async getTask(taskId) {
