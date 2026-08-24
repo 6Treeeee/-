@@ -141,3 +141,72 @@ and once per cold runtime before inference.
 
 See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for runtime dependencies
 and open-source research references.
+
+## A2A control loop
+
+The repository also contains a deliberately small control layer between a
+decision agent and a replaceable local coding executor. It borrows the A2A
+task/message/artifact semantics, but it is not advertised as full A2A Protocol
+conformance.
+
+```text
+authenticated decision client
+  -> durable task + acceptance criteria + budgets
+  -> outbound-only local Codex worker
+  -> structured attempt + evidence + real-world observation
+  -> deterministic reviewer + stop-loss rules
+  -> CONTINUE | CHANGE_PATH | STOP | ROLLBACK | ASK_OWNER
+```
+
+The control API is intentionally limited to:
+
+```text
+POST /tasks
+GET  /tasks
+GET  /tasks/:id
+GET  /tasks/:id/result
+POST /tasks/:id/decision
+POST /tasks/:id/executor
+POST /tasks/:id/stop
+```
+
+All task routes require an Ed25519-signed request (or an explicitly configured
+hashed bearer credential). Decision and worker identities use different keys,
+roles, principals, and workspace scopes. Private keys stay outside the
+repository; `config/a2a-public-keys.js` contains only public verification keys.
+The worker accepts assignments only for fixed local workspace paths, strips
+credential environment variables from Codex subprocesses, and never exposes an
+inbound command port.
+
+The server-side reviewer keeps build, test, deployment, real-world, and Owner
+goal gates separate. The stop-loss state machine rejects mechanical retries
+after two identical root causes, requires architecture review after two commits
+without blind-test improvement, lowers priority when complexity rises without
+Owner-goal progress, and routes a simpler alternative through a minimal proof
+of concept. `ASK_OWNER` is accepted only for credentials, payment, permission,
+manual login, legal/compliance boundaries, irreversible actions, or a major
+product-direction choice.
+
+For local development:
+
+```text
+npm install
+npm run check
+npm test
+npm run build
+
+npm install --prefix worker
+copy worker/config.example.json worker/config.json
+npm run test:worker
+npm run a2a:worker
+```
+
+Generate a fresh decision/worker key pair with `npm run a2a:keys`. Store the
+private PEM files outside this checkout, deploy only the generated public-key
+configuration, and supply the private PEM text to the local worker through the
+environment names referenced by `worker/config.json`.
+
+The source selection and licensing analysis is recorded in
+[`docs/a2a-upstream-evaluation.md`](docs/a2a-upstream-evaluation.md). The local
+executor is optional: another coding agent can implement the same signed task
+and report contract without changing the control service.

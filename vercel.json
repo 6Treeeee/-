@@ -5,6 +5,41 @@
     "api/index.js": {
       "maxDuration": 300,
       "includeFiles": "{artifacts/douyin/verified-profile.json,assets/whisper/ASSET_MANIFEST.json,assets/whisper/LICENSE-whisper.cpp,assets/whisper/LICENSE-OpenAI-Whisper,assets/whisper/ggml-base-q5_1.bin,assets/whisper/whisper-bin-ubuntu-x64-b4938-no-openmp.tar.gz}"
+    },
+    "api/a2a.js": {
+      "maxDuration": 30
+    },
+    "api/agent-card.js": {
+      "maxDuration": 10
+    },
+    "api/workflow-flow.js": {
+      "maxDuration": 300,
+      "experimentalTriggers": [
+        {
+          "type": "queue/v2beta",
+          "topic": "__wkf_workflow_*",
+          "consumer": "default",
+          "retryAfterSeconds": 5,
+          "initialDelaySeconds": 0
+        }
+      ]
+    },
+    "api/workflow-step.js": {
+      "maxDuration": 300,
+      "experimentalTriggers": [
+        {
+          "type": "queue/v2beta",
+          "topic": "__wkf_step_*",
+          "consumer": "default",
+          "retryAfterSeconds": 5,
+          "initialDelaySeconds": 0
+        }
+      ]
     }
-  }
+  },
+  "rewrites": [
+    { "source": "/tasks", "destination": "/api/a2a?route=/tasks" },
+    { "source": "/tasks/:path*", "destination": "/api/a2a?route=/tasks/:path*" },
+    { "source": "/agent-card", "destination": "/api/agent-card" }
+  ]
 }

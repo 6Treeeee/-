@@ -1,4 +1,9 @@
 node_modules/
+.well-known/workflow/
+.a2a/
+worker/node_modules/
+worker/config.json
+worker/*.pem
 .vercel/
 .env
 .env.*
@@ -16,3 +21,4 @@ artifacts/douyin/tmp/
 
 # Superseded upstream binary; kept locally only to preserve the handed-off worktree.
 assets/whisper/whisper-bin-ubuntu-x64-b4938.tar.gz
+/.swc

@@ -1,0 +1,19 @@
+{
+  "control_url": "https://your-authenticated-a2a.example.com",
+  "worker_id": "owner-machine-codex-1",
+  "key_id": "worker-owner-machine-v1",
+  "private_key_env": "A2A_WORKER_PRIVATE_KEY",
+  "decision_key_id": "decision-owner-v1",
+  "decision_private_key_env": "A2A_DECISION_PRIVATE_KEY",
+  "poll_interval_ms": 5000,
+  "request_timeout_ms": 30000,
+  "claim_timeout_ms": 5000,
+  "heartbeat_interval_ms": 15000,
+  "executor_network_access": true,
+  "research_network_access": true,
+  "model": null,
+  "reasoning_effort": "high",
+  "workspaces": {
+    "content-reader": "C:\\Users\\Administrator\\Documents\\Codex\\2026-08-24\\a2a-control-loop"
+  }
+}

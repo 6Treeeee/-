@@ -11,6 +11,8 @@ preserved.
 | `puppeteer-core` | 25.7.0 | Apache-2.0 | Ordinary logged-out browser automation |
 | `@sparticuz/chromium` | 149.0.0 | MIT | Serverless Chromium runtime |
 | `mp4box` | 2.4.1 | BSD-3-Clause | AAC remux from public MP4 into audio-only MP4 |
+| `workflow` | 4.8.4 | Apache-2.0 | Durable A2A task state, hooks, queues, and event history |
+| `@openai/codex-sdk` | 0.149.1 | Apache-2.0 | Local replaceable Codex executor client |
 | `whisper.cpp` | b4938 (`371b5a7`) | MIT | Local CPU speech-to-text engine |
 | OpenAI Whisper multilingual base q5_1 weights | revision `5359861` | MIT | Local speech-to-text model |
 
@@ -19,7 +21,8 @@ You may obtain a copy at <https://www.apache.org/licenses/LICENSE-2.0>.
 Unless required by applicable law or agreed to in writing, software distributed
 under that license is provided on an "AS IS" basis, without warranties or
 conditions of any kind. `@ai-sdk/gateway` carries Copyright 2023 Vercel, Inc.
-The complete Apache-2.0 texts remain present in the installed package
+The `workflow` package is maintained by Vercel and the Codex SDK is maintained
+by OpenAI. Complete Apache-2.0 texts remain present in the installed package
 distributions.
 
 ## @sparticuz/chromium — MIT
