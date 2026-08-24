@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { runInNewContext } from "node:vm";
 
 import {
   addCostCounters,
@@ -105,6 +106,16 @@ test("parseExecutorReport accepts live blind evidence and records bounded cost",
   assert.equal(report.owner_goal_pass, true);
   assert.equal(report.real_world_test.observations.segment_timestamps.length, 2);
   assert.deepEqual(report.blockers, ["Independent review required"]);
+});
+
+test("model accepts plain JSON objects deserialized in another JavaScript realm", () => {
+  const crossRealmReport = runInNewContext(
+    `JSON.parse(${JSON.stringify(JSON.stringify(validBlindReport()))})`
+  );
+  const report = parseExecutorReport(crossRealmReport);
+
+  assert.equal(report.task_id, "task_test_1");
+  assert.equal(report.real_world_test.observations.profile, "CONTENT_READER_TRANSCRIPT");
 });
 
 test("structured observations are bounded and cannot carry transcript text", () => {

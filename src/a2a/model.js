@@ -784,7 +784,15 @@ function assertPlainObject(value, path) {
     throw new TypeError(`${path} must be an object`);
   }
   const prototype = Object.getPrototypeOf(value);
-  if (prototype !== Object.prototype && prototype !== null) {
+  // Durable Workflow payloads are deserialized in a different JavaScript
+  // realm, so their ordinary Object prototype is not reference-equal to the
+  // API function's Object.prototype. A plain object still has a prototype
+  // whose own prototype is null; class instances do not.
+  if (
+    prototype !== null &&
+    prototype !== Object.prototype &&
+    Object.getPrototypeOf(prototype) !== null
+  ) {
     throw new TypeError(`${path} must be a plain object`);
   }
   return value;
