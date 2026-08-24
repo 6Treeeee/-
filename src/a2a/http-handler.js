@@ -322,6 +322,16 @@ export function createA2AHttpHandler({
         body: rawBody,
         pathAndQuery,
       };
+      if (process.env.VERCEL_ENV === "preview") {
+        console.info(JSON.stringify({
+          event: "a2a_request_canonical",
+          method,
+          route,
+          pathAndQuery,
+          request_path: url.pathname,
+          query_keys: [...url.searchParams.keys()].sort(),
+        }));
+      }
 
       if (method === "POST" && route === "/tasks") {
         const principal = authorizer(authRequest, ["decision"]);
