@@ -1,5 +1,3 @@
-import { randomUUID } from "node:crypto";
-
 export const TASK_STATUSES = Object.freeze([
   "submitted",
   "queued",
@@ -99,6 +97,14 @@ const BLIND_FORBIDDEN_ORIGINS = new Set([
   "MANUAL",
   "HARDCODE"
 ]);
+
+function randomModelId(prefix) {
+  const uuid = globalThis.crypto?.randomUUID?.();
+  if (typeof uuid !== "string") {
+    throw new TypeError(`${prefix} id is required in this runtime`);
+  }
+  return `${prefix}_${uuid}`;
+}
 const TASK_KEYS = new Set([
   "request_id",
   "context_id",
@@ -162,9 +168,9 @@ export function parseTaskInput(input, options = {}) {
   const value = assertPlainObject(input, "task");
   assertNoUnknownKeys(value, TASK_KEYS, "task");
 
-  const now = options.now ?? new Date().toISOString();
+  const now = options.now ?? value.created_at ?? new Date().toISOString();
   const taskId = parseId(value.task_id === undefined
-    ? (options.idFactory?.() ?? `task_${randomUUID()}`)
+    ? (options.idFactory?.() ?? randomModelId("task"))
     : value.task_id, "task.task_id");
   const createdAt = value.created_at === undefined
     ? parseTimestamp(now, "options.now")
@@ -278,7 +284,7 @@ export function parseExecutorReport(input, options = {}) {
 
   const report = {
     report_id: value.report_id === undefined
-      ? `report_${randomUUID()}`
+      ? randomModelId("report")
       : parseId(value.report_id, `${path}.report_id`),
     task_id: taskId,
     status,
@@ -353,7 +359,7 @@ export function parseDecision(input, options = {}) {
 
   return {
     decision_id: value.decision_id === undefined
-      ? `decision_${randomUUID()}`
+      ? randomModelId("decision")
       : parseId(value.decision_id, `${path}.decision_id`),
     task_id: taskId,
     decision,

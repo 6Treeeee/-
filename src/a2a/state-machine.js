@@ -142,8 +142,8 @@ function assertWorker(task, event) {
   }
 }
 
-export function createInitialTask(input, taskId, now = Date.now()) {
-  const timestamp = iso(now);
+export function createInitialTask(input, taskId, now = null) {
+  const timestamp = input.created_at || iso(now ?? Date.now());
   return {
     task_id: taskId,
     request_id: input.request_id || null,
