@@ -54,7 +54,9 @@ export function canonicalPathAndQuery(pathname, searchParams = new URLSearchPara
     throw new A2AAuthError("A2A_CANONICAL_PATH_INVALID", 400);
   }
   const entries = [...searchParams.entries()]
-    .filter(([key]) => key !== "route")
+    // Both values are routing metadata injected by the Vercel rewrite. They
+    // are not part of the public control API and must not alter the signature.
+    .filter(([key]) => key !== "route" && key !== "path")
     .sort(([leftKey, leftValue], [rightKey, rightValue]) => (
       leftKey.localeCompare(rightKey) || leftValue.localeCompare(rightValue)
     ));

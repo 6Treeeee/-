@@ -21,7 +21,7 @@ const PUBLIC_KEY_PEM = publicKey.export({ type: "spki", format: "pem" });
 test("canonical request fixes method, sorted query, body hash, and line order", () => {
   const pathAndQuery = canonicalPathAndQuery(
     "/tasks",
-    new URLSearchParams("route=%2Ftasks&z=last&a=two&a=one")
+    new URLSearchParams("route=%2Ftasks&path=rewritten-task-id&z=last&a=two&a=one")
   );
   assert.equal(pathAndQuery, "/tasks?a=one&a=two&z=last");
 
