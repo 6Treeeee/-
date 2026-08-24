@@ -109,6 +109,14 @@ export async function a2aControlWorkflow(input) {
       try {
         state = reduceTaskEvent(state, event);
       } catch (error) {
+        console.warn(JSON.stringify({
+          event: "a2a_workflow_event_rejected",
+          task_id: workflowRunId,
+          event_id: event?.event_id || null,
+          kind: event?.kind || null,
+          error_name: String(error?.name || "Error").slice(0, 80),
+          error_message: String(error?.message || "A2A_EVENT_REJECTED").slice(0, 300),
+        }));
         state = recordRejectedTaskEvent(state, event, error);
       }
       await emitTaskState(state);

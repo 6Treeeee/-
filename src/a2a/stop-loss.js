@@ -195,7 +195,9 @@ function isFailedAttempt(report) {
 
 function normalizedRootCause(report) {
   if (!isFailedAttempt(report) || report.root_cause === null) return null;
-  return report.root_cause.trim().toLocaleLowerCase("en-US").replace(/\s+/g, " ");
+  // Locale-sensitive transforms are unnecessary for stable machine codes and
+  // are not portable across every deterministic Workflow runtime.
+  return report.root_cause.trim().toLowerCase().replace(/\s+/g, " ");
 }
 
 function trailingRootCauseRun(reports) {
