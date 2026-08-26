@@ -14,6 +14,7 @@
   "model": null,
   "reasoning_effort": "high",
   "workspaces": {
-    "content-reader": "C:\\Users\\Administrator\\Documents\\Codex\\2026-08-24\\a2a-control-loop"
+    "content-reader": "C:\\Users\\Administrator\\Documents\\Codex\\2026-08-24\\a2a-control-loop",
+    "a2a-control": "C:\\Users\\Administrator\\Documents\\Codex\\2026-08-24\\a2a-control-loop"
   }
 }

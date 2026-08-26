@@ -5,7 +5,8 @@ export const a2aPublicKeys = Object.freeze([
     "role": "decision",
     "principal_id": "gpt-decision-owner",
     "workspace_ids": [
-      "content-reader"
+      "content-reader",
+      "a2a-control"
     ],
     "public_key_pem": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAg6141fjpIKj4dM4QrECmKH/iIanW8UA03qhZEgw7myk=\n-----END PUBLIC KEY-----\n"
   },
@@ -14,7 +15,8 @@ export const a2aPublicKeys = Object.freeze([
     "role": "worker",
     "principal_id": "owner-machine-codex-1",
     "workspace_ids": [
-      "content-reader"
+      "content-reader",
+      "a2a-control"
     ],
     "public_key_pem": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAJfKoWWWdP3qZnlUyG7FYydOgVRNt05WcwsGXSmTQFuA=\n-----END PUBLIC KEY-----\n"
   }

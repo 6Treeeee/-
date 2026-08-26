@@ -26,7 +26,11 @@ const MIN_TRANSCRIPT_CHARACTERS = 20;
 export function reviewEvidence(taskInput, reportInput, options = {}) {
   const task = parseReviewerTask(taskInput);
   const report = parseExecutorReport(reportInput, { taskId: task.task_id });
-  const policy = parseReviewOptions(options);
+  const isContentReaderTask = task.workspace_id === "content-reader";
+  const isControlAcceptanceTask = task.workspace_id === "a2a-control";
+  const policy = parseReviewOptions(options, {
+    require_blind_sample: !isControlAcceptanceTask
+  });
   const reasons = [];
 
   const buildPass = verifyGate(report.evidence, "BUILD_PASS", {
@@ -41,9 +45,11 @@ export function reviewEvidence(taskInput, reportInput, options = {}) {
   const blindReview = inspectBlindTest(report, {
     requireBlindSample: policy.require_blind_sample,
     minimumSuccessRate: policy.minimum_success_rate,
-    requiredObservationProfile: task.workspace_id === "content-reader"
+    requiredObservationProfile: isContentReaderTask
       ? "CONTENT_READER_TRANSCRIPT"
-      : null,
+      : isControlAcceptanceTask
+        ? "A2A_CONTROL_EXECUTION"
+        : null,
     requireAsrMethod: taskRequiresAsr(task)
   });
   const sampleReview = verifyExpectedSample(task.sample, report.real_world_test);
@@ -52,12 +58,17 @@ export function reviewEvidence(taskInput, reportInput, options = {}) {
   const realWorldPass = blindReview.valid && sampleReview.matches;
   const criteriaReview = verifyAcceptanceCriteria(task, report);
   reasons.push(...criteriaReview.reasons);
+  const controlLoopReview = inspectControlLoop(taskInput, report, blindReview);
+  reasons.push(...controlLoopReview.reasons);
 
   const ownerGoalPass = buildPass
     && testPass
     && deployPass
     && realWorldPass
-    && criteriaReview.all_passed;
+    && criteriaReview.all_passed
+    && (!isControlAcceptanceTask
+      || (controlLoopReview.REAL_EXECUTION_PASS
+        && controlLoopReview.DECISION_FEEDBACK_PASS));
   const gates = {
     BUILD_PASS: buildPass,
     TEST_PASS: testPass,
@@ -92,6 +103,121 @@ export function reviewEvidence(taskInput, reportInput, options = {}) {
     executor_completion_accepted: report.status === "completed" && ownerGoalPass,
     criteria: criteriaReview.results,
     blind_test: { ...blindReview, expected_sample_matches: sampleReview.matches },
+    control_loop: controlLoopReview,
+    reasons: deduplicateReasons(reasons)
+  };
+}
+
+function inspectControlLoop(taskInput, report, realWorldReview) {
+  const required = taskInput?.workspace_id === "a2a-control";
+  if (!required) {
+    return {
+      required: false,
+      REAL_EXECUTION_PASS: null,
+      DECISION_FEEDBACK_PASS: null,
+      reasons: []
+    };
+  }
+
+  const observations = report.real_world_test?.observations;
+  const realExecutionPass = realWorldReview.valid
+    && observations?.profile === "A2A_CONTROL_EXECUTION"
+    && observations.command_exit_code === 0
+    && observations.artifact_bytes > 0
+    && observations.artifact_sha256 !== EMPTY_SHA256;
+  const reasons = [];
+  if (!realExecutionPass) {
+    reasons.push({
+      code: "REAL_EXECUTION_NOT_VERIFIED",
+      message: "the authenticated executor did not provide valid live command and artifact evidence"
+    });
+  }
+
+  const attempts = Array.isArray(taskInput?.attempts) ? taskInput.attempts : [];
+  const priorAttempt = [...attempts].reverse().find((attempt) => (
+    attempt?.real_world_test?.observations?.profile === "A2A_CONTROL_EXECUTION"
+  ));
+  const priorObservations = priorAttempt?.real_world_test?.observations;
+  const decisions = Array.isArray(taskInput?.decisions) ? taskInput.decisions : [];
+  const decision = [...decisions].reverse().find((item) => (
+    item?.decision === "CONTINUE" || item?.decision === "CHANGE_PATH"
+  ));
+  if (!decision) {
+    reasons.push({
+      code: "CONTROL_DECISION_MISSING",
+      message: "no second GPT decision exists before this executor report"
+    });
+  }
+
+  const decisionReferenced = Boolean(
+    decision
+      && observations?.decision_id
+      && observations.decision_id === decision.decision_id
+  );
+  if (decision && !decisionReferenced) {
+    reasons.push({
+      code: "CONTROL_DECISION_NOT_REFERENCED",
+      message: "the executor evidence is not bound to the latest GPT decision"
+    });
+  }
+
+  const actionChanged = Boolean(
+    priorAttempt
+      && priorObservations
+      && observations
+      && report.action !== priorAttempt.action
+      && observations.action_id !== priorObservations.action_id
+      && observations.artifact_ref !== priorObservations.artifact_ref
+      && observations.artifact_sha256 !== priorObservations.artifact_sha256
+  );
+  if (decision && !actionChanged) {
+    reasons.push({
+      code: "CONTROL_ACTION_UNCHANGED",
+      message: "the post-decision action and artifact are not materially different from the prior attempt"
+    });
+  }
+
+  const goalApplied = !decision
+    ? false
+    : decision.decision !== "CHANGE_PATH"
+      || (decision.next_goal != null
+        && decision.next_goal === (taskInput.current_goal ?? taskInput.execution_goal));
+  if (decision && !goalApplied) {
+    reasons.push({
+      code: "CONTROL_GOAL_NOT_APPLIED",
+      message: "the CHANGE_PATH next goal was not applied to the executor task state"
+    });
+  }
+
+  const decisionAt = decision?.at ?? decision?.created_at ?? null;
+  const executionAt = report.real_world_test?.observed_at ?? report.created_at;
+  const temporalOrderPass = Boolean(
+    decisionAt
+      && Number.isFinite(Date.parse(decisionAt))
+      && Date.parse(executionAt) >= Date.parse(decisionAt)
+  );
+  if (decision && !temporalOrderPass) {
+    reasons.push({
+      code: "CONTROL_EXECUTION_PRECEDES_DECISION",
+      message: "the changed execution evidence does not occur after the GPT decision"
+    });
+  }
+
+  return {
+    required: true,
+    REAL_EXECUTION_PASS: realExecutionPass,
+    DECISION_FEEDBACK_PASS: Boolean(
+      realExecutionPass
+        && priorAttempt
+        && decision
+        && decisionReferenced
+        && actionChanged
+        && goalApplied
+        && temporalOrderPass
+    ),
+    decision_id: decision?.decision_id ?? null,
+    previous_action_id: priorObservations?.action_id ?? null,
+    current_action_id: observations?.action_id ?? null,
     reasons: deduplicateReasons(reasons)
   };
 }
@@ -227,7 +353,8 @@ export function inspectBlindTest(reportInput, options = {}) {
     throw new TypeError("minimumSuccessRate must be between 0 and 1");
   }
   if (requiredObservationProfile !== null
-    && requiredObservationProfile !== "CONTENT_READER_TRANSCRIPT") {
+    && !["CONTENT_READER_TRANSCRIPT", "A2A_CONTROL_EXECUTION"]
+      .includes(requiredObservationProfile)) {
     throw new TypeError("requiredObservationProfile is not supported");
   }
   if (typeof requireAsrMethod !== "boolean") {
@@ -369,6 +496,44 @@ function inspectStructuredObservations(test, requiredProfile, requireAsrMethod) 
         asr_method_verified: false
       },
       reasons
+    };
+  }
+
+  if (observations.profile === "A2A_CONTROL_EXECUTION") {
+    const controlReasons = [];
+    if (requiredProfile !== null && observations.profile !== requiredProfile) {
+      controlReasons.push({
+        code: "OBSERVATION_PROFILE_MISMATCH",
+        message: `expected ${requiredProfile} structured observations`
+      });
+    }
+    if (observations.command_exit_code !== 0) {
+      controlReasons.push({
+        code: "CONTROL_COMMAND_FAILED",
+        message: `executor command exited with code ${observations.command_exit_code}`
+      });
+    }
+    if (observations.artifact_bytes < 1
+      || observations.artifact_sha256 === EMPTY_SHA256) {
+      controlReasons.push({
+        code: "CONTROL_ARTIFACT_EMPTY",
+        message: "executor artifact is empty"
+      });
+    }
+    return {
+      summary: {
+        required: requiredProfile !== null,
+        present: true,
+        valid: controlReasons.length === 0,
+        profile: observations.profile,
+        action_id: observations.action_id,
+        decision_id: observations.decision_id,
+        artifact_ref: observations.artifact_ref,
+        artifact_sha256: observations.artifact_sha256,
+        artifact_bytes: observations.artifact_bytes,
+        command_exit_code: observations.command_exit_code
+      },
+      reasons: controlReasons
     };
   }
 
@@ -633,7 +798,7 @@ function highestVerifiedStage(gates) {
   return highest;
 }
 
-function parseReviewOptions(options) {
+function parseReviewOptions(options, defaults = {}) {
   if (options === null || typeof options !== "object" || Array.isArray(options)) {
     throw new TypeError("review options must be an object");
   }
@@ -641,7 +806,9 @@ function parseReviewOptions(options) {
   for (const key of Object.keys(options)) {
     if (!allowed.has(key)) throw new TypeError(`review options.${key} is not allowed`);
   }
-  const requireBlindSample = options.require_blind_sample ?? true;
+  const requireBlindSample = options.require_blind_sample
+    ?? defaults.require_blind_sample
+    ?? true;
   const minimumSuccessRate = options.minimum_success_rate ?? 1;
   if (typeof requireBlindSample !== "boolean") {
     throw new TypeError("review options.require_blind_sample must be a boolean");

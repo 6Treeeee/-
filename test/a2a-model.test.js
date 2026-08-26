@@ -136,6 +136,28 @@ test("structured observations are bounded and cannot carry transcript text", () 
   assert.throws(() => parseExecutorReport(oversized), /exceeds the limit of 4096/);
 });
 
+test("control execution observations are compact, hashed, and command-bound", () => {
+  const report = validBlindReport();
+  report.real_world_test.sample_type = "KNOWN_SAMPLE";
+  report.evidence[0].sample_type = "KNOWN_SAMPLE";
+  report.real_world_test.observations = {
+    profile: "A2A_CONTROL_EXECUTION",
+    action_id: "phase_1",
+    decision_id: null,
+    artifact_ref: "C:/workspace/.a2a/phase-1.json",
+    artifact_sha256: "c".repeat(64),
+    artifact_bytes: 128,
+    command_exit_code: 0
+  };
+
+  const parsed = parseExecutorReport(report);
+  assert.equal(parsed.real_world_test.observations.action_id, "phase_1");
+  assert.equal(parsed.real_world_test.observations.artifact_bytes, 128);
+
+  report.real_world_test.observations.artifact_bytes = 0;
+  assert.throws(() => parseExecutorReport(report), /must be between 1/);
+});
+
 test("blind samples reject fixture, snapshot, cache, manual, and hardcoded sources", () => {
   for (const [field, value] of [
     ["cache_hit", true],

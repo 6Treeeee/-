@@ -526,6 +526,48 @@ export function parseRealWorldTest(input, path = "real_world_test") {
  */
 export function parseRealWorldObservations(input, path = "real_world_test.observations") {
   const value = assertPlainObject(input, path);
+  const profile = parseEnum(
+    value.profile,
+    ["CONTENT_READER_TRANSCRIPT", "A2A_CONTROL_EXECUTION"],
+    `${path}.profile`
+  );
+  if (profile === "A2A_CONTROL_EXECUTION") {
+    const keys = new Set([
+      "profile",
+      "action_id",
+      "decision_id",
+      "artifact_ref",
+      "artifact_sha256",
+      "artifact_bytes",
+      "command_exit_code"
+    ]);
+    assertNoUnknownKeys(value, keys, path);
+    return {
+      profile,
+      action_id: parseId(value.action_id, `${path}.action_id`),
+      decision_id: value.decision_id == null
+        ? null
+        : parseId(value.decision_id, `${path}.decision_id`),
+      artifact_ref: parseRequiredString(
+        value.artifact_ref,
+        `${path}.artifact_ref`,
+        MODEL_LIMITS.evidenceReference
+      ),
+      artifact_sha256: parseSha256(value.artifact_sha256, `${path}.artifact_sha256`),
+      artifact_bytes: parseBoundedInteger(
+        value.artifact_bytes,
+        `${path}.artifact_bytes`,
+        1,
+        MODEL_LIMITS.transcriptCharacters
+      ),
+      command_exit_code: parseBoundedInteger(
+        value.command_exit_code,
+        `${path}.command_exit_code`,
+        0,
+        255
+      )
+    };
+  }
   const keys = new Set([
     "profile",
     "http_status",
@@ -555,11 +597,7 @@ export function parseRealWorldObservations(input, path = "real_world_test.observ
     throw new TypeError(`${path}.segment_count must match segment_timestamps.length`);
   }
   return {
-    profile: parseEnum(
-      value.profile,
-      ["CONTENT_READER_TRANSCRIPT"],
-      `${path}.profile`
-    ),
+    profile,
     http_status: parseBoundedInteger(value.http_status, `${path}.http_status`, 100, 599),
     readable_content_status: parseRequiredString(
       value.readable_content_status,

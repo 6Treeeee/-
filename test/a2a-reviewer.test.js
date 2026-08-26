@@ -265,6 +265,168 @@ test("REPORT transition routes a test-only claim to decision instead of completi
   assert.equal(state.review.gates.OWNER_GOAL_PASS, false);
 });
 
+test("Level 1 completes only after real execution and a GPT decision changes Codex behavior", () => {
+  let state = createInitialTask(controlTask(), "task_level_1", Date.parse(NOW));
+  state = reduceTaskEvent(state, {
+    event_id: "claim_level_1_phase_1",
+    kind: "CLAIM",
+    at: "2026-08-24T00:00:01.000Z",
+    worker_id: "owner-machine-codex-1",
+    workspace_id: "a2a-control"
+  });
+  state = reduceTaskEvent(state, {
+    event_id: "report_level_1_phase_1",
+    kind: "REPORT",
+    at: "2026-08-24T00:00:02.000Z",
+    worker_id: "owner-machine-codex-1",
+    payload: controlReport(1)
+  });
+
+  assert.equal(state.status, "review_required");
+  assert.equal(state.review.control_loop.REAL_EXECUTION_PASS, true);
+  assert.equal(state.review.control_loop.DECISION_FEEDBACK_PASS, false);
+
+  state = reduceTaskEvent(state, {
+    event_id: "decision_level_1_change_path",
+    kind: "DECISION",
+    at: "2026-08-24T00:00:03.000Z",
+    payload: {
+      decision_id: "decision_level_1_change_path",
+      task_id: state.task_id,
+      decision: "CHANGE_PATH",
+      reason: "Use the second explicit artifact action",
+      constraints_update: ["Preserve the phase-one artifact"],
+      next_goal: "Create a distinct phase-two artifact that references the GPT decision",
+      created_at: "2026-08-24T00:00:03.000Z"
+    }
+  });
+  assert.equal(state.current_goal, "Create a distinct phase-two artifact that references the GPT decision");
+
+  state = reduceTaskEvent(state, {
+    event_id: "claim_level_1_phase_2",
+    kind: "CLAIM",
+    at: "2026-08-24T00:00:04.000Z",
+    worker_id: "owner-machine-codex-1",
+    workspace_id: "a2a-control"
+  });
+  state = reduceTaskEvent(state, {
+    event_id: "report_level_1_phase_2",
+    kind: "REPORT",
+    at: "2026-08-24T00:00:05.000Z",
+    worker_id: "owner-machine-codex-1",
+    payload: controlReport(2, "decision_level_1_change_path")
+  });
+
+  assert.equal(state.status, "completed");
+  assert.equal(state.review.control_loop.REAL_EXECUTION_PASS, true);
+  assert.equal(state.review.control_loop.DECISION_FEEDBACK_PASS, true);
+  assert.equal(state.review.control_loop.previous_action_id, "phase_1");
+  assert.equal(state.review.control_loop.current_action_id, "phase_2");
+  assert.equal(state.review.owner_goal_pass, true);
+});
+
+function controlTask() {
+  return {
+    workspace_id: "a2a-control",
+    sample: {
+      sample_type: "KNOWN_SAMPLE",
+      sample_id: "level-1-live-nonce"
+    },
+    goal: "Prove one real GPT to Codex decision feedback loop",
+    acceptance_criteria: [
+      "Codex executes a real workspace action and changes it after the GPT decision"
+    ],
+    constraints: ["Use only isolated low-risk artifacts"],
+    budget: { max_executions: 2, max_agent_calls: 2 },
+    stop_conditions: ["Stop immediately after Level 1 passes"],
+    allowed_actions: ["Create ignored acceptance artifacts"],
+    forbidden_actions: ["Modify production data"]
+  };
+}
+
+function controlReport(phase, decisionId = null) {
+  const observedAt = phase === 1
+    ? "2026-08-24T00:00:02.000Z"
+    : "2026-08-24T00:00:05.000Z";
+  const actionId = `phase_${phase}`;
+  const liveEvidenceId = `ev_control_${phase}`;
+  return {
+    report_id: `report_level_1_${phase}`,
+    task_id: "task_level_1",
+    status: phase === 1 ? "review_required" : "completed",
+    action: phase === 1
+      ? "Create the phase-one nonce artifact"
+      : "Create the post-decision phase-two proof artifact",
+    result: `The authenticated executor created and hashed phase ${phase}`,
+    evidence: [
+      evidenceItem(`ev_build_${phase}`, "BUILD", "BUILD_PASS", "COMMAND_OUTPUT", "Source checks passed"),
+      evidenceItem(`ev_test_${phase}`, "TEST", "TEST_PASS", "TEST_RUN", "Automated tests passed"),
+      {
+        ...evidenceItem(
+          `ev_deploy_${phase}`,
+          "DEPLOYMENT",
+          "DEPLOY_PASS",
+          "DEPLOYMENT_PLATFORM",
+          "Preview deployment is ready"
+        ),
+        deployment_id: "dpl_level_1"
+      },
+      {
+        ...evidenceItem(
+          liveEvidenceId,
+          "REAL_WORLD",
+          "REAL_WORLD_PASS",
+          "LIVE_RUNTIME",
+          `Authenticated executor created phase ${phase} and verified its digest`
+        ),
+        ref: `C:/workspace/.a2a/phase-${phase}.json`,
+        sample_type: "KNOWN_SAMPLE"
+      }
+    ],
+    real_world_test: {
+      sample_type: "KNOWN_SAMPLE",
+      sample_id: "level-1-live-nonce",
+      source_url: null,
+      passed: true,
+      success_rate: 1,
+      observed_at: observedAt,
+      origin: "LIVE_RUNTIME",
+      evidence_ids: [liveEvidenceId],
+      observations: {
+        profile: "A2A_CONTROL_EXECUTION",
+        action_id: actionId,
+        decision_id: decisionId,
+        artifact_ref: `C:/workspace/.a2a/phase-${phase}.json`,
+        artifact_sha256: (phase === 1 ? "c" : "d").repeat(64),
+        artifact_bytes: 128 + phase,
+        command_exit_code: 0
+      }
+    },
+    cost: {
+      execution_count: 1,
+      real_world_test_count: 1,
+      agent_call_count: 1,
+      estimated_tokens: 100,
+      external_api_call_count: 0,
+      deployment_count: 0
+    },
+    root_cause: null,
+    alternatives: [],
+    decision_required: phase === 1,
+    acceptance_results: [{
+      criterion_index: 0,
+      passed: true,
+      evidence_ids: [liveEvidenceId],
+      note: `Phase ${phase} live evidence is present`
+    }],
+    commit_sha: "abcdef1",
+    complexity: null,
+    owner_goal_pass: phase === 2,
+    blockers: [],
+    created_at: observedAt
+  };
+}
+
 function task() {
   return {
     task_id: "task_review",
