@@ -1923,6 +1923,81 @@ test("DirectPublicWebProvider checks the actual page URL even when canonical loo
   );
 });
 
+test("DirectPublicWebProvider recovers only identity-bound detail on a fresh page after a wrong redirect", async () => {
+  const id = "7000000000000000001";
+  const wrongId = "7000000000000000002";
+  const expectedMedia = `https://v3-dy-o.douyinvod.com/${id}.mp4`;
+  const wrongMedia = `https://v3-dy-o.douyinvod.com/${wrongId}.mp4`;
+  const navigations = [];
+  const pages = [
+    fakeBrowserPage({
+      currentUrl: `https://www.douyin.com/video/${wrongId}`,
+      videoDom: {
+        canonical: `https://www.douyin.com/video/${wrongId}`,
+        title: "Wrong public video - 抖音",
+        description: "Wrong public description",
+        media: [wrongMedia],
+        videoPresent: true,
+        durationSeconds: 12,
+        width: 1080,
+        height: 1920,
+        hydration: []
+      }
+    }),
+    fakeBrowserPage({
+      currentUrl: `https://www.douyin.com/video/${wrongId}`,
+      publicDetail: {
+        status: 200,
+        payload: {
+          aweme_detail: aweme(id, {
+            video: { duration: 12_000, play_addr: { url_list: [expectedMedia] } }
+          })
+        }
+      },
+      videoDom: {
+        canonical: `https://www.douyin.com/video/${wrongId}`,
+        title: "Wrong public video - 抖音",
+        description: "Wrong public description",
+        media: [wrongMedia],
+        videoPresent: true,
+        durationSeconds: 12,
+        width: 1080,
+        height: 1920,
+        hydration: []
+      }
+    })
+  ];
+  let pageCalls = 0;
+  const provider = new DirectPublicWebProvider({
+    browserService: {
+      async withPage(operation) {
+        const fake = pages[pageCalls++];
+        try {
+          return await operation({ page: fake.page, runtime: { kind: "injected-test-browser" } });
+        } finally {
+          navigations.push(fake.navigatedTo());
+        }
+      }
+    },
+    retries: 1,
+    retryDelayMs: 0,
+    videoContentWaitMs: 0,
+    settleMs: 0
+  });
+
+  const result = await provider.readVideo({ awemeId: id });
+
+  assert.equal(result.aweme.aweme_id, id);
+  assert.deepEqual(result.networkMediaUrls, []);
+  assert.deepEqual(result.aweme.video.play_addr.url_list, [expectedMedia]);
+  assert.equal(result.meta.identity.source, "public_detail");
+  assert.equal(result.meta.identity.page_url_mismatch_recovered, true);
+  assert.deepEqual(navigations, [
+    `https://www.douyin.com/video/${id}`,
+    `https://www.iesdouyin.com/share/video/${id}`
+  ]);
+});
+
 test("DirectPublicWebProvider survives a transient execution-context navigation race", async () => {
   const id = "7670118101211453413";
   const publicMedia = `https://v3-dy-o.douyinvod.com/${id}.mp4`;

@@ -1094,7 +1094,7 @@ export class DirectPublicWebProvider {
 
   async readVideo({ inputUrl, resolvedUrl, awemeId } = {}) {
     const selected = videoTarget({ inputUrl, resolvedUrl, awemeId });
-    return this.runWithRetry((_attempt, target) => this.browser.withPage(async ({ page, runtime }) => {
+    return this.runWithRetry((attempt, target) => this.browser.withPage(async ({ page, runtime }) => {
       const capture = createCapture({ expectedAwemeId: selected.awemeId });
       capture.attach(page);
       const acquiredAt = new Date().toISOString();
@@ -1198,7 +1198,10 @@ export class DirectPublicWebProvider {
         const canonicalMismatch = Boolean(
           selected.awemeId && canonicalPageId && canonicalPageId !== selected.awemeId
         );
-        if (selected.awemeId && finalUrlId && finalUrlId !== selected.awemeId) {
+        const pageUrlMismatch = Boolean(
+          selected.awemeId && finalUrlId && finalUrlId !== selected.awemeId
+        );
+        if (pageUrlMismatch && attempt === 0) {
           const accessFailure = capturedAccessFailure();
           if (accessFailure) throw accessFailure;
           throw identityMismatchError(target, selected.awemeId, finalUrlId, "page_url");
@@ -1211,11 +1214,12 @@ export class DirectPublicWebProvider {
         );
         const preliminaryAweme = capture.state.aweme ??
           (!selected.awemeId || hydrationId === selected.awemeId ? rawHydration : null);
-        const preliminaryConflict = canonicalMismatch || hydrationMismatch ||
+        const preliminaryConflict = pageUrlMismatch || canonicalMismatch || hydrationMismatch ||
           capture.state.mismatchedAwemeIds.length > 0;
         const preliminaryMediaUrls = preliminaryConflict ? [] : rawObservedMediaUrls;
         const needsExplicitDetail = selected.awemeId && (
-          (canonicalMismatch && !capture.state.aweme) ||
+          ((pageUrlMismatch || canonicalMismatch) && !capture.state.aweme &&
+            !(rawHydration && hydrationId === selected.awemeId)) ||
           (embeddedAwemeMediaUrls(preliminaryAweme).length === 0 && preliminaryMediaUrls.length === 0)
         );
         if (needsExplicitDetail) {
@@ -1238,12 +1242,16 @@ export class DirectPublicWebProvider {
             }
           }
         }
-        const hasIdentityConflict = canonicalMismatch || hydrationMismatch ||
+        const hasIdentityConflict = pageUrlMismatch || canonicalMismatch || hydrationMismatch ||
           capture.state.mismatchedAwemeIds.length > 0;
         mergeSignals(combinedAccess, capture.state.signals);
         if (hasIdentityConflict) {
           const accessFailure = capturedAccessFailure();
           if (accessFailure) throw accessFailure;
+        }
+        if (pageUrlMismatch && !capture.state.aweme &&
+            !(rawHydration && hydrationId === selected.awemeId)) {
+          throw identityMismatchError(target, selected.awemeId, finalUrlId, "page_url");
         }
         if (canonicalMismatch && !capture.state.aweme) {
           throw identityMismatchError(target, selected.awemeId, canonicalPageId, "canonical");
@@ -1305,6 +1313,14 @@ export class DirectPublicWebProvider {
             network_media_hosts: [...new Set(
               [...capture.state.media.values()].map((item) => item.host)
             )],
+            identity: {
+              expected_aweme_id: selected.awemeId,
+              observed_aweme_id: observedAwemeId,
+              source: capture.state.aweme
+                ? "public_detail"
+                : hydration ? "hydration" : "page_metadata",
+              page_url_mismatch_recovered: pageUrlMismatch
+            },
             page: {
               title: dom.title,
               description: dom.description,
