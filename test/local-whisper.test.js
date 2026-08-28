@@ -47,10 +47,14 @@ test("bounded Whisper CLI decoding preserves segment JSON without five-beam toke
     modelPath: "/runtime/model.bin",
     inputPath: "/tmp/input.mp3",
     outputPrefix: "/tmp/result",
+    offsetMs: 120_000,
     durationMs: 273_834,
     threads: 2
   });
 
+  assert.deepEqual(args.slice(args.indexOf("-ot"), args.indexOf("-ot") + 4), [
+    "-ot", "120000", "-d", "273834"
+  ]);
   assert.deepEqual(args.slice(args.indexOf("-bs"), args.indexOf("-bs") + 7), [
     "-bs", "1", "-bo", "1", "-nf", "-ng", "-oj"
   ]);
@@ -163,6 +167,60 @@ test("LocalWhisperAsr keeps a bounded 273-second MP3 in one CLI invocation", asy
   assert.equal(invocations[0].timeoutMs, 280_000);
   assert.equal(result.method, "local_whisper_cpp_base_q5_1");
   assert.deepEqual(result.segments.map((segment) => segment.start_ms), [0, 2_360]);
+});
+
+test("LocalWhisperAsr chunks long MP3 media and restores global timestamps", async () => {
+  const invocations = [];
+  const byOffset = new Map([
+    [0, [
+      { offsets: { from: 0, to: 2_000 }, text: "开场", tokens: [{ text: "开场", p: 0.9 }] },
+      { offsets: { from: 276_000, to: 279_000 }, text: "边界重复", tokens: [{ text: "边界重复", p: 0.8 }] }
+    ]],
+    [275_000, [
+      { offsets: { from: 4_000, to: 7_000 }, text: "边界重复", tokens: [{ text: "边界重复", p: 0.7 }] },
+      { offsets: { from: 8_000, to: 11_000 }, text: "第二段", tokens: [{ text: "第二段", p: 0.9 }] }
+    ]],
+    [550_000, [
+      { offsets: { from: 5_000, to: 8_000 }, text: "第三段", tokens: [{ text: "第三段", p: 0.85 }] }
+    ]]
+  ]);
+  const engine = new LocalWhisperAsr({
+    platform: "linux",
+    arch: "x64",
+    maxDurationMs: 280_000,
+    chunkOverlapMs: 5_000,
+    runtimeProvider: async () => runtime(),
+    runImpl: async (input) => {
+      invocations.push(input);
+      return {
+        result: { language: "zh" },
+        transcription: byOffset.get(input.offsetMs) ?? []
+      };
+    },
+    audioDecoder: { async decode() { throw new Error("known MP3 duration should not be decoded"); } }
+  });
+
+  const result = await engine.transcribe({
+    bytes: new Uint8Array([1, 2, 3]),
+    mediaType: "audio/mpeg",
+    video: { aweme_id: "7674668931734326528", media: { duration_ms: 560_000 } }
+  });
+
+  assert.deepEqual(invocations.map(({ offsetMs, durationMs }) => ({ offsetMs, durationMs })), [
+    { offsetMs: 0, durationMs: 280_000 },
+    { offsetMs: 275_000, durationMs: 280_000 },
+    { offsetMs: 550_000, durationMs: 10_000 }
+  ]);
+  assert.equal(result.text, "开场\n边界重复\n第二段\n第三段");
+  assert.deepEqual(result.segments.map(({ start_ms, end_ms, text }) => ({ start_ms, end_ms, text })), [
+    { start_ms: 0, end_ms: 2_000, text: "开场" },
+    { start_ms: 276_000, end_ms: 279_000, text: "边界重复" },
+    { start_ms: 283_000, end_ms: 286_000, text: "第二段" },
+    { start_ms: 555_000, end_ms: 558_000, text: "第三段" }
+  ]);
+  assert.equal(result.chunking.chunk_count, 3);
+  assert.equal(result.chunking.duplicates_removed, 1);
+  assert.ok(result.limitations.includes("chunked_long_audio"));
 });
 
 test("LocalWhisperAsr caps inference at the request deadline with a response reserve", async () => {
@@ -278,6 +336,7 @@ test("LocalWhisperAsr rejects overlong media before preparing or running the eng
     platform: "linux",
     arch: "x64",
     maxDurationMs: 180_000,
+    maxTotalDurationMs: 180_000,
     runtimeProvider: async () => { prepared += 1; return runtime(); },
     runImpl: async () => { ran += 1; return RAW_RESULT; }
   });
@@ -294,29 +353,19 @@ test("LocalWhisperAsr rejects overlong media before preparing or running the eng
   assert.equal(ran, 0);
 });
 
-test("LocalWhisperAsr reconciles an overlong MP3 page duration with decoded media", async () => {
-  let invocation;
+test("LocalWhisperAsr chunks known long MP3 media without full browser decoding", async () => {
+  const invocations = [];
   let decoded = 0;
   const engine = new LocalWhisperAsr({
     platform: "linux",
     arch: "x64",
     maxDurationMs: 280_000,
     runtimeProvider: async () => runtime(),
-    runImpl: async (input) => { invocation = input; return RAW_RESULT; },
+    runImpl: async (input) => { invocations.push(input); return RAW_RESULT; },
     audioDecoder: {
       async decode() {
         decoded += 1;
-        return {
-          bytes: new Uint8Array([82, 73, 70, 70]),
-          method: "browser_offline_audio_context_pcm16_wav",
-          sampleRate: 16_000,
-          channelCount: 1,
-          sourceChannelCount: 2,
-          durationMs: 273_834,
-          inputBytes: 4,
-          outputBytes: 4,
-          diagnostics: { runtime: "sparticuz_chromium" }
-        };
+        throw new Error("not expected");
       }
     }
   });
@@ -327,34 +376,33 @@ test("LocalWhisperAsr reconciles an overlong MP3 page duration with decoded medi
     video: { media: { duration_ms: 300_000 } }
   });
 
-  assert.equal(decoded, 1);
-  assert.equal(invocation.extension, ".wav");
-  assert.equal(invocation.durationMs, 273_834);
-  assert.equal(result.audio_preprocessing.duration_ms, 273_834);
+  assert.equal(decoded, 0);
+  assert.deepEqual(invocations.map(({ offsetMs, durationMs, extension }) => ({
+    offsetMs,
+    durationMs,
+    extension
+  })), [
+    { offsetMs: 0, durationMs: 280_000, extension: ".mp3" },
+    { offsetMs: 275_000, durationMs: 25_000, extension: ".mp3" }
+  ]);
+  assert.equal(result.chunking.chunk_count, 2);
 });
 
-test("LocalWhisperAsr still rejects MP3 media that is truly over the decoded limit", async () => {
+test("LocalWhisperAsr still rejects MP3 media over the total synchronous limit", async () => {
   let ran = 0;
   const engine = new LocalWhisperAsr({
     platform: "linux",
     arch: "x64",
     maxDurationMs: 180_000,
-    runImpl: async () => { ran += 1; return RAW_RESULT; },
-    audioDecoder: {
-      async decode() {
-        return {
-          bytes: new Uint8Array([82, 73, 70, 70]),
-          durationMs: 180_001
-        };
-      }
-    }
+    maxTotalDurationMs: 180_000,
+    runImpl: async () => { ran += 1; return RAW_RESULT; }
   });
 
   await assert.rejects(
     engine.transcribe({
       bytes: new Uint8Array([1, 2, 3, 4]),
       mediaType: "audio/mpeg",
-      video: { media: { duration_ms: 300_000 } }
+      video: { media: { duration_ms: 180_001 } }
     }),
     (error) => error.code === "LOCAL_ASR_DURATION_LIMIT" &&
       error.details?.duration_ms === 180_001
@@ -500,7 +548,7 @@ test("LocalWhisperAsr refuses browser duration measurement without its bounded d
     engine.transcribe({
       bytes: new Uint8Array([1, 2, 3]),
       mediaType: "audio/mpeg",
-      video: { media: { duration_ms: 300_000 } },
+      video: { aweme_id: "duration-missing" },
       deadlineAt: Date.now() + 34_500
     }),
     (error) => error.code === "LOCAL_ASR_DEADLINE_EXCEEDED" &&

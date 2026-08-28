@@ -28,11 +28,11 @@ const MODEL_FILE = "ggml-base-q5_1.bin";
 const MODEL_SHA256 = "422f1ae452ade6f30a004d7e5c6a43195e4433bc370bf23fac9cc591f01a8898";
 const MODEL_NAME = "whisper-base-q5_1-multilingual";
 const DEFAULT_MAX_INPUT_BYTES = 25 * 1024 * 1024;
-// The pinned CLI already processes complete inputs through internal 30-second
-// Whisper windows. Keep one process/model load for bounded long videos instead
-// of spawning application-level chunks, which would consume the same CPU while
-// repeatedly loading the model inside the Function deadline.
+// Keep each local CLI invocation below the synchronous Function deadline.
+// Longer single-video audio is handled by explicit offset/duration windows.
 const DEFAULT_MAX_DURATION_MS = 280_000;
+const DEFAULT_MAX_TOTAL_DURATION_MS = 1_500_000;
+const DEFAULT_CHUNK_OVERLAP_MS = 5_000;
 const DEFAULT_TIMEOUT_MS = 280_000;
 // The Vercel runtime may report one available CPU even though the pinned
 // whisper.cpp binary is measurably faster with two worker threads there. The
@@ -365,6 +365,7 @@ export function buildWhisperCliArgs({
   modelPath,
   inputPath,
   outputPrefix,
+  offsetMs = 0,
   durationMs,
   threads
 }) {
@@ -372,6 +373,7 @@ export function buildWhisperCliArgs({
     "-m", modelPath,
     "-f", inputPath,
     "-l", "auto",
+    ...(offsetMs > 0 ? ["-ot", String(offsetMs)] : []),
     // The pinned b4938 CLI accepts millisecond duration windows. Bound the
     // actual decoded input as well as trusting the public page metadata.
     "-d", String(durationMs),
@@ -389,7 +391,15 @@ export function buildWhisperCliArgs({
   ];
 }
 
-async function defaultRunImpl({ runtime, bytes, extension, durationMs: boundedDurationMs, timeoutMs, threads }) {
+async function defaultRunImpl({
+  runtime,
+  bytes,
+  extension,
+  offsetMs = 0,
+  durationMs: boundedDurationMs,
+  timeoutMs,
+  threads
+}) {
   const jobRoot = join(tmpdir(), `content-reader-asr-${randomUUID()}`);
   const inputPath = join(jobRoot, `input${extension}`);
   const outputPrefix = join(jobRoot, "result");
@@ -403,6 +413,7 @@ async function defaultRunImpl({ runtime, bytes, extension, durationMs: boundedDu
         modelPath: runtime.modelPath,
         inputPath,
         outputPrefix,
+        offsetMs,
         durationMs: boundedDurationMs,
         threads
       }),
@@ -532,6 +543,144 @@ export function parseWhisperJson(payload, {
   };
 }
 
+function chunkWindows(totalDurationMs, maxDurationMs, overlapMs) {
+  const total = Math.max(0, Math.round(totalDurationMs));
+  const maxDuration = Math.max(1, Math.round(maxDurationMs));
+  const overlap = Math.max(0, Math.min(Math.round(overlapMs), maxDuration - 1));
+  if (total <= maxDuration) {
+    return [{ offsetMs: 0, durationMs: total, coverageStartMs: 0, coverageEndMs: total }];
+  }
+  const windows = [];
+  let offsetMs = 0;
+  while (offsetMs < total) {
+    const endMs = Math.min(total, offsetMs + maxDuration);
+    windows.push({
+      offsetMs,
+      durationMs: endMs - offsetMs,
+      coverageStartMs: windows.length === 0 ? offsetMs : Math.min(endMs, offsetMs + overlap),
+      coverageEndMs: endMs
+    });
+    if (endMs >= total) break;
+    offsetMs = endMs - overlap;
+  }
+  return windows;
+}
+
+function comparisonText(value) {
+  return compactText(value)
+    .replace(/[\s，。！？,.!?、:：;；"'“”‘’《》<>()[\]{}【】]/g, "")
+    .toLowerCase();
+}
+
+function chunkLooksRelative(segments, window) {
+  if (window.offsetMs <= 0 || !segments.length) return false;
+  const earliest = Math.min(...segments.map((segment) => segment.start_ms));
+  return earliest < Math.max(1_000, window.offsetMs - 5_000);
+}
+
+function segmentsForWindow(result, window) {
+  const offset = chunkLooksRelative(result.segments, window) ? window.offsetMs : 0;
+  const segments = [];
+  for (const segment of result.segments) {
+    const start = segment.start_ms + offset;
+    const end = segment.end_ms + offset;
+    if (end <= window.coverageStartMs || start >= window.coverageEndMs + 1_000) continue;
+    const clippedStart = Math.max(start, window.coverageStartMs);
+    const clippedEnd = Math.max(clippedStart, Math.min(end, window.coverageEndMs));
+    segments.push({
+      ...segment,
+      start_ms: clippedStart,
+      end_ms: clippedEnd
+    });
+  }
+  return segments;
+}
+
+function isBoundaryDuplicate(previous, current, overlapMs) {
+  if (!previous) return false;
+  if (current.start_ms > previous.end_ms + overlapMs + 2_000) return false;
+  const left = comparisonText(previous.text);
+  const right = comparisonText(current.text);
+  if (!left || !right) return false;
+  return left === right || (right.length >= 6 && left.endsWith(right));
+}
+
+function mergeChunkResults(results, {
+  windows,
+  totalDurationMs,
+  maxDurationMs,
+  overlapMs,
+  processingMs = null,
+  audioPreprocessing = null
+}) {
+  const merged = [];
+  let duplicatesRemoved = 0;
+  for (let index = 0; index < results.length; index += 1) {
+    for (const segment of segmentsForWindow(results[index], windows[index])) {
+      if (isBoundaryDuplicate(merged.at(-1), segment, overlapMs)) {
+        duplicatesRemoved += 1;
+        continue;
+      }
+      merged.push(segment);
+    }
+  }
+  if (!merged.length) {
+    throw new ReaderError(
+      "LOCAL_ASR_EMPTY_RESULT",
+      "The local speech-to-text engine returned no readable speech.",
+      { status: 502 }
+    );
+  }
+  merged.sort((left, right) => left.start_ms - right.start_ms || left.end_ms - right.end_ms);
+  let previousEnd = 0;
+  const segments = merged.map((segment) => {
+    const start = Math.max(previousEnd, Math.round(segment.start_ms));
+    const end = Math.max(start, Math.round(segment.end_ms));
+    previousEnd = end;
+    return { ...segment, start_ms: start, end_ms: end };
+  });
+  const confidences = segments
+    .map((segment) => Number(segment.confidence))
+    .filter((value) => Number.isFinite(value) && value >= 0 && value <= 1);
+  const confidence = probability(confidences);
+  return {
+    text: compactText(segments.map((segment) => segment.text).join("\n")),
+    segments,
+    language: results.find((result) => result.language)?.language ?? null,
+    method: "local_whisper_cpp_base_q5_1",
+    confidence,
+    limitations: [
+      "quantized_base_model_lower_accuracy",
+      confidence === null
+        ? "confidence_unavailable_without_token_alignment"
+        : "confidence_is_mean_segment_probability",
+      "bounded_single_candidate_decode",
+      "chunked_long_audio",
+      ...(duplicatesRemoved ? ["chunk_boundary_duplicates_removed"] : []),
+      "domain_terms_and_homophones_may_be_inaccurate"
+    ],
+    engine: {
+      name: "whisper.cpp",
+      release: ENGINE_RELEASE,
+      commit: ENGINE_COMMIT
+    },
+    model: {
+      name: MODEL_NAME,
+      sha256: MODEL_SHA256
+    },
+    chunking: {
+      strategy: "whisper_cpp_offset_duration_windows",
+      chunk_count: windows.length,
+      total_duration_ms: Math.round(totalDurationMs),
+      max_segment_duration_ms: Math.round(maxDurationMs),
+      overlap_ms: Math.round(overlapMs),
+      duplicates_removed: duplicatesRemoved
+    },
+    ...(Number.isFinite(processingMs) ? { processing_ms: Math.round(processingMs) } : {}),
+    ...(audioPreprocessing ? { audio_preprocessing: audioPreprocessing } : {})
+  };
+}
+
 function decoderDiagnostic(result) {
   return {
     method: result.method,
@@ -562,6 +711,8 @@ export class LocalWhisperAsr {
     audioDecoder = new BrowserAudioDecoder(),
     maxInputBytes = DEFAULT_MAX_INPUT_BYTES,
     maxDurationMs = DEFAULT_MAX_DURATION_MS,
+    maxTotalDurationMs = DEFAULT_MAX_TOTAL_DURATION_MS,
+    chunkOverlapMs = DEFAULT_CHUNK_OVERLAP_MS,
     timeoutMs = DEFAULT_TIMEOUT_MS,
     threads = DEFAULT_THREADS,
     responseReserveMs = DEFAULT_RESPONSE_RESERVE_MS,
@@ -583,6 +734,19 @@ export class LocalWhisperAsr {
     this.maxDurationMs = integerOption(maxDurationMs, {
       field: "maxDurationMs", minimum: 1_000, maximum: 300_000
     });
+    this.maxTotalDurationMs = integerOption(maxTotalDurationMs, {
+      field: "maxTotalDurationMs", minimum: 1_000, maximum: 3_600_000
+    });
+    this.chunkOverlapMs = integerOption(chunkOverlapMs, {
+      field: "chunkOverlapMs", minimum: 0, maximum: 30_000
+    });
+    if (this.chunkOverlapMs >= this.maxDurationMs) {
+      throw new ReaderError(
+        "LOCAL_ASR_CONFIGURATION_INVALID",
+        "The local speech-to-text configuration is invalid.",
+        { status: 500, details: { field: "chunkOverlapMs" } }
+      );
+    }
     this.timeoutMs = integerOption(timeoutMs, {
       field: "timeoutMs", minimum: 1_000, maximum: 285_000
     });
@@ -774,9 +938,9 @@ export class LocalWhisperAsr {
     let duration = durationMs(video);
     const inputMediaType = canonicalMediaType(mediaType);
     const directExtension = SAFE_INPUT_TYPES.get(inputMediaType);
-    const durationNeedsMeasurement = duration === null || duration > this.maxDurationMs;
+    const durationNeedsMeasurement = duration === null || (!directExtension && duration <= this.maxDurationMs);
     const canMeasureDuringDecode = DECODE_INPUT_TYPES.has(inputMediaType) &&
-      (!directExtension || durationNeedsMeasurement);
+      durationNeedsMeasurement;
     if (duration === null && !canMeasureDuringDecode) {
       throw new ReaderError(
         "LOCAL_ASR_DURATION_UNKNOWN",
@@ -784,11 +948,11 @@ export class LocalWhisperAsr {
         { status: 422 }
       );
     }
-    if (duration !== null && duration > this.maxDurationMs && !canMeasureDuringDecode) {
+    if (duration !== null && duration > this.maxTotalDurationMs) {
       throw new ReaderError(
         "LOCAL_ASR_DURATION_LIMIT",
         "The public media is longer than the synchronous local speech-to-text limit.",
-        { status: 422, details: { duration_ms: duration, max_duration_ms: this.maxDurationMs } }
+        { status: 422, details: { duration_ms: duration, max_duration_ms: this.maxTotalDurationMs } }
       );
     }
     const release = await this._acquireSlot();
@@ -831,13 +995,13 @@ export class LocalWhisperAsr {
         }
         const declaredDurationMs = duration;
         const decoded = await this.audioDecoder.decode(input);
-        if (decoded.durationMs > this.maxDurationMs) {
+        if (decoded.durationMs > this.maxTotalDurationMs) {
           throw new ReaderError(
             "LOCAL_ASR_DURATION_LIMIT",
             "The decoded public media is longer than the synchronous local speech-to-text limit.",
             {
               status: 422,
-              details: { duration_ms: decoded.durationMs, max_duration_ms: this.maxDurationMs }
+              details: { duration_ms: decoded.durationMs, max_duration_ms: this.maxTotalDurationMs }
             }
           );
         }
@@ -860,45 +1024,76 @@ export class LocalWhisperAsr {
           { status: 422, details: { media_type: canonicalMediaType(mediaType) || "unknown" } }
         );
       }
+      if (boundedDurationMs > this.maxTotalDurationMs) {
+        throw new ReaderError(
+          "LOCAL_ASR_DURATION_LIMIT",
+          "The public media is longer than the synchronous local speech-to-text limit.",
+          {
+            status: 422,
+            details: { duration_ms: boundedDurationMs, max_duration_ms: this.maxTotalDurationMs }
+          }
+        );
+      }
 
       const runtime = await this.runtimeProvider({
         assetRoot: this.assetRoot,
         runtimeTempRoot: this.runtimeTempRoot,
         inflateImpl: inflate
       });
-      const remainingMs = hasDeadline
-        ? Math.floor(numericDeadline - Date.now() - this.responseReserveMs)
-        : this.timeoutMs;
-      if (remainingMs < 1_000) {
-        throw new ReaderError(
-          "LOCAL_ASR_DEADLINE_EXCEEDED",
-          "Not enough request time remains for bounded local speech-to-text.",
-          { status: 503, details: { stage: "deadline" } }
-        );
+      const windows = chunkWindows(boundedDurationMs, this.maxDurationMs, this.chunkOverlapMs);
+      const parsedChunks = [];
+      for (let index = 0; index < windows.length; index += 1) {
+        const window = windows[index];
+        const remainingMs = hasDeadline
+          ? Math.floor(numericDeadline - Date.now() - this.responseReserveMs)
+          : this.timeoutMs;
+        if (remainingMs < 1_000) {
+          throw new ReaderError(
+            "LOCAL_ASR_DEADLINE_EXCEEDED",
+            "Not enough request time remains for bounded local speech-to-text.",
+            { status: 503, details: { stage: "deadline" } }
+          );
+        }
+        const inferenceTimeoutMs = Math.min(this.timeoutMs, remainingMs);
+        logLocalAsr("local_asr.inference_started", {
+          prepared_bytes: preparedBytes.byteLength,
+          duration_ms: window.durationMs,
+          offset_ms: window.offsetMs,
+          chunk_index: index,
+          chunk_count: windows.length,
+          timeout_ms: inferenceTimeoutMs,
+          threads: this.threads,
+          elapsed_ms: Date.now() - startedAt
+        });
+        const raw = await this.runImpl({
+          runtime,
+          bytes: preparedBytes,
+          extension,
+          offsetMs: window.offsetMs,
+          durationMs: window.durationMs,
+          timeoutMs: inferenceTimeoutMs,
+          threads: this.threads
+        });
+        parsedChunks.push(parseWhisperJson(raw));
       }
-      const inferenceTimeoutMs = Math.min(this.timeoutMs, remainingMs);
-      logLocalAsr("local_asr.inference_started", {
-        prepared_bytes: preparedBytes.byteLength,
-        duration_ms: boundedDurationMs,
-        timeout_ms: inferenceTimeoutMs,
-        threads: this.threads,
-        elapsed_ms: Date.now() - startedAt
-      });
-      const raw = await this.runImpl({
-        runtime,
-        bytes: preparedBytes,
-        extension,
-        durationMs: boundedDurationMs,
-        timeoutMs: inferenceTimeoutMs,
-        threads: this.threads
-      });
-      const result = parseWhisperJson(raw, {
-        processingMs: Date.now() - startedAt,
-        audioPreprocessing
-      });
+      const result = windows.length === 1
+        ? {
+            ...parsedChunks[0],
+            ...(Number.isFinite(Date.now() - startedAt) ? { processing_ms: Date.now() - startedAt } : {}),
+            ...(audioPreprocessing ? { audio_preprocessing: audioPreprocessing } : {})
+          }
+        : mergeChunkResults(parsedChunks, {
+            windows,
+            totalDurationMs: boundedDurationMs,
+            maxDurationMs: this.maxDurationMs,
+            overlapMs: this.chunkOverlapMs,
+            processingMs: Date.now() - startedAt,
+            audioPreprocessing
+          });
       logLocalAsr("local_asr.completed", {
         duration_ms: boundedDurationMs,
         segment_count: result.segments.length,
+        ...(result.chunking ? { chunk_count: result.chunking.chunk_count } : {}),
         processing_ms: result.processing_ms
       });
       return result;
