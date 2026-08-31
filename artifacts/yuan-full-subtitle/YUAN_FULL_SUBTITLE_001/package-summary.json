@@ -1,0 +1,12 @@
+{
+  "subtitles": 480,
+  "size_count_scope": "files and bytes exclude package-summary.json and artifact-validation.json",
+  "evidence_frames": 1061,
+  "files": 2201,
+  "bytes": 226648374,
+  "max_file_bytes": 863991,
+  "manual_group_corrections": 15,
+  "merged_variant_groups": 18,
+  "source_issues": 7,
+  "report": "C:\\Users\\Administrator\\Documents\\Codex\\2026-08-24\\a2a-control-loop\\gpt-handoff-yuan-full-subtitle.md"
+}

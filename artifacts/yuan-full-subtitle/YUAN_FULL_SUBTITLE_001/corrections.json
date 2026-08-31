@@ -1,0 +1,122 @@
+[
+  {
+    "start_seconds": 95.43,
+    "raw_group_text": "EWPOO所以财经博主今天讲城市",
+    "final_text": "所以财经博主今天讲城市",
+    "reason": "剔除路人衣服上的 EWPOO，不属于底部字幕",
+    "reviewed_evidence": "evidence-crops/chunk-00/0081-0096930.jpg",
+    "reviewed_source": "raw-change-frames/chunk-00/0081-0096930.png"
+  },
+  {
+    "start_seconds": 302.18,
+    "raw_group_text": "因为它背后连着家企业的进口成本",
+    "final_text": "因为它背后连着一家企业的进口成本",
+    "reason": "移动背景造成漏识别“一”；用清晰同字幕帧核对",
+    "reviewed_evidence": "evidence-crops/chunk-02/0057-0301180.jpg",
+    "reviewed_source": "raw-change-frames/chunk-02/0057-0301180.png"
+  },
+  {
+    "start_seconds": 305.18,
+    "raw_group_text": "个国家的进出口",
+    "final_text": "一个国家的进出口",
+    "reason": "同一句字幕的“一”漏识别变体",
+    "reviewed_evidence": "evidence-crops/chunk-02/0074-0305430.jpg",
+    "reviewed_source": "raw-change-frames/chunk-02/0074-0305430.png"
+  },
+  {
+    "start_seconds": 306.18,
+    "raw_group_text": "个国家的进出口",
+    "final_text": "一个国家的进出口",
+    "reason": "同一句字幕的“一”漏识别变体",
+    "reviewed_evidence": "evidence-crops/chunk-02/0074-0305430.jpg",
+    "reviewed_source": "raw-change-frames/chunk-02/0074-0305430.png"
+  },
+  {
+    "start_seconds": 306.93,
+    "raw_group_text": "个国家的进出口",
+    "final_text": "一个国家的进出口",
+    "reason": "同一句字幕的“一”漏识别变体",
+    "reviewed_evidence": "evidence-crops/chunk-02/0074-0305430.jpg",
+    "reviewed_source": "raw-change-frames/chunk-02/0074-0305430.png"
+  },
+  {
+    "start_seconds": 310.18,
+    "raw_group_text": "一下你可以想象",
+    "final_text": "你可以想象一下",
+    "reason": "同一句字幕的行序/漏字变体",
+    "reviewed_evidence": "evidence-crops/chunk-02/frame-0310680.jpg",
+    "reviewed_source": "raw-change-frames/chunk-02/frame-0310680.png"
+  },
+  {
+    "start_seconds": 310.43,
+    "raw_group_text": "你可以想象下",
+    "final_text": "你可以想象一下",
+    "reason": "同一句字幕的行序/漏字变体",
+    "reviewed_evidence": "evidence-crops/chunk-02/frame-0310680.jpg",
+    "reviewed_source": "raw-change-frames/chunk-02/frame-0310680.png"
+  },
+  {
+    "start_seconds": 313.43,
+    "raw_group_text": "市场一恐院",
+    "final_text": "市场一恐慌",
+    "reason": "“恐院”为 OCR 误字；画面是“恐慌”",
+    "reviewed_evidence": "evidence-crops/chunk-02/frame-0312930.jpg",
+    "reviewed_source": "raw-change-frames/chunk-02/frame-0312930.png"
+  },
+  {
+    "start_seconds": 320.18,
+    "raw_group_text": "今天冲到天止",
+    "final_text": "今天冲到天上",
+    "reason": "“天止/今夫/关上”为移动背景下的 OCR 变体",
+    "reviewed_evidence": "evidence-crops/chunk-02/frame-0319680.jpg",
+    "reviewed_source": "raw-change-frames/chunk-02/frame-0319680.png"
+  },
+  {
+    "start_seconds": 320.43,
+    "raw_group_text": "今夫冲到天上",
+    "final_text": "今天冲到天上",
+    "reason": "“天止/今夫/关上”为移动背景下的 OCR 变体",
+    "reviewed_evidence": "evidence-crops/chunk-02/frame-0319680.jpg",
+    "reviewed_source": "raw-change-frames/chunk-02/frame-0319680.png"
+  },
+  {
+    "start_seconds": 320.68,
+    "raw_group_text": "今天冲到关上",
+    "final_text": "今天冲到天上",
+    "reason": "“天止/今夫/关上”为移动背景下的 OCR 变体",
+    "reviewed_evidence": "evidence-crops/chunk-02/frame-0319680.jpg",
+    "reviewed_source": "raw-change-frames/chunk-02/frame-0319680.png"
+  },
+  {
+    "start_seconds": 321.68,
+    "raw_group_text": "明天文掉到地板",
+    "final_text": "明天又掉到地板",
+    "reason": "“文”为 OCR 误字；画面是“又”",
+    "reviewed_evidence": "evidence-crops/chunk-02/frame-0321180.jpg",
+    "reviewed_source": "raw-change-frames/chunk-02/frame-0321180.png"
+  },
+  {
+    "start_seconds": 748.93,
+    "raw_group_text": "油价锁定航空公司可以用它管理油价",
+    "final_text": "航空公司可以用它管理油价",
+    "reason": "剔除插图标签“油价锁定”，不混入底部对白字幕",
+    "reviewed_evidence": "evidence-crops/chunk-06/frame-0749180.jpg",
+    "reviewed_source": "raw-change-frames/chunk-06/frame-0749180.png"
+  },
+  {
+    "start_seconds": 989.68,
+    "raw_group_text": "一衍生品背后是一份等待未来结算的合同",
+    "final_text": "衍生品背后是一份等待未来结算的合同",
+    "reason": "剔除图形边框误识别的前导“一”",
+    "reviewed_evidence": "evidence-crops/chunk-08/frame-0989680.jpg",
+    "reviewed_source": "raw-change-frames/chunk-08/frame-0989680.png"
+  },
+  {
+    "start_seconds": 1077.43,
+    "raw_group_text": "把下跌归答于运气",
+    "final_text": "把下跌归咎于运气",
+    "reason": "“答”为 OCR 误字；视觉核对为“咎”",
+    "reviewed_evidence": "evidence-crops/chunk-08/frame-1077430.jpg",
+    "reviewed_source": "raw-change-frames/chunk-08/frame-1077430.png"
+  }
+]

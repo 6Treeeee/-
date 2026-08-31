@@ -1,0 +1,166 @@
+{
+  "task_id": "YUAN_FULL_SUBTITLE_001",
+  "status": "completed_full_video_ocr_with_evidence_limits",
+  "video_id": "7674668931734326528",
+  "source_url": "https://www.douyin.com/video/7674668931734326528",
+  "nominal_duration": "18:40",
+  "playback_duration_seconds": 1119.765011,
+  "capture_coverage_seconds": [
+    0,
+    1119.6
+  ],
+  "raw_frames": 1061,
+  "raw_frames_by_batch": {
+    "audit-edges": 2,
+    "chunk-00": 100,
+    "audit-00": 85,
+    "chunk-01": 70,
+    "audit-01": 16,
+    "chunk-02": 182,
+    "audit-02": 11,
+    "chunk-03": 58,
+    "audit-03": 34,
+    "chunk-04": 60,
+    "audit-04": 31,
+    "chunk-05": 61,
+    "audit-05": 43,
+    "chunk-06": 92,
+    "audit-06": 37,
+    "chunk-07": 53,
+    "audit-07": 10,
+    "audit-manual": 1,
+    "chunk-08": 66,
+    "audit-08": 18,
+    "chunk-09": 26,
+    "audit-09": 5
+  },
+  "initial_frames": 768,
+  "low_threshold_additional_frames": 290,
+  "targeted_missing_caption_frame": 1,
+  "boundary_frames": 2,
+  "nonempty_ocr_frames": 1046,
+  "visually_confirmed_blank_dialogue_frames": 15,
+  "provisional_groups": 498,
+  "final_subtitles": 480,
+  "manual_group_text_corrections": 15,
+  "variant_groups_merged_after_visual_review": 18,
+  "missing_caption_recovered": {
+    "first_observed_seconds": 853.68,
+    "text": "用的多就更贵",
+    "evidence": "evidence-crops/audit-07/frame-0853680.jpg",
+    "independent_targeted_evidence": "evidence-crops/audit-manual/frame-0854200.jpg"
+  },
+  "remaining_obvious_missing_captions_found": 0,
+  "adjacent_duplicate_captions": 0,
+  "chronological_inversions": 0,
+  "nonpositive_duration_captions": 0,
+  "repeated_texts_at_nonadjacent_positions": [
+    {
+      "text": "收益从哪里来",
+      "occurrences": 2
+    },
+    {
+      "text": "期货",
+      "occurrences": 2
+    },
+    {
+      "text": "这里是Yuan的认知笔记",
+      "occurrences": 2
+    }
+  ],
+  "source_subtitle_issues": 7,
+  "scans": [
+    {
+      "start": 0,
+      "end": 120,
+      "step": 0.25,
+      "threshold": 0.003,
+      "frames": 481,
+      "events": 184
+    },
+    {
+      "start": 120,
+      "end": 240,
+      "step": 0.25,
+      "threshold": 0.003,
+      "frames": 481,
+      "events": 85
+    },
+    {
+      "start": 240,
+      "end": 360,
+      "step": 0.25,
+      "threshold": 0.003,
+      "frames": 481,
+      "events": 192
+    },
+    {
+      "start": 360,
+      "end": 480,
+      "step": 0.25,
+      "threshold": 0.003,
+      "frames": 481,
+      "events": 91
+    },
+    {
+      "start": 480,
+      "end": 600,
+      "step": 0.25,
+      "threshold": 0.003,
+      "frames": 481,
+      "events": 90
+    },
+    {
+      "start": 600,
+      "end": 720,
+      "step": 0.25,
+      "threshold": 0.003,
+      "frames": 481,
+      "events": 103
+    },
+    {
+      "start": 720,
+      "end": 840,
+      "step": 0.25,
+      "threshold": 0.003,
+      "frames": 481,
+      "events": 128
+    },
+    {
+      "start": 840,
+      "end": 960,
+      "step": 0.25,
+      "threshold": 0.003,
+      "frames": 481,
+      "events": 62
+    },
+    {
+      "start": 960,
+      "end": 1080,
+      "step": 0.25,
+      "threshold": 0.003,
+      "frames": 481,
+      "events": 83
+    },
+    {
+      "start": 1080,
+      "end": 1120,
+      "step": 0.25,
+      "threshold": 0.003,
+      "frames": 161,
+      "events": 30
+    }
+  ],
+  "original_png_local_root": "C:\\Users\\Administrator\\.codex\\visualizations\\2026\\08\\29\\01a04bb7-861a-7631-9dc6-09ff18e801a2\\YUAN_FULL_SUBTITLE_001\\raw-change-frames",
+  "original_png_uploaded": false,
+  "all_full_frame_jpeg_versions_uploaded": true,
+  "all_subtitle_crop_jpegs_uploaded": true,
+  "limitations": [
+    "0.25-second visual checks and finite thresholds do not guarantee recovery of all sub-0.25s flashes or arbitrarily small visual changes.",
+    "Timing is based on captured frames, not frame-exact onset/offset.",
+    "No ASR or audio-text alignment. Source subtitle omissions and source word errors are retained, not invented from context.",
+    "Only flagged, blank, boundary and selected evidence frames were individually reviewed; no claim of human review of every frame.",
+    "Original PNGs remain local; GitHub contains a full-frame JPEG derivative and a higher-quality subtitle crop for every captured frame, plus PNG hashes.",
+    "The first two original chunk detection/capture JSON files were not persisted in the previous browser session; their frames and OCR remain, and the new full audit detection data covers both intervals."
+  ]
+}

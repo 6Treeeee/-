@@ -1,0 +1,373 @@
+[
+  {
+    "target": 840.2,
+    "actual": 840.2,
+    "readyState": 4,
+    "file": "frame-0840200.png",
+    "reused": false
+  },
+  {
+    "target": 841.68,
+    "actual": 841.68,
+    "readyState": 4,
+    "file": "frame-0841680.png",
+    "reused": false
+  },
+  {
+    "target": 844.43,
+    "actual": 844.43,
+    "readyState": 4,
+    "file": "frame-0844430.png",
+    "reused": false
+  },
+  {
+    "target": 846.68,
+    "actual": 846.68,
+    "readyState": 4,
+    "file": "frame-0846680.png",
+    "reused": false
+  },
+  {
+    "target": 848.18,
+    "actual": 848.18,
+    "readyState": 4,
+    "file": "frame-0848180.png",
+    "reused": false
+  },
+  {
+    "target": 849.68,
+    "actual": 849.68,
+    "readyState": 4,
+    "file": "frame-0849680.png",
+    "reused": false
+  },
+  {
+    "target": 852.18,
+    "actual": 852.18,
+    "readyState": 4,
+    "file": "frame-0852180.png",
+    "reused": false
+  },
+  {
+    "target": 855.68,
+    "actual": 855.68,
+    "readyState": 4,
+    "file": "frame-0855680.png",
+    "reused": false
+  },
+  {
+    "target": 857.43,
+    "actual": 857.43,
+    "readyState": 4,
+    "file": "frame-0857430.png",
+    "reused": false
+  },
+  {
+    "target": 859.18,
+    "actual": 859.18,
+    "readyState": 4,
+    "file": "frame-0859180.png",
+    "reused": false
+  },
+  {
+    "target": 861.68,
+    "actual": 861.68,
+    "readyState": 4,
+    "file": "frame-0861680.png",
+    "reused": false
+  },
+  {
+    "target": 863.93,
+    "actual": 863.93,
+    "readyState": 4,
+    "file": "frame-0863930.png",
+    "reused": false
+  },
+  {
+    "target": 864.18,
+    "actual": 864.18,
+    "readyState": 4,
+    "file": "frame-0864180.png",
+    "reused": false
+  },
+  {
+    "target": 866.43,
+    "actual": 866.43,
+    "readyState": 4,
+    "file": "frame-0866430.png",
+    "reused": false
+  },
+  {
+    "target": 869.43,
+    "actual": 869.43,
+    "readyState": 4,
+    "file": "frame-0869430.png",
+    "reused": false
+  },
+  {
+    "target": 870.93,
+    "actual": 870.93,
+    "readyState": 4,
+    "file": "frame-0870930.png",
+    "reused": false
+  },
+  {
+    "target": 872.68,
+    "actual": 872.68,
+    "readyState": 4,
+    "file": "frame-0872680.png",
+    "reused": false
+  },
+  {
+    "target": 875.43,
+    "actual": 875.43,
+    "readyState": 4,
+    "file": "frame-0875430.png",
+    "reused": false
+  },
+  {
+    "target": 878.43,
+    "actual": 878.43,
+    "readyState": 4,
+    "file": "frame-0878430.png",
+    "reused": false
+  },
+  {
+    "target": 884.43,
+    "actual": 884.43,
+    "readyState": 4,
+    "file": "frame-0884430.png",
+    "reused": false
+  },
+  {
+    "target": 885.93,
+    "actual": 885.93,
+    "readyState": 4,
+    "file": "frame-0885930.png",
+    "reused": false
+  },
+  {
+    "target": 886.68,
+    "actual": 886.68,
+    "readyState": 4,
+    "file": "frame-0886680.png",
+    "reused": false
+  },
+  {
+    "target": 891.93,
+    "actual": 891.93,
+    "readyState": 4,
+    "file": "frame-0891930.png",
+    "reused": false
+  },
+  {
+    "target": 894.43,
+    "actual": 894.43,
+    "readyState": 4,
+    "file": "frame-0894430.png",
+    "reused": false
+  },
+  {
+    "target": 896.68,
+    "actual": 896.68,
+    "readyState": 4,
+    "file": "frame-0896680.png",
+    "reused": false
+  },
+  {
+    "target": 896.93,
+    "actual": 896.93,
+    "readyState": 4,
+    "file": "frame-0896930.png",
+    "reused": false
+  },
+  {
+    "target": 898.18,
+    "actual": 898.18,
+    "readyState": 4,
+    "file": "frame-0898180.png",
+    "reused": false
+  },
+  {
+    "target": 899.93,
+    "actual": 899.93,
+    "readyState": 4,
+    "file": "frame-0899930.png",
+    "reused": false
+  },
+  {
+    "target": 903.68,
+    "actual": 903.68,
+    "readyState": 4,
+    "file": "frame-0903680.png",
+    "reused": false
+  },
+  {
+    "target": 907.43,
+    "actual": 907.43,
+    "readyState": 4,
+    "file": "frame-0907430.png",
+    "reused": false
+  },
+  {
+    "target": 909.43,
+    "actual": 909.43,
+    "readyState": 4,
+    "file": "frame-0909430.png",
+    "reused": false
+  },
+  {
+    "target": 911.93,
+    "actual": 911.93,
+    "readyState": 4,
+    "file": "frame-0911930.png",
+    "reused": false
+  },
+  {
+    "target": 916.18,
+    "actual": 916.18,
+    "readyState": 4,
+    "file": "frame-0916180.png",
+    "reused": false
+  },
+  {
+    "target": 917.68,
+    "actual": 917.68,
+    "readyState": 4,
+    "file": "frame-0917680.png",
+    "reused": false
+  },
+  {
+    "target": 920.68,
+    "actual": 920.68,
+    "readyState": 4,
+    "file": "frame-0920680.png",
+    "reused": false
+  },
+  {
+    "target": 923.43,
+    "actual": 923.43,
+    "readyState": 4,
+    "file": "frame-0923430.png",
+    "reused": false
+  },
+  {
+    "target": 923.68,
+    "actual": 923.68,
+    "readyState": 4,
+    "file": "frame-0923680.png",
+    "reused": false
+  },
+  {
+    "target": 926.93,
+    "actual": 926.93,
+    "readyState": 4,
+    "file": "frame-0926930.png",
+    "reused": false
+  },
+  {
+    "target": 927.18,
+    "actual": 927.18,
+    "readyState": 4,
+    "file": "frame-0927180.png",
+    "reused": false
+  },
+  {
+    "target": 928.68,
+    "actual": 928.68,
+    "readyState": 4,
+    "file": "frame-0928680.png",
+    "reused": false
+  },
+  {
+    "target": 931.18,
+    "actual": 931.18,
+    "readyState": 4,
+    "file": "frame-0931180.png",
+    "reused": false
+  },
+  {
+    "target": 933.43,
+    "actual": 933.43,
+    "readyState": 4,
+    "file": "frame-0933430.png",
+    "reused": false
+  },
+  {
+    "target": 937.18,
+    "actual": 937.18,
+    "readyState": 4,
+    "file": "frame-0937180.png",
+    "reused": false
+  },
+  {
+    "target": 939.18,
+    "actual": 939.18,
+    "readyState": 4,
+    "file": "frame-0939180.png",
+    "reused": false
+  },
+  {
+    "target": 942.93,
+    "actual": 942.93,
+    "readyState": 4,
+    "file": "frame-0942930.png",
+    "reused": false
+  },
+  {
+    "target": 944.93,
+    "actual": 944.93,
+    "readyState": 4,
+    "file": "frame-0944930.png",
+    "reused": false
+  },
+  {
+    "target": 949.18,
+    "actual": 949.18,
+    "readyState": 4,
+    "file": "frame-0949180.png",
+    "reused": false
+  },
+  {
+    "target": 952.93,
+    "actual": 952.93,
+    "readyState": 4,
+    "file": "frame-0952930.png",
+    "reused": false
+  },
+  {
+    "target": 956.18,
+    "actual": 956.18,
+    "readyState": 4,
+    "file": "frame-0956180.png",
+    "reused": false
+  },
+  {
+    "target": 958.18,
+    "actual": 958.18,
+    "readyState": 4,
+    "file": "frame-0958180.png",
+    "reused": false
+  },
+  {
+    "target": 958.68,
+    "actual": 958.68,
+    "readyState": 4,
+    "file": "frame-0958680.png",
+    "reused": false
+  },
+  {
+    "target": 958.93,
+    "actual": 958.93,
+    "readyState": 4,
+    "file": "frame-0958930.png",
+    "reused": false
+  },
+  {
+    "target": 959.43,
+    "actual": 959.43,
+    "readyState": 4,
+    "file": "frame-0959430.png",
+    "reused": false
+  }
+]

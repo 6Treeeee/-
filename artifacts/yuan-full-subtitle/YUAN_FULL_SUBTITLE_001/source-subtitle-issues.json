@@ -1,0 +1,51 @@
+[
+  {
+    "timeline_id": 151,
+    "seconds": 334.68,
+    "visible_text": "我们平时最常接触的个人便利化购汇度是每人每年等值5万美元",
+    "note": "底部原字幕显示“个人便利化购汇度”，疑似源字幕缺“额”；按画面保留，不补字。",
+    "evidence": "evidence-crops/chunk-02/frame-0334930.jpg"
+  },
+  {
+    "timeline_id": 153,
+    "seconds": 343.93,
+    "visible_text": "超过便利化度还可以按要求提供材料办理",
+    "note": "底部原字幕显示“超过便利化度”，疑似源字幕缺“额”；按画面保留。",
+    "evidence": "evidence-crops/chunk-02/frame-0343930.jpg"
+  },
+  {
+    "timeline_id": 227,
+    "seconds": 527.18,
+    "visible_text": "你买到的是基金份底层资产上涨",
+    "note": "底部原字幕为“你买到的是基金份底层资产上涨”，本身缺字且两句连写；右侧插图写“基金份额”，但不据此替换底部字幕。",
+    "evidence": "evidence-crops/chunk-04/frame-0527180.jpg"
+  },
+  {
+    "timeline_id": 261,
+    "seconds": 612.43,
+    "visible_text": "这一次不先被定义",
+    "note": "原画面明确写“这一次不先被定义”；“被”疑似作者字幕用字问题，未改写为“背”。",
+    "evidence": "evidence-crops/chunk-05/frame-0612430.jpg"
+  },
+  {
+    "timeline_id": 382,
+    "seconds": 886.68,
+    "visible_text": "而是按照同一个名义金算出来的利息差企业使用互换",
+    "note": "底部原字幕为“而是按照同一个名义金算出来的利息差企业使用互换”，疑似缺“本”且连写；按画面保留。",
+    "evidence": "evidence-crops/chunk-07/frame-0886680.jpg"
+  },
+  {
+    "timeline_id": 425,
+    "seconds": 999.18,
+    "visible_text": "但你购买的是基金份是对一资金池里",
+    "note": "底部原字幕为“但你购买的是基金份是对一资金池里”，疑似缺“额/个”；上一两分钟探针曾按语义补全，本次撤销该无画面依据的补写，不修改旧文件。",
+    "evidence": "evidence-crops/chunk-08/frame-0999180.jpg"
+  },
+  {
+    "timeline_id": 438,
+    "seconds": 1031.43,
+    "visible_text": "债权基金份一项资产",
+    "note": "底部原字幕显示“债权 基金份一项资产”，疑似缺“额”；保留可见文字。",
+    "evidence": "evidence-crops/chunk-08/frame-1031430.jpg"
+  }
+]

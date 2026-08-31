@@ -1,0 +1,429 @@
+[
+  {
+    "target": 600.2,
+    "actual": 600.2,
+    "readyState": 4,
+    "file": "frame-0600200.png",
+    "reused": false
+  },
+  {
+    "target": 600.43,
+    "actual": 600.43,
+    "readyState": 4,
+    "file": "frame-0600430.png",
+    "reused": false
+  },
+  {
+    "target": 601.43,
+    "actual": 601.43,
+    "readyState": 4,
+    "file": "frame-0601430.png",
+    "reused": false
+  },
+  {
+    "target": 602.18,
+    "actual": 602.18,
+    "readyState": 4,
+    "file": "frame-0602180.png",
+    "reused": false
+  },
+  {
+    "target": 605.68,
+    "actual": 605.68,
+    "readyState": 4,
+    "file": "frame-0605680.png",
+    "reused": false
+  },
+  {
+    "target": 607.43,
+    "actual": 607.43,
+    "readyState": 4,
+    "file": "frame-0607430.png",
+    "reused": false
+  },
+  {
+    "target": 607.68,
+    "actual": 607.68,
+    "readyState": 4,
+    "file": "frame-0607680.png",
+    "reused": false
+  },
+  {
+    "target": 609.18,
+    "actual": 609.18,
+    "readyState": 4,
+    "file": "frame-0609180.png",
+    "reused": false
+  },
+  {
+    "target": 609.43,
+    "actual": 609.43,
+    "readyState": 4,
+    "file": "frame-0609430.png",
+    "reused": false
+  },
+  {
+    "target": 610.18,
+    "actual": 610.18,
+    "readyState": 4,
+    "file": "frame-0610180.png",
+    "reused": false
+  },
+  {
+    "target": 610.43,
+    "actual": 610.43,
+    "readyState": 4,
+    "file": "frame-0610430.png",
+    "reused": false
+  },
+  {
+    "target": 611.18,
+    "actual": 611.18,
+    "readyState": 4,
+    "file": "frame-0611180.png",
+    "reused": false
+  },
+  {
+    "target": 612.43,
+    "actual": 612.43,
+    "readyState": 4,
+    "file": "frame-0612430.png",
+    "reused": false
+  },
+  {
+    "target": 613.93,
+    "actual": 613.93,
+    "readyState": 4,
+    "file": "frame-0613930.png",
+    "reused": false
+  },
+  {
+    "target": 615.18,
+    "actual": 615.18,
+    "readyState": 4,
+    "file": "frame-0615180.png",
+    "reused": false
+  },
+  {
+    "target": 615.93,
+    "actual": 615.93,
+    "readyState": 4,
+    "file": "frame-0615930.png",
+    "reused": false
+  },
+  {
+    "target": 617.93,
+    "actual": 617.93,
+    "readyState": 4,
+    "file": "frame-0617930.png",
+    "reused": false
+  },
+  {
+    "target": 620.43,
+    "actual": 620.43,
+    "readyState": 4,
+    "file": "frame-0620430.png",
+    "reused": false
+  },
+  {
+    "target": 622.93,
+    "actual": 622.93,
+    "readyState": 4,
+    "file": "frame-0622930.png",
+    "reused": false
+  },
+  {
+    "target": 625.18,
+    "actual": 625.18,
+    "readyState": 4,
+    "file": "frame-0625180.png",
+    "reused": false
+  },
+  {
+    "target": 627.43,
+    "actual": 627.43,
+    "readyState": 4,
+    "file": "frame-0627430.png",
+    "reused": false
+  },
+  {
+    "target": 629.68,
+    "actual": 629.68,
+    "readyState": 4,
+    "file": "frame-0629680.png",
+    "reused": false
+  },
+  {
+    "target": 630.93,
+    "actual": 630.93,
+    "readyState": 4,
+    "file": "frame-0630930.png",
+    "reused": false
+  },
+  {
+    "target": 631.18,
+    "actual": 631.18,
+    "readyState": 4,
+    "file": "frame-0631180.png",
+    "reused": false
+  },
+  {
+    "target": 631.43,
+    "actual": 631.43,
+    "readyState": 4,
+    "file": "frame-0631430.png",
+    "reused": false
+  },
+  {
+    "target": 633.43,
+    "actual": 633.43,
+    "readyState": 4,
+    "file": "frame-0633430.png",
+    "reused": false
+  },
+  {
+    "target": 635.93,
+    "actual": 635.93,
+    "readyState": 4,
+    "file": "frame-0635930.png",
+    "reused": false
+  },
+  {
+    "target": 638.68,
+    "actual": 638.68,
+    "readyState": 4,
+    "file": "frame-0638680.png",
+    "reused": false
+  },
+  {
+    "target": 641.68,
+    "actual": 641.68,
+    "readyState": 4,
+    "file": "frame-0641680.png",
+    "reused": false
+  },
+  {
+    "target": 643.43,
+    "actual": 643.43,
+    "readyState": 4,
+    "file": "frame-0643430.png",
+    "reused": false
+  },
+  {
+    "target": 646.18,
+    "actual": 646.18,
+    "readyState": 4,
+    "file": "frame-0646180.png",
+    "reused": false
+  },
+  {
+    "target": 650.18,
+    "actual": 650.18,
+    "readyState": 4,
+    "file": "frame-0650180.png",
+    "reused": false
+  },
+  {
+    "target": 654.68,
+    "actual": 654.68,
+    "readyState": 4,
+    "file": "frame-0654680.png",
+    "reused": false
+  },
+  {
+    "target": 656.18,
+    "actual": 656.18,
+    "readyState": 4,
+    "file": "frame-0656180.png",
+    "reused": false
+  },
+  {
+    "target": 660.43,
+    "actual": 660.43,
+    "readyState": 4,
+    "file": "frame-0660430.png",
+    "reused": false
+  },
+  {
+    "target": 662.93,
+    "actual": 662.93,
+    "readyState": 4,
+    "file": "frame-0662930.png",
+    "reused": false
+  },
+  {
+    "target": 664.43,
+    "actual": 664.43,
+    "readyState": 4,
+    "file": "frame-0664430.png",
+    "reused": false
+  },
+  {
+    "target": 667.93,
+    "actual": 667.93,
+    "readyState": 4,
+    "file": "frame-0667930.png",
+    "reused": false
+  },
+  {
+    "target": 668.93,
+    "actual": 668.93,
+    "readyState": 4,
+    "file": "frame-0668930.png",
+    "reused": false
+  },
+  {
+    "target": 670.93,
+    "actual": 670.93,
+    "readyState": 4,
+    "file": "frame-0670930.png",
+    "reused": false
+  },
+  {
+    "target": 672.93,
+    "actual": 672.93,
+    "readyState": 4,
+    "file": "frame-0672930.png",
+    "reused": false
+  },
+  {
+    "target": 674.68,
+    "actual": 674.68,
+    "readyState": 4,
+    "file": "frame-0674680.png",
+    "reused": false
+  },
+  {
+    "target": 676.18,
+    "actual": 676.18,
+    "readyState": 4,
+    "file": "frame-0676180.png",
+    "reused": false
+  },
+  {
+    "target": 680.18,
+    "actual": 680.18,
+    "readyState": 4,
+    "file": "frame-0680180.png",
+    "reused": false
+  },
+  {
+    "target": 683.68,
+    "actual": 683.68,
+    "readyState": 4,
+    "file": "frame-0683680.png",
+    "reused": false
+  },
+  {
+    "target": 687.93,
+    "actual": 687.93,
+    "readyState": 4,
+    "file": "frame-0687930.png",
+    "reused": false
+  },
+  {
+    "target": 688.18,
+    "actual": 688.18,
+    "readyState": 4,
+    "file": "frame-0688180.png",
+    "reused": false
+  },
+  {
+    "target": 691.18,
+    "actual": 691.18,
+    "readyState": 4,
+    "file": "frame-0691180.png",
+    "reused": false
+  },
+  {
+    "target": 693.93,
+    "actual": 693.93,
+    "readyState": 4,
+    "file": "frame-0693930.png",
+    "reused": false
+  },
+  {
+    "target": 696.18,
+    "actual": 696.18,
+    "readyState": 4,
+    "file": "frame-0696180.png",
+    "reused": false
+  },
+  {
+    "target": 698.68,
+    "actual": 698.68,
+    "readyState": 4,
+    "file": "frame-0698680.png",
+    "reused": false
+  },
+  {
+    "target": 702.43,
+    "actual": 702.43,
+    "readyState": 4,
+    "file": "frame-0702430.png",
+    "reused": false
+  },
+  {
+    "target": 703.93,
+    "actual": 703.93,
+    "readyState": 4,
+    "file": "frame-0703930.png",
+    "reused": false
+  },
+  {
+    "target": 705.18,
+    "actual": 705.18,
+    "readyState": 4,
+    "file": "frame-0705180.png",
+    "reused": false
+  },
+  {
+    "target": 708.43,
+    "actual": 708.43,
+    "readyState": 4,
+    "file": "frame-0708430.png",
+    "reused": false
+  },
+  {
+    "target": 708.68,
+    "actual": 708.68,
+    "readyState": 4,
+    "file": "frame-0708680.png",
+    "reused": false
+  },
+  {
+    "target": 711.18,
+    "actual": 711.18,
+    "readyState": 4,
+    "file": "frame-0711180.png",
+    "reused": false
+  },
+  {
+    "target": 712.68,
+    "actual": 712.68,
+    "readyState": 4,
+    "file": "frame-0712680.png",
+    "reused": false
+  },
+  {
+    "target": 715.18,
+    "actual": 715.18,
+    "readyState": 4,
+    "file": "frame-0715180.png",
+    "reused": false
+  },
+  {
+    "target": 717.93,
+    "actual": 717.93,
+    "readyState": 4,
+    "file": "frame-0717930.png",
+    "reused": false
+  },
+  {
+    "target": 719.93,
+    "actual": 719.93,
+    "readyState": 4,
+    "file": "frame-0719930.png",
+    "reused": false
+  }
+]

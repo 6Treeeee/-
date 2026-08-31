@@ -1,0 +1,234 @@
+[
+  {
+    "seconds": 70.68,
+    "time": "01:10.68",
+    "text": "",
+    "confidence": 0,
+    "raw_text": "房租个",
+    "pieces": [
+      {
+        "text": "房租个",
+        "confidence": 0.8184072971343994,
+        "cx": 642.0,
+        "cy": 489.5,
+        "height": 29.0,
+        "box": [
+          [
+            586.0,
+            475.0
+          ],
+          [
+            698.0,
+            475.0
+          ],
+          [
+            698.0,
+            504.0
+          ],
+          [
+            586.0,
+            504.0
+          ]
+        ]
+      }
+    ],
+    "source": "raw-change-frames/chunk-00/0057-0070680.png",
+    "evidence": "evidence-crops/chunk-00/0057-0070680.jpg",
+    "sha256": "22040434677279fa95b14d6a3cc21b617cc86054147a5d67feb570133129a9be",
+    "ocr_region_text": ""
+  },
+  {
+    "seconds": 176.93,
+    "time": "02:56.93",
+    "text": "",
+    "confidence": 0,
+    "raw_text": "",
+    "pieces": [],
+    "source": "raw-change-frames/chunk-01/0032-0176930.png",
+    "evidence": "evidence-crops/chunk-01/0032-0176930.jpg",
+    "sha256": "36880f6f7e2db09042a9b2f594fbc0f7107b4e08bfeb5d400f8ccf1c31297de4",
+    "ocr_region_text": ""
+  },
+  {
+    "seconds": 211.43,
+    "time": "03:31.43",
+    "text": "",
+    "confidence": 0,
+    "raw_text": "",
+    "pieces": [],
+    "source": "raw-change-frames/chunk-01/0052-0211430.png",
+    "evidence": "evidence-crops/chunk-01/0052-0211430.jpg",
+    "sha256": "aaee7e284178241944234c4ba1eafd9ed51e73eea236a471826856dd8f84c101",
+    "ocr_region_text": ""
+  },
+  {
+    "seconds": 254.93,
+    "time": "04:14.93",
+    "text": "",
+    "confidence": 0,
+    "raw_text": "",
+    "pieces": [],
+    "source": "raw-change-frames/chunk-02/0006-0254930.png",
+    "evidence": "evidence-crops/chunk-02/0006-0254930.jpg",
+    "sha256": "3c093d46bc3a078b1855d3b2c6f0e71d639e2b0a858034e4e54d0bbe8e2b62a9",
+    "ocr_region_text": ""
+  },
+  {
+    "seconds": 295.68,
+    "time": "04:55.68",
+    "text": "",
+    "confidence": 0,
+    "raw_text": "",
+    "pieces": [],
+    "source": "raw-change-frames/chunk-02/0035-0295680.png",
+    "evidence": "evidence-crops/chunk-02/0035-0295680.jpg",
+    "sha256": "f55eadc5744ced1617cd11038762c976c2f788325f8898ed933e17ae975cf439",
+    "ocr_region_text": ""
+  },
+  {
+    "seconds": 317.18,
+    "time": "05:17.18",
+    "text": "",
+    "confidence": 0,
+    "raw_text": "",
+    "pieces": [],
+    "source": "raw-change-frames/chunk-02/frame-0317180.png",
+    "evidence": "evidence-crops/chunk-02/frame-0317180.jpg",
+    "sha256": "ba1c51563ccf46be95432f62213eebee2807817dc026caf4c3b4cc33d5aedde5",
+    "ocr_region_text": ""
+  },
+  {
+    "seconds": 340.68,
+    "time": "05:40.68",
+    "text": "",
+    "confidence": 0,
+    "raw_text": "",
+    "pieces": [],
+    "source": "raw-change-frames/chunk-02/frame-0340680.png",
+    "evidence": "evidence-crops/chunk-02/frame-0340680.jpg",
+    "sha256": "07c8dde587047de49d59d1816accc7fbc079c0b5cd2de030f710fad6d74f751c",
+    "ocr_region_text": ""
+  },
+  {
+    "seconds": 361.43,
+    "time": "06:01.43",
+    "text": "",
+    "confidence": 0,
+    "raw_text": "",
+    "pieces": [],
+    "source": "raw-change-frames/chunk-03/frame-0361430.png",
+    "evidence": "evidence-crops/chunk-03/frame-0361430.jpg",
+    "sha256": "7a52ba6cf458c4abcb79d1c8f516bcf678ab7b7feb4551c215fee46eb19894bf",
+    "ocr_region_text": ""
+  },
+  {
+    "seconds": 443.93,
+    "time": "07:23.93",
+    "text": "",
+    "confidence": 0,
+    "raw_text": "",
+    "pieces": [],
+    "source": "raw-change-frames/chunk-03/frame-0443930.png",
+    "evidence": "evidence-crops/chunk-03/frame-0443930.jpg",
+    "sha256": "0fb0a086873c51ae833c2b412e86609dca6bd86352edccf0c157365a1cfe598c",
+    "ocr_region_text": ""
+  },
+  {
+    "seconds": 490.18,
+    "time": "08:10.18",
+    "text": "",
+    "confidence": 0,
+    "raw_text": "",
+    "pieces": [],
+    "source": "raw-change-frames/chunk-04/frame-0490180.png",
+    "evidence": "evidence-crops/chunk-04/frame-0490180.jpg",
+    "sha256": "e748199390bb71bf45f09839ae6b4eb49723984d157663e583ee3314b20364db",
+    "ocr_region_text": ""
+  },
+  {
+    "seconds": 734.18,
+    "time": "12:14.18",
+    "text": "",
+    "confidence": 0,
+    "raw_text": "",
+    "pieces": [],
+    "source": "raw-change-frames/chunk-06/frame-0734180.png",
+    "evidence": "evidence-crops/chunk-06/frame-0734180.jpg",
+    "sha256": "e8a117d10aa280fcacfec4da1953713f7ba70836ec7d4eae0a0fdf0410fa6f7d",
+    "ocr_region_text": ""
+  },
+  {
+    "seconds": 734.43,
+    "time": "12:14.43",
+    "text": "",
+    "confidence": 0,
+    "raw_text": "",
+    "pieces": [],
+    "source": "raw-change-frames/chunk-06/frame-0734430.png",
+    "evidence": "evidence-crops/chunk-06/frame-0734430.jpg",
+    "sha256": "e8add5b7bef3862be5117ae2a959ad4357f9906f9605542bcd04157634d34994",
+    "ocr_region_text": ""
+  },
+  {
+    "seconds": 763.18,
+    "time": "12:43.18",
+    "text": "",
+    "confidence": 0,
+    "raw_text": "",
+    "pieces": [],
+    "source": "raw-change-frames/audit-06/frame-0763180.png",
+    "evidence": "evidence-crops/audit-06/frame-0763180.jpg",
+    "sha256": "cd72b612d9a8e566a19c96870e182dd4e2eb2a8949057c8d44278330f55bc184",
+    "ocr_region_text": ""
+  },
+  {
+    "seconds": 803.68,
+    "time": "13:23.68",
+    "text": "",
+    "confidence": 0,
+    "raw_text": "一边卖选择，一边卖承诺",
+    "pieces": [
+      {
+        "text": "一边卖选择，一边卖承诺",
+        "confidence": 0.991246911612424,
+        "cx": 641.0,
+        "cy": 508.0,
+        "height": 28.0,
+        "box": [
+          [
+            501.0,
+            494.0
+          ],
+          [
+            781.0,
+            494.0
+          ],
+          [
+            781.0,
+            522.0
+          ],
+          [
+            501.0,
+            522.0
+          ]
+        ]
+      }
+    ],
+    "source": "raw-change-frames/chunk-06/frame-0803680.png",
+    "evidence": "evidence-crops/chunk-06/frame-0803680.jpg",
+    "sha256": "18a5c725e99f151da088ab47227b9e4b0e9ef963e0eb242d4be79841428c8d26",
+    "ocr_region_text": ""
+  },
+  {
+    "seconds": 896.68,
+    "time": "14:56.68",
+    "text": "",
+    "confidence": 0,
+    "raw_text": "",
+    "pieces": [],
+    "source": "raw-change-frames/chunk-07/frame-0896680.png",
+    "evidence": "evidence-crops/chunk-07/frame-0896680.jpg",
+    "sha256": "0dec0dba9d8fb779852d59e15aedd5163a0f246b270d36d30d5ef1723cb66f6e",
+    "ocr_region_text": ""
+  }
+]

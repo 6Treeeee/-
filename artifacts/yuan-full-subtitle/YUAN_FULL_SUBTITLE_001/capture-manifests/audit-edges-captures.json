@@ -1,0 +1,18 @@
+[
+  {
+    "target": 0,
+    "actual": 0,
+    "readyState": 4,
+    "file": "frame-0000000.png",
+    "method": "browser screenshot",
+    "reason": "full-video boundary audit"
+  },
+  {
+    "target": 1119.6,
+    "actual": 1119.6,
+    "readyState": 4,
+    "file": "frame-1119600.png",
+    "method": "browser screenshot",
+    "reason": "full-video boundary audit"
+  }
+]

@@ -1,0 +1,19 @@
+{
+  "published_image_hashes_verified": 2122,
+  "timeline_entries_verified": 480,
+  "markdown_local_links": "all_exist",
+  "srt_entries_verified": 480,
+  "prior_probe_rows_compared": 45,
+  "prior_probe_rounded_capture_time_tolerance_seconds": 0.15,
+  "prior_probe_agreement_except_documented_source_correction": 44,
+  "prior_probe_difference": [
+    {
+      "prior_time": 999.2,
+      "prior_text": "但你购买的是基金份额，是对一个资金池里",
+      "current_text": "但你购买的是基金份是对一资金池里",
+      "current_evidence": "evidence-crops/chunk-08/frame-0999180.jpg"
+    }
+  ],
+  "formal_project_tests_run": false,
+  "status": "passed"
+}
