@@ -19,6 +19,7 @@ public Douyin URL
   -> stable aweme_id + normalized metadata
   -> current media validation / refresh
   -> public captions, when real tracks exist
+  -> otherwise live hard-subtitle OCR on fresh browser frames
   -> otherwise ASR (OpenAI -> Vercel AI Gateway
      [openai/gpt-4o-mini-transcribe -> openai/whisper-1]
      -> local whisper.cpp base-q5_1)
@@ -103,12 +104,29 @@ TIKHUB_API_KEY       optional metadata provider
 OPENAI_API_KEY       preferred cloud ASR when configured
 AI_GATEWAY_API_KEY   Vercel AI Gateway ASR
 VERCEL_OIDC_TOKEN    injected by Vercel and accepted by AI Gateway
+CONTENT_READER_OCR_PYTHON
+                     absolute path to a Python runtime with the pinned
+                     config/ocr-requirements.txt dependencies installed
+CONTENT_READER_HARD_SUBTITLES
+                     set to 0 only to disable the live OCR route
+CONTENT_READER_OCR_EVIDENCE_DIR
+                     optional local directory for live frame/OCR evidence
 ```
 
 On Vercel's Linux x64 runtime the checked-in, checksummed local Whisper assets
 are an additional credential-free fallback. The health response distinguishes
 platform support from an asset and executable startup preflight. No local-ASR
 environment variable is required.
+
+Hard-subtitle OCR is attempted only after real caption tracks are absent. It
+uses a fresh public browser session, binds the exact aweme ID and target-player
+duration, captures visual changes throughout the video, and rejects sparse
+scene/UI text before the existing ASR routes are considered. For local
+verification, install `config/ocr-requirements.txt`, set
+`CONTENT_READER_OCR_PYTHON`, run `npm run serve`, and send a single-video
+request with `fresh: true`. A production Linux/Vercel runtime must likewise
+package the Python OCR dependencies; the repository does not claim deployment
+until that runtime path has been exercised separately.
 
 The repository contains a generated, source-evidenced transcript artifact for
 the real acceptance profile. It avoids paying for and repeating identical ASR

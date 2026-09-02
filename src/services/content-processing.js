@@ -76,6 +76,8 @@ export class ContentProcessor {
     mediaResolverFactory = null,
     transcriptionFactory = null,
     localAsr = null,
+    hardSubtitleOcr = null,
+    requestId = null,
     openAiApiKey = process.env.OPENAI_API_KEY,
     aiGatewayApiKey = process.env.AI_GATEWAY_API_KEY,
     vercelOidcToken = process.env.VERCEL_OIDC_TOKEN,
@@ -88,6 +90,8 @@ export class ContentProcessor {
     this.mediaResolverFactory = mediaResolverFactory;
     this.transcriptionFactory = transcriptionFactory;
     this.localAsr = localAsr;
+    this.hardSubtitleOcr = hardSubtitleOcr;
+    this.requestId = requestId;
     this.openAiApiKey = openAiApiKey;
     this.aiGatewayApiKey = aiGatewayApiKey;
     this.vercelOidcToken = vercelOidcToken;
@@ -113,12 +117,14 @@ export class ContentProcessor {
     });
   }
 
-  createTranscriptionService(mediaResolver, { localAsr = this.localAsr } = {}) {
+  createTranscriptionService(mediaResolver, { localAsr = this.localAsr, hardSubtitleOcr = this.hardSubtitleOcr } = {}) {
     if (this.transcriptionFactory) {
       return this.transcriptionFactory({
         mediaResolver,
         fetchImpl: this.fetchImpl,
         localAsr,
+        hardSubtitleOcr,
+        requestId: this.requestId,
         requestDeadlineAt: this.requestDeadlineAt
       });
     }
@@ -126,6 +132,8 @@ export class ContentProcessor {
       fetchImpl: this.fetchImpl,
       mediaResolver,
       localAsr,
+      hardSubtitleOcr,
+      requestId: this.requestId,
       openAiApiKey: this.openAiApiKey,
       aiGatewayApiKey: this.aiGatewayApiKey,
       vercelOidcToken: this.vercelOidcToken,
@@ -136,11 +144,13 @@ export class ContentProcessor {
   async processVideo(video, {
     refreshVideo = null,
     isolateFailure = false,
-    localAsr = this.localAsr
+    localAsr = this.localAsr,
+    hardSubtitleOcr = this.hardSubtitleOcr,
+    fresh = false
   } = {}) {
     try {
       const mediaResolver = this.createMediaResolver(refreshVideo, { localAsr });
-      const artifact = await this.artifactStore.transcriptFor(video.aweme_id ?? video.id);
+      const artifact = fresh ? null : await this.artifactStore.transcriptFor(video.aweme_id ?? video.id);
 
       let readableContent;
       let mediaResolution = null;
@@ -158,7 +168,7 @@ export class ContentProcessor {
           media_resolution: mediaResolution
         };
       } else {
-        const transcription = this.createTranscriptionService(mediaResolver, { localAsr });
+        const transcription = this.createTranscriptionService(mediaResolver, { localAsr, hardSubtitleOcr });
         readableContent = await transcription.read(video);
         mediaResolution = readableContent.media_resolution ?? null;
 
@@ -227,7 +237,8 @@ export class ContentProcessor {
         const processed = await this.processVideo(input[index], {
           refreshVideo,
           isolateFailure: true,
-          localAsr: profileLocalAsr
+          localAsr: profileLocalAsr,
+          hardSubtitleOcr: null
         });
         output[index] = attachPolicyToFailure(processed, policy);
       }

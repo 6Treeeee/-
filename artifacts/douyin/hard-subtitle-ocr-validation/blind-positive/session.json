@@ -1,0 +1,36 @@
+{
+  "run_id": "b8e48b02-a2d4-4596-9178-beca216e7f72",
+  "request_id": "blind-positive-ocr-002",
+  "aweme_id": "7589860433402531110",
+  "started_at": "2026-09-01T09:06:03.530Z",
+  "engine": {
+    "ready": true,
+    "engine": "rapidocr_onnxruntime",
+    "version": "1.4.4",
+    "models": [
+      {
+        "name": "ch_PP-OCRv4_det_infer.onnx",
+        "sha256": "d2a7720d45a54257208b1e13e36a8479894cb74155a5efe29462512d42f49da9"
+      },
+      {
+        "name": "ch_PP-OCRv4_rec_infer.onnx",
+        "sha256": "48fc40f24f6d2a207a2b1091d3437eb3cc3eb6b676dc3ef9c37384005483683b"
+      },
+      {
+        "name": "ch_ppocr_mobile_v2.0_cls_infer.onnx",
+        "sha256": "e47acedf663230f8863ff1ab0e64dd2d82b838fceb5957146dab185a89d6215c"
+      }
+    ]
+  },
+  "playback": {
+    "duration_ms": 133237,
+    "source_width": 1280,
+    "source_height": 720,
+    "capture_width": 1280,
+    "capture_height": 720,
+    "page_url": "https://www.douyin.com/video/7589860433402531110",
+    "expected_id": "7589860433402531110"
+  },
+  "media_url_sha256": "f4dc3b91353d5df2858ad6751a2d66ae821a6f1a2683d2f07f481100ff8c458b",
+  "cache_read": false
+}

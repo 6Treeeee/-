@@ -15,7 +15,8 @@ export function serviceDescription({
   openaiConfigured = false,
   gatewayConfigured = false,
   localWhisperConfigured = false,
-  localWhisperStatus = null
+  localWhisperStatus = null,
+  hardSubtitleStatus = null
 } = {}) {
   return {
     service: "Content Reader",
@@ -31,6 +32,7 @@ export function serviceDescription({
     content_pipeline: {
       media_validation_and_refresh: true,
       captions_first: true,
+      hard_subtitle_ocr: hardSubtitleStatus ?? { configured: false, scope: "single_video" },
       asr: {
         openai: openaiConfigured,
         vercel_ai_gateway: gatewayConfigured,

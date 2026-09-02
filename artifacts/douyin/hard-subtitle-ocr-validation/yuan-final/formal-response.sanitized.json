@@ -1,0 +1,6293 @@
+{
+  "ok": true,
+  "request_id": "yuan-live-ocr-006",
+  "schema_version": "2.0",
+  "platform": "douyin",
+  "content_type": "video",
+  "source": {
+    "input_url": "https://www.douyin.com/video/7674668931734326528",
+    "resolved_url": "https://www.douyin.com/video/7674668931734326528",
+    "resolution": {
+      "finalUrl": "https://www.douyin.com/video/7674668931734326528",
+      "resolved": false,
+      "hops": []
+    },
+    "retrieval": {
+      "provider": "direct_public_web",
+      "method": "public_unauthenticated_browser",
+      "acquired_at": "2026-09-01T04:30:19.588Z",
+      "target": {
+        "host": "www.douyin.com",
+        "path": "/video/7674668931734326528"
+      },
+      "browser": {
+        "kind": "local_edge",
+        "userAgentAdjusted": true
+      },
+      "endpoints_observed": [
+        "/aweme/v1/web/aweme/detail/"
+      ],
+      "network_media_count": 2,
+      "network_media_hosts": [
+        "v95-zjwz2tc-web.douyinvod.com"
+      ],
+      "identity": {
+        "expected_aweme_id": "7674668931734326528",
+        "observed_aweme_id": "7674668931734326528",
+        "source": "public_detail",
+        "page_url_mismatch_recovered": false
+      },
+      "page": {
+        "title": "20多岁，该系统学一次金融了 很多人不是完全不懂金融，而是零零散散听了很多，始终拼不成一张完整的图。 这期从经济、财经和金融的区别讲起 #金融知识 #财经科普 #零基础学金融 #投资理财 #Yuan的认知笔记 - 抖音",
+        "description": "20多岁，该系统学一次金融了 很多人不是完全不懂金融，而是零零散散听了很多，始终拼不成一张完整的图。\n这期从经济、财经和金融的区别讲起\n#金融知识  #财经科普  #零基础学金融  #投资理财   #Yuan的认知笔记 - Yuan于20260817发布在抖音，已经收获了42.6万个喜欢，来抖音，记录美好生活！",
+        "canonical_host": "www.douyin.com",
+        "canonical_path": "/video/7674668931734326528"
+      },
+      "attempts": 1
+    },
+    "provider_attempts": [
+      {
+        "provider": "direct_public_web",
+        "status": "success"
+      }
+    ]
+  },
+  "content": {
+    "id": "7674668931734326528",
+    "aweme_id": "7674668931734326528",
+    "canonical_url": "https://www.douyin.com/video/7674668931734326528",
+    "content_kind": "video",
+    "title": "20多岁，该系统学一次金融了",
+    "description": "20多岁，该系统学一次金融了 很多人不是完全不懂金融，而是零零散散听了很多，始终拼不成一张完整的图。\n这期从经济、财经和金融的区别讲起\n#金融知识  #财经科普  #零基础学金融  #投资理财   #Yuan的认知笔记",
+    "author": {
+      "id": "212656092610675",
+      "display_name": "Yuan",
+      "sec_uid": null
+    },
+    "media": {
+      "duration_ms": 1119766,
+      "width": 1920,
+      "height": 1080
+    },
+    "readable_content": {
+      "status": "complete",
+      "method": "hard_subtitle_ocr",
+      "text": "你20多岁了\n该系统学一次金融了\n如果你愿意花十几分钟把今天的内容\n不管你以前懂不懂金融\n最后都会得到一张完整的金融地图\n以后再听到股票\n债券基金\n期货期权\n你不会只觉得这些词耳熟\n你会知道自己买到的到底是什么\n收益从哪里来\n最坏又会亏到哪里？\n很多人学金融最大的问题不是学的少\n是零零散散听了很多\n市盈率降息\n黄金基金\n期货\n什么都知道一点\n却始终拼不成一张完整的图\n真正轮到自己掏钱\n还是只能问别人\n这个能买吗？\n所以今天不推荐任何产品\n只把金融到底在研究什么\n应该怎么学\n一次讲清楚\n这里是Yuan的认知笔记\n每当我们提到钱\n总会碰到三个词\n经济 财经和金融\n先说经济\n工厂为什么建在这里？先说经济\n工厂为什么建在这里？经济学研究的不只是钱\n工厂为什么建在这里？却处处与钱相关\n却处处与钱相关\n工厂为什么建在这里？却处处与钱相关\n工厂为什么建在这里？一家工厂为什么建在这座城市？\n一家工厂为什么建在这座城市？\n岗位少，人更多年轻人为什么找不到工作？\n年轻人为什么找不到工作？\n房租个\n房租为什么上涨？\n货更多，买的人没有变房租为什么上涨？\n货更多，买的人没有变一件商品为什么突然降价？\n一件商品为什么突然降价？\n社会有限的资源应该怎样分配？\n这些都属于经济问题\n所以经济研究的是整个社会怎样生产\n分配 交换和消费\n再说财经\n财经更像一个内容大类\n产业变化\n公司经营\n财政政策\n国际贸易和资本市场都可以装\n所以财经博主今天讲城市\n明天讲行业\n后天又讲股票\n并不矛盾\n接下来才是金融\n金融不用想得太神秘\n它研究的是钱怎么在人与人之间流动\n怎么从今天搬到未来\n又怎么把收益和风险分给不同的人\n有钱的人把暂时不用的钱交出去\n希望获得回报\n需要钱的人提前拿到资金\n再用未来的收入偿还\n但信用不是凭空多出一笔钱\n信用只是把未来的钱搬到今天\n同时把偿还义务也一起搬了过来\n所以看任何金融产品\n先别被名字吓住\n只问四个问题\n钱从谁手里流向了谁？\n你交出钱以后换回了什么权利？\n收益从哪里来？\n风险最后由谁承担？\n金融再复杂也绕不开这四个问题\n为了容易理解\n我们先把金融工具分成两大块\n第一块是基础金融产品\n第二块\n是从这些基础产品上继续长出来的衍生工具\n基础产品再按你交钱以后拿回来什么\n分成三类\n直接持有一项资产\n把钱借给别人\n以及把钱交给专业的人集中管理\n这不是唯一的教科书分类\n但它最适合普通人先把地图搭起来\n第一类直接持有一项资产\n最典型的就是股票\n你买下一家公司的股票\n本质上是成为这家公司的\n股东\n拿到它的一小部分所有权\n既然是所有权\n买完以后能不能找公司退货？\n不能\n你退给谁？\n退给你自己吗？\n你想退出只能在市场里找到下一个愿意接手的人\n这就是二级市场上的股票买卖\n很多人买股票以后\n每天只盯着价格涨没涨\n却从来没有研究过公司靠什么挣钱\n这就像你花钱入股一家餐馆\n进门以后不看他有没有客人\n三\n进门以后不看他有没有客人\n菜好不好吃\n账上赚不赚钱\n只在门口问自己的股份明天能不能卖\n真正的所有权思维是先看这家公司有没有生意\n能不能持续创造利润和现金流\n公司经营得好\n可能用利润分红\n也可能把钱继续投入\n让公司的价值增长\n股东的收益不一定来自另一个股东的亏损\n股东的收益不一定来自\n也可能来自公司真正创造出来的利润\n现金流和分红\n除了股票\n我们还会直接持有和交易货币\n而两种货币之间的价格就叫汇率\n汇率不用想的太复杂\n它就是一种钱\n用另一种钱来标价\n比如你准备出国旅游\n需要拿人民币换美元\n进口商去海外买货也需要换美元\n当需要美元的人突然变多\n00000\n大家都拿人民币去换美元\n相对人民币的价格就可能上涨\n反过来外国企业要购买中国商品\n海外资金想进入中国市场\n就需要先把手里的钱换成人民币\n人民币的需求增加\n它就可能相对升值\n所以汇率每天变化\n本质上是在回答一个问题\n此时此刻大家更愿意持有哪一种货币？\n汇率也不是大家在市场里随便叫价就\n因为它背后连着一家企业的进口成本\n个国家的进出\n国家的进出口\n跨境资金流动\n甚至金融市场的稳定\n你可以想象一下\n如果没有任何管理\n市场一恐慌\n所有人同时把大量人民币换成美元\n汇率就可能剧烈波动\n今天冲到天上\n今天冲到关止\n今天冲到天上\n明天又掉到地板\n外资不敢轻易进来\n国内企业做跨境生意也很难判断\n所以人民币汇率既会受到市场供求\n也实行有管理的浮动\n我们平时最常接触的个人便利化购汇度是每人每年等值5万美元\n如果确实有留学等真实用途\n超过便利化度还可以按要求提供材料\n并不是超过这个数就永远换不了\n普通人看到的是一美元能换多少人民\n企业看到的是成本和利润\n国家看到的是资金流动和金融稳定\n一句话理解\n汇率就是两种货币在不断交换中重新给对方标出的价格\n还有一类是商品现货\n这里说的不是你去菜市场买颗白菜\n重点是能够被标准化大规模交易的大宗\n比如原油\n天然气黄金\n白银铜铝\n小麦玉米\n大豆白糖和咖啡\n所谓现货\n就是你买的是东西本身\n成交以后现在或者很快就完成交付\n它的价格主要受到用途\n稀缺程度\n供求关系和运输库存影响\n比如天气异常\n咖啡豆减产\n供应变少\n价格就可能上涨\n产油国增加产量\n市场上的原油变多\n价格就可能承压\n你会发现股票\n外汇和大宗商品看起来完全不同\n但它们都有一个共同点\n你直接持有的是一项资产本身\n第二类是把钱借给别人\n朋友找你借钱\n可能写张借条就够了\n可借钱的主体变成国家或者公司\n就需要更标准的债务凭证\n这就是债券\n国家发行的叫国债\n公司发行的叫公司债或者企业债\n你买债券不是入股这家公司\n你是把钱借给他\n他按约定付利息\n到期再还本金\n如果一个信用较弱的公司给出的收益还比信用更强的债券低\n投资人为什么要把钱借给他？\n所以很多借款人必须给出更高的收益\n这也是为什么看到高收益时\n先别急着高兴\n多出来的收益\n很可能就是别人请你承担风险的价格\n债券买完以后也不代表价格永远不变\n举个简单的例子\n你手里的旧债券每年给4块利息\n后来市场上新发行的债券每年能给6\n别人自然更愿意买新的\n你的旧债券想卖出去\n价格往往就得便宜一点\n所以市场利率上升时\n固定利率债券的价格通常会下跌\n市场利率下降时\n旧债券反而可能更值钱\n银行存款从关系上看也是一种债权\n你把钱存进银行\n银行使用这笔资金\n并对你承担相应的偿付义务\n借钱的人，准备靠什么还？所以研究所有债权产品\n借钱的人，准备靠什么还？最后只盯一个问题\n借钱的人，准备靠什么还？借钱的人准备靠什么还你？\n借钱的人准备靠什么还你？\n第三类是把钱交给专业的人集中管理\n最常见的就是基金\n基金用大白话讲就是很多人把钱放进\n再由基金管理人按照合同去买股票\n债券或者其他资产\n你买到的是基金份底层资产上涨\n扣除相关费用后\n基金净值可能上涨\n底层资产下跌亏损也由持有人承担\n有人替你管理和有人替你保本\n基金经理更像替你开车的人\n他负责按照约定路线开\n但不代表他能保证路上不堵车\n更不能保证你一定赚钱\n而且这辆车不是免费开的\n管理费\n托管费等费用会按规则从基金资产里\n所以买基金时别只看基金经理的人设\n也别只看最近一段收益\n先看钱最后投向了哪里\n费用怎么收\n风险有多大\n什么时候能退出\n你买的不是一句专业的人替你理财\n你买的是一篮子资产\n以及管理这篮子资产的一套规则\n到这里用10秒钟做一次自测\n股票是买下一部分资产和所有权\n债券是把钱借出去\n基金是把一群人的钱集中起来\n按合同交给专业的人管理\n这三件事能对上\n金融的前半张地图就搭稳了\n三种关系对上，前半张图就稳了接下来讲最刺激\n接下来讲最刺激\n最复杂\n也最容易让普通人亏得莫名其妙的一部分\n金融衍生工具\n常见的四类是远期\n期货 期权和互换\n这一次不先被定义\n我们直接把它们放进生活里\n第一远期合约\n假设你准备半年后办婚礼\n现在酒店一桌是2000元\n你担心半年以后菜价上涨\n酒店涨到3000元\n酒店也担心半年后没有客人\n宴会厅空着\n于是你们今天私下签一份合同\n半年后无论市场价格怎么变\n都按2000元一桌结算\n这就是远期最朴素的逻辑\n不管市场价格怎么变两个人今天谈好条件\n不管市场价格怎么变把未来的价格先锁住\n农民可以和面包厂提前锁定小麦价格\n外贸企业也可以和银行提前锁定\n远期合约的价值\n会跟着它背后的商品利率或者汇率\n它解决的是未来的不确定性\n好处是灵活\n数量 时间和交付方式都可以商量\n问题也很直接\n这是双方私下约定\n对方到时候有没有能力履约\n需要你自己判断\n第二期货合约\n期货可以理解成把远期合同搬进\n就像你原本在微信里和陌生人私下\n价格 规格和交货时间全靠聊天记录\n现在把交易搬进一个有统一规则\n保证金和结算制度的平台\n交易所提前规定好数量\n质量 到期时间等标准\n再通过每日结算和清算机制管理履约\n合同统一以后\n更容易交易\n也更容易在到期前平仓退出\n但期货还有一个必须看懂的东西\n保证金\n假设一份价值10万元的合约\n你不需要先拿出全部10万元\n只需要交其中一部分保证金\n就能参与整笔交易\n这就是杠杆\n方向判断对了\n收益被放大\n方向判断错了\n损失也会被放大\n价格稍微多走几步\n你的保证金就可能不够\n还要继续补钱\n甚至被强制平仓\n杠杆不会提高你的判断能力\n它只会让判断的结果更快更大的来到你面前\n期货\n本身不等于赌博\n农民可以用它锁住粮价\n航空公司可以用它管理油价\n生产企业也可以用它控制原料成本\n有人拿它给生意上保险\n也有人拿它放大自己对价格的判断\n给生意上保险放大价格判断工具没有变\n给生意上保险放大价格判断使用目的完全不同\n使用目的完全不同\n第三\n期权合约\n期权最像生活里的付费保留一个选择\n比如你看中一套房\n但还需要一个月确认贷款\n￥10,000你先付1万元\n￥10,000和卖家约定\n这一个月内你有权按现在谈好的价格\n￥10,000一个月后房价涨了\n￥10,000你可以按原价购买\n如果你发现房子有问题\n或者市场价格跌了\n你也可以放弃购买\n只损失提前支付的这1万元\n这笔用来买选择权的钱\n就像期权里的权利金\n期权买方花钱买到的是权利\n行情有利可以行使这项权利\n行情不利也可以放弃\n行情有利，可以行使权利最大损失：已付的1万元\n而卖方收下权利金以后\n就承担了按合同履约的义务\n所以期权里的买卖双方并不对称\n一边买的是选择\n另一边卖的是承诺\n但真实期权不能只判断涨还是跌\n你的方向可能看对了\n可涨得太慢\n时间先到期了\n权利金照样可能损失\n市场预期波动变小\n期权价格也可能发生变化\n所以期权交易里\n方向 时间和波动\n缺一个都不行\n第四 互换合约\n互换就是两个人不交换本金\n只交换未来一组现金流的计算方式\n先想象两种手机套餐\n一种每个月固定交100元\n不管用了多少流量\n账单都比较稳定\n另一种按实际流量收费\n用的少就便宜\n用的多就更贵\n有人讨厌账单波动\n更愿意付固定费用\n有人觉得未来用量会下降\n更愿意按实际使用付钱\n利率互换做的事情很像\n一家公司借的是浮动利率贷款\n担心以后利率上涨\n成本越来越高\n另一家公司承担固定利率\n却判断未来利率会下降\n双方可以按约定交换固定利息和浮动利息产生的现金流效果\n注意通常交换的不是那笔\n贷款本金\n而是按照同一个名义金算出来的利息\n很多时候是为了调整债务结构\n稳定成本或者管理风险\n四类工具讲完\n再把它们放回一张图里\n远期是私下约定未来价格\n期货是把标准化的远期合同搬进\n期权是付出一笔钱\n买下未来选择的权利\n互换是双方交换未来现金流的计算\n它们有几个共同点\n价值通常会跟着某项基础资产\n利率汇率或者指数变化\n交易的核心是一份关于未来的合同\n很多产品带有杠杆\n只看一份封闭的衍生合同\n一方多获得的收益通常\n对应另一方少获得的收益或者\n再扣掉手续费等成本\n所有参与者加起来甚至可能是负和\n但这不代表行生品没有价值\n你提前锁价可能是担心以后买不起\n对方愿意锁价可能是担心以后卖\n双方都放弃了一部分未来可能得到的好处\n换来一份确定性\n所以\n衍生品既可以拿来压价格\n锁价格·管理风险也可以拿来管理风险\n也可以拿来管理风险\n同样一把伞\n有人用它挡雨\n有人拿它赌明天会不会下雨\n股票不能被这么简单的说成零和游戏\n比如你和朋友合伙开了一家餐馆\n餐馆做好菜\n服务顾客\n最后创造出新的利润和现金流\n你作为股东可以分到这笔利润\n股票背后是一家会经营\n会赚钱\n也可能经营失败的公司\n衍生品背后是一份等待未来\n那为什么基金不是衍生品呢？\n基金净值确实会跟着股票和债券变化\n但你购买的是基金份是对一资金池里\n一组资产的集合投资权益\n你不是在签一张未来按某个价格交割的衍生合同\n联动只是衍生品的一个特征\n不能只看见价格会跟着别的东西变\n就把所有产品都塞进\n衍生品\n金融市场最基础的地图到这里就搭\n以后遇到任何产品\n先别问他能赚多少\n先问5个问题\n第一我买到的到底是什么？\n是所有权\n债权基金份一项资产\n还是一份衍生合同？\n第二收益从哪里来？\n来自企业利润\n借款利息\n资产涨价\n还是交易对手承担的损失？\n第三谁对我负有责任？\n是公司借款人\n管理人交易对手？\n还是根本没有人承诺还本？\n第四最坏会亏到哪里？\n只亏投入的本金\n还是因为杠杆可能承担更大的损失？\n第五我怎么退出？\n可以随时卖出\n需要等到期\n存在封闭期\n还是市场里可能根本找不到买家？\n20多岁本金少并不可怕\n真正危险的是拿应急金去买一份自己都解释不清的东西\n再把上涨归功于能力\n把下跌归答于运气\n金融入门的第一课不是预测明天涨\n是你在签字和付款以前\n能看懂自己把钱交给了谁\n换回了什么权利\n又接下了什么风险\n今晚\n打开你的持仓\n或者找一个你准备购买的产品\n把刚才5个问题写下来\n如果连收益从哪里来\n最坏能亏多少都答不出来\n就先别追加一分钱\n等这张地图搭稳以后\n再去学估值\n资产配置\n宏观政策和交易方法\n那时候你听到的每一个知识点\n才终于有位置可以落下\n这里是Yuan的认知笔记\n我们下期再见",
+      "segments": [
+        {
+          "start_ms": 180,
+          "end_ms": 1180,
+          "last_seen_ms": 180,
+          "text": "你20多岁了",
+          "confidence": 0.9981038967768351,
+          "evidence": [
+            "frames/00000-0000180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1180,
+          "end_ms": 4680,
+          "last_seen_ms": 1680,
+          "text": "该系统学一次金融了",
+          "confidence": 0.996380262904697,
+          "evidence": [
+            "frames/00001-0001180.jpg",
+            "frames/00002-0001430.jpg",
+            "frames/00003-0001680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 4680,
+          "end_ms": 7930,
+          "last_seen_ms": 7680,
+          "text": "如果你愿意花十几分钟把今天的内容",
+          "confidence": 0.9877950213849545,
+          "evidence": [
+            "frames/00004-0004680.jpg",
+            "frames/00005-0007180.jpg",
+            "frames/00006-0007430.jpg",
+            "frames/00007-0007680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 7930,
+          "end_ms": 10180,
+          "last_seen_ms": 9180,
+          "text": "不管你以前懂不懂金融",
+          "confidence": 0.9941267371177673,
+          "evidence": [
+            "frames/00008-0007930.jpg",
+            "frames/00009-0008180.jpg",
+            "frames/00010-0008430.jpg",
+            "frames/00011-0008680.jpg",
+            "frames/00012-0008930.jpg",
+            "frames/00013-0009180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 10180,
+          "end_ms": 13180,
+          "last_seen_ms": 12930,
+          "text": "最后都会得到一张完整的金融地图",
+          "confidence": 0.9944433768590292,
+          "evidence": [
+            "frames/00014-0010180.jpg",
+            "frames/00015-0010680.jpg",
+            "frames/00016-0010930.jpg",
+            "frames/00017-0011430.jpg",
+            "frames/00018-0012930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 13180,
+          "end_ms": 15430,
+          "last_seen_ms": 13430,
+          "text": "以后再听到股票",
+          "confidence": 0.9956864970070975,
+          "evidence": [
+            "frames/00019-0013180.jpg",
+            "frames/00020-0013430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 15430,
+          "end_ms": 16930,
+          "last_seen_ms": 15430,
+          "text": "债券基金",
+          "confidence": 0.9545886665582657,
+          "evidence": [
+            "frames/00021-0015430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 16930,
+          "end_ms": 17930,
+          "last_seen_ms": 17680,
+          "text": "期货期权",
+          "confidence": 0.9943635314702988,
+          "evidence": [
+            "frames/00022-0016930.jpg",
+            "frames/00023-0017180.jpg",
+            "frames/00024-0017430.jpg",
+            "frames/00025-0017680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 17930,
+          "end_ms": 20430,
+          "last_seen_ms": 20180,
+          "text": "你不会只觉得这些词耳熟",
+          "confidence": 0.9839286804199219,
+          "evidence": [
+            "frames/00026-0017930.jpg",
+            "frames/00027-0018180.jpg",
+            "frames/00028-0018430.jpg",
+            "frames/00029-0018680.jpg",
+            "frames/00030-0018930.jpg",
+            "frames/00031-0019180.jpg",
+            "frames/00032-0019430.jpg",
+            "frames/00033-0019680.jpg",
+            "frames/00034-0019930.jpg",
+            "frames/00035-0020180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 20430,
+          "end_ms": 23180,
+          "last_seen_ms": 21680,
+          "text": "你会知道自己买到的到底是什么",
+          "confidence": 0.9876622429915837,
+          "evidence": [
+            "frames/00036-0020430.jpg",
+            "frames/00037-0020680.jpg",
+            "frames/00038-0021430.jpg",
+            "frames/00039-0021680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 23180,
+          "end_ms": 24680,
+          "last_seen_ms": 23180,
+          "text": "收益从哪里来",
+          "confidence": 0.9890396893024445,
+          "evidence": [
+            "frames/00040-0023180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 24680,
+          "end_ms": 26680,
+          "last_seen_ms": 24680,
+          "text": "最坏又会亏到哪里？",
+          "confidence": 0.9782830476760864,
+          "evidence": [
+            "frames/00041-0024680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 26680,
+          "end_ms": 29680,
+          "last_seen_ms": 29180,
+          "text": "很多人学金融最大的问题不是学的少",
+          "confidence": 0.9961612708866596,
+          "evidence": [
+            "frames/00042-0026680.jpg",
+            "frames/00043-0026930.jpg",
+            "frames/00044-0028680.jpg",
+            "frames/00045-0028930.jpg",
+            "frames/00046-0029180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 29680,
+          "end_ms": 32180,
+          "last_seen_ms": 30430,
+          "text": "是零零散散听了很多",
+          "confidence": 0.9946181310547723,
+          "evidence": [
+            "frames/00047-0029680.jpg",
+            "frames/00048-0030180.jpg",
+            "frames/00049-0030430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 32180,
+          "end_ms": 33430,
+          "last_seen_ms": 33180,
+          "text": "市盈率降息",
+          "confidence": 0.9938849806785583,
+          "evidence": [
+            "frames/00050-0032180.jpg",
+            "frames/00051-0032930.jpg",
+            "frames/00052-0033180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 33430,
+          "end_ms": 34680,
+          "last_seen_ms": 33430,
+          "text": "黄金基金",
+          "confidence": 0.9980981051921844,
+          "evidence": [
+            "frames/00053-0033430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 34680,
+          "end_ms": 35930,
+          "last_seen_ms": 34930,
+          "text": "期货",
+          "confidence": 0.9979773163795471,
+          "evidence": [
+            "frames/00054-0034680.jpg",
+            "frames/00055-0034930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 35930,
+          "end_ms": 37180,
+          "last_seen_ms": 35930,
+          "text": "什么都知道一点",
+          "confidence": 0.9967148218836103,
+          "evidence": [
+            "frames/00056-0035930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 37180,
+          "end_ms": 39680,
+          "last_seen_ms": 37680,
+          "text": "却始终拼不成一张完整的图",
+          "confidence": 0.9841079860925674,
+          "evidence": [
+            "frames/00057-0037180.jpg",
+            "frames/00058-0037430.jpg",
+            "frames/00059-0037680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 39680,
+          "end_ms": 41680,
+          "last_seen_ms": 40680,
+          "text": "真正轮到自己掏钱",
+          "confidence": 0.9907281324267387,
+          "evidence": [
+            "frames/00060-0039680.jpg",
+            "frames/00061-0039930.jpg",
+            "frames/00062-0040180.jpg",
+            "frames/00063-0040430.jpg",
+            "frames/00064-0040680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 41680,
+          "end_ms": 43180,
+          "last_seen_ms": 42430,
+          "text": "还是只能问别人",
+          "confidence": 0.9950602310044424,
+          "evidence": [
+            "frames/00065-0041680.jpg",
+            "frames/00066-0041930.jpg",
+            "frames/00067-0042180.jpg",
+            "frames/00068-0042430.jpg"
+          ],
+          "recognition_variants": 2
+        },
+        {
+          "start_ms": 43180,
+          "end_ms": 44680,
+          "last_seen_ms": 44430,
+          "text": "这个能买吗？",
+          "confidence": 0.9936491151650747,
+          "evidence": [
+            "frames/00069-0043180.jpg",
+            "frames/00070-0043430.jpg",
+            "frames/00071-0043930.jpg",
+            "frames/00072-0044180.jpg",
+            "frames/00073-0044430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 44680,
+          "end_ms": 46930,
+          "last_seen_ms": 45430,
+          "text": "所以今天不推荐任何产品",
+          "confidence": 0.9942193248055198,
+          "evidence": [
+            "frames/00074-0044680.jpg",
+            "frames/00075-0044930.jpg",
+            "frames/00076-0045180.jpg",
+            "frames/00077-0045430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 46930,
+          "end_ms": 49680,
+          "last_seen_ms": 47680,
+          "text": "只把金融到底在研究什么",
+          "confidence": 0.9884269725192677,
+          "evidence": [
+            "frames/00078-0046930.jpg",
+            "frames/00079-0047180.jpg",
+            "frames/00080-0047430.jpg",
+            "frames/00081-0047680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 49680,
+          "end_ms": 50680,
+          "last_seen_ms": 50430,
+          "text": "应该怎么学",
+          "confidence": 0.9978183507919312,
+          "evidence": [
+            "frames/00082-0049680.jpg",
+            "frames/00083-0050430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 50680,
+          "end_ms": 52180,
+          "last_seen_ms": 50930,
+          "text": "一次讲清楚",
+          "confidence": 0.9951901078224182,
+          "evidence": [
+            "frames/00084-0050680.jpg",
+            "frames/00085-0050930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 52180,
+          "end_ms": 54430,
+          "last_seen_ms": 53930,
+          "text": "这里是Yuan的认知笔记",
+          "confidence": 0.9882212976614634,
+          "evidence": [
+            "frames/00086-0052180.jpg",
+            "frames/00087-0052930.jpg",
+            "frames/00088-0053930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 54430,
+          "end_ms": 55680,
+          "last_seen_ms": 54680,
+          "text": "每当我们提到钱",
+          "confidence": 0.9931336385863168,
+          "evidence": [
+            "frames/00089-0054430.jpg",
+            "frames/00090-0054680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 55680,
+          "end_ms": 57680,
+          "last_seen_ms": 56430,
+          "text": "总会碰到三个词",
+          "confidence": 0.9745619552476066,
+          "evidence": [
+            "frames/00091-0055680.jpg",
+            "frames/00092-0055930.jpg",
+            "frames/00093-0056180.jpg",
+            "frames/00094-0056430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 57680,
+          "end_ms": 60430,
+          "last_seen_ms": 57930,
+          "text": "经济 财经和金融",
+          "confidence": 0.9513836205005646,
+          "evidence": [
+            "frames/00095-0057680.jpg",
+            "frames/00096-0057930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 60430,
+          "end_ms": 60680,
+          "last_seen_ms": 60430,
+          "text": "先说经济",
+          "confidence": 0.9924931526184082,
+          "evidence": [
+            "frames/00097-0060430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 60680,
+          "end_ms": 61680,
+          "last_seen_ms": 61430,
+          "text": "工厂为什么建在这里？先说经济",
+          "confidence": 0.9866957142949104,
+          "evidence": [
+            "frames/00098-0060680.jpg",
+            "frames/00099-0060930.jpg",
+            "frames/00100-0061180.jpg",
+            "frames/00101-0061430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 61680,
+          "end_ms": 63680,
+          "last_seen_ms": 63430,
+          "text": "工厂为什么建在这里？经济学研究的不只是钱",
+          "confidence": 0.990388810634613,
+          "evidence": [
+            "frames/00102-0061680.jpg",
+            "frames/00103-0061930.jpg",
+            "frames/00104-0062180.jpg",
+            "frames/00105-0062430.jpg",
+            "frames/00106-0062680.jpg",
+            "frames/00107-0062930.jpg",
+            "frames/00108-0063180.jpg",
+            "frames/00109-0063430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 63680,
+          "end_ms": 64930,
+          "last_seen_ms": 64680,
+          "text": "工厂为什么建在这里？却处处与钱相关",
+          "confidence": 0.9827698877879552,
+          "evidence": [
+            "frames/00110-0063680.jpg",
+            "frames/00111-0063930.jpg",
+            "frames/00112-0064180.jpg",
+            "frames/00113-0064430.jpg",
+            "frames/00114-0064680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 64930,
+          "end_ms": 65430,
+          "last_seen_ms": 65180,
+          "text": "却处处与钱相关",
+          "confidence": 0.9767253824642727,
+          "evidence": [
+            "frames/00115-0064930.jpg",
+            "frames/00116-0065180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 65430,
+          "end_ms": 65680,
+          "last_seen_ms": 65430,
+          "text": "工厂为什么建在这里？却处处与钱相关",
+          "confidence": 0.9798455455473492,
+          "evidence": [
+            "frames/00117-0065430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 65680,
+          "end_ms": 67680,
+          "last_seen_ms": 67430,
+          "text": "工厂为什么建在这里？一家工厂为什么建在这座城市？",
+          "confidence": 0.9772145284073694,
+          "evidence": [
+            "frames/00118-0065680.jpg",
+            "frames/00119-0065930.jpg",
+            "frames/00120-0066180.jpg",
+            "frames/00121-0066430.jpg",
+            "frames/00122-0066680.jpg",
+            "frames/00123-0066930.jpg",
+            "frames/00124-0067180.jpg",
+            "frames/00125-0067430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 67680,
+          "end_ms": 68430,
+          "last_seen_ms": 68180,
+          "text": "一家工厂为什么建在这座城市？",
+          "confidence": 0.9756004256861551,
+          "evidence": [
+            "frames/00126-0067680.jpg",
+            "frames/00127-0067930.jpg",
+            "frames/00128-0068180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 68430,
+          "end_ms": 70430,
+          "last_seen_ms": 70180,
+          "text": "岗位少，人更多年轻人为什么找不到工作？",
+          "confidence": 0.993181049367603,
+          "evidence": [
+            "frames/00129-0068430.jpg",
+            "frames/00130-0068680.jpg",
+            "frames/00131-0068930.jpg",
+            "frames/00132-0069180.jpg",
+            "frames/00133-0069430.jpg",
+            "frames/00134-0069680.jpg",
+            "frames/00135-0069930.jpg",
+            "frames/00136-0070180.jpg"
+          ],
+          "recognition_variants": 2
+        },
+        {
+          "start_ms": 70430,
+          "end_ms": 70680,
+          "last_seen_ms": 70430,
+          "text": "年轻人为什么找不到工作？",
+          "confidence": 0.9866574654976527,
+          "evidence": [
+            "frames/00137-0070430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 70680,
+          "end_ms": 70930,
+          "last_seen_ms": 70680,
+          "text": "房租个",
+          "confidence": 0.8152421116828918,
+          "evidence": [
+            "frames/00138-0070680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 70930,
+          "end_ms": 71930,
+          "last_seen_ms": 71680,
+          "text": "房租为什么上涨？",
+          "confidence": 0.9864259660243988,
+          "evidence": [
+            "frames/00139-0070930.jpg",
+            "frames/00140-0071180.jpg",
+            "frames/00141-0071430.jpg",
+            "frames/00142-0071680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 71930,
+          "end_ms": 72180,
+          "last_seen_ms": 71930,
+          "text": "货更多，买的人没有变房租为什么上涨？",
+          "confidence": 0.9916862107813358,
+          "evidence": [
+            "frames/00143-0071930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 72180,
+          "end_ms": 73180,
+          "last_seen_ms": 72930,
+          "text": "货更多，买的人没有变一件商品为什么突然降价？",
+          "confidence": 0.9854310184717179,
+          "evidence": [
+            "frames/00144-0072180.jpg",
+            "frames/00145-0072430.jpg",
+            "frames/00146-0072680.jpg",
+            "frames/00147-0072930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 73180,
+          "end_ms": 74430,
+          "last_seen_ms": 74180,
+          "text": "一件商品为什么突然降价？",
+          "confidence": 0.9778499950965246,
+          "evidence": [
+            "frames/00148-0073180.jpg",
+            "frames/00149-0073430.jpg",
+            "frames/00150-0073680.jpg",
+            "frames/00151-0074180.jpg"
+          ],
+          "recognition_variants": 2
+        },
+        {
+          "start_ms": 74430,
+          "end_ms": 77430,
+          "last_seen_ms": 76180,
+          "text": "社会有限的资源应该怎样分配？",
+          "confidence": 0.990095100232533,
+          "evidence": [
+            "frames/00152-0074430.jpg",
+            "frames/00153-0074680.jpg",
+            "frames/00154-0074930.jpg",
+            "frames/00155-0075180.jpg",
+            "frames/00156-0075430.jpg",
+            "frames/00157-0075680.jpg",
+            "frames/00158-0075930.jpg",
+            "frames/00159-0076180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 77430,
+          "end_ms": 78930,
+          "last_seen_ms": 78680,
+          "text": "这些都属于经济问题",
+          "confidence": 0.9886851906776428,
+          "evidence": [
+            "frames/00160-0077430.jpg",
+            "frames/00161-0078180.jpg",
+            "frames/00162-0078430.jpg",
+            "frames/00163-0078680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 78930,
+          "end_ms": 82430,
+          "last_seen_ms": 81430,
+          "text": "所以经济研究的是整个社会怎样生产",
+          "confidence": 0.9925568364560604,
+          "evidence": [
+            "frames/00164-0078930.jpg",
+            "frames/00165-0079180.jpg",
+            "frames/00166-0079430.jpg",
+            "frames/00167-0079680.jpg",
+            "frames/00168-0080180.jpg",
+            "frames/00169-0080430.jpg",
+            "frames/00170-0081430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 82430,
+          "end_ms": 84930,
+          "last_seen_ms": 84430,
+          "text": "分配 交换和消费",
+          "confidence": 0.9611679688096046,
+          "evidence": [
+            "frames/00171-0082430.jpg",
+            "frames/00172-0084430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 84930,
+          "end_ms": 86430,
+          "last_seen_ms": 85430,
+          "text": "再说财经",
+          "confidence": 0.9933156967163086,
+          "evidence": [
+            "frames/00173-0084930.jpg",
+            "frames/00174-0085180.jpg",
+            "frames/00175-0085430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 86430,
+          "end_ms": 88180,
+          "last_seen_ms": 87180,
+          "text": "财经更像一个内容大类",
+          "confidence": 0.989460551738739,
+          "evidence": [
+            "frames/00176-0086430.jpg",
+            "frames/00177-0087180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 88180,
+          "end_ms": 89180,
+          "last_seen_ms": 88930,
+          "text": "产业变化",
+          "confidence": 0.9937553852796555,
+          "evidence": [
+            "frames/00178-0088180.jpg",
+            "frames/00179-0088930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 89180,
+          "end_ms": 90180,
+          "last_seen_ms": 89180,
+          "text": "公司经营",
+          "confidence": 0.9983165860176086,
+          "evidence": [
+            "frames/00180-0089180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 90180,
+          "end_ms": 91680,
+          "last_seen_ms": 91180,
+          "text": "财政政策",
+          "confidence": 0.9939427077770233,
+          "evidence": [
+            "frames/00181-0090180.jpg",
+            "frames/00182-0090930.jpg",
+            "frames/00183-0091180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 91680,
+          "end_ms": 95180,
+          "last_seen_ms": 94930,
+          "text": "国际贸易和资本市场都可以装",
+          "confidence": 0.995755952138167,
+          "evidence": [
+            "frames/00184-0091680.jpg",
+            "frames/00185-0092930.jpg",
+            "frames/00186-0094930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 95180,
+          "end_ms": 97680,
+          "last_seen_ms": 97180,
+          "text": "所以财经博主今天讲城市",
+          "confidence": 0.9940838488665494,
+          "evidence": [
+            "frames/00187-0095180.jpg",
+            "frames/00188-0095430.jpg",
+            "frames/00189-0096930.jpg",
+            "frames/00190-0097180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 97680,
+          "end_ms": 98680,
+          "last_seen_ms": 97680,
+          "text": "明天讲行业",
+          "confidence": 0.9949965953826905,
+          "evidence": [
+            "frames/00191-0097680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 98680,
+          "end_ms": 99930,
+          "last_seen_ms": 99180,
+          "text": "后天又讲股票",
+          "confidence": 0.9917721649010977,
+          "evidence": [
+            "frames/00192-0098680.jpg",
+            "frames/00193-0098930.jpg",
+            "frames/00194-0099180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 99930,
+          "end_ms": 101180,
+          "last_seen_ms": 100680,
+          "text": "并不矛盾",
+          "confidence": 0.9391933530569077,
+          "evidence": [
+            "frames/00195-0099930.jpg",
+            "frames/00196-0100680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 101180,
+          "end_ms": 102680,
+          "last_seen_ms": 102180,
+          "text": "接下来才是金融",
+          "confidence": 0.995941528252193,
+          "evidence": [
+            "frames/00197-0101180.jpg",
+            "frames/00198-0102180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 102680,
+          "end_ms": 104430,
+          "last_seen_ms": 102930,
+          "text": "金融不用想得太神秘",
+          "confidence": 0.9950737290912204,
+          "evidence": [
+            "frames/00199-0102680.jpg",
+            "frames/00200-0102930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 104430,
+          "end_ms": 107180,
+          "last_seen_ms": 105930,
+          "text": "它研究的是钱怎么在人与人之间流动",
+          "confidence": 0.9871615283191204,
+          "evidence": [
+            "frames/00201-0104430.jpg",
+            "frames/00202-0105930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 107180,
+          "end_ms": 108930,
+          "last_seen_ms": 107180,
+          "text": "怎么从今天搬到未来",
+          "confidence": 0.9903583195474412,
+          "evidence": [
+            "frames/00203-0107180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 108930,
+          "end_ms": 112930,
+          "last_seen_ms": 112180,
+          "text": "又怎么把收益和风险分给不同的人",
+          "confidence": 0.9924934864044189,
+          "evidence": [
+            "frames/00204-0108930.jpg",
+            "frames/00205-0112180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 112930,
+          "end_ms": 115680,
+          "last_seen_ms": 112930,
+          "text": "有钱的人把暂时不用的钱交出去",
+          "confidence": 0.9957410608019147,
+          "evidence": [
+            "frames/00206-0112930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 115680,
+          "end_ms": 117930,
+          "last_seen_ms": 117680,
+          "text": "希望获得回报",
+          "confidence": 0.9929961264133453,
+          "evidence": [
+            "frames/00207-0115680.jpg",
+            "frames/00208-0117680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 117930,
+          "end_ms": 120180,
+          "last_seen_ms": 118680,
+          "text": "需要钱的人提前拿到资金",
+          "confidence": 0.9928399703719398,
+          "evidence": [
+            "frames/00209-0117930.jpg",
+            "frames/00210-0118180.jpg",
+            "frames/00211-0118680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 120180,
+          "end_ms": 122930,
+          "last_seen_ms": 120180,
+          "text": "再用未来的收入偿还",
+          "confidence": 0.9955932961569892,
+          "evidence": [
+            "frames/00212-0120180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 122930,
+          "end_ms": 126180,
+          "last_seen_ms": 124680,
+          "text": "但信用不是凭空多出一笔钱",
+          "confidence": 0.9953510214885076,
+          "evidence": [
+            "frames/00213-0122930.jpg",
+            "frames/00214-0124680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 126180,
+          "end_ms": 128680,
+          "last_seen_ms": 126180,
+          "text": "信用只是把未来的钱搬到今天",
+          "confidence": 0.9925537659571722,
+          "evidence": [
+            "frames/00215-0126180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 128680,
+          "end_ms": 131680,
+          "last_seen_ms": 128680,
+          "text": "同时把偿还义务也一起搬了过来",
+          "confidence": 0.9915284642151424,
+          "evidence": [
+            "frames/00216-0128680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 131680,
+          "end_ms": 133430,
+          "last_seen_ms": 131930,
+          "text": "所以看任何金融产品",
+          "confidence": 0.9923334916432699,
+          "evidence": [
+            "frames/00217-0131680.jpg",
+            "frames/00218-0131930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 133430,
+          "end_ms": 135680,
+          "last_seen_ms": 133930,
+          "text": "先别被名字吓住",
+          "confidence": 0.9916805965559823,
+          "evidence": [
+            "frames/00219-0133430.jpg",
+            "frames/00220-0133930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 135680,
+          "end_ms": 136930,
+          "last_seen_ms": 135930,
+          "text": "只问四个问题",
+          "confidence": 0.9870955944061279,
+          "evidence": [
+            "frames/00221-0135680.jpg",
+            "frames/00222-0135930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 136930,
+          "end_ms": 139680,
+          "last_seen_ms": 138680,
+          "text": "钱从谁手里流向了谁？",
+          "confidence": 0.9647747159004212,
+          "evidence": [
+            "frames/00223-0136930.jpg",
+            "frames/00224-0138680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 139680,
+          "end_ms": 142430,
+          "last_seen_ms": 139680,
+          "text": "你交出钱以后换回了什么权利？",
+          "confidence": 0.9847525996821267,
+          "evidence": [
+            "frames/00225-0139680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 142430,
+          "end_ms": 143930,
+          "last_seen_ms": 142430,
+          "text": "收益从哪里来？",
+          "confidence": 0.9887802345412118,
+          "evidence": [
+            "frames/00226-0142430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 143930,
+          "end_ms": 146180,
+          "last_seen_ms": 145680,
+          "text": "风险最后由谁承担？",
+          "confidence": 0.9902713828616672,
+          "evidence": [
+            "frames/00227-0143930.jpg",
+            "frames/00228-0145680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 146180,
+          "end_ms": 149430,
+          "last_seen_ms": 148930,
+          "text": "金融再复杂也绕不开这四个问题",
+          "confidence": 0.9951629255499158,
+          "evidence": [
+            "frames/00229-0146180.jpg",
+            "frames/00230-0148680.jpg",
+            "frames/00231-0148930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 149430,
+          "end_ms": 150680,
+          "last_seen_ms": 149680,
+          "text": "为了容易理解",
+          "confidence": 0.9973512689272562,
+          "evidence": [
+            "frames/00232-0149430.jpg",
+            "frames/00233-0149680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 150680,
+          "end_ms": 152680,
+          "last_seen_ms": 150680,
+          "text": "我们先把金融工具分成两大块",
+          "confidence": 0.9918802334712102,
+          "evidence": [
+            "frames/00234-0150680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 152680,
+          "end_ms": 155930,
+          "last_seen_ms": 152930,
+          "text": "第一块是基础金融产品",
+          "confidence": 0.992047518491745,
+          "evidence": [
+            "frames/00235-0152680.jpg",
+            "frames/00236-0152930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 155930,
+          "end_ms": 156930,
+          "last_seen_ms": 156180,
+          "text": "第二块",
+          "confidence": 0.9981585741043091,
+          "evidence": [
+            "frames/00237-0155930.jpg",
+            "frames/00238-0156180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 156930,
+          "end_ms": 161680,
+          "last_seen_ms": 161180,
+          "text": "是从这些基础产品上继续长出来的衍生工具",
+          "confidence": 0.9770338404036704,
+          "evidence": [
+            "frames/00239-0156930.jpg",
+            "frames/00240-0157180.jpg",
+            "frames/00241-0159680.jpg",
+            "frames/00242-0161180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 161680,
+          "end_ms": 165180,
+          "last_seen_ms": 162180,
+          "text": "基础产品再按你交钱以后拿回来什么",
+          "confidence": 0.9882026761770248,
+          "evidence": [
+            "frames/00243-0161680.jpg",
+            "frames/00244-0162180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 165180,
+          "end_ms": 166430,
+          "last_seen_ms": 165180,
+          "text": "分成三类",
+          "confidence": 0.9932390451431274,
+          "evidence": [
+            "frames/00245-0165180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 166430,
+          "end_ms": 167680,
+          "last_seen_ms": 166680,
+          "text": "直接持有一项资产",
+          "confidence": 0.9925585091114044,
+          "evidence": [
+            "frames/00246-0166430.jpg",
+            "frames/00247-0166680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 167680,
+          "end_ms": 169180,
+          "last_seen_ms": 167680,
+          "text": "把钱借给别人",
+          "confidence": 0.9900532265504202,
+          "evidence": [
+            "frames/00248-0167680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 169180,
+          "end_ms": 172180,
+          "last_seen_ms": 169430,
+          "text": "以及把钱交给专业的人集中管理",
+          "confidence": 0.9954306355544499,
+          "evidence": [
+            "frames/00249-0169180.jpg",
+            "frames/00250-0169430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 172180,
+          "end_ms": 174180,
+          "last_seen_ms": 172430,
+          "text": "这不是唯一的教科书分类",
+          "confidence": 0.9958996393463828,
+          "evidence": [
+            "frames/00251-0172180.jpg",
+            "frames/00252-0172430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 174180,
+          "end_ms": 176930,
+          "last_seen_ms": 175680,
+          "text": "但它最适合普通人先把地图搭起来",
+          "confidence": 0.9813234448432923,
+          "evidence": [
+            "frames/00253-0174180.jpg",
+            "frames/00254-0175430.jpg",
+            "frames/00255-0175680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 177180,
+          "end_ms": 179680,
+          "last_seen_ms": 178430,
+          "text": "第一类直接持有一项资产",
+          "confidence": 0.9905062372034246,
+          "evidence": [
+            "frames/00257-0177180.jpg",
+            "frames/00258-0177430.jpg",
+            "frames/00259-0177680.jpg",
+            "frames/00260-0178180.jpg",
+            "frames/00261-0178430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 179680,
+          "end_ms": 181180,
+          "last_seen_ms": 179680,
+          "text": "最典型的就是股票",
+          "confidence": 0.9936964511871338,
+          "evidence": [
+            "frames/00262-0179680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 181180,
+          "end_ms": 183180,
+          "last_seen_ms": 181180,
+          "text": "你买下一家公司的股票",
+          "confidence": 0.9922841310501098,
+          "evidence": [
+            "frames/00263-0181180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 183180,
+          "end_ms": 185180,
+          "last_seen_ms": 184180,
+          "text": "本质上是成为这家公司的",
+          "confidence": 0.9942999265410684,
+          "evidence": [
+            "frames/00264-0183180.jpg",
+            "frames/00265-0183430.jpg",
+            "frames/00266-0183680.jpg",
+            "frames/00267-0184180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 185180,
+          "end_ms": 186430,
+          "last_seen_ms": 185680,
+          "text": "股东",
+          "confidence": 0.995206207036972,
+          "evidence": [
+            "frames/00268-0185180.jpg",
+            "frames/00269-0185430.jpg",
+            "frames/00270-0185680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 186430,
+          "end_ms": 188930,
+          "last_seen_ms": 186430,
+          "text": "拿到它的一小部分所有权",
+          "confidence": 0.9819438782605258,
+          "evidence": [
+            "frames/00271-0186430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 188930,
+          "end_ms": 190680,
+          "last_seen_ms": 189180,
+          "text": "既然是所有权",
+          "confidence": 0.9886763691902161,
+          "evidence": [
+            "frames/00272-0188930.jpg",
+            "frames/00273-0189180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 190680,
+          "end_ms": 192680,
+          "last_seen_ms": 191180,
+          "text": "买完以后能不能找公司退货？",
+          "confidence": 0.9795284362939688,
+          "evidence": [
+            "frames/00274-0190680.jpg",
+            "frames/00275-0191180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 192680,
+          "end_ms": 193430,
+          "last_seen_ms": 192680,
+          "text": "不能",
+          "confidence": 0.9996307492256165,
+          "evidence": [
+            "frames/00276-0192680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 193430,
+          "end_ms": 194930,
+          "last_seen_ms": 193430,
+          "text": "你退给谁？",
+          "confidence": 0.9867397427558899,
+          "evidence": [
+            "frames/00277-0193430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 194930,
+          "end_ms": 196180,
+          "last_seen_ms": 194930,
+          "text": "退给你自己吗？",
+          "confidence": 0.9935408064297268,
+          "evidence": [
+            "frames/00278-0194930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 196180,
+          "end_ms": 201180,
+          "last_seen_ms": 198180,
+          "text": "你想退出只能在市场里找到下一个愿意接手的人",
+          "confidence": 0.9900379338047721,
+          "evidence": [
+            "frames/00279-0196180.jpg",
+            "frames/00280-0198180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 201180,
+          "end_ms": 203430,
+          "last_seen_ms": 203180,
+          "text": "这就是二级市场上的股票买卖",
+          "confidence": 0.9551057769702032,
+          "evidence": [
+            "frames/00281-0201180.jpg",
+            "frames/00282-0203180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 203430,
+          "end_ms": 205180,
+          "last_seen_ms": 203680,
+          "text": "很多人买股票以后",
+          "confidence": 0.9963965937495232,
+          "evidence": [
+            "frames/00283-0203430.jpg",
+            "frames/00284-0203680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 205180,
+          "end_ms": 207930,
+          "last_seen_ms": 205180,
+          "text": "每天只盯着价格涨没涨",
+          "confidence": 0.9747175335884094,
+          "evidence": [
+            "frames/00285-0205180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 207930,
+          "end_ms": 211430,
+          "last_seen_ms": 207930,
+          "text": "却从来没有研究过公司靠什么挣钱",
+          "confidence": 0.982958455880483,
+          "evidence": [
+            "frames/00286-0207930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 211680,
+          "end_ms": 213180,
+          "last_seen_ms": 212930,
+          "text": "这就像你花钱入股一家餐馆",
+          "confidence": 0.9808032860358556,
+          "evidence": [
+            "frames/00288-0211680.jpg",
+            "frames/00289-0212680.jpg",
+            "frames/00290-0212930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 214430,
+          "end_ms": 215680,
+          "last_seen_ms": 214430,
+          "text": "进门以后不看他有没有客人",
+          "confidence": 0.9969878494739532,
+          "evidence": [
+            "frames/00292-0214430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 215680,
+          "end_ms": 216180,
+          "last_seen_ms": 215930,
+          "text": "三",
+          "confidence": 0.6451886892318726,
+          "evidence": [
+            "frames/00293-0215680.jpg",
+            "frames/00294-0215930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 216180,
+          "end_ms": 216430,
+          "last_seen_ms": 216180,
+          "text": "进门以后不看他有没有客人",
+          "confidence": 0.9967320561408997,
+          "evidence": [
+            "frames/00295-0216180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 216430,
+          "end_ms": 217680,
+          "last_seen_ms": 216930,
+          "text": "菜好不好吃",
+          "confidence": 0.9960584282875061,
+          "evidence": [
+            "frames/00296-0216430.jpg",
+            "frames/00297-0216680.jpg",
+            "frames/00298-0216930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 217680,
+          "end_ms": 219180,
+          "last_seen_ms": 217680,
+          "text": "账上赚不赚钱",
+          "confidence": 0.9882346789042155,
+          "evidence": [
+            "frames/00299-0217680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 219180,
+          "end_ms": 222930,
+          "last_seen_ms": 222180,
+          "text": "只在门口问自己的股份明天能不能卖",
+          "confidence": 0.9930240623652935,
+          "evidence": [
+            "frames/00300-0219180.jpg",
+            "frames/00301-0222180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 222930,
+          "end_ms": 227680,
+          "last_seen_ms": 223180,
+          "text": "真正的所有权思维是先看这家公司有没有生意",
+          "confidence": 0.9927959009841247,
+          "evidence": [
+            "frames/00302-0222930.jpg",
+            "frames/00303-0223180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 227680,
+          "end_ms": 230680,
+          "last_seen_ms": 227680,
+          "text": "能不能持续创造利润和现金流",
+          "confidence": 0.9928256410818833,
+          "evidence": [
+            "frames/00304-0227680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 230680,
+          "end_ms": 231930,
+          "last_seen_ms": 230680,
+          "text": "公司经营得好",
+          "confidence": 0.9886141816775004,
+          "evidence": [
+            "frames/00305-0230680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 231930,
+          "end_ms": 233680,
+          "last_seen_ms": 231930,
+          "text": "可能用利润分红",
+          "confidence": 0.9958971227918353,
+          "evidence": [
+            "frames/00306-0231930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 233680,
+          "end_ms": 235180,
+          "last_seen_ms": 234430,
+          "text": "也可能把钱继续投入",
+          "confidence": 0.9950947496626112,
+          "evidence": [
+            "frames/00307-0233680.jpg",
+            "frames/00308-0234430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 235180,
+          "end_ms": 237430,
+          "last_seen_ms": 236180,
+          "text": "让公司的价值增长",
+          "confidence": 0.9957308694720268,
+          "evidence": [
+            "frames/00309-0235180.jpg",
+            "frames/00310-0235430.jpg",
+            "frames/00311-0235930.jpg",
+            "frames/00312-0236180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 237430,
+          "end_ms": 238180,
+          "last_seen_ms": 237430,
+          "text": "股东的收益不一定来自另一个股东的亏损",
+          "confidence": 0.987805736809969,
+          "evidence": [
+            "frames/00313-0237430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 238180,
+          "end_ms": 241180,
+          "last_seen_ms": 238180,
+          "text": "股东的收益不一定来自",
+          "confidence": 0.9940049171447753,
+          "evidence": [
+            "frames/00314-0238180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 241180,
+          "end_ms": 245180,
+          "last_seen_ms": 241180,
+          "text": "也可能来自公司真正创造出来的利润",
+          "confidence": 0.9951225258409977,
+          "evidence": [
+            "frames/00315-0241180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 245180,
+          "end_ms": 247680,
+          "last_seen_ms": 247180,
+          "text": "现金流和分红",
+          "confidence": 0.9934119582176208,
+          "evidence": [
+            "frames/00316-0245180.jpg",
+            "frames/00317-0246180.jpg",
+            "frames/00318-0247180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 247680,
+          "end_ms": 248680,
+          "last_seen_ms": 247680,
+          "text": "除了股票",
+          "confidence": 0.9962804615497589,
+          "evidence": [
+            "frames/00319-0247680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 248680,
+          "end_ms": 251180,
+          "last_seen_ms": 248680,
+          "text": "我们还会直接持有和交易货币",
+          "confidence": 0.9849300843018752,
+          "evidence": [
+            "frames/00320-0248680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 251180,
+          "end_ms": 254930,
+          "last_seen_ms": 251180,
+          "text": "而两种货币之间的价格就叫汇率",
+          "confidence": 0.9884296187332698,
+          "evidence": [
+            "frames/00321-0251180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 255180,
+          "end_ms": 256930,
+          "last_seen_ms": 255180,
+          "text": "汇率不用想的太复杂",
+          "confidence": 0.9961579574478997,
+          "evidence": [
+            "frames/00323-0255180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 256930,
+          "end_ms": 258180,
+          "last_seen_ms": 256930,
+          "text": "它就是一种钱",
+          "confidence": 0.9776774048805237,
+          "evidence": [
+            "frames/00324-0256930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 258180,
+          "end_ms": 259680,
+          "last_seen_ms": 258180,
+          "text": "用另一种钱来标价",
+          "confidence": 0.9847497418522835,
+          "evidence": [
+            "frames/00325-0258180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 259680,
+          "end_ms": 261430,
+          "last_seen_ms": 259680,
+          "text": "比如你准备出国旅游",
+          "confidence": 0.9928148786226908,
+          "evidence": [
+            "frames/00326-0259680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 261430,
+          "end_ms": 263680,
+          "last_seen_ms": 261680,
+          "text": "需要拿人民币换美元",
+          "confidence": 0.9955132338735793,
+          "evidence": [
+            "frames/00327-0261430.jpg",
+            "frames/00328-0261680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 263680,
+          "end_ms": 267680,
+          "last_seen_ms": 267180,
+          "text": "进口商去海外买货也需要换美元",
+          "confidence": 0.9955779782363346,
+          "evidence": [
+            "frames/00329-0263680.jpg",
+            "frames/00330-0265180.jpg",
+            "frames/00331-0267180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 267680,
+          "end_ms": 269180,
+          "last_seen_ms": 268930,
+          "text": "当需要美元的人突然变多",
+          "confidence": 0.9935645623640581,
+          "evidence": [
+            "frames/00332-0267680.jpg",
+            "frames/00333-0267930.jpg",
+            "frames/00334-0268180.jpg",
+            "frames/00335-0268430.jpg",
+            "frames/00336-0268680.jpg",
+            "frames/00337-0268930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 269180,
+          "end_ms": 269680,
+          "last_seen_ms": 269180,
+          "text": "00000",
+          "confidence": 0.6828347563743591,
+          "evidence": [
+            "frames/00338-0269180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 269680,
+          "end_ms": 272180,
+          "last_seen_ms": 269680,
+          "text": "大家都拿人民币去换美元",
+          "confidence": 0.9937018210237677,
+          "evidence": [
+            "frames/00339-0269680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 272180,
+          "end_ms": 275180,
+          "last_seen_ms": 272180,
+          "text": "相对人民币的价格就可能上涨",
+          "confidence": 0.9880464856441205,
+          "evidence": [
+            "frames/00340-0272180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 275180,
+          "end_ms": 278430,
+          "last_seen_ms": 276430,
+          "text": "反过来外国企业要购买中国商品",
+          "confidence": 0.9965355055672782,
+          "evidence": [
+            "frames/00341-0275180.jpg",
+            "frames/00342-0276430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 278430,
+          "end_ms": 280680,
+          "last_seen_ms": 279180,
+          "text": "海外资金想进入中国市场",
+          "confidence": 0.992922387339852,
+          "evidence": [
+            "frames/00343-0278430.jpg",
+            "frames/00344-0279180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 280680,
+          "end_ms": 284180,
+          "last_seen_ms": 280680,
+          "text": "就需要先把手里的钱换成人民币",
+          "confidence": 0.9902413019112178,
+          "evidence": [
+            "frames/00345-0280680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 284180,
+          "end_ms": 285930,
+          "last_seen_ms": 284430,
+          "text": "人民币的需求增加",
+          "confidence": 0.9917385429143906,
+          "evidence": [
+            "frames/00346-0284180.jpg",
+            "frames/00347-0284430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 285930,
+          "end_ms": 287430,
+          "last_seen_ms": 286180,
+          "text": "它就可能相对升值",
+          "confidence": 0.9921987056732178,
+          "evidence": [
+            "frames/00348-0285930.jpg",
+            "frames/00349-0286180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 287430,
+          "end_ms": 289430,
+          "last_seen_ms": 287430,
+          "text": "所以汇率每天变化",
+          "confidence": 0.9818562492728233,
+          "evidence": [
+            "frames/00350-0287430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 289430,
+          "end_ms": 291680,
+          "last_seen_ms": 289430,
+          "text": "本质上是在回答一个问题",
+          "confidence": 0.9920845031738281,
+          "evidence": [
+            "frames/00351-0289430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 291680,
+          "end_ms": 295680,
+          "last_seen_ms": 295430,
+          "text": "此时此刻大家更愿意持有哪一种货币？",
+          "confidence": 0.9859544249141917,
+          "evidence": [
+            "frames/00352-0291680.jpg",
+            "frames/00353-0291930.jpg",
+            "frames/00354-0293180.jpg",
+            "frames/00355-0295180.jpg",
+            "frames/00356-0295430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 296430,
+          "end_ms": 301180,
+          "last_seen_ms": 300930,
+          "text": "汇率也不是大家在市场里随便叫价就",
+          "confidence": 0.9903859533369541,
+          "evidence": [
+            "frames/00360-0296430.jpg",
+            "frames/00361-0296680.jpg",
+            "frames/00362-0296930.jpg",
+            "frames/00363-0297180.jpg",
+            "frames/00364-0297430.jpg",
+            "frames/00365-0297680.jpg",
+            "frames/00366-0297930.jpg",
+            "frames/00367-0298180.jpg",
+            "frames/00368-0298430.jpg",
+            "frames/00369-0298680.jpg",
+            "frames/00370-0298930.jpg",
+            "frames/00371-0299180.jpg",
+            "frames/00372-0299430.jpg",
+            "frames/00373-0299680.jpg",
+            "frames/00374-0299930.jpg",
+            "frames/00375-0300180.jpg",
+            "frames/00376-0300430.jpg",
+            "frames/00377-0300680.jpg",
+            "frames/00378-0300930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 301180,
+          "end_ms": 305180,
+          "last_seen_ms": 304930,
+          "text": "因为它背后连着一家企业的进口成本",
+          "confidence": 0.9895543100933234,
+          "evidence": [
+            "frames/00379-0301180.jpg",
+            "frames/00380-0301430.jpg",
+            "frames/00381-0301680.jpg",
+            "frames/00382-0301930.jpg",
+            "frames/00383-0302180.jpg",
+            "frames/00384-0302430.jpg",
+            "frames/00385-0302680.jpg",
+            "frames/00386-0302930.jpg",
+            "frames/00387-0303180.jpg",
+            "frames/00388-0303430.jpg",
+            "frames/00389-0303680.jpg",
+            "frames/00390-0303930.jpg",
+            "frames/00391-0304180.jpg",
+            "frames/00392-0304430.jpg",
+            "frames/00393-0304680.jpg",
+            "frames/00394-0304930.jpg"
+          ],
+          "recognition_variants": 2
+        },
+        {
+          "start_ms": 305180,
+          "end_ms": 305930,
+          "last_seen_ms": 305680,
+          "text": "个国家的进出",
+          "confidence": 0.9974362949530283,
+          "evidence": [
+            "frames/00395-0305180.jpg",
+            "frames/00396-0305430.jpg",
+            "frames/00397-0305680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 305930,
+          "end_ms": 307180,
+          "last_seen_ms": 306930,
+          "text": "国家的进出口",
+          "confidence": 0.9986411597993637,
+          "evidence": [
+            "frames/00398-0305930.jpg",
+            "frames/00399-0306180.jpg",
+            "frames/00400-0306430.jpg",
+            "frames/00401-0306680.jpg",
+            "frames/00402-0306930.jpg"
+          ],
+          "recognition_variants": 2
+        },
+        {
+          "start_ms": 307180,
+          "end_ms": 308430,
+          "last_seen_ms": 308180,
+          "text": "跨境资金流动",
+          "confidence": 0.989652415116628,
+          "evidence": [
+            "frames/00403-0307180.jpg",
+            "frames/00404-0307430.jpg",
+            "frames/00405-0307680.jpg",
+            "frames/00406-0307930.jpg",
+            "frames/00407-0308180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 308430,
+          "end_ms": 310180,
+          "last_seen_ms": 309930,
+          "text": "甚至金融市场的稳定",
+          "confidence": 0.9926939076847502,
+          "evidence": [
+            "frames/00408-0308430.jpg",
+            "frames/00409-0308680.jpg",
+            "frames/00410-0308930.jpg",
+            "frames/00411-0309180.jpg",
+            "frames/00412-0309430.jpg",
+            "frames/00413-0309680.jpg",
+            "frames/00414-0309930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 310180,
+          "end_ms": 311180,
+          "last_seen_ms": 310930,
+          "text": "你可以想象一下",
+          "confidence": 0.9975687265396118,
+          "evidence": [
+            "frames/00415-0310180.jpg",
+            "frames/00416-0310430.jpg",
+            "frames/00417-0310680.jpg",
+            "frames/00418-0310930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 311180,
+          "end_ms": 312930,
+          "last_seen_ms": 312680,
+          "text": "如果没有任何管理",
+          "confidence": 0.976604200899601,
+          "evidence": [
+            "frames/00419-0311180.jpg",
+            "frames/00420-0311430.jpg",
+            "frames/00421-0311680.jpg",
+            "frames/00422-0311930.jpg",
+            "frames/00423-0312180.jpg",
+            "frames/00424-0312430.jpg",
+            "frames/00425-0312680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 312930,
+          "end_ms": 314180,
+          "last_seen_ms": 313930,
+          "text": "市场一恐慌",
+          "confidence": 0.8857207685709,
+          "evidence": [
+            "frames/00426-0312930.jpg",
+            "frames/00427-0313180.jpg",
+            "frames/00428-0313430.jpg",
+            "frames/00429-0313680.jpg",
+            "frames/00430-0313930.jpg"
+          ],
+          "recognition_variants": 2
+        },
+        {
+          "start_ms": 314180,
+          "end_ms": 317180,
+          "last_seen_ms": 316930,
+          "text": "所有人同时把大量人民币换成美元",
+          "confidence": 0.98050430615743,
+          "evidence": [
+            "frames/00431-0314180.jpg",
+            "frames/00432-0314430.jpg",
+            "frames/00433-0314680.jpg",
+            "frames/00434-0314930.jpg",
+            "frames/00435-0315180.jpg",
+            "frames/00436-0315430.jpg",
+            "frames/00437-0315680.jpg",
+            "frames/00438-0315930.jpg",
+            "frames/00439-0316180.jpg",
+            "frames/00440-0316430.jpg",
+            "frames/00441-0316680.jpg",
+            "frames/00442-0316930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 317430,
+          "end_ms": 319680,
+          "last_seen_ms": 319430,
+          "text": "汇率就可能剧烈波动",
+          "confidence": 0.9847335815429688,
+          "evidence": [
+            "frames/00444-0317430.jpg",
+            "frames/00445-0317680.jpg",
+            "frames/00446-0317930.jpg",
+            "frames/00447-0318180.jpg",
+            "frames/00448-0318430.jpg",
+            "frames/00449-0318680.jpg",
+            "frames/00450-0318930.jpg",
+            "frames/00451-0319180.jpg",
+            "frames/00452-0319430.jpg"
+          ],
+          "recognition_variants": 2
+        },
+        {
+          "start_ms": 319680,
+          "end_ms": 320180,
+          "last_seen_ms": 319930,
+          "text": "今天冲到天上",
+          "confidence": 0.9911002417405447,
+          "evidence": [
+            "frames/00453-0319680.jpg",
+            "frames/00454-0319930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 320180,
+          "end_ms": 320430,
+          "last_seen_ms": 320180,
+          "text": "今天冲到关止",
+          "confidence": 0.887597014506658,
+          "evidence": [
+            "frames/00455-0320180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 320430,
+          "end_ms": 321180,
+          "last_seen_ms": 320930,
+          "text": "今天冲到天上",
+          "confidence": 0.8500291506449381,
+          "evidence": [
+            "frames/00456-0320430.jpg",
+            "frames/00457-0320680.jpg",
+            "frames/00458-0320930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 321180,
+          "end_ms": 322680,
+          "last_seen_ms": 322430,
+          "text": "明天又掉到地板",
+          "confidence": 0.9598915066037859,
+          "evidence": [
+            "frames/00459-0321180.jpg",
+            "frames/00460-0321430.jpg",
+            "frames/00461-0321680.jpg",
+            "frames/00462-0321930.jpg",
+            "frames/00463-0322180.jpg",
+            "frames/00464-0322430.jpg"
+          ],
+          "recognition_variants": 2
+        },
+        {
+          "start_ms": 322680,
+          "end_ms": 324930,
+          "last_seen_ms": 324680,
+          "text": "外资不敢轻易进来",
+          "confidence": 0.9953400567173958,
+          "evidence": [
+            "frames/00465-0322680.jpg",
+            "frames/00466-0322930.jpg",
+            "frames/00467-0323180.jpg",
+            "frames/00468-0323430.jpg",
+            "frames/00469-0323680.jpg",
+            "frames/00470-0323930.jpg",
+            "frames/00471-0324180.jpg",
+            "frames/00472-0324430.jpg",
+            "frames/00473-0324680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 324930,
+          "end_ms": 329180,
+          "last_seen_ms": 328930,
+          "text": "国内企业做跨境生意也很难判断",
+          "confidence": 0.962497877223151,
+          "evidence": [
+            "frames/00474-0324930.jpg",
+            "frames/00475-0325180.jpg",
+            "frames/00476-0325430.jpg",
+            "frames/00477-0325680.jpg",
+            "frames/00478-0325930.jpg",
+            "frames/00479-0326180.jpg",
+            "frames/00480-0326430.jpg",
+            "frames/00481-0326680.jpg",
+            "frames/00482-0326930.jpg",
+            "frames/00483-0327180.jpg",
+            "frames/00484-0327430.jpg",
+            "frames/00485-0327680.jpg",
+            "frames/00486-0327930.jpg",
+            "frames/00487-0328180.jpg",
+            "frames/00488-0328430.jpg",
+            "frames/00489-0328680.jpg",
+            "frames/00490-0328930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 329180,
+          "end_ms": 332930,
+          "last_seen_ms": 329430,
+          "text": "所以人民币汇率既会受到市场供求",
+          "confidence": 0.9822484215100606,
+          "evidence": [
+            "frames/00491-0329180.jpg",
+            "frames/00492-0329430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 332930,
+          "end_ms": 334680,
+          "last_seen_ms": 334430,
+          "text": "也实行有管理的浮动",
+          "confidence": 0.9965005384551154,
+          "evidence": [
+            "frames/00493-0332930.jpg",
+            "frames/00494-0333180.jpg",
+            "frames/00495-0333430.jpg",
+            "frames/00496-0333680.jpg",
+            "frames/00497-0333930.jpg",
+            "frames/00498-0334180.jpg",
+            "frames/00499-0334430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 334680,
+          "end_ms": 340680,
+          "last_seen_ms": 336680,
+          "text": "我们平时最常接触的个人便利化购汇度是每人每年等值5万美元",
+          "confidence": 0.9924789636563032,
+          "evidence": [
+            "frames/00500-0334680.jpg",
+            "frames/00501-0334930.jpg",
+            "frames/00502-0336430.jpg",
+            "frames/00503-0336680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 341430,
+          "end_ms": 343930,
+          "last_seen_ms": 341430,
+          "text": "如果确实有留学等真实用途",
+          "confidence": 0.9947698762019476,
+          "evidence": [
+            "frames/00505-0341430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 343930,
+          "end_ms": 347430,
+          "last_seen_ms": 343930,
+          "text": "超过便利化度还可以按要求提供材料",
+          "confidence": 0.991600826382637,
+          "evidence": [
+            "frames/00506-0343930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 347430,
+          "end_ms": 351430,
+          "last_seen_ms": 348180,
+          "text": "并不是超过这个数就永远换不了",
+          "confidence": 0.9963640059743609,
+          "evidence": [
+            "frames/00507-0347430.jpg",
+            "frames/00508-0347680.jpg",
+            "frames/00509-0347930.jpg",
+            "frames/00510-0348180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 351430,
+          "end_ms": 354930,
+          "last_seen_ms": 351430,
+          "text": "普通人看到的是一美元能换多少人民",
+          "confidence": 0.99532026425004,
+          "evidence": [
+            "frames/00511-0351430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 354930,
+          "end_ms": 357930,
+          "last_seen_ms": 355180,
+          "text": "企业看到的是成本和利润",
+          "confidence": 0.9951264045455239,
+          "evidence": [
+            "frames/00512-0354930.jpg",
+            "frames/00513-0355180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 357930,
+          "end_ms": 361430,
+          "last_seen_ms": 358180,
+          "text": "国家看到的是资金流动和金融稳定",
+          "confidence": 0.9919940948486328,
+          "evidence": [
+            "frames/00514-0357930.jpg",
+            "frames/00515-0358180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 361680,
+          "end_ms": 362680,
+          "last_seen_ms": 361680,
+          "text": "一句话理解",
+          "confidence": 0.9962831258773803,
+          "evidence": [
+            "frames/00517-0361680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 362680,
+          "end_ms": 368180,
+          "last_seen_ms": 362680,
+          "text": "汇率就是两种货币在不断交换中重新给对方标出的价格",
+          "confidence": 0.9889114281960896,
+          "evidence": [
+            "frames/00518-0362680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 368180,
+          "end_ms": 371180,
+          "last_seen_ms": 369930,
+          "text": "还有一类是商品现货",
+          "confidence": 0.9946521917978922,
+          "evidence": [
+            "frames/00519-0368180.jpg",
+            "frames/00520-0368430.jpg",
+            "frames/00521-0368930.jpg",
+            "frames/00522-0369930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 371180,
+          "end_ms": 373680,
+          "last_seen_ms": 371680,
+          "text": "这里说的不是你去菜市场买颗白菜",
+          "confidence": 0.9918771862983705,
+          "evidence": [
+            "frames/00523-0371180.jpg",
+            "frames/00524-0371430.jpg",
+            "frames/00525-0371680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 373680,
+          "end_ms": 377430,
+          "last_seen_ms": 373680,
+          "text": "重点是能够被标准化大规模交易的大宗",
+          "confidence": 0.9915538921075708,
+          "evidence": [
+            "frames/00526-0373680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 377430,
+          "end_ms": 378430,
+          "last_seen_ms": 377430,
+          "text": "比如原油",
+          "confidence": 0.9988524317741394,
+          "evidence": [
+            "frames/00527-0377430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 378430,
+          "end_ms": 379680,
+          "last_seen_ms": 378430,
+          "text": "天然气黄金",
+          "confidence": 0.9960654377937317,
+          "evidence": [
+            "frames/00528-0378430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 379680,
+          "end_ms": 380930,
+          "last_seen_ms": 379680,
+          "text": "白银铜铝",
+          "confidence": 0.9973670989274979,
+          "evidence": [
+            "frames/00529-0379680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 380930,
+          "end_ms": 382180,
+          "last_seen_ms": 380930,
+          "text": "小麦玉米",
+          "confidence": 0.9976746737957001,
+          "evidence": [
+            "frames/00530-0380930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 382180,
+          "end_ms": 384180,
+          "last_seen_ms": 383180,
+          "text": "大豆白糖和咖啡",
+          "confidence": 0.9973365409033639,
+          "evidence": [
+            "frames/00531-0382180.jpg",
+            "frames/00532-0383180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 384180,
+          "end_ms": 385680,
+          "last_seen_ms": 384430,
+          "text": "所谓现货",
+          "confidence": 0.9906286895275116,
+          "evidence": [
+            "frames/00533-0384180.jpg",
+            "frames/00534-0384430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 385680,
+          "end_ms": 387680,
+          "last_seen_ms": 385680,
+          "text": "就是你买的是东西本身",
+          "confidence": 0.9956866562366485,
+          "evidence": [
+            "frames/00535-0385680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 387680,
+          "end_ms": 390930,
+          "last_seen_ms": 389430,
+          "text": "成交以后现在或者很快就完成交付",
+          "confidence": 0.9904462178548177,
+          "evidence": [
+            "frames/00536-0387680.jpg",
+            "frames/00537-0389430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 390930,
+          "end_ms": 393180,
+          "last_seen_ms": 390930,
+          "text": "它的价格主要受到用途",
+          "confidence": 0.9897055625915527,
+          "evidence": [
+            "frames/00538-0390930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 393180,
+          "end_ms": 394430,
+          "last_seen_ms": 393180,
+          "text": "稀缺程度",
+          "confidence": 0.9987286180257797,
+          "evidence": [
+            "frames/00539-0393180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 394430,
+          "end_ms": 397180,
+          "last_seen_ms": 395930,
+          "text": "供求关系和运输库存影响",
+          "confidence": 0.9950625246221368,
+          "evidence": [
+            "frames/00540-0394430.jpg",
+            "frames/00541-0395930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 397180,
+          "end_ms": 398680,
+          "last_seen_ms": 398430,
+          "text": "比如天气异常",
+          "confidence": 0.99742192029953,
+          "evidence": [
+            "frames/00542-0397180.jpg",
+            "frames/00543-0397430.jpg",
+            "frames/00544-0397680.jpg",
+            "frames/00545-0397930.jpg",
+            "frames/00546-0398180.jpg",
+            "frames/00547-0398430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 398680,
+          "end_ms": 399930,
+          "last_seen_ms": 399680,
+          "text": "咖啡豆减产",
+          "confidence": 0.9970871329307556,
+          "evidence": [
+            "frames/00548-0398680.jpg",
+            "frames/00549-0398930.jpg",
+            "frames/00550-0399180.jpg",
+            "frames/00551-0399430.jpg",
+            "frames/00552-0399680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 399930,
+          "end_ms": 401180,
+          "last_seen_ms": 400180,
+          "text": "供应变少",
+          "confidence": 0.9948793947696686,
+          "evidence": [
+            "frames/00553-0399930.jpg",
+            "frames/00554-0400180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 401180,
+          "end_ms": 402930,
+          "last_seen_ms": 401180,
+          "text": "价格就可能上涨",
+          "confidence": 0.9938527430806842,
+          "evidence": [
+            "frames/00555-0401180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 402930,
+          "end_ms": 404680,
+          "last_seen_ms": 402930,
+          "text": "产油国增加产量",
+          "confidence": 0.995815668787275,
+          "evidence": [
+            "frames/00556-0402930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 404680,
+          "end_ms": 406180,
+          "last_seen_ms": 404680,
+          "text": "市场上的原油变多",
+          "confidence": 0.9941411167383194,
+          "evidence": [
+            "frames/00557-0404680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 406180,
+          "end_ms": 407430,
+          "last_seen_ms": 406180,
+          "text": "价格就可能承压",
+          "confidence": 0.9949305142675128,
+          "evidence": [
+            "frames/00558-0406180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 407430,
+          "end_ms": 408930,
+          "last_seen_ms": 407430,
+          "text": "你会发现股票",
+          "confidence": 0.9964143534501394,
+          "evidence": [
+            "frames/00559-0407430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 408930,
+          "end_ms": 411930,
+          "last_seen_ms": 409930,
+          "text": "外汇和大宗商品看起来完全不同",
+          "confidence": 0.9925504965441567,
+          "evidence": [
+            "frames/00560-0408930.jpg",
+            "frames/00561-0409930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 411930,
+          "end_ms": 413680,
+          "last_seen_ms": 411930,
+          "text": "但它们都有一个共同点",
+          "confidence": 0.9813447833061218,
+          "evidence": [
+            "frames/00562-0411930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 413680,
+          "end_ms": 417680,
+          "last_seen_ms": 416930,
+          "text": "你直接持有的是一项资产本身",
+          "confidence": 0.9894634255996118,
+          "evidence": [
+            "frames/00563-0413680.jpg",
+            "frames/00564-0416930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 417680,
+          "end_ms": 420430,
+          "last_seen_ms": 417930,
+          "text": "第二类是把钱借给别人",
+          "confidence": 0.9883435666561127,
+          "evidence": [
+            "frames/00565-0417680.jpg",
+            "frames/00566-0417930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 420430,
+          "end_ms": 421430,
+          "last_seen_ms": 420430,
+          "text": "朋友找你借钱",
+          "confidence": 0.9851667284965515,
+          "evidence": [
+            "frames/00567-0420430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 421430,
+          "end_ms": 423680,
+          "last_seen_ms": 421430,
+          "text": "可能写张借条就够了",
+          "confidence": 0.9974566366937425,
+          "evidence": [
+            "frames/00568-0421430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 423680,
+          "end_ms": 426680,
+          "last_seen_ms": 426430,
+          "text": "可借钱的主体变成国家或者公司",
+          "confidence": 0.9921101672308785,
+          "evidence": [
+            "frames/00569-0423680.jpg",
+            "frames/00570-0423930.jpg",
+            "frames/00571-0425930.jpg",
+            "frames/00572-0426180.jpg",
+            "frames/00573-0426430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 426680,
+          "end_ms": 429430,
+          "last_seen_ms": 427180,
+          "text": "就需要更标准的债务凭证",
+          "confidence": 0.9918095144358549,
+          "evidence": [
+            "frames/00574-0426680.jpg",
+            "frames/00575-0426930.jpg",
+            "frames/00576-0427180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 429430,
+          "end_ms": 430930,
+          "last_seen_ms": 429430,
+          "text": "这就是债券",
+          "confidence": 0.9655135631561279,
+          "evidence": [
+            "frames/00577-0429430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 430930,
+          "end_ms": 432680,
+          "last_seen_ms": 430930,
+          "text": "国家发行的叫国债",
+          "confidence": 0.9952588304877281,
+          "evidence": [
+            "frames/00578-0430930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 432680,
+          "end_ms": 435680,
+          "last_seen_ms": 433930,
+          "text": "公司发行的叫公司债或者企业债",
+          "confidence": 0.9915586199079242,
+          "evidence": [
+            "frames/00579-0432680.jpg",
+            "frames/00580-0433930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 435680,
+          "end_ms": 438680,
+          "last_seen_ms": 437930,
+          "text": "你买债券不是入股这家公司",
+          "confidence": 0.9867091178894043,
+          "evidence": [
+            "frames/00581-0435680.jpg",
+            "frames/00582-0437930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 438680,
+          "end_ms": 440680,
+          "last_seen_ms": 438680,
+          "text": "你是把钱借给他",
+          "confidence": 0.9940038323402405,
+          "evidence": [
+            "frames/00583-0438680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 440680,
+          "end_ms": 442180,
+          "last_seen_ms": 440680,
+          "text": "他按约定付利息",
+          "confidence": 0.9870568258421761,
+          "evidence": [
+            "frames/00584-0440680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 442180,
+          "end_ms": 443930,
+          "last_seen_ms": 442180,
+          "text": "到期再还本金",
+          "confidence": 0.995259682337443,
+          "evidence": [
+            "frames/00585-0442180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 444180,
+          "end_ms": 449680,
+          "last_seen_ms": 444930,
+          "text": "如果一个信用较弱的公司给出的收益还比信用更强的债券低",
+          "confidence": 0.9803161408752205,
+          "evidence": [
+            "frames/00587-0444180.jpg",
+            "frames/00588-0444680.jpg",
+            "frames/00589-0444930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 449680,
+          "end_ms": 451930,
+          "last_seen_ms": 449680,
+          "text": "投资人为什么要把钱借给他？",
+          "confidence": 0.9902767630723807,
+          "evidence": [
+            "frames/00590-0449680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 451930,
+          "end_ms": 457430,
+          "last_seen_ms": 452180,
+          "text": "所以很多借款人必须给出更高的收益",
+          "confidence": 0.9925563707947731,
+          "evidence": [
+            "frames/00591-0451930.jpg",
+            "frames/00592-0452180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 457430,
+          "end_ms": 459680,
+          "last_seen_ms": 458930,
+          "text": "这也是为什么看到高收益时",
+          "confidence": 0.9950482845306396,
+          "evidence": [
+            "frames/00593-0457430.jpg",
+            "frames/00594-0458930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 459680,
+          "end_ms": 461180,
+          "last_seen_ms": 459680,
+          "text": "先别急着高兴",
+          "confidence": 0.995418518781662,
+          "evidence": [
+            "frames/00595-0459680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 461180,
+          "end_ms": 462430,
+          "last_seen_ms": 461180,
+          "text": "多出来的收益",
+          "confidence": 0.9972892502943674,
+          "evidence": [
+            "frames/00596-0461180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 462430,
+          "end_ms": 466430,
+          "last_seen_ms": 465930,
+          "text": "很可能就是别人请你承担风险的价格",
+          "confidence": 0.992900263518095,
+          "evidence": [
+            "frames/00597-0462430.jpg",
+            "frames/00598-0465930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 466430,
+          "end_ms": 469680,
+          "last_seen_ms": 466680,
+          "text": "债券买完以后也不代表价格永远不变",
+          "confidence": 0.9819496795535088,
+          "evidence": [
+            "frames/00599-0466430.jpg",
+            "frames/00600-0466680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 469680,
+          "end_ms": 471430,
+          "last_seen_ms": 469680,
+          "text": "举个简单的例子",
+          "confidence": 0.9952344979558673,
+          "evidence": [
+            "frames/00601-0469680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 471430,
+          "end_ms": 475180,
+          "last_seen_ms": 474680,
+          "text": "你手里的旧债券每年给4块利息",
+          "confidence": 0.9787993090493339,
+          "evidence": [
+            "frames/00602-0471430.jpg",
+            "frames/00603-0472930.jpg",
+            "frames/00604-0473430.jpg",
+            "frames/00605-0473680.jpg",
+            "frames/00606-0473930.jpg",
+            "frames/00607-0474180.jpg",
+            "frames/00608-0474430.jpg",
+            "frames/00609-0474680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 475180,
+          "end_ms": 478930,
+          "last_seen_ms": 478680,
+          "text": "后来市场上新发行的债券每年能给6",
+          "confidence": 0.9728207997977734,
+          "evidence": [
+            "frames/00610-0475180.jpg",
+            "frames/00611-0478180.jpg",
+            "frames/00612-0478680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 478930,
+          "end_ms": 481180,
+          "last_seen_ms": 480680,
+          "text": "别人自然更愿意买新的",
+          "confidence": 0.9943740367889404,
+          "evidence": [
+            "frames/00613-0478930.jpg",
+            "frames/00614-0479180.jpg",
+            "frames/00615-0479430.jpg",
+            "frames/00616-0479680.jpg",
+            "frames/00617-0479930.jpg",
+            "frames/00618-0480430.jpg",
+            "frames/00619-0480680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 481180,
+          "end_ms": 482930,
+          "last_seen_ms": 482430,
+          "text": "你的旧债券想卖出去",
+          "confidence": 0.9852276311980354,
+          "evidence": [
+            "frames/00620-0481180.jpg",
+            "frames/00621-0481430.jpg",
+            "frames/00622-0481680.jpg",
+            "frames/00623-0481930.jpg",
+            "frames/00624-0482180.jpg",
+            "frames/00625-0482430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 482930,
+          "end_ms": 485430,
+          "last_seen_ms": 484930,
+          "text": "价格往往就得便宜一点",
+          "confidence": 0.9728431761264802,
+          "evidence": [
+            "frames/00626-0482930.jpg",
+            "frames/00627-0483180.jpg",
+            "frames/00628-0483430.jpg",
+            "frames/00629-0483680.jpg",
+            "frames/00630-0483930.jpg",
+            "frames/00631-0484180.jpg",
+            "frames/00632-0484430.jpg",
+            "frames/00633-0484680.jpg",
+            "frames/00634-0484930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 485430,
+          "end_ms": 487180,
+          "last_seen_ms": 486930,
+          "text": "所以市场利率上升时",
+          "confidence": 0.997622529665629,
+          "evidence": [
+            "frames/00635-0485430.jpg",
+            "frames/00636-0485680.jpg",
+            "frames/00637-0485930.jpg",
+            "frames/00638-0486180.jpg",
+            "frames/00639-0486430.jpg",
+            "frames/00640-0486680.jpg",
+            "frames/00641-0486930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 487180,
+          "end_ms": 490180,
+          "last_seen_ms": 488680,
+          "text": "固定利率债券的价格通常会下跌",
+          "confidence": 0.9752274921962194,
+          "evidence": [
+            "frames/00642-0487180.jpg",
+            "frames/00643-0487430.jpg",
+            "frames/00644-0487930.jpg",
+            "frames/00645-0488180.jpg",
+            "frames/00646-0488680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 490680,
+          "end_ms": 491680,
+          "last_seen_ms": 490680,
+          "text": "市场利率下降时",
+          "confidence": 0.9940729737281799,
+          "evidence": [
+            "frames/00648-0490680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 491680,
+          "end_ms": 494430,
+          "last_seen_ms": 493930,
+          "text": "旧债券反而可能更值钱",
+          "confidence": 0.979884099960327,
+          "evidence": [
+            "frames/00649-0491680.jpg",
+            "frames/00650-0493680.jpg",
+            "frames/00651-0493930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 494430,
+          "end_ms": 499180,
+          "last_seen_ms": 494680,
+          "text": "银行存款从关系上看也是一种债权",
+          "confidence": 0.9918197671572367,
+          "evidence": [
+            "frames/00652-0494430.jpg",
+            "frames/00653-0494680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 499180,
+          "end_ms": 500680,
+          "last_seen_ms": 499180,
+          "text": "你把钱存进银行",
+          "confidence": 0.9926947014672416,
+          "evidence": [
+            "frames/00654-0499180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 500680,
+          "end_ms": 502180,
+          "last_seen_ms": 500680,
+          "text": "银行使用这笔资金",
+          "confidence": 0.9900194182991982,
+          "evidence": [
+            "frames/00655-0500680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 502180,
+          "end_ms": 504680,
+          "last_seen_ms": 502180,
+          "text": "并对你承担相应的偿付义务",
+          "confidence": 0.9957849681377411,
+          "evidence": [
+            "frames/00656-0502180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 504680,
+          "end_ms": 506680,
+          "last_seen_ms": 505180,
+          "text": "借钱的人，准备靠什么还？所以研究所有债权产品",
+          "confidence": 0.9936101838946344,
+          "evidence": [
+            "frames/00657-0504680.jpg",
+            "frames/00658-0504930.jpg",
+            "frames/00659-0505180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 506680,
+          "end_ms": 508930,
+          "last_seen_ms": 506680,
+          "text": "借钱的人，准备靠什么还？最后只盯一个问题",
+          "confidence": 0.9845285514990489,
+          "evidence": [
+            "frames/00660-0506680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 508930,
+          "end_ms": 511180,
+          "last_seen_ms": 508930,
+          "text": "借钱的人，准备靠什么还？借钱的人准备靠什么还你？",
+          "confidence": 0.9917618632316589,
+          "evidence": [
+            "frames/00661-0508930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 511180,
+          "end_ms": 511430,
+          "last_seen_ms": 511180,
+          "text": "借钱的人准备靠什么还你？",
+          "confidence": 0.9947168181339899,
+          "evidence": [
+            "frames/00662-0511180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 511430,
+          "end_ms": 514680,
+          "last_seen_ms": 511430,
+          "text": "第三类是把钱交给专业的人集中管理",
+          "confidence": 0.9935738854110241,
+          "evidence": [
+            "frames/00663-0511430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 514680,
+          "end_ms": 516930,
+          "last_seen_ms": 514930,
+          "text": "最常见的就是基金",
+          "confidence": 0.993465282022953,
+          "evidence": [
+            "frames/00664-0514680.jpg",
+            "frames/00665-0514930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 516930,
+          "end_ms": 521430,
+          "last_seen_ms": 516930,
+          "text": "基金用大白话讲就是很多人把钱放进",
+          "confidence": 0.9698686189949512,
+          "evidence": [
+            "frames/00666-0516930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 521430,
+          "end_ms": 524930,
+          "last_seen_ms": 521680,
+          "text": "再由基金管理人按照合同去买股票",
+          "confidence": 0.9905962268511455,
+          "evidence": [
+            "frames/00667-0521430.jpg",
+            "frames/00668-0521680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 524930,
+          "end_ms": 527180,
+          "last_seen_ms": 524930,
+          "text": "债券或者其他资产",
+          "confidence": 0.976387619972229,
+          "evidence": [
+            "frames/00669-0524930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 527180,
+          "end_ms": 531430,
+          "last_seen_ms": 528680,
+          "text": "你买到的是基金份底层资产上涨",
+          "confidence": 0.9884830372674124,
+          "evidence": [
+            "frames/00670-0527180.jpg",
+            "frames/00671-0527430.jpg",
+            "frames/00672-0528680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 531430,
+          "end_ms": 533180,
+          "last_seen_ms": 531430,
+          "text": "扣除相关费用后",
+          "confidence": 0.9924953494753156,
+          "evidence": [
+            "frames/00673-0531430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 533180,
+          "end_ms": 535430,
+          "last_seen_ms": 533180,
+          "text": "基金净值可能上涨",
+          "confidence": 0.9955025017261505,
+          "evidence": [
+            "frames/00674-0533180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 535430,
+          "end_ms": 538430,
+          "last_seen_ms": 535680,
+          "text": "底层资产下跌亏损也由持有人承担",
+          "confidence": 0.9924689491589864,
+          "evidence": [
+            "frames/00675-0535430.jpg",
+            "frames/00676-0535680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 538430,
+          "end_ms": 542680,
+          "last_seen_ms": 538930,
+          "text": "有人替你管理和有人替你保本",
+          "confidence": 0.9943826565375695,
+          "evidence": [
+            "frames/00677-0538430.jpg",
+            "frames/00678-0538680.jpg",
+            "frames/00679-0538930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 542680,
+          "end_ms": 545180,
+          "last_seen_ms": 542680,
+          "text": "基金经理更像替你开车的人",
+          "confidence": 0.9929811855157217,
+          "evidence": [
+            "frames/00680-0542680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 545180,
+          "end_ms": 547180,
+          "last_seen_ms": 545430,
+          "text": "他负责按照约定路线开",
+          "confidence": 0.9851995885372162,
+          "evidence": [
+            "frames/00681-0545180.jpg",
+            "frames/00682-0545430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 547180,
+          "end_ms": 550430,
+          "last_seen_ms": 549680,
+          "text": "但不代表他能保证路上不堵车",
+          "confidence": 0.9939831174336947,
+          "evidence": [
+            "frames/00683-0547180.jpg",
+            "frames/00684-0549680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 550430,
+          "end_ms": 552680,
+          "last_seen_ms": 550430,
+          "text": "更不能保证你一定赚钱",
+          "confidence": 0.993117344379425,
+          "evidence": [
+            "frames/00685-0550430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 552680,
+          "end_ms": 555180,
+          "last_seen_ms": 552930,
+          "text": "而且这辆车不是免费开的",
+          "confidence": 0.9937720190395009,
+          "evidence": [
+            "frames/00686-0552680.jpg",
+            "frames/00687-0552930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 555180,
+          "end_ms": 555930,
+          "last_seen_ms": 555180,
+          "text": "管理费",
+          "confidence": 0.9990936716397604,
+          "evidence": [
+            "frames/00688-0555180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 555930,
+          "end_ms": 560430,
+          "last_seen_ms": 556680,
+          "text": "托管费等费用会按规则从基金资产里",
+          "confidence": 0.9888636320829391,
+          "evidence": [
+            "frames/00689-0555930.jpg",
+            "frames/00690-0556680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 560430,
+          "end_ms": 564930,
+          "last_seen_ms": 563680,
+          "text": "所以买基金时别只看基金经理的人设",
+          "confidence": 0.9949210695922375,
+          "evidence": [
+            "frames/00691-0560430.jpg",
+            "frames/00692-0560680.jpg",
+            "frames/00693-0561680.jpg",
+            "frames/00694-0563680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 564930,
+          "end_ms": 566930,
+          "last_seen_ms": 565180,
+          "text": "也别只看最近一段收益",
+          "confidence": 0.9929771184921264,
+          "evidence": [
+            "frames/00695-0564930.jpg",
+            "frames/00696-0565180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 566930,
+          "end_ms": 569180,
+          "last_seen_ms": 567430,
+          "text": "先看钱最后投向了哪里",
+          "confidence": 0.9919448733329773,
+          "evidence": [
+            "frames/00697-0566930.jpg",
+            "frames/00698-0567180.jpg",
+            "frames/00699-0567430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 569180,
+          "end_ms": 570180,
+          "last_seen_ms": 569180,
+          "text": "费用怎么收",
+          "confidence": 0.9966183662414551,
+          "evidence": [
+            "frames/00700-0569180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 570180,
+          "end_ms": 571180,
+          "last_seen_ms": 570180,
+          "text": "风险有多大",
+          "confidence": 0.9966915488243103,
+          "evidence": [
+            "frames/00701-0570180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 571180,
+          "end_ms": 572930,
+          "last_seen_ms": 571180,
+          "text": "什么时候能退出",
+          "confidence": 0.9972551039287022,
+          "evidence": [
+            "frames/00702-0571180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 572930,
+          "end_ms": 576930,
+          "last_seen_ms": 576180,
+          "text": "你买的不是一句专业的人替你理财",
+          "confidence": 0.9923976063728333,
+          "evidence": [
+            "frames/00703-0572930.jpg",
+            "frames/00704-0573180.jpg",
+            "frames/00705-0576180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 576930,
+          "end_ms": 578680,
+          "last_seen_ms": 577680,
+          "text": "你买的是一篮子资产",
+          "confidence": 0.9878645009464688,
+          "evidence": [
+            "frames/00706-0576930.jpg",
+            "frames/00707-0577680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 578680,
+          "end_ms": 582180,
+          "last_seen_ms": 578930,
+          "text": "以及管理这篮子资产的一套规则",
+          "confidence": 0.9855574412005288,
+          "evidence": [
+            "frames/00708-0578680.jpg",
+            "frames/00709-0578930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 582180,
+          "end_ms": 585180,
+          "last_seen_ms": 584680,
+          "text": "到这里用10秒钟做一次自测",
+          "confidence": 0.991208961376777,
+          "evidence": [
+            "frames/00710-0582180.jpg",
+            "frames/00711-0584680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 585180,
+          "end_ms": 588430,
+          "last_seen_ms": 585180,
+          "text": "股票是买下一部分资产和所有权",
+          "confidence": 0.9920479101794106,
+          "evidence": [
+            "frames/00712-0585180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 588430,
+          "end_ms": 590680,
+          "last_seen_ms": 588680,
+          "text": "债券是把钱借出去",
+          "confidence": 0.9693047031760216,
+          "evidence": [
+            "frames/00713-0588430.jpg",
+            "frames/00714-0588680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 590680,
+          "end_ms": 593680,
+          "last_seen_ms": 591680,
+          "text": "基金是把一群人的钱集中起来",
+          "confidence": 0.995314148756174,
+          "evidence": [
+            "frames/00715-0590680.jpg",
+            "frames/00716-0591680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 593680,
+          "end_ms": 595680,
+          "last_seen_ms": 593680,
+          "text": "按合同交给专业的人管理",
+          "confidence": 0.9935787428509105,
+          "evidence": [
+            "frames/00717-0593680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 595680,
+          "end_ms": 597180,
+          "last_seen_ms": 596930,
+          "text": "这三件事能对上",
+          "confidence": 0.9984345776694161,
+          "evidence": [
+            "frames/00718-0595680.jpg",
+            "frames/00719-0596930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 597180,
+          "end_ms": 600180,
+          "last_seen_ms": 598680,
+          "text": "金融的前半张地图就搭稳了",
+          "confidence": 0.9934119532505671,
+          "evidence": [
+            "frames/00720-0597180.jpg",
+            "frames/00721-0597430.jpg",
+            "frames/00722-0598680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 600180,
+          "end_ms": 600430,
+          "last_seen_ms": 600180,
+          "text": "三种关系对上，前半张图就稳了接下来讲最刺激",
+          "confidence": 0.9938246309757233,
+          "evidence": [
+            "frames/00723-0600180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 600430,
+          "end_ms": 601430,
+          "last_seen_ms": 600430,
+          "text": "接下来讲最刺激",
+          "confidence": 0.9955599478312901,
+          "evidence": [
+            "frames/00724-0600430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 601430,
+          "end_ms": 602180,
+          "last_seen_ms": 601430,
+          "text": "最复杂",
+          "confidence": 0.9982017079989115,
+          "evidence": [
+            "frames/00725-0601430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 602180,
+          "end_ms": 605680,
+          "last_seen_ms": 605180,
+          "text": "也最容易让普通人亏得莫名其妙的一部分",
+          "confidence": 0.9912548646330833,
+          "evidence": [
+            "frames/00726-0602180.jpg",
+            "frames/00727-0605180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 605680,
+          "end_ms": 607430,
+          "last_seen_ms": 605680,
+          "text": "金融衍生工具",
+          "confidence": 0.9403861860434214,
+          "evidence": [
+            "frames/00728-0605680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 607430,
+          "end_ms": 610180,
+          "last_seen_ms": 609680,
+          "text": "常见的四类是远期",
+          "confidence": 0.9958933368325233,
+          "evidence": [
+            "frames/00729-0607430.jpg",
+            "frames/00730-0607680.jpg",
+            "frames/00731-0607930.jpg",
+            "frames/00732-0609180.jpg",
+            "frames/00733-0609430.jpg",
+            "frames/00734-0609680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 610180,
+          "end_ms": 612430,
+          "last_seen_ms": 612180,
+          "text": "期货 期权和互换",
+          "confidence": 0.93441391736269,
+          "evidence": [
+            "frames/00735-0610180.jpg",
+            "frames/00736-0610430.jpg",
+            "frames/00737-0611180.jpg",
+            "frames/00738-0611430.jpg",
+            "frames/00739-0612180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 612430,
+          "end_ms": 613930,
+          "last_seen_ms": 613180,
+          "text": "这一次不先被定义",
+          "confidence": 0.9969546869397163,
+          "evidence": [
+            "frames/00740-0612430.jpg",
+            "frames/00741-0612930.jpg",
+            "frames/00742-0613180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 613930,
+          "end_ms": 615930,
+          "last_seen_ms": 615180,
+          "text": "我们直接把它们放进生活里",
+          "confidence": 0.9841767251491547,
+          "evidence": [
+            "frames/00743-0613930.jpg",
+            "frames/00744-0615180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 615930,
+          "end_ms": 617930,
+          "last_seen_ms": 615930,
+          "text": "第一远期合约",
+          "confidence": 0.9968324800332388,
+          "evidence": [
+            "frames/00745-0615930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 617930,
+          "end_ms": 620430,
+          "last_seen_ms": 619180,
+          "text": "假设你准备半年后办婚礼",
+          "confidence": 0.9949022260579196,
+          "evidence": [
+            "frames/00746-0617930.jpg",
+            "frames/00747-0619180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 620430,
+          "end_ms": 622930,
+          "last_seen_ms": 620430,
+          "text": "现在酒店一桌是2000元",
+          "confidence": 0.9971176385879517,
+          "evidence": [
+            "frames/00748-0620430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 622930,
+          "end_ms": 625180,
+          "last_seen_ms": 622930,
+          "text": "你担心半年以后菜价上涨",
+          "confidence": 0.991175039248033,
+          "evidence": [
+            "frames/00749-0622930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 625180,
+          "end_ms": 627430,
+          "last_seen_ms": 625180,
+          "text": "酒店涨到3000元",
+          "confidence": 0.9940819674068027,
+          "evidence": [
+            "frames/00750-0625180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 627430,
+          "end_ms": 629680,
+          "last_seen_ms": 627430,
+          "text": "酒店也担心半年后没有客人",
+          "confidence": 0.9930686901013056,
+          "evidence": [
+            "frames/00751-0627430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 629680,
+          "end_ms": 630930,
+          "last_seen_ms": 629680,
+          "text": "宴会厅空着",
+          "confidence": 0.9899055123329162,
+          "evidence": [
+            "frames/00752-0629680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 630930,
+          "end_ms": 633180,
+          "last_seen_ms": 631430,
+          "text": "于是你们今天私下签一份合同",
+          "confidence": 0.9941710600486169,
+          "evidence": [
+            "frames/00753-0630930.jpg",
+            "frames/00754-0631180.jpg",
+            "frames/00755-0631430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 633180,
+          "end_ms": 635930,
+          "last_seen_ms": 633430,
+          "text": "半年后无论市场价格怎么变",
+          "confidence": 0.9904106557369232,
+          "evidence": [
+            "frames/00756-0633180.jpg",
+            "frames/00757-0633430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 635930,
+          "end_ms": 638680,
+          "last_seen_ms": 635930,
+          "text": "都按2000元一桌结算",
+          "confidence": 0.9971401420506564,
+          "evidence": [
+            "frames/00758-0635930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 638680,
+          "end_ms": 641680,
+          "last_seen_ms": 640180,
+          "text": "这就是远期最朴素的逻辑",
+          "confidence": 0.9896268844604492,
+          "evidence": [
+            "frames/00759-0638680.jpg",
+            "frames/00760-0640180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 641680,
+          "end_ms": 643430,
+          "last_seen_ms": 641680,
+          "text": "不管市场价格怎么变两个人今天谈好条件",
+          "confidence": 0.9907507167922126,
+          "evidence": [
+            "frames/00761-0641680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 643430,
+          "end_ms": 646180,
+          "last_seen_ms": 643430,
+          "text": "不管市场价格怎么变把未来的价格先锁住",
+          "confidence": 0.9881940252251096,
+          "evidence": [
+            "frames/00762-0643430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 646180,
+          "end_ms": 650180,
+          "last_seen_ms": 649930,
+          "text": "农民可以和面包厂提前锁定小麦价格",
+          "confidence": 0.988418236374855,
+          "evidence": [
+            "frames/00763-0646180.jpg",
+            "frames/00764-0646430.jpg",
+            "frames/00765-0646680.jpg",
+            "frames/00766-0646930.jpg",
+            "frames/00767-0647180.jpg",
+            "frames/00768-0647430.jpg",
+            "frames/00769-0647680.jpg",
+            "frames/00770-0647930.jpg",
+            "frames/00771-0648180.jpg",
+            "frames/00772-0648430.jpg",
+            "frames/00773-0648680.jpg",
+            "frames/00774-0648930.jpg",
+            "frames/00775-0649180.jpg",
+            "frames/00776-0649430.jpg",
+            "frames/00777-0649680.jpg",
+            "frames/00778-0649930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 650180,
+          "end_ms": 654430,
+          "last_seen_ms": 654180,
+          "text": "外贸企业也可以和银行提前锁定",
+          "confidence": 0.9960123470851353,
+          "evidence": [
+            "frames/00779-0650180.jpg",
+            "frames/00780-0650430.jpg",
+            "frames/00781-0650680.jpg",
+            "frames/00782-0650930.jpg",
+            "frames/00783-0651680.jpg",
+            "frames/00784-0651930.jpg",
+            "frames/00785-0652180.jpg",
+            "frames/00786-0652430.jpg",
+            "frames/00787-0652930.jpg",
+            "frames/00788-0653180.jpg",
+            "frames/00789-0653430.jpg",
+            "frames/00790-0653680.jpg",
+            "frames/00791-0653930.jpg",
+            "frames/00792-0654180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 654430,
+          "end_ms": 656180,
+          "last_seen_ms": 654680,
+          "text": "远期合约的价值",
+          "confidence": 0.9928104707172939,
+          "evidence": [
+            "frames/00793-0654430.jpg",
+            "frames/00794-0654680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 656180,
+          "end_ms": 660430,
+          "last_seen_ms": 658680,
+          "text": "会跟着它背后的商品利率或者汇率",
+          "confidence": 0.9686341047286987,
+          "evidence": [
+            "frames/00795-0656180.jpg",
+            "frames/00796-0658680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 660430,
+          "end_ms": 662930,
+          "last_seen_ms": 660430,
+          "text": "它解决的是未来的不确定性",
+          "confidence": 0.9930578470230103,
+          "evidence": [
+            "frames/00797-0660430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 662930,
+          "end_ms": 664430,
+          "last_seen_ms": 662930,
+          "text": "好处是灵活",
+          "confidence": 0.9974491715431213,
+          "evidence": [
+            "frames/00798-0662930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 664430,
+          "end_ms": 667930,
+          "last_seen_ms": 665680,
+          "text": "数量 时间和交付方式都可以商量",
+          "confidence": 0.9637079993883769,
+          "evidence": [
+            "frames/00799-0664430.jpg",
+            "frames/00800-0664930.jpg",
+            "frames/00801-0665680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 667930,
+          "end_ms": 668930,
+          "last_seen_ms": 667930,
+          "text": "问题也很直接",
+          "confidence": 0.9849104781945547,
+          "evidence": [
+            "frames/00802-0667930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 668930,
+          "end_ms": 670930,
+          "last_seen_ms": 668930,
+          "text": "这是双方私下约定",
+          "confidence": 0.9949942901730537,
+          "evidence": [
+            "frames/00803-0668930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 670930,
+          "end_ms": 672930,
+          "last_seen_ms": 672180,
+          "text": "对方到时候有没有能力履约",
+          "confidence": 0.9947617302338282,
+          "evidence": [
+            "frames/00804-0670930.jpg",
+            "frames/00805-0672180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 672930,
+          "end_ms": 674680,
+          "last_seen_ms": 672930,
+          "text": "需要你自己判断",
+          "confidence": 0.9909778918538775,
+          "evidence": [
+            "frames/00806-0672930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 674680,
+          "end_ms": 676180,
+          "last_seen_ms": 674680,
+          "text": "第二期货合约",
+          "confidence": 0.9967043896516165,
+          "evidence": [
+            "frames/00807-0674680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 676180,
+          "end_ms": 680180,
+          "last_seen_ms": 679430,
+          "text": "期货可以理解成把远期合同搬进",
+          "confidence": 0.9927376636437008,
+          "evidence": [
+            "frames/00808-0676180.jpg",
+            "frames/00809-0679180.jpg",
+            "frames/00810-0679430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 680180,
+          "end_ms": 683680,
+          "last_seen_ms": 680180,
+          "text": "就像你原本在微信里和陌生人私下",
+          "confidence": 0.9899293700853984,
+          "evidence": [
+            "frames/00811-0680180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 683680,
+          "end_ms": 687930,
+          "last_seen_ms": 686180,
+          "text": "价格 规格和交货时间全靠聊天记录",
+          "confidence": 0.9695214331150055,
+          "evidence": [
+            "frames/00812-0683680.jpg",
+            "frames/00813-0683930.jpg",
+            "frames/00814-0686180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 687930,
+          "end_ms": 691180,
+          "last_seen_ms": 688180,
+          "text": "现在把交易搬进一个有统一规则",
+          "confidence": 0.9918784626892635,
+          "evidence": [
+            "frames/00815-0687930.jpg",
+            "frames/00816-0688180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 691180,
+          "end_ms": 693930,
+          "last_seen_ms": 693180,
+          "text": "保证金和结算制度的平台",
+          "confidence": 0.9945967251604254,
+          "evidence": [
+            "frames/00817-0691180.jpg",
+            "frames/00818-0693180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 693930,
+          "end_ms": 696180,
+          "last_seen_ms": 693930,
+          "text": "交易所提前规定好数量",
+          "confidence": 0.9953428447246552,
+          "evidence": [
+            "frames/00819-0693930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 696180,
+          "end_ms": 698680,
+          "last_seen_ms": 696180,
+          "text": "质量 到期时间等标准",
+          "confidence": 0.949513292312622,
+          "evidence": [
+            "frames/00820-0696180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 698680,
+          "end_ms": 702430,
+          "last_seen_ms": 700180,
+          "text": "再通过每日结算和清算机制管理履约",
+          "confidence": 0.9917308986186981,
+          "evidence": [
+            "frames/00821-0698680.jpg",
+            "frames/00822-0700180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 702430,
+          "end_ms": 703930,
+          "last_seen_ms": 702430,
+          "text": "合同统一以后",
+          "confidence": 0.9957085649172465,
+          "evidence": [
+            "frames/00823-0702430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 703930,
+          "end_ms": 705180,
+          "last_seen_ms": 703930,
+          "text": "更容易交易",
+          "confidence": 0.997599470615387,
+          "evidence": [
+            "frames/00824-0703930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 705180,
+          "end_ms": 708430,
+          "last_seen_ms": 707180,
+          "text": "也更容易在到期前平仓退出",
+          "confidence": 0.9906947861115137,
+          "evidence": [
+            "frames/00825-0705180.jpg",
+            "frames/00826-0707180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 708430,
+          "end_ms": 711180,
+          "last_seen_ms": 708680,
+          "text": "但期货还有一个必须看懂的东西",
+          "confidence": 0.9924955751214709,
+          "evidence": [
+            "frames/00827-0708430.jpg",
+            "frames/00828-0708680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 711180,
+          "end_ms": 712680,
+          "last_seen_ms": 711180,
+          "text": "保证金",
+          "confidence": 0.9976759354273478,
+          "evidence": [
+            "frames/00829-0711180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 712680,
+          "end_ms": 715180,
+          "last_seen_ms": 714180,
+          "text": "假设一份价值10万元的合约",
+          "confidence": 0.9948363579236544,
+          "evidence": [
+            "frames/00830-0712680.jpg",
+            "frames/00831-0714180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 715180,
+          "end_ms": 717930,
+          "last_seen_ms": 715430,
+          "text": "你不需要先拿出全部10万元",
+          "confidence": 0.9945384860038757,
+          "evidence": [
+            "frames/00832-0715180.jpg",
+            "frames/00833-0715430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 717930,
+          "end_ms": 719930,
+          "last_seen_ms": 718180,
+          "text": "只需要交其中一部分保证金",
+          "confidence": 0.9892305632432302,
+          "evidence": [
+            "frames/00834-0717930.jpg",
+            "frames/00835-0718180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 719930,
+          "end_ms": 722430,
+          "last_seen_ms": 719930,
+          "text": "就能参与整笔交易",
+          "confidence": 0.9955986589193344,
+          "evidence": [
+            "frames/00836-0719930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 722430,
+          "end_ms": 723680,
+          "last_seen_ms": 722430,
+          "text": "这就是杠杆",
+          "confidence": 0.9870903253555298,
+          "evidence": [
+            "frames/00837-0722430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 723680,
+          "end_ms": 724680,
+          "last_seen_ms": 724430,
+          "text": "方向判断对了",
+          "confidence": 0.9886573751767477,
+          "evidence": [
+            "frames/00838-0723680.jpg",
+            "frames/00839-0724430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 724680,
+          "end_ms": 725930,
+          "last_seen_ms": 724680,
+          "text": "收益被放大",
+          "confidence": 0.9963631153106689,
+          "evidence": [
+            "frames/00840-0724680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 725930,
+          "end_ms": 727180,
+          "last_seen_ms": 726930,
+          "text": "方向判断错了",
+          "confidence": 0.9922122458616892,
+          "evidence": [
+            "frames/00841-0725930.jpg",
+            "frames/00842-0726180.jpg",
+            "frames/00843-0726430.jpg",
+            "frames/00844-0726680.jpg",
+            "frames/00845-0726930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 727180,
+          "end_ms": 728930,
+          "last_seen_ms": 728180,
+          "text": "损失也会被放大",
+          "confidence": 0.9926377023969378,
+          "evidence": [
+            "frames/00846-0727180.jpg",
+            "frames/00847-0727430.jpg",
+            "frames/00848-0728180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 728930,
+          "end_ms": 730430,
+          "last_seen_ms": 728930,
+          "text": "价格稍微多走几步",
+          "confidence": 0.958639569580555,
+          "evidence": [
+            "frames/00849-0728930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 730430,
+          "end_ms": 731680,
+          "last_seen_ms": 730430,
+          "text": "你的保证金就可能不够",
+          "confidence": 0.9970069587230682,
+          "evidence": [
+            "frames/00850-0730430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 731680,
+          "end_ms": 732930,
+          "last_seen_ms": 731680,
+          "text": "还要继续补钱",
+          "confidence": 0.9834688901901245,
+          "evidence": [
+            "frames/00851-0731680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 732930,
+          "end_ms": 734180,
+          "last_seen_ms": 733930,
+          "text": "甚至被强制平仓",
+          "confidence": 0.9901319061006818,
+          "evidence": [
+            "frames/00852-0732930.jpg",
+            "frames/00853-0733680.jpg",
+            "frames/00854-0733930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 734680,
+          "end_ms": 737430,
+          "last_seen_ms": 735930,
+          "text": "杠杆不会提高你的判断能力",
+          "confidence": 0.9832272827625275,
+          "evidence": [
+            "frames/00857-0734680.jpg",
+            "frames/00858-0734930.jpg",
+            "frames/00859-0735180.jpg",
+            "frames/00860-0735430.jpg",
+            "frames/00861-0735680.jpg",
+            "frames/00862-0735930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 737430,
+          "end_ms": 742930,
+          "last_seen_ms": 742430,
+          "text": "它只会让判断的结果更快更大的来到你面前",
+          "confidence": 0.974349918351932,
+          "evidence": [
+            "frames/00863-0737430.jpg",
+            "frames/00864-0741930.jpg",
+            "frames/00865-0742180.jpg",
+            "frames/00866-0742430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 742930,
+          "end_ms": 743930,
+          "last_seen_ms": 742930,
+          "text": "期货",
+          "confidence": 0.9975204765796661,
+          "evidence": [
+            "frames/00867-0742930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 743930,
+          "end_ms": 746180,
+          "last_seen_ms": 745930,
+          "text": "本身不等于赌博",
+          "confidence": 0.990531963961465,
+          "evidence": [
+            "frames/00868-0743930.jpg",
+            "frames/00869-0745680.jpg",
+            "frames/00870-0745930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 746180,
+          "end_ms": 748430,
+          "last_seen_ms": 748180,
+          "text": "农民可以用它锁住粮价",
+          "confidence": 0.9870337665081023,
+          "evidence": [
+            "frames/00871-0746180.jpg",
+            "frames/00872-0746430.jpg",
+            "frames/00873-0746680.jpg",
+            "frames/00874-0746930.jpg",
+            "frames/00875-0747180.jpg",
+            "frames/00876-0747430.jpg",
+            "frames/00877-0747680.jpg",
+            "frames/00878-0747930.jpg",
+            "frames/00879-0748180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 748430,
+          "end_ms": 750680,
+          "last_seen_ms": 750430,
+          "text": "航空公司可以用它管理油价",
+          "confidence": 0.9918631116549174,
+          "evidence": [
+            "frames/00880-0748430.jpg",
+            "frames/00881-0748680.jpg",
+            "frames/00882-0748930.jpg",
+            "frames/00883-0749180.jpg",
+            "frames/00884-0749430.jpg",
+            "frames/00885-0749680.jpg",
+            "frames/00886-0749930.jpg",
+            "frames/00887-0750180.jpg",
+            "frames/00888-0750430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 750680,
+          "end_ms": 753430,
+          "last_seen_ms": 753180,
+          "text": "生产企业也可以用它控制原料成本",
+          "confidence": 0.9882879972457885,
+          "evidence": [
+            "frames/00889-0750680.jpg",
+            "frames/00890-0750930.jpg",
+            "frames/00891-0751180.jpg",
+            "frames/00892-0751430.jpg",
+            "frames/00893-0751680.jpg",
+            "frames/00894-0751930.jpg",
+            "frames/00895-0752180.jpg",
+            "frames/00896-0752430.jpg",
+            "frames/00897-0752680.jpg",
+            "frames/00898-0752930.jpg",
+            "frames/00899-0753180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 753430,
+          "end_ms": 755180,
+          "last_seen_ms": 754930,
+          "text": "有人拿它给生意上保险",
+          "confidence": 0.9809782445430756,
+          "evidence": [
+            "frames/00900-0753430.jpg",
+            "frames/00901-0753680.jpg",
+            "frames/00902-0753930.jpg",
+            "frames/00903-0754180.jpg",
+            "frames/00904-0754430.jpg",
+            "frames/00905-0754680.jpg",
+            "frames/00906-0754930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 755180,
+          "end_ms": 758930,
+          "last_seen_ms": 757180,
+          "text": "也有人拿它放大自己对价格的判断",
+          "confidence": 0.982156785329183,
+          "evidence": [
+            "frames/00907-0755180.jpg",
+            "frames/00908-0755430.jpg",
+            "frames/00909-0755680.jpg",
+            "frames/00910-0755930.jpg",
+            "frames/00911-0756180.jpg",
+            "frames/00912-0756430.jpg",
+            "frames/00913-0756680.jpg",
+            "frames/00914-0756930.jpg",
+            "frames/00915-0757180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 758930,
+          "end_ms": 759930,
+          "last_seen_ms": 758930,
+          "text": "给生意上保险放大价格判断工具没有变",
+          "confidence": 0.9979700141482883,
+          "evidence": [
+            "frames/00916-0758930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 759930,
+          "end_ms": 761180,
+          "last_seen_ms": 759930,
+          "text": "给生意上保险放大价格判断使用目的完全不同",
+          "confidence": 0.994016419682238,
+          "evidence": [
+            "frames/00917-0759930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 761180,
+          "end_ms": 762180,
+          "last_seen_ms": 761180,
+          "text": "使用目的完全不同",
+          "confidence": 0.9917433634400368,
+          "evidence": [
+            "frames/00918-0761180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 762180,
+          "end_ms": 763180,
+          "last_seen_ms": 762180,
+          "text": "第三",
+          "confidence": 0.9991294145584106,
+          "evidence": [
+            "frames/00919-0762180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 763430,
+          "end_ms": 764680,
+          "last_seen_ms": 763430,
+          "text": "期权合约",
+          "confidence": 0.9948599934577942,
+          "evidence": [
+            "frames/00921-0763430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 764680,
+          "end_ms": 768680,
+          "last_seen_ms": 764680,
+          "text": "期权最像生活里的付费保留一个选择",
+          "confidence": 0.9913405142724514,
+          "evidence": [
+            "frames/00922-0764680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 768680,
+          "end_ms": 771180,
+          "last_seen_ms": 768680,
+          "text": "比如你看中一套房",
+          "confidence": 0.9964011311531067,
+          "evidence": [
+            "frames/00923-0768680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 771180,
+          "end_ms": 773180,
+          "last_seen_ms": 772930,
+          "text": "但还需要一个月确认贷款",
+          "confidence": 0.997394242069938,
+          "evidence": [
+            "frames/00924-0771180.jpg",
+            "frames/00925-0772930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 773180,
+          "end_ms": 774430,
+          "last_seen_ms": 773430,
+          "text": "￥10,000你先付1万元",
+          "confidence": 0.9641692872558321,
+          "evidence": [
+            "frames/00926-0773180.jpg",
+            "frames/00927-0773430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 774430,
+          "end_ms": 775180,
+          "last_seen_ms": 774430,
+          "text": "￥10,000和卖家约定",
+          "confidence": 0.9667226987225668,
+          "evidence": [
+            "frames/00928-0774430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 775180,
+          "end_ms": 779180,
+          "last_seen_ms": 777430,
+          "text": "这一个月内你有权按现在谈好的价格",
+          "confidence": 0.9929750077426434,
+          "evidence": [
+            "frames/00929-0775180.jpg",
+            "frames/00930-0776180.jpg",
+            "frames/00931-0777180.jpg",
+            "frames/00932-0777430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 779180,
+          "end_ms": 781180,
+          "last_seen_ms": 779180,
+          "text": "￥10,000一个月后房价涨了",
+          "confidence": 0.9688759903822626,
+          "evidence": [
+            "frames/00933-0779180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 781180,
+          "end_ms": 782680,
+          "last_seen_ms": 781180,
+          "text": "￥10,000你可以按原价购买",
+          "confidence": 0.9675283623593194,
+          "evidence": [
+            "frames/00934-0781180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 782680,
+          "end_ms": 784180,
+          "last_seen_ms": 783430,
+          "text": "如果你发现房子有问题",
+          "confidence": 0.9961140513420105,
+          "evidence": [
+            "frames/00935-0782680.jpg",
+            "frames/00936-0783180.jpg",
+            "frames/00937-0783430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 784180,
+          "end_ms": 785680,
+          "last_seen_ms": 784180,
+          "text": "或者市场价格跌了",
+          "confidence": 0.9885123670101166,
+          "evidence": [
+            "frames/00938-0784180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 785680,
+          "end_ms": 787930,
+          "last_seen_ms": 785680,
+          "text": "你也可以放弃购买",
+          "confidence": 0.9976810365915298,
+          "evidence": [
+            "frames/00939-0785680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 787930,
+          "end_ms": 791180,
+          "last_seen_ms": 790180,
+          "text": "只损失提前支付的这1万元",
+          "confidence": 0.993138367931048,
+          "evidence": [
+            "frames/00940-0787930.jpg",
+            "frames/00941-0790180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 791180,
+          "end_ms": 793180,
+          "last_seen_ms": 791180,
+          "text": "这笔用来买选择权的钱",
+          "confidence": 0.9929855704307556,
+          "evidence": [
+            "frames/00942-0791180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 793180,
+          "end_ms": 795430,
+          "last_seen_ms": 793430,
+          "text": "就像期权里的权利金",
+          "confidence": 0.9861608213848538,
+          "evidence": [
+            "frames/00943-0793180.jpg",
+            "frames/00944-0793430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 795430,
+          "end_ms": 799180,
+          "last_seen_ms": 797180,
+          "text": "期权买方花钱买到的是权利",
+          "confidence": 0.9882781952619553,
+          "evidence": [
+            "frames/00945-0795430.jpg",
+            "frames/00946-0797180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 799180,
+          "end_ms": 801430,
+          "last_seen_ms": 799180,
+          "text": "行情有利可以行使这项权利",
+          "confidence": 0.9952677885691324,
+          "evidence": [
+            "frames/00947-0799180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 801430,
+          "end_ms": 803680,
+          "last_seen_ms": 801430,
+          "text": "行情不利也可以放弃",
+          "confidence": 0.9982717964384291,
+          "evidence": [
+            "frames/00948-0801430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 803680,
+          "end_ms": 803930,
+          "last_seen_ms": 803680,
+          "text": "行情有利，可以行使权利最大损失：已付的1万元",
+          "confidence": 0.987843619151549,
+          "evidence": [
+            "frames/00949-0803680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 803930,
+          "end_ms": 805930,
+          "last_seen_ms": 804180,
+          "text": "而卖方收下权利金以后",
+          "confidence": 0.9808318972587585,
+          "evidence": [
+            "frames/00950-0803930.jpg",
+            "frames/00951-0804180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 805930,
+          "end_ms": 808430,
+          "last_seen_ms": 805930,
+          "text": "就承担了按合同履约的义务",
+          "confidence": 0.9953213930130005,
+          "evidence": [
+            "frames/00952-0805930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 808430,
+          "end_ms": 811430,
+          "last_seen_ms": 811180,
+          "text": "所以期权里的买卖双方并不对称",
+          "confidence": 0.9933836332389286,
+          "evidence": [
+            "frames/00953-0808430.jpg",
+            "frames/00954-0811180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 811430,
+          "end_ms": 812930,
+          "last_seen_ms": 811680,
+          "text": "一边买的是选择",
+          "confidence": 0.9970999445234027,
+          "evidence": [
+            "frames/00955-0811430.jpg",
+            "frames/00956-0811680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 812930,
+          "end_ms": 814680,
+          "last_seen_ms": 812930,
+          "text": "另一边卖的是承诺",
+          "confidence": 0.9949602708220482,
+          "evidence": [
+            "frames/00957-0812930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 814680,
+          "end_ms": 817930,
+          "last_seen_ms": 814680,
+          "text": "但真实期权不能只判断涨还是跌",
+          "confidence": 0.9886303331170764,
+          "evidence": [
+            "frames/00958-0814680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 817930,
+          "end_ms": 819930,
+          "last_seen_ms": 818180,
+          "text": "你的方向可能看对了",
+          "confidence": 0.9977087908320956,
+          "evidence": [
+            "frames/00959-0817930.jpg",
+            "frames/00960-0818180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 819930,
+          "end_ms": 821180,
+          "last_seen_ms": 819930,
+          "text": "可涨得太慢",
+          "confidence": 0.9923699855804443,
+          "evidence": [
+            "frames/00961-0819930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 821180,
+          "end_ms": 822680,
+          "last_seen_ms": 821180,
+          "text": "时间先到期了",
+          "confidence": 0.9975335200627645,
+          "evidence": [
+            "frames/00962-0821180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 822680,
+          "end_ms": 824930,
+          "last_seen_ms": 822680,
+          "text": "权利金照样可能损失",
+          "confidence": 0.9925381806161668,
+          "evidence": [
+            "frames/00963-0822680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 824930,
+          "end_ms": 826680,
+          "last_seen_ms": 824930,
+          "text": "市场预期波动变小",
+          "confidence": 0.9926308393478394,
+          "evidence": [
+            "frames/00964-0824930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 826680,
+          "end_ms": 828930,
+          "last_seen_ms": 826680,
+          "text": "期权价格也可能发生变化",
+          "confidence": 0.9930166277018461,
+          "evidence": [
+            "frames/00965-0826680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 828930,
+          "end_ms": 830430,
+          "last_seen_ms": 828930,
+          "text": "所以期权交易里",
+          "confidence": 0.9912506597382682,
+          "evidence": [
+            "frames/00966-0828930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 830430,
+          "end_ms": 832180,
+          "last_seen_ms": 830430,
+          "text": "方向 时间和波动",
+          "confidence": 0.9441263750195503,
+          "evidence": [
+            "frames/00967-0830430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 832180,
+          "end_ms": 834180,
+          "last_seen_ms": 832180,
+          "text": "缺一个都不行",
+          "confidence": 0.9989090065161387,
+          "evidence": [
+            "frames/00968-0832180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 834180,
+          "end_ms": 835430,
+          "last_seen_ms": 834180,
+          "text": "第四 互换合约",
+          "confidence": 0.9491912296840123,
+          "evidence": [
+            "frames/00969-0834180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 835430,
+          "end_ms": 837930,
+          "last_seen_ms": 835430,
+          "text": "互换就是两个人不交换本金",
+          "confidence": 0.995910699168841,
+          "evidence": [
+            "frames/00970-0835430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 837930,
+          "end_ms": 841680,
+          "last_seen_ms": 838930,
+          "text": "只交换未来一组现金流的计算方式",
+          "confidence": 0.9942317406336466,
+          "evidence": [
+            "frames/00971-0837930.jpg",
+            "frames/00972-0838930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 841680,
+          "end_ms": 844430,
+          "last_seen_ms": 841680,
+          "text": "先想象两种手机套餐",
+          "confidence": 0.9903516305817498,
+          "evidence": [
+            "frames/00973-0841680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 844430,
+          "end_ms": 846680,
+          "last_seen_ms": 845930,
+          "text": "一种每个月固定交100元",
+          "confidence": 0.9927350332339605,
+          "evidence": [
+            "frames/00974-0844430.jpg",
+            "frames/00975-0845930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 846680,
+          "end_ms": 848180,
+          "last_seen_ms": 846680,
+          "text": "不管用了多少流量",
+          "confidence": 0.9959941655397415,
+          "evidence": [
+            "frames/00976-0846680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 848180,
+          "end_ms": 849680,
+          "last_seen_ms": 848180,
+          "text": "账单都比较稳定",
+          "confidence": 0.9926908186503819,
+          "evidence": [
+            "frames/00977-0848180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 849680,
+          "end_ms": 852180,
+          "last_seen_ms": 849680,
+          "text": "另一种按实际流量收费",
+          "confidence": 0.9938269138336182,
+          "evidence": [
+            "frames/00978-0849680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 852180,
+          "end_ms": 853680,
+          "last_seen_ms": 852180,
+          "text": "用的少就便宜",
+          "confidence": 0.9944189687569936,
+          "evidence": [
+            "frames/00979-0852180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 853680,
+          "end_ms": 855680,
+          "last_seen_ms": 853680,
+          "text": "用的多就更贵",
+          "confidence": 0.99852787454923,
+          "evidence": [
+            "frames/00980-0853680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 855680,
+          "end_ms": 857430,
+          "last_seen_ms": 855680,
+          "text": "有人讨厌账单波动",
+          "confidence": 0.9762707948684692,
+          "evidence": [
+            "frames/00981-0855680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 857430,
+          "end_ms": 859180,
+          "last_seen_ms": 857430,
+          "text": "更愿意付固定费用",
+          "confidence": 0.9955797120928764,
+          "evidence": [
+            "frames/00982-0857430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 859180,
+          "end_ms": 861680,
+          "last_seen_ms": 859930,
+          "text": "有人觉得未来用量会下降",
+          "confidence": 0.9903524084524675,
+          "evidence": [
+            "frames/00983-0859180.jpg",
+            "frames/00984-0859930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 861680,
+          "end_ms": 863930,
+          "last_seen_ms": 861680,
+          "text": "更愿意按实际使用付钱",
+          "confidence": 0.9879611372947693,
+          "evidence": [
+            "frames/00985-0861680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 863930,
+          "end_ms": 866430,
+          "last_seen_ms": 864680,
+          "text": "利率互换做的事情很像",
+          "confidence": 0.9901153862476348,
+          "evidence": [
+            "frames/00986-0863930.jpg",
+            "frames/00987-0864180.jpg",
+            "frames/00988-0864430.jpg",
+            "frames/00989-0864680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 866430,
+          "end_ms": 869430,
+          "last_seen_ms": 866430,
+          "text": "一家公司借的是浮动利率贷款",
+          "confidence": 0.9931106567382812,
+          "evidence": [
+            "frames/00990-0866430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 869430,
+          "end_ms": 870930,
+          "last_seen_ms": 869430,
+          "text": "担心以后利率上涨",
+          "confidence": 0.99619360268116,
+          "evidence": [
+            "frames/00991-0869430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 870930,
+          "end_ms": 872680,
+          "last_seen_ms": 870930,
+          "text": "成本越来越高",
+          "confidence": 0.993505189816157,
+          "evidence": [
+            "frames/00992-0870930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 872680,
+          "end_ms": 875430,
+          "last_seen_ms": 873430,
+          "text": "另一家公司承担固定利率",
+          "confidence": 0.9947921200232073,
+          "evidence": [
+            "frames/00993-0872680.jpg",
+            "frames/00994-0872930.jpg",
+            "frames/00995-0873430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 875430,
+          "end_ms": 878430,
+          "last_seen_ms": 875430,
+          "text": "却判断未来利率会下降",
+          "confidence": 0.978169971704483,
+          "evidence": [
+            "frames/00996-0875430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 878430,
+          "end_ms": 884430,
+          "last_seen_ms": 880430,
+          "text": "双方可以按约定交换固定利息和浮动利息产生的现金流效果",
+          "confidence": 0.9937869966030121,
+          "evidence": [
+            "frames/00997-0878430.jpg",
+            "frames/00998-0880430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 884430,
+          "end_ms": 885930,
+          "last_seen_ms": 884430,
+          "text": "注意通常交换的不是那笔",
+          "confidence": 0.9937535090879961,
+          "evidence": [
+            "frames/00999-0884430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 885930,
+          "end_ms": 886680,
+          "last_seen_ms": 885930,
+          "text": "贷款本金",
+          "confidence": 0.9863092601299286,
+          "evidence": [
+            "frames/01000-0885930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 886680,
+          "end_ms": 891930,
+          "last_seen_ms": 887430,
+          "text": "而是按照同一个名义金算出来的利息",
+          "confidence": 0.9924830384552479,
+          "evidence": [
+            "frames/01001-0886680.jpg",
+            "frames/01002-0887430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 891930,
+          "end_ms": 894430,
+          "last_seen_ms": 891930,
+          "text": "很多时候是为了调整债务结构",
+          "confidence": 0.9946582409051749,
+          "evidence": [
+            "frames/01003-0891930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 894430,
+          "end_ms": 896680,
+          "last_seen_ms": 894430,
+          "text": "稳定成本或者管理风险",
+          "confidence": 0.9921564817428589,
+          "evidence": [
+            "frames/01004-0894430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 896930,
+          "end_ms": 898180,
+          "last_seen_ms": 896930,
+          "text": "四类工具讲完",
+          "confidence": 0.9920333127180735,
+          "evidence": [
+            "frames/01006-0896930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 898180,
+          "end_ms": 899930,
+          "last_seen_ms": 898180,
+          "text": "再把它们放回一张图里",
+          "confidence": 0.9880787789821625,
+          "evidence": [
+            "frames/01007-0898180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 899930,
+          "end_ms": 903680,
+          "last_seen_ms": 901430,
+          "text": "远期是私下约定未来价格",
+          "confidence": 0.9897362698208202,
+          "evidence": [
+            "frames/01008-0899930.jpg",
+            "frames/01009-0901430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 903680,
+          "end_ms": 907430,
+          "last_seen_ms": 903930,
+          "text": "期货是把标准化的远期合同搬进",
+          "confidence": 0.981508561543056,
+          "evidence": [
+            "frames/01010-0903680.jpg",
+            "frames/01011-0903930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 907430,
+          "end_ms": 909430,
+          "last_seen_ms": 907430,
+          "text": "期权是付出一笔钱",
+          "confidence": 0.9913126230239868,
+          "evidence": [
+            "frames/01012-0907430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 909430,
+          "end_ms": 911930,
+          "last_seen_ms": 909430,
+          "text": "买下未来选择的权利",
+          "confidence": 0.9922690788904825,
+          "evidence": [
+            "frames/01013-0909430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 911930,
+          "end_ms": 916180,
+          "last_seen_ms": 915430,
+          "text": "互换是双方交换未来现金流的计算",
+          "confidence": 0.9952318509419759,
+          "evidence": [
+            "frames/01014-0911930.jpg",
+            "frames/01015-0915430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 916180,
+          "end_ms": 917680,
+          "last_seen_ms": 916180,
+          "text": "它们有几个共同点",
+          "confidence": 0.9834894984960556,
+          "evidence": [
+            "frames/01016-0916180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 917680,
+          "end_ms": 920680,
+          "last_seen_ms": 917680,
+          "text": "价值通常会跟着某项基础资产",
+          "confidence": 0.9849829582067636,
+          "evidence": [
+            "frames/01017-0917680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 920680,
+          "end_ms": 923430,
+          "last_seen_ms": 922430,
+          "text": "利率汇率或者指数变化",
+          "confidence": 0.9953780174255371,
+          "evidence": [
+            "frames/01018-0920680.jpg",
+            "frames/01019-0922430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 923430,
+          "end_ms": 926930,
+          "last_seen_ms": 923680,
+          "text": "交易的核心是一份关于未来的合同",
+          "confidence": 0.9945206721623738,
+          "evidence": [
+            "frames/01020-0923430.jpg",
+            "frames/01021-0923680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 926930,
+          "end_ms": 928680,
+          "last_seen_ms": 927180,
+          "text": "很多产品带有杠杆",
+          "confidence": 0.9853502884507179,
+          "evidence": [
+            "frames/01022-0926930.jpg",
+            "frames/01023-0927180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 928680,
+          "end_ms": 931180,
+          "last_seen_ms": 928680,
+          "text": "只看一份封闭的衍生合同",
+          "confidence": 0.9600727287205783,
+          "evidence": [
+            "frames/01024-0928680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 931180,
+          "end_ms": 933430,
+          "last_seen_ms": 931180,
+          "text": "一方多获得的收益通常",
+          "confidence": 0.9626909852027893,
+          "evidence": [
+            "frames/01025-0931180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 933430,
+          "end_ms": 937180,
+          "last_seen_ms": 935680,
+          "text": "对应另一方少获得的收益或者",
+          "confidence": 0.9888450457499577,
+          "evidence": [
+            "frames/01026-0933430.jpg",
+            "frames/01027-0933680.jpg",
+            "frames/01028-0935680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 937180,
+          "end_ms": 939180,
+          "last_seen_ms": 937180,
+          "text": "再扣掉手续费等成本",
+          "confidence": 0.9942848881085714,
+          "evidence": [
+            "frames/01029-0937180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 939180,
+          "end_ms": 942680,
+          "last_seen_ms": 939180,
+          "text": "所有参与者加起来甚至可能是负和",
+          "confidence": 0.9929129083951315,
+          "evidence": [
+            "frames/01030-0939180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 942680,
+          "end_ms": 944930,
+          "last_seen_ms": 942930,
+          "text": "但这不代表行生品没有价值",
+          "confidence": 0.950807457168897,
+          "evidence": [
+            "frames/01031-0942680.jpg",
+            "frames/01032-0942930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 944930,
+          "end_ms": 949180,
+          "last_seen_ms": 944930,
+          "text": "你提前锁价可能是担心以后买不起",
+          "confidence": 0.9939693371454875,
+          "evidence": [
+            "frames/01033-0944930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 949180,
+          "end_ms": 952930,
+          "last_seen_ms": 949680,
+          "text": "对方愿意锁价可能是担心以后卖",
+          "confidence": 0.9951229223183223,
+          "evidence": [
+            "frames/01034-0949180.jpg",
+            "frames/01035-0949680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 952930,
+          "end_ms": 956180,
+          "last_seen_ms": 955930,
+          "text": "双方都放弃了一部分未来可能得到的好处",
+          "confidence": 0.9943962898347285,
+          "evidence": [
+            "frames/01036-0952930.jpg",
+            "frames/01037-0955930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 956180,
+          "end_ms": 958180,
+          "last_seen_ms": 956180,
+          "text": "换来一份确定性",
+          "confidence": 0.9940768565450396,
+          "evidence": [
+            "frames/01038-0956180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 958180,
+          "end_ms": 959430,
+          "last_seen_ms": 958930,
+          "text": "所以",
+          "confidence": 0.9991868436336517,
+          "evidence": [
+            "frames/01039-0958180.jpg",
+            "frames/01040-0958680.jpg",
+            "frames/01041-0958930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 959430,
+          "end_ms": 961930,
+          "last_seen_ms": 959430,
+          "text": "衍生品既可以拿来压价格",
+          "confidence": 0.9773024862462824,
+          "evidence": [
+            "frames/01042-0959430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 961930,
+          "end_ms": 963180,
+          "last_seen_ms": 961930,
+          "text": "锁价格·管理风险也可以拿来管理风险",
+          "confidence": 0.9900336551169555,
+          "evidence": [
+            "frames/01043-0961930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 963180,
+          "end_ms": 963930,
+          "last_seen_ms": 963430,
+          "text": "也可以拿来管理风险",
+          "confidence": 0.99592215485043,
+          "evidence": [
+            "frames/01044-0963180.jpg",
+            "frames/01045-0963430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 963930,
+          "end_ms": 965180,
+          "last_seen_ms": 963930,
+          "text": "同样一把伞",
+          "confidence": 0.9982945799827576,
+          "evidence": [
+            "frames/01046-0963930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 965180,
+          "end_ms": 966930,
+          "last_seen_ms": 965180,
+          "text": "有人用它挡雨",
+          "confidence": 0.954729159673055,
+          "evidence": [
+            "frames/01047-0965180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 966930,
+          "end_ms": 969430,
+          "last_seen_ms": 966930,
+          "text": "有人拿它赌明天会不会下雨",
+          "confidence": 0.9750109861294428,
+          "evidence": [
+            "frames/01048-0966930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 969430,
+          "end_ms": 972680,
+          "last_seen_ms": 969930,
+          "text": "股票不能被这么简单的说成零和游戏",
+          "confidence": 0.9934975914657116,
+          "evidence": [
+            "frames/01049-0969430.jpg",
+            "frames/01050-0969680.jpg",
+            "frames/01051-0969930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 972680,
+          "end_ms": 975680,
+          "last_seen_ms": 972680,
+          "text": "比如你和朋友合伙开了一家餐馆",
+          "confidence": 0.9713134212153298,
+          "evidence": [
+            "frames/01052-0972680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 975680,
+          "end_ms": 976930,
+          "last_seen_ms": 975680,
+          "text": "餐馆做好菜",
+          "confidence": 0.9810335993766784,
+          "evidence": [
+            "frames/01053-0975680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 976930,
+          "end_ms": 978180,
+          "last_seen_ms": 976930,
+          "text": "服务顾客",
+          "confidence": 0.9958797544240952,
+          "evidence": [
+            "frames/01054-0976930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 978180,
+          "end_ms": 981430,
+          "last_seen_ms": 980430,
+          "text": "最后创造出新的利润和现金流",
+          "confidence": 0.9944418118550227,
+          "evidence": [
+            "frames/01055-0978180.jpg",
+            "frames/01056-0979930.jpg",
+            "frames/01057-0980180.jpg",
+            "frames/01058-0980430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 981430,
+          "end_ms": 983930,
+          "last_seen_ms": 983430,
+          "text": "你作为股东可以分到这笔利润",
+          "confidence": 0.9932557481985825,
+          "evidence": [
+            "frames/01059-0981430.jpg",
+            "frames/01060-0983430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 983930,
+          "end_ms": 985680,
+          "last_seen_ms": 985430,
+          "text": "股票背后是一家会经营",
+          "confidence": 0.9901703238487244,
+          "evidence": [
+            "frames/01061-0983930.jpg",
+            "frames/01062-0984180.jpg",
+            "frames/01063-0984930.jpg",
+            "frames/01064-0985180.jpg",
+            "frames/01065-0985430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 985680,
+          "end_ms": 986930,
+          "last_seen_ms": 986680,
+          "text": "会赚钱",
+          "confidence": 0.9809554815292358,
+          "evidence": [
+            "frames/01066-0985680.jpg",
+            "frames/01067-0985930.jpg",
+            "frames/01068-0986180.jpg",
+            "frames/01069-0986430.jpg",
+            "frames/01070-0986680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 986930,
+          "end_ms": 989680,
+          "last_seen_ms": 989180,
+          "text": "也可能经营失败的公司",
+          "confidence": 0.9955851912498475,
+          "evidence": [
+            "frames/01071-0986930.jpg",
+            "frames/01072-0987180.jpg",
+            "frames/01073-0987430.jpg",
+            "frames/01074-0987680.jpg",
+            "frames/01075-0987930.jpg",
+            "frames/01076-0988180.jpg",
+            "frames/01077-0988430.jpg",
+            "frames/01078-0988680.jpg",
+            "frames/01079-0988930.jpg",
+            "frames/01080-0989180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 989680,
+          "end_ms": 993930,
+          "last_seen_ms": 990430,
+          "text": "衍生品背后是一份等待未来",
+          "confidence": 0.9851810485124588,
+          "evidence": [
+            "frames/01081-0989680.jpg",
+            "frames/01082-0990430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 993930,
+          "end_ms": 995680,
+          "last_seen_ms": 995430,
+          "text": "那为什么基金不是衍生品呢？",
+          "confidence": 0.9804930549401504,
+          "evidence": [
+            "frames/01083-0993930.jpg",
+            "frames/01084-0994680.jpg",
+            "frames/01085-0994930.jpg",
+            "frames/01086-0995430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 995680,
+          "end_ms": 999180,
+          "last_seen_ms": 996180,
+          "text": "基金净值确实会跟着股票和债券变化",
+          "confidence": 0.9698886461555958,
+          "evidence": [
+            "frames/01087-0995680.jpg",
+            "frames/01088-0995930.jpg",
+            "frames/01089-0996180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 999180,
+          "end_ms": 1003680,
+          "last_seen_ms": 1002680,
+          "text": "但你购买的是基金份是对一资金池里",
+          "confidence": 0.9907613471150398,
+          "evidence": [
+            "frames/01090-0999180.jpg",
+            "frames/01091-1002680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1003680,
+          "end_ms": 1007180,
+          "last_seen_ms": 1006930,
+          "text": "一组资产的集合投资权益",
+          "confidence": 0.9941293001174927,
+          "evidence": [
+            "frames/01092-1003680.jpg",
+            "frames/01093-1003930.jpg",
+            "frames/01094-1006930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1007180,
+          "end_ms": 1012430,
+          "last_seen_ms": 1009680,
+          "text": "你不是在签一张未来按某个价格交割的衍生合同",
+          "confidence": 0.9860099958521978,
+          "evidence": [
+            "frames/01095-1007180.jpg",
+            "frames/01096-1007430.jpg",
+            "frames/01097-1009680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1012430,
+          "end_ms": 1014930,
+          "last_seen_ms": 1012430,
+          "text": "联动只是衍生品的一个特征",
+          "confidence": 0.9776679426431656,
+          "evidence": [
+            "frames/01098-1012430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1014930,
+          "end_ms": 1017680,
+          "last_seen_ms": 1016680,
+          "text": "不能只看见价格会跟着别的东西变",
+          "confidence": 0.9915878256162007,
+          "evidence": [
+            "frames/01099-1014930.jpg",
+            "frames/01100-1016680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1017680,
+          "end_ms": 1019430,
+          "last_seen_ms": 1017680,
+          "text": "就把所有产品都塞进",
+          "confidence": 0.9956749611430697,
+          "evidence": [
+            "frames/01101-1017680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1019430,
+          "end_ms": 1020180,
+          "last_seen_ms": 1019430,
+          "text": "衍生品",
+          "confidence": 0.9954336881637573,
+          "evidence": [
+            "frames/01102-1019430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1020180,
+          "end_ms": 1023180,
+          "last_seen_ms": 1020680,
+          "text": "金融市场最基础的地图到这里就搭",
+          "confidence": 0.9833468397458395,
+          "evidence": [
+            "frames/01103-1020180.jpg",
+            "frames/01104-1020430.jpg",
+            "frames/01105-1020680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1023180,
+          "end_ms": 1025180,
+          "last_seen_ms": 1023180,
+          "text": "以后遇到任何产品",
+          "confidence": 0.9930939003825188,
+          "evidence": [
+            "frames/01106-1023180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1025180,
+          "end_ms": 1026930,
+          "last_seen_ms": 1025180,
+          "text": "先别问他能赚多少",
+          "confidence": 0.9826599434018135,
+          "evidence": [
+            "frames/01107-1025180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1026930,
+          "end_ms": 1028430,
+          "last_seen_ms": 1026930,
+          "text": "先问5个问题",
+          "confidence": 0.9858752191066742,
+          "evidence": [
+            "frames/01108-1026930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1028430,
+          "end_ms": 1030180,
+          "last_seen_ms": 1028430,
+          "text": "第一我买到的到底是什么？",
+          "confidence": 0.9912856419881185,
+          "evidence": [
+            "frames/01109-1028430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1030180,
+          "end_ms": 1031430,
+          "last_seen_ms": 1030180,
+          "text": "是所有权",
+          "confidence": 0.9951574355363846,
+          "evidence": [
+            "frames/01110-1030180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1031430,
+          "end_ms": 1034180,
+          "last_seen_ms": 1031430,
+          "text": "债权基金份一项资产",
+          "confidence": 0.99462980694241,
+          "evidence": [
+            "frames/01111-1031430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1034180,
+          "end_ms": 1035930,
+          "last_seen_ms": 1034180,
+          "text": "还是一份衍生合同？",
+          "confidence": 0.9808448420630561,
+          "evidence": [
+            "frames/01112-1034180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1035930,
+          "end_ms": 1038430,
+          "last_seen_ms": 1035930,
+          "text": "第二收益从哪里来？",
+          "confidence": 0.9805688261985779,
+          "evidence": [
+            "frames/01113-1035930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1038430,
+          "end_ms": 1039680,
+          "last_seen_ms": 1038430,
+          "text": "来自企业利润",
+          "confidence": 0.9979967474937439,
+          "evidence": [
+            "frames/01114-1038430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1039680,
+          "end_ms": 1040680,
+          "last_seen_ms": 1039680,
+          "text": "借款利息",
+          "confidence": 0.9980680197477341,
+          "evidence": [
+            "frames/01115-1039680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1040680,
+          "end_ms": 1041430,
+          "last_seen_ms": 1040680,
+          "text": "资产涨价",
+          "confidence": 0.9709844291210175,
+          "evidence": [
+            "frames/01116-1040680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1041430,
+          "end_ms": 1044180,
+          "last_seen_ms": 1042930,
+          "text": "还是交易对手承担的损失？",
+          "confidence": 0.9924385100603104,
+          "evidence": [
+            "frames/01117-1041430.jpg",
+            "frames/01118-1042930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1044180,
+          "end_ms": 1046180,
+          "last_seen_ms": 1044180,
+          "text": "第三谁对我负有责任？",
+          "confidence": 0.9843844830989837,
+          "evidence": [
+            "frames/01119-1044180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1046180,
+          "end_ms": 1047680,
+          "last_seen_ms": 1046180,
+          "text": "是公司借款人",
+          "confidence": 0.9966239929199219,
+          "evidence": [
+            "frames/01120-1046180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1047680,
+          "end_ms": 1049180,
+          "last_seen_ms": 1047680,
+          "text": "管理人交易对手？",
+          "confidence": 0.9787066578865051,
+          "evidence": [
+            "frames/01121-1047680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1049180,
+          "end_ms": 1051680,
+          "last_seen_ms": 1049930,
+          "text": "还是根本没有人承诺还本？",
+          "confidence": 0.9869170983632406,
+          "evidence": [
+            "frames/01122-1049180.jpg",
+            "frames/01123-1049930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1051680,
+          "end_ms": 1054430,
+          "last_seen_ms": 1051680,
+          "text": "第四最坏会亏到哪里？",
+          "confidence": 0.9830444931983948,
+          "evidence": [
+            "frames/01124-1051680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1054430,
+          "end_ms": 1055680,
+          "last_seen_ms": 1054430,
+          "text": "只亏投入的本金",
+          "confidence": 0.9938234005655561,
+          "evidence": [
+            "frames/01125-1054430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1055680,
+          "end_ms": 1059180,
+          "last_seen_ms": 1056930,
+          "text": "还是因为杠杆可能承担更大的损失？",
+          "confidence": 0.9896224215626717,
+          "evidence": [
+            "frames/01126-1055680.jpg",
+            "frames/01127-1056930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1059180,
+          "end_ms": 1060680,
+          "last_seen_ms": 1059180,
+          "text": "第五我怎么退出？",
+          "confidence": 0.9888930171728134,
+          "evidence": [
+            "frames/01128-1059180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1060680,
+          "end_ms": 1062180,
+          "last_seen_ms": 1060680,
+          "text": "可以随时卖出",
+          "confidence": 0.9962796568870544,
+          "evidence": [
+            "frames/01129-1060680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1062180,
+          "end_ms": 1063430,
+          "last_seen_ms": 1062180,
+          "text": "需要等到期",
+          "confidence": 0.9982361674308777,
+          "evidence": [
+            "frames/01130-1062180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1063430,
+          "end_ms": 1064680,
+          "last_seen_ms": 1063430,
+          "text": "存在封闭期",
+          "confidence": 0.9963375329971313,
+          "evidence": [
+            "frames/01131-1063430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1064680,
+          "end_ms": 1067680,
+          "last_seen_ms": 1064680,
+          "text": "还是市场里可能根本找不到买家？",
+          "confidence": 0.9893004695574442,
+          "evidence": [
+            "frames/01132-1064680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1067680,
+          "end_ms": 1070180,
+          "last_seen_ms": 1067680,
+          "text": "20多岁本金少并不可怕",
+          "confidence": 0.9952519698576494,
+          "evidence": [
+            "frames/01133-1067680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1070180,
+          "end_ms": 1075430,
+          "last_seen_ms": 1070930,
+          "text": "真正危险的是拿应急金去买一份自己都解释不清的东西",
+          "confidence": 0.9923100676387548,
+          "evidence": [
+            "frames/01134-1070180.jpg",
+            "frames/01135-1070930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1075430,
+          "end_ms": 1077430,
+          "last_seen_ms": 1075430,
+          "text": "再把上涨归功于能力",
+          "confidence": 0.9953877594735887,
+          "evidence": [
+            "frames/01136-1075430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1077430,
+          "end_ms": 1079430,
+          "last_seen_ms": 1077930,
+          "text": "把下跌归答于运气",
+          "confidence": 0.920282956212759,
+          "evidence": [
+            "frames/01137-1077430.jpg",
+            "frames/01138-1077930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1079430,
+          "end_ms": 1084180,
+          "last_seen_ms": 1079430,
+          "text": "金融入门的第一课不是预测明天涨",
+          "confidence": 0.9915833711624146,
+          "evidence": [
+            "frames/01139-1079430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1084180,
+          "end_ms": 1086430,
+          "last_seen_ms": 1084930,
+          "text": "是你在签字和付款以前",
+          "confidence": 0.9930801689624786,
+          "evidence": [
+            "frames/01140-1084180.jpg",
+            "frames/01141-1084430.jpg",
+            "frames/01142-1084930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1086430,
+          "end_ms": 1088430,
+          "last_seen_ms": 1086430,
+          "text": "能看懂自己把钱交给了谁",
+          "confidence": 0.9859368042512373,
+          "evidence": [
+            "frames/01143-1086430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1088430,
+          "end_ms": 1089930,
+          "last_seen_ms": 1088430,
+          "text": "换回了什么权利",
+          "confidence": 0.9933584417615619,
+          "evidence": [
+            "frames/01144-1088430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1089930,
+          "end_ms": 1091680,
+          "last_seen_ms": 1089930,
+          "text": "又接下了什么风险",
+          "confidence": 0.9953135028481483,
+          "evidence": [
+            "frames/01145-1089930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1091680,
+          "end_ms": 1092930,
+          "last_seen_ms": 1092180,
+          "text": "今晚",
+          "confidence": 0.9967846274375916,
+          "evidence": [
+            "frames/01146-1091680.jpg",
+            "frames/01147-1091930.jpg",
+            "frames/01148-1092180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1092930,
+          "end_ms": 1094180,
+          "last_seen_ms": 1092930,
+          "text": "打开你的持仓",
+          "confidence": 0.9872359335422516,
+          "evidence": [
+            "frames/01149-1092930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1094180,
+          "end_ms": 1096430,
+          "last_seen_ms": 1094180,
+          "text": "或者找一个你准备购买的产品",
+          "confidence": 0.9917461780401376,
+          "evidence": [
+            "frames/01150-1094180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1096430,
+          "end_ms": 1098430,
+          "last_seen_ms": 1096430,
+          "text": "把刚才5个问题写下来",
+          "confidence": 0.9929502248764038,
+          "evidence": [
+            "frames/01151-1096430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1098430,
+          "end_ms": 1100180,
+          "last_seen_ms": 1098430,
+          "text": "如果连收益从哪里来",
+          "confidence": 0.9918486542171903,
+          "evidence": [
+            "frames/01152-1098430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1100180,
+          "end_ms": 1102680,
+          "last_seen_ms": 1100180,
+          "text": "最坏能亏多少都答不出来",
+          "confidence": 0.9816271391781893,
+          "evidence": [
+            "frames/01153-1100180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1102680,
+          "end_ms": 1104930,
+          "last_seen_ms": 1102680,
+          "text": "就先别追加一分钱",
+          "confidence": 0.9941910356283188,
+          "evidence": [
+            "frames/01154-1102680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1104930,
+          "end_ms": 1106680,
+          "last_seen_ms": 1105430,
+          "text": "等这张地图搭稳以后",
+          "confidence": 0.9918860726886325,
+          "evidence": [
+            "frames/01155-1104930.jpg",
+            "frames/01156-1105430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1106680,
+          "end_ms": 1108180,
+          "last_seen_ms": 1107930,
+          "text": "再去学估值",
+          "confidence": 0.9900716304779053,
+          "evidence": [
+            "frames/01157-1106680.jpg",
+            "frames/01158-1107180.jpg",
+            "frames/01159-1107430.jpg",
+            "frames/01160-1107930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1108180,
+          "end_ms": 1109430,
+          "last_seen_ms": 1108430,
+          "text": "资产配置",
+          "confidence": 0.9934417456388474,
+          "evidence": [
+            "frames/01161-1108180.jpg",
+            "frames/01162-1108430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1109430,
+          "end_ms": 1111180,
+          "last_seen_ms": 1109430,
+          "text": "宏观政策和交易方法",
+          "confidence": 0.9960814846886529,
+          "evidence": [
+            "frames/01163-1109430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1111180,
+          "end_ms": 1113180,
+          "last_seen_ms": 1112930,
+          "text": "那时候你听到的每一个知识点",
+          "confidence": 0.9953952385829046,
+          "evidence": [
+            "frames/01164-1111180.jpg",
+            "frames/01165-1111430.jpg",
+            "frames/01166-1112680.jpg",
+            "frames/01167-1112930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1113180,
+          "end_ms": 1116180,
+          "last_seen_ms": 1113430,
+          "text": "才终于有位置可以落下",
+          "confidence": 0.9952214658260345,
+          "evidence": [
+            "frames/01168-1113180.jpg",
+            "frames/01169-1113430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1116180,
+          "end_ms": 1118930,
+          "last_seen_ms": 1116680,
+          "text": "这里是Yuan的认知笔记",
+          "confidence": 0.997390866279602,
+          "evidence": [
+            "frames/01170-1116180.jpg",
+            "frames/01171-1116430.jpg",
+            "frames/01172-1116680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 1118930,
+          "end_ms": 1119782,
+          "last_seen_ms": 1119732,
+          "text": "我们下期再见",
+          "confidence": 0.9982529183228811,
+          "evidence": [
+            "frames/01173-1118930.jpg",
+            "frames/01174-1119732.jpg"
+          ],
+          "recognition_variants": 1
+        }
+      ],
+      "language": null,
+      "confidence": 0.9869217111974737,
+      "limitations": [
+        "visual_subtitles_only_not_spoken_audio",
+        "approximate_frame_capture_timestamps",
+        "sub_250ms_or_low_change_captions_may_be_missed",
+        "source_subtitle_errors_preserved",
+        "short_lived_ocr_variants_collapsed_by_temporal_consensus",
+        "ocr_not_manually_corrected"
+      ],
+      "source": {
+        "type": "ocr",
+        "provider": "live_browser_rapidocr",
+        "run_id": "97a87ed7-1b9a-4b64-a881-682aa5a31697",
+        "request_id": "yuan-live-ocr-006",
+        "stable_aweme_id": "7674668931734326528",
+        "started_at": "2026-09-01T04:30:30.386Z",
+        "finished_at": "2026-09-01T04:40:35.27Z",
+        "fresh_capture": true,
+        "transcript_cache_read": false,
+        "frame_count": 1175,
+        "checked_frames": 4480,
+        "frame_hash_chain": "3f9cbc175d05ea5db984d9fca4e976f78c97aa6b8a511d1a7589b095785f8245",
+        "probe_hash_chain": "19b0f031e1fbaa13dccceb1d883915b45316da1fa5af73201f217003d1fd5318",
+        "media_url_sha256": "cd8a3b8e1138fd64295ee81a1e053c10320a265529e725237a109797eb62399b",
+        "engine": {
+          "ready": true,
+          "engine": "rapidocr_onnxruntime",
+          "version": "1.4.4",
+          "models": [
+            {
+              "name": "ch_PP-OCRv4_det_infer.onnx",
+              "sha256": "d2a7720d45a54257208b1e13e36a8479894cb74155a5efe29462512d42f49da9"
+            },
+            {
+              "name": "ch_PP-OCRv4_rec_infer.onnx",
+              "sha256": "48fc40f24f6d2a207a2b1091d3437eb3cc3eb6b676dc3ef9c37384005483683b"
+            },
+            {
+              "name": "ch_ppocr_mobile_v2.0_cls_infer.onnx",
+              "sha256": "e47acedf663230f8863ff1ab0e64dd2d82b838fceb5957146dab185a89d6215c"
+            }
+          ]
+        },
+        "coverage": {
+          "start_ms": 0,
+          "end_ms": 1119782,
+          "full_video_scanned": true,
+          "visual_step_ms": 250,
+          "threshold": 0.003
+        }
+      },
+      "media_resolution": {
+        "stable_identity": "aweme_id",
+        "media_kind": "video",
+        "media_type": "browser_decoded_video",
+        "acquired_at": "2026-09-01T04:30:30.386Z",
+        "validated_at": "2026-09-01T04:40:35.27Z",
+        "validation": {
+          "status": "live_browser_frames_read",
+          "frame_count": 1175,
+          "media_url_sha256": "cd8a3b8e1138fd64295ee81a1e053c10320a265529e725237a109797eb62399b"
+        }
+      }
+    }
+  }
+}

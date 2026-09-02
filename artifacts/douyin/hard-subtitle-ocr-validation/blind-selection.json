@@ -1,0 +1,17 @@
+{
+  "task_id": "CONTENT_READER_LEVEL2_BLIND_001",
+  "selected_at": "2026-09-01T16:49:23.0495463+08:00",
+  "input_url": "https://www.douyin.com/video/7550875346879417639",
+  "aweme_id": "7550875346879417639",
+  "selection_method": "First canonical Douyin single-video result from a public search index after the logged-out official homepage returned a CAPTCHA interstitial; the video page was not opened before the formal request.",
+  "preflight_content_read": false,
+  "prior_repository_id_matches": 0,
+  "prior_tree_mirror_id_matches": 0,
+  "prior_memory_index_id_matches": 0,
+  "excluded_known_development_ids": [
+    "7674668931734326528",
+    "7670118101211453413",
+    "7669061012259179785",
+    "7663451783460703524"
+  ]
+}

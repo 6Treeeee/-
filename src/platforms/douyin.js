@@ -233,6 +233,8 @@ export class DouyinReader {
     aiGatewayApiKey = process.env.AI_GATEWAY_API_KEY,
     vercelOidcToken = process.env.VERCEL_OIDC_TOKEN,
     localAsr = null,
+    hardSubtitleOcr = null,
+    requestId = null,
     requestDeadlineAt = null,
     processContent,
     profileConcurrency = 3
@@ -275,6 +277,8 @@ export class DouyinReader {
       aiGatewayApiKey,
       vercelOidcToken,
       localAsr,
+      hardSubtitleOcr,
+      requestId,
       requestDeadlineAt,
       profileConcurrency
     });
@@ -342,17 +346,20 @@ export class DouyinReader {
     });
   }
 
-  async readVideo({ inputUrl, resolvedUrl, resolution }) {
+  async readVideo({ inputUrl, resolvedUrl, resolution, fresh = false }) {
     const context = {
       inputUrl,
       resolvedUrl,
       awemeId: awemeIdFromUrl(resolvedUrl) ?? awemeIdFromUrl(inputUrl)
     };
-    const retrieval = await this.retrieveVideo(context);
+    const retrieval = await this.retrieveVideo(context, fresh
+      ? this.orderFor("video").filter((id) => id !== "verified_public_artifact")
+      : this.orderFor("video"));
     let content = this.normalizeRetrievedVideo(retrieval, context);
 
     if (this.processContent) {
       content = await this.processor.processVideo(content, {
+        fresh,
         refreshVideo: async (awemeId) => {
           const canonicalUrl = `https://www.douyin.com/video/${awemeId}`;
           const refreshed = await this.retrieveVideo({
@@ -535,7 +542,7 @@ export class DouyinReader {
     };
   }
 
-  async read({ url, type = "auto" }) {
+  async read({ url, type = "auto", fresh = false }) {
     const inputUrl = validatedDouyinUrl(url).href;
     const resolution = await resolveDouyinUrl(inputUrl, this.fetchImpl);
     const resolvedUrl = publicSourceUrl(resolution.finalUrl);
@@ -550,7 +557,7 @@ export class DouyinReader {
       return this.readProfile({ inputUrl, resolvedUrl, resolution: sourceResolution });
     }
     if (detectedType === "video") {
-      return this.readVideo({ inputUrl, resolvedUrl, resolution: sourceResolution });
+      return this.readVideo({ inputUrl, resolvedUrl, resolution: sourceResolution, fresh });
     }
 
     // A short-link fetch can fail transiently even though an ordinary public
@@ -577,6 +584,7 @@ export class DouyinReader {
         }
         if (browserDetectedType === "video") {
           return this.readVideo({
+            fresh,
             inputUrl,
             resolvedUrl: browserResolvedUrl,
             resolution: browserSourceResolution
@@ -603,7 +611,7 @@ export class DouyinReader {
     }
     const awemeId = awemeIdFromUrl(resolvedUrl) ?? awemeIdFromUrl(inputUrl);
     if (awemeId) {
-      return this.readVideo({ inputUrl, resolvedUrl, resolution: sourceResolution });
+      return this.readVideo({ inputUrl, resolvedUrl, resolution: sourceResolution, fresh });
     }
     throw new ReaderError(
       "DOUYIN_CONTENT_NOT_RESOLVED",

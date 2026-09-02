@@ -574,6 +574,8 @@ export class TranscriptionService {
     fetchImpl = globalThis.fetch,
     mediaResolver = null,
     localAsr = null,
+    hardSubtitleOcr = null,
+    requestId = null,
     openAiApiKey = process.env.OPENAI_API_KEY,
     openAIApiKey,
     openaiApiKey,
@@ -606,6 +608,8 @@ export class TranscriptionService {
     this.fetchImpl = fetchImpl;
     this.mediaResolver = mediaResolver ?? new MediaResolver({ fetchImpl });
     this.localAsr = localAsr;
+    this.hardSubtitleOcr = hardSubtitleOcr;
+    this.requestId = requestId;
     this.openAiApiKey = openAIApiKey ?? openaiApiKey ?? openAiApiKey;
     this.aiGatewayApiKey = gatewayApiKey ?? aiGatewayApiKey;
     this.vercelOidcToken = oidcToken ?? vercelOidcToken;
@@ -901,6 +905,23 @@ export class TranscriptionService {
       }
     }
 
+    // Hard subtitles are read from a fresh public browser before any audio is
+    // fetched or extracted. Access-control failures remain terminal.
+    const ocrAttempts = [];
+    if (typeof this.hardSubtitleOcr === "function") {
+      try {
+        const result = await this.hardSubtitleOcr(video, {
+          deadlineAt: this.requestDeadlineAt ?? Date.now() + 270_000,
+          requestId: this.requestId
+        });
+        if (result?.status === "complete" && result.text?.trim()) return result;
+        ocrAttempts.push({ method: "hard_subtitle_ocr", code: "OCR_EMPTY_RESULT" });
+      } catch (error) {
+        if (isTerminalAccessError(error) || ["OCR_BUSY", "OCR_DEADLINE_EXCEEDED"].includes(error?.code)) throw error;
+        ocrAttempts.push({ ...safeAttempt("hard_subtitle_ocr", error), ...(error?.details?.ocr_run_id ? { ocr_run_id: error.details.ocr_run_id } : {}) });
+      }
+    }
+
     let media;
     let resolvedSource;
     try {
@@ -916,14 +937,15 @@ export class TranscriptionService {
         details: {
           ...(video.aweme_id ?? video.id ? { aweme_id: String(video.aweme_id ?? video.id) } : {}),
           cause: safeAttempt("media", error),
+          ...(ocrAttempts.length ? { ocr_attempts: ocrAttempts } : {}),
           ...(captionAttempts.length ? { caption_attempts: captionAttempts } : {})
         },
         cause: error
       });
     }
 
-    const attempts = [];
-    const inheritedLimitations = captionAttempts.length ? ["caption_tracks_unusable"] : [];
+    const attempts = [...ocrAttempts];
+    const inheritedLimitations = [...(captionAttempts.length ? ["caption_tracks_unusable"] : []), ...(ocrAttempts.length ? ["hard_subtitle_ocr_unavailable"] : [])];
     const mediaResolution = publicMediaResolution(resolvedSource);
     let transcriptionMedia = media;
     if (isMp4Video(media) && typeof this.audioExtractor === "function") {

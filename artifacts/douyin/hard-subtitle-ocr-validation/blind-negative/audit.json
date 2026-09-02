@@ -1,0 +1,40 @@
+{
+  "task_id": "CONTENT_READER_LEVEL2_BLIND_NEGATIVE",
+  "status": "accepted_negative_routing_test_from_existing_evidence",
+  "aweme_id": "7550875346879417639",
+  "public_url": "https://www.douyin.com/video/7550875346879417639",
+  "selection": "previously unused and not pre-read before the blind run",
+  "identity": {
+    "expected_aweme_id": "7550875346879417639",
+    "observed_aweme_id": "7550875346879417639",
+    "target_player_bound": true,
+    "media_duration_ms": 374144
+  },
+  "pre_fix": {
+    "request_id": "blind-live-ocr-002",
+    "result": "incorrectly accepted sparse scene and UI text as 36 caption segments",
+    "content_level_review": "failed because long interview stretches had no readable hard subtitles"
+  },
+  "minimal_fix": "require sustained caption activity and exclude multi-row scene/UI OCR",
+  "post_fix": {
+    "request_id": "blind-live-ocr-003",
+    "run_id": "131a8758-b637-4b56-b90a-ba07e7f529d8",
+    "checked_frames": 1497,
+    "changed_frames": 390,
+    "active_ms": 29000,
+    "active_ratio": 0.077532,
+    "covered_10s_windows": 21,
+    "total_10s_windows": 38,
+    "window_ratio": 0.552632,
+    "ocr_decision": "OCR_CAPTIONS_SPARSE",
+    "fallback_attempted": "existing ASR route",
+    "final_error": "TRANSCRIPTION_UNAVAILABLE"
+  },
+  "provenance": {
+    "fresh_capture": true,
+    "transcript_cache_read": false,
+    "pre_generated_transcript_used": false
+  },
+  "decision": "pass_as_negative_route_test",
+  "note": "The final 503 is honest on this Windows host because no cloud ASR credential is configured and the bundled local Whisper runtime is Linux x64 only."
+}

@@ -1092,7 +1092,7 @@ export class DirectPublicWebProvider {
     }), target);
   }
 
-  async readVideo({ inputUrl, resolvedUrl, awemeId } = {}) {
+  async readVideo({ inputUrl, resolvedUrl, awemeId, consumeVideo = null } = {}) {
     const selected = videoTarget({ inputUrl, resolvedUrl, awemeId });
     return this.runWithRetry((attempt, target) => this.browser.withPage(async ({ page, runtime }) => {
       const capture = createCapture({ expectedAwemeId: selected.awemeId });
@@ -1123,6 +1123,9 @@ export class DirectPublicWebProvider {
           }
         }
         if (timeoutDetailRecovery) {
+          if (consumeVideo) {
+            throw new ReaderError("OCR_PUBLIC_PLAYER_UNAVAILABLE", "Metadata recovery did not provide a live public player.", { status: 503 });
+          }
           return {
             aweme: timeoutDetailRecovery.aweme,
             networkMediaUrls: [],
@@ -1299,8 +1302,21 @@ export class DirectPublicWebProvider {
           );
         }
 
+        const consumed = typeof consumeVideo === "function" ? await consumeVideo({
+          page, runtime, aweme,
+          assertAccess: async () => {
+            await capture.drain();
+            const liveAccess = await pageAccessSnapshot(page);
+            mergeSignals(liveAccess, capture.state.signals);
+            const liveFailure = accessError(liveAccess, { hasPublicContent: true });
+            if (liveFailure) throw liveFailure;
+            const current = exactPublicVideoPage(page.url(), selected.awemeId);
+            if (!current) throw identityMismatchError(target, selected.awemeId, awemeIdFromUrl(page.url()), "live_player_page");
+          }
+        }) : undefined;
         return {
           aweme,
+          ...(consumed !== undefined ? { consumed } : {}),
           networkMediaUrls: observedMediaUrls,
           meta: {
             provider: PROVIDER,

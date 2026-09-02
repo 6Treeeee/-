@@ -1,0 +1,18 @@
+{
+  "ok": false,
+  "request_id": "blind-live-ocr-003",
+  "error": {
+    "code": "TRANSCRIPTION_UNAVAILABLE",
+    "message": "No configured speech-to-text method produced a transcript.",
+    "details": {
+      "aweme_id": "7550875346879417639",
+      "attempts": [
+        {
+          "method": "hard_subtitle_ocr",
+          "code": "OCR_CAPTIONS_SPARSE",
+          "ocr_run_id": "131a8758-b637-4b56-b90a-ba07e7f529d8"
+        }
+      ]
+    }
+  }
+}

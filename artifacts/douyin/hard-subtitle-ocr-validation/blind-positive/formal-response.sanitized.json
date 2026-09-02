@@ -1,0 +1,1696 @@
+{
+  "ok": true,
+  "request_id": "blind-positive-ocr-002",
+  "schema_version": "2.0",
+  "platform": "douyin",
+  "content_type": "video",
+  "source": {
+    "input_url": "https://www.douyin.com/video/7589860433402531110",
+    "resolved_url": "https://www.douyin.com/video/7589860433402531110",
+    "resolution": {
+      "finalUrl": "https://www.douyin.com/video/7589860433402531110",
+      "resolved": false,
+      "hops": []
+    },
+    "retrieval": {
+      "provider": "direct_public_web",
+      "method": "public_unauthenticated_browser",
+      "acquired_at": "2026-09-01T09:05:53.417Z",
+      "target": {
+        "host": "www.douyin.com",
+        "path": "/video/7589860433402531110"
+      },
+      "browser": {
+        "kind": "local_edge",
+        "userAgentAdjusted": true
+      },
+      "endpoints_observed": [
+        "/aweme/v1/web/aweme/detail/"
+      ],
+      "network_media_count": 2,
+      "network_media_hosts": [
+        "v95-aw-web.douyinvod.com"
+      ],
+      "identity": {
+        "expected_aweme_id": "7589860433402531110",
+        "observed_aweme_id": "7589860433402531110",
+        "source": "public_detail",
+        "page_url_mismatch_recovered": false
+      },
+      "page": {
+        "title": "停不下来的“无脑刷视频”？知识到底怎么进脑子啊！ #知识科普#抖音精选app#2025年度精选内容盘点#用学霸的方式打开2026 - 抖音",
+        "description": "停不下来的“无脑刷视频”？知识到底怎么进脑子啊！ #知识科普#抖音精选app#2025年度精选内容盘点#用学霸的方式打开2026 - 苏大实验员萝卜于20251231发布在抖音，已经收获了4318.5万个喜欢，来抖音，记录美好生活！",
+        "canonical_host": "www.douyin.com",
+        "canonical_path": "/video/7589860433402531110"
+      },
+      "attempts": 1
+    },
+    "provider_attempts": [
+      {
+        "provider": "direct_public_web",
+        "status": "success"
+      }
+    ]
+  },
+  "content": {
+    "id": "7589860433402531110",
+    "aweme_id": "7589860433402531110",
+    "canonical_url": "https://www.douyin.com/video/7589860433402531110",
+    "content_kind": "video",
+    "title": "停不下来的“无脑刷视频”？知识到底怎么进脑子啊！",
+    "description": "停不下来的“无脑刷视频”？知识到底怎么进脑子啊！ #知识科普#抖音精选app#2025年度精选内容盘点#用学霸的方式打开2026",
+    "author": {
+      "id": "3289335016992800",
+      "display_name": "苏大实验员萝卜",
+      "sec_uid": null
+    },
+    "media": {
+      "duration_ms": 133237,
+      "width": 1920,
+      "height": 1080
+    },
+    "readable_content": {
+      "status": "complete",
+      "method": "hard_subtitle_ocr",
+      "text": "你门有没有发现一个神奇的现象\n好像自己的专注力越来越低了\n注力\n好像自己的专注力越来越低了\n明明只想刷5分钟短视频\n5: 00\n回过神\n30:00\n已经漫无目的的划了半个小时\n30: 00\n已经漫无目的的划了半个小时\n刷完啥也没记住\n觉得脑子更空了\n其实这不是我们的问题\n刷到新内容时\n多巴胺会给个短暂的快乐刺激\n但这种快速切换的模式\n会让负责专注和决策的大脑区域\n慢慢变成\n不用判断\n看似刷了很多\n实际能沉淀的有效信息少的可怜\n我刚刷了啥\n当你用学霸的方式刷视频\n你就会打开一个新世界\n首先学霸用的可不是普通APP\n首先学霸用的可不是\n而是抖音的另一个版本\n抖音精选APP\n我猜你们肯定没见过\n如果你们想刷点有营养的视频\n还真得用它\n早上起来\n学霸们会用10分钟的时间\n快速获得信息\n能在不知不觉中\n提升自己的表达力\n提升自己的表达力B医国国\n抖音精选\n金融\n直接整理了\n月度\n直接整理了\n直接整理了贫。妈妈在每个\n直接整理了\n不用靠自己无脑刷\n就已经帮我们筛好了\n鹤灵Healing三种改变大脑的方式\n就已经帮我们筛好了：0万\n各领域的优质内容做了\n更不会动不动就乱入各种杂乱的广告\nPS\nPS:广告是不能进入精选的\n到下午\n学霸连刷手机也是一种学习方式\n因为他们手机刷到的都是\n免疫系统是怎样疯狂的保解你\n橋\n公\n可以直接在上面看\n想自学短视频制作的\n上面也给你汇总了课程\n而且非常系统化\n每个课程都讲的非常详细\n知识就这么快速的进入了脑子里\n到了晚上\n学霸甚至可以靠刷视频\nB居居\nB国HO\n因为它还能当做\n读物\n比如你喜欢这条\n比如你喜欢这条糖瘾吗？\n你有糖愈吗？\n《为什么糖会让人上瘾》\n进人抖音精选APP后\n点击视频\n奶嘉\n让它后台播放\n还能定时什么时候关闭\n利用碎片时间\n又不会陷入无目的刷视频的循环\n让大脑在放松中悄悄吸收知识\n普通人\n普通人学霸\n普通人\n更酷的是\n它们用的抖音精选APP\n奶茶\n像我经常会看公开课里的\n各大高校在线上分享理论基础课程\n我可以根据章节做跳转\n在听到不懂的地方\n就可以点右上角的AI去提问\n厅单的出来老板会\n《如何让AI生成行业报告》\n刷到自己感兴趣的内容\n正好没时间看完可以点稍后再看\n就会添加到后台\n等你啥时候空\n普林斯顿大学的\n它的功能真的太强大了\n感觉从高中生到职场人\n会遇到生活中的方方面面\n它都涵盖了\n它给我一种\n像是一本电子版百科全书的感觉\n如果你也想告别“刷完就忘”的\n让刷视频变成真正的充电时刻\n赶紧点左下角下载抖音精选APP\n这里的每一条内容都值得细品\n既能满足大脑对优质信息的需求\n又能让你刷的\n有收获\n有收获有共鸣",
+      "segments": [
+        {
+          "start_ms": 180,
+          "end_ms": 1930,
+          "last_seen_ms": 1680,
+          "text": "你门有没有发现一个神奇的现象",
+          "confidence": 0.9606430040938514,
+          "evidence": [
+            "frames/00000-0000180.jpg",
+            "frames/00001-0000430.jpg",
+            "frames/00002-0000680.jpg",
+            "frames/00003-0000930.jpg",
+            "frames/00004-0001180.jpg",
+            "frames/00005-0001430.jpg",
+            "frames/00006-0001680.jpg"
+          ],
+          "recognition_variants": 2
+        },
+        {
+          "start_ms": 1930,
+          "end_ms": 2430,
+          "last_seen_ms": 2180,
+          "text": "好像自己的专注力越来越低了",
+          "confidence": 0.9903003756816571,
+          "evidence": [
+            "frames/00007-0001930.jpg",
+            "frames/00008-0002180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 2430,
+          "end_ms": 2930,
+          "last_seen_ms": 2680,
+          "text": "注力",
+          "confidence": 0.9431476294994354,
+          "evidence": [
+            "frames/00009-0002430.jpg",
+            "frames/00010-0002680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 2930,
+          "end_ms": 3680,
+          "last_seen_ms": 3430,
+          "text": "好像自己的专注力越来越低了",
+          "confidence": 0.9638930971805865,
+          "evidence": [
+            "frames/00011-0002930.jpg",
+            "frames/00012-0003180.jpg",
+            "frames/00013-0003430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 3680,
+          "end_ms": 3930,
+          "last_seen_ms": 3680,
+          "text": "明明只想刷5分钟短视频",
+          "confidence": 0.9975319396365773,
+          "evidence": [
+            "frames/00014-0003680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 3930,
+          "end_ms": 5180,
+          "last_seen_ms": 4930,
+          "text": "5: 00",
+          "confidence": 0.8983412504196167,
+          "evidence": [
+            "frames/00015-0003930.jpg",
+            "frames/00016-0004180.jpg",
+            "frames/00017-0004430.jpg",
+            "frames/00018-0004680.jpg",
+            "frames/00019-0004930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 5180,
+          "end_ms": 5430,
+          "last_seen_ms": 5180,
+          "text": "回过神",
+          "confidence": 0.9990282456080118,
+          "evidence": [
+            "frames/00020-0005180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 5430,
+          "end_ms": 5680,
+          "last_seen_ms": 5430,
+          "text": "30:00",
+          "confidence": 0.9780428647994995,
+          "evidence": [
+            "frames/00021-0005430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 5680,
+          "end_ms": 5930,
+          "last_seen_ms": 5680,
+          "text": "已经漫无目的的划了半个小时",
+          "confidence": 0.9869871781422541,
+          "evidence": [
+            "frames/00022-0005680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 5930,
+          "end_ms": 6180,
+          "last_seen_ms": 5930,
+          "text": "30: 00",
+          "confidence": 0.9161244829495748,
+          "evidence": [
+            "frames/00023-0005930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 6180,
+          "end_ms": 7680,
+          "last_seen_ms": 6180,
+          "text": "已经漫无目的的划了半个小时",
+          "confidence": 0.9872559675803552,
+          "evidence": [
+            "frames/00024-0006180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 7680,
+          "end_ms": 8930,
+          "last_seen_ms": 8180,
+          "text": "刷完啥也没记住",
+          "confidence": 0.9906824060848781,
+          "evidence": [
+            "frames/00025-0007680.jpg",
+            "frames/00026-0007930.jpg",
+            "frames/00027-0008180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 8930,
+          "end_ms": 9930,
+          "last_seen_ms": 8930,
+          "text": "觉得脑子更空了",
+          "confidence": 0.9968179294041225,
+          "evidence": [
+            "frames/00028-0008930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 9930,
+          "end_ms": 11180,
+          "last_seen_ms": 9930,
+          "text": "其实这不是我们的问题",
+          "confidence": 0.9963160157203674,
+          "evidence": [
+            "frames/00029-0009930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 14180,
+          "end_ms": 15180,
+          "last_seen_ms": 14930,
+          "text": "刷到新内容时",
+          "confidence": 0.9922068317731222,
+          "evidence": [
+            "frames/00034-0014180.jpg",
+            "frames/00035-0014430.jpg",
+            "frames/00036-0014680.jpg",
+            "frames/00037-0014930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 15180,
+          "end_ms": 17180,
+          "last_seen_ms": 15430,
+          "text": "多巴胺会给个短暂的快乐刺激",
+          "confidence": 0.9921750059494605,
+          "evidence": [
+            "frames/00038-0015180.jpg",
+            "frames/00039-0015430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 17180,
+          "end_ms": 18680,
+          "last_seen_ms": 17180,
+          "text": "但这种快速切换的模式",
+          "confidence": 0.9968586683273315,
+          "evidence": [
+            "frames/00040-0017180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 18680,
+          "end_ms": 20430,
+          "last_seen_ms": 20180,
+          "text": "会让负责专注和决策的大脑区域",
+          "confidence": 0.9914030049528394,
+          "evidence": [
+            "frames/00041-0018680.jpg",
+            "frames/00042-0020180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 21180,
+          "end_ms": 22180,
+          "last_seen_ms": 21930,
+          "text": "慢慢变成",
+          "confidence": 0.9925452172756195,
+          "evidence": [
+            "frames/00044-0021180.jpg",
+            "frames/00045-0021430.jpg",
+            "frames/00046-0021680.jpg",
+            "frames/00047-0021930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 22930,
+          "end_ms": 23430,
+          "last_seen_ms": 23180,
+          "text": "不用判断",
+          "confidence": 0.9943788200616837,
+          "evidence": [
+            "frames/00051-0022930.jpg",
+            "frames/00052-0023180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 24430,
+          "end_ms": 25180,
+          "last_seen_ms": 24930,
+          "text": "看似刷了很多",
+          "confidence": 0.9975866278012594,
+          "evidence": [
+            "frames/00057-0024430.jpg",
+            "frames/00058-0024680.jpg",
+            "frames/00059-0024930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 25180,
+          "end_ms": 27180,
+          "last_seen_ms": 26930,
+          "text": "实际能沉淀的有效信息少的可怜",
+          "confidence": 0.9928007211003985,
+          "evidence": [
+            "frames/00060-0025180.jpg",
+            "frames/00061-0025430.jpg",
+            "frames/00062-0025680.jpg",
+            "frames/00063-0025930.jpg",
+            "frames/00064-0026180.jpg",
+            "frames/00065-0026430.jpg",
+            "frames/00066-0026930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 27680,
+          "end_ms": 28430,
+          "last_seen_ms": 28180,
+          "text": "我刚刷了啥",
+          "confidence": 0.9984749078750609,
+          "evidence": [
+            "frames/00069-0027680.jpg",
+            "frames/00070-0027930.jpg",
+            "frames/00071-0028180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 29180,
+          "end_ms": 30680,
+          "last_seen_ms": 30430,
+          "text": "当你用学霸的方式刷视频",
+          "confidence": 0.9941842447627675,
+          "evidence": [
+            "frames/00074-0029180.jpg",
+            "frames/00075-0029430.jpg",
+            "frames/00076-0029680.jpg",
+            "frames/00077-0029930.jpg",
+            "frames/00078-0030180.jpg",
+            "frames/00079-0030430.jpg"
+          ],
+          "recognition_variants": 2
+        },
+        {
+          "start_ms": 30680,
+          "end_ms": 31930,
+          "last_seen_ms": 31680,
+          "text": "你就会打开一个新世界",
+          "confidence": 0.9967361629009247,
+          "evidence": [
+            "frames/00080-0030680.jpg",
+            "frames/00081-0030930.jpg",
+            "frames/00082-0031180.jpg",
+            "frames/00083-0031430.jpg",
+            "frames/00084-0031680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 31930,
+          "end_ms": 33180,
+          "last_seen_ms": 32930,
+          "text": "首先学霸用的可不是普通APP",
+          "confidence": 0.9959337200437274,
+          "evidence": [
+            "frames/00085-0031930.jpg",
+            "frames/00086-0032180.jpg",
+            "frames/00087-0032430.jpg",
+            "frames/00088-0032680.jpg",
+            "frames/00089-0032930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 33180,
+          "end_ms": 33930,
+          "last_seen_ms": 33680,
+          "text": "首先学霸用的可不是",
+          "confidence": 0.9980223245090909,
+          "evidence": [
+            "frames/00090-0033180.jpg",
+            "frames/00091-0033430.jpg",
+            "frames/00092-0033680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 33930,
+          "end_ms": 34930,
+          "last_seen_ms": 34680,
+          "text": "而是抖音的另一个版本",
+          "confidence": 0.9873573899269104,
+          "evidence": [
+            "frames/00093-0033930.jpg",
+            "frames/00094-0034180.jpg",
+            "frames/00095-0034430.jpg",
+            "frames/00096-0034680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 34930,
+          "end_ms": 35930,
+          "last_seen_ms": 35680,
+          "text": "抖音精选APP",
+          "confidence": 0.9916739889553615,
+          "evidence": [
+            "frames/00097-0034930.jpg",
+            "frames/00098-0035180.jpg",
+            "frames/00099-0035430.jpg",
+            "frames/00100-0035680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 35930,
+          "end_ms": 37180,
+          "last_seen_ms": 36930,
+          "text": "我猜你们肯定没见过",
+          "confidence": 0.9948546356625028,
+          "evidence": [
+            "frames/00101-0035930.jpg",
+            "frames/00102-0036180.jpg",
+            "frames/00103-0036680.jpg",
+            "frames/00104-0036930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 37180,
+          "end_ms": 39180,
+          "last_seen_ms": 38680,
+          "text": "如果你们想刷点有营养的视频",
+          "confidence": 0.991134918653048,
+          "evidence": [
+            "frames/00105-0037180.jpg",
+            "frames/00106-0037430.jpg",
+            "frames/00107-0037680.jpg",
+            "frames/00108-0038180.jpg",
+            "frames/00109-0038430.jpg",
+            "frames/00110-0038680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 39180,
+          "end_ms": 39930,
+          "last_seen_ms": 39180,
+          "text": "还真得用它",
+          "confidence": 0.9900716185569763,
+          "evidence": [
+            "frames/00111-0039180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 39930,
+          "end_ms": 40680,
+          "last_seen_ms": 40430,
+          "text": "早上起来",
+          "confidence": 0.9979148209095001,
+          "evidence": [
+            "frames/00112-0039930.jpg",
+            "frames/00113-0040180.jpg",
+            "frames/00114-0040430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 40680,
+          "end_ms": 42180,
+          "last_seen_ms": 41930,
+          "text": "学霸们会用10分钟的时间",
+          "confidence": 0.9640159892539183,
+          "evidence": [
+            "frames/00115-0040680.jpg",
+            "frames/00116-0040930.jpg",
+            "frames/00117-0041180.jpg",
+            "frames/00118-0041430.jpg",
+            "frames/00119-0041680.jpg",
+            "frames/00120-0041930.jpg"
+          ],
+          "recognition_variants": 2
+        },
+        {
+          "start_ms": 42180,
+          "end_ms": 43180,
+          "last_seen_ms": 42930,
+          "text": "快速获得信息",
+          "confidence": 0.9937197102440729,
+          "evidence": [
+            "frames/00121-0042180.jpg",
+            "frames/00122-0042430.jpg",
+            "frames/00123-0042680.jpg",
+            "frames/00124-0042930.jpg"
+          ],
+          "recognition_variants": 2
+        },
+        {
+          "start_ms": 43180,
+          "end_ms": 44180,
+          "last_seen_ms": 43930,
+          "text": "能在不知不觉中",
+          "confidence": 0.9993164454187665,
+          "evidence": [
+            "frames/00125-0043180.jpg",
+            "frames/00126-0043430.jpg",
+            "frames/00127-0043680.jpg",
+            "frames/00128-0043930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 44180,
+          "end_ms": 44430,
+          "last_seen_ms": 44180,
+          "text": "提升自己的表达力",
+          "confidence": 0.9936860874295235,
+          "evidence": [
+            "frames/00129-0044180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 44430,
+          "end_ms": 45180,
+          "last_seen_ms": 44930,
+          "text": "提升自己的表达力B医国国",
+          "confidence": 0.8139083459973335,
+          "evidence": [
+            "frames/00130-0044430.jpg",
+            "frames/00131-0044680.jpg",
+            "frames/00132-0044930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 45180,
+          "end_ms": 45430,
+          "last_seen_ms": 45180,
+          "text": "抖音精选",
+          "confidence": 0.9941630810499191,
+          "evidence": [
+            "frames/00133-0045180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 45430,
+          "end_ms": 46430,
+          "last_seen_ms": 45680,
+          "text": "金融",
+          "confidence": 0.999599277973175,
+          "evidence": [
+            "frames/00134-0045430.jpg",
+            "frames/00135-0045680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 46430,
+          "end_ms": 47180,
+          "last_seen_ms": 46930,
+          "text": "直接整理了",
+          "confidence": 0.9985828876495363,
+          "evidence": [
+            "frames/00136-0046430.jpg",
+            "frames/00137-0046680.jpg",
+            "frames/00138-0046930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 47180,
+          "end_ms": 47430,
+          "last_seen_ms": 47180,
+          "text": "月度",
+          "confidence": 0.9981691837310791,
+          "evidence": [
+            "frames/00139-0047180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 47430,
+          "end_ms": 47680,
+          "last_seen_ms": 47430,
+          "text": "直接整理了",
+          "confidence": 0.9982904314994812,
+          "evidence": [
+            "frames/00140-0047430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 47680,
+          "end_ms": 47930,
+          "last_seen_ms": 47680,
+          "text": "直接整理了贫。妈妈在每个",
+          "confidence": 0.954893430074056,
+          "evidence": [
+            "frames/00141-0047680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 47930,
+          "end_ms": 48180,
+          "last_seen_ms": 47930,
+          "text": "直接整理了",
+          "confidence": 0.9975676298141479,
+          "evidence": [
+            "frames/00142-0047930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 48180,
+          "end_ms": 49430,
+          "last_seen_ms": 48680,
+          "text": "不用靠自己无脑刷",
+          "confidence": 0.9578217566013336,
+          "evidence": [
+            "frames/00143-0048180.jpg",
+            "frames/00144-0048430.jpg",
+            "frames/00145-0048680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 49430,
+          "end_ms": 49930,
+          "last_seen_ms": 49680,
+          "text": "就已经帮我们筛好了",
+          "confidence": 0.989968736966451,
+          "evidence": [
+            "frames/00146-0049430.jpg",
+            "frames/00147-0049680.jpg"
+          ],
+          "recognition_variants": 2
+        },
+        {
+          "start_ms": 49930,
+          "end_ms": 50180,
+          "last_seen_ms": 49930,
+          "text": "鹤灵Healing三种改变大脑的方式",
+          "confidence": 0.9969456162717607,
+          "evidence": [
+            "frames/00148-0049930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 50180,
+          "end_ms": 50430,
+          "last_seen_ms": 50180,
+          "text": "就已经帮我们筛好了：0万",
+          "confidence": 0.9119754433631897,
+          "evidence": [
+            "frames/00149-0050180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 50430,
+          "end_ms": 51680,
+          "last_seen_ms": 51180,
+          "text": "各领域的优质内容做了",
+          "confidence": 0.9839465737342834,
+          "evidence": [
+            "frames/00150-0050430.jpg",
+            "frames/00151-0050680.jpg",
+            "frames/00152-0050930.jpg",
+            "frames/00153-0051180.jpg"
+          ],
+          "recognition_variants": 2
+        },
+        {
+          "start_ms": 51680,
+          "end_ms": 53680,
+          "last_seen_ms": 52680,
+          "text": "更不会动不动就乱入各种杂乱的广告",
+          "confidence": 0.9919819682836533,
+          "evidence": [
+            "frames/00154-0051680.jpg",
+            "frames/00155-0051930.jpg",
+            "frames/00156-0052430.jpg",
+            "frames/00157-0052680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 53680,
+          "end_ms": 54180,
+          "last_seen_ms": 53680,
+          "text": "PS",
+          "confidence": 0.9509786665439606,
+          "evidence": [
+            "frames/00158-0053680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 54180,
+          "end_ms": 55430,
+          "last_seen_ms": 54680,
+          "text": "PS:广告是不能进入精选的",
+          "confidence": 0.9433238024895008,
+          "evidence": [
+            "frames/00159-0054180.jpg",
+            "frames/00160-0054430.jpg",
+            "frames/00161-0054680.jpg"
+          ],
+          "recognition_variants": 2
+        },
+        {
+          "start_ms": 55430,
+          "end_ms": 55930,
+          "last_seen_ms": 55680,
+          "text": "到下午",
+          "confidence": 0.9982274572054545,
+          "evidence": [
+            "frames/00162-0055430.jpg",
+            "frames/00163-0055680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 55930,
+          "end_ms": 58180,
+          "last_seen_ms": 57930,
+          "text": "学霸连刷手机也是一种学习方式",
+          "confidence": 0.9963156666074481,
+          "evidence": [
+            "frames/00164-0055930.jpg",
+            "frames/00165-0056180.jpg",
+            "frames/00166-0056430.jpg",
+            "frames/00167-0056680.jpg",
+            "frames/00168-0056930.jpg",
+            "frames/00169-0057180.jpg",
+            "frames/00170-0057430.jpg",
+            "frames/00171-0057680.jpg",
+            "frames/00172-0057930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 58180,
+          "end_ms": 59930,
+          "last_seen_ms": 58430,
+          "text": "因为他们手机刷到的都是",
+          "confidence": 0.9971450350501321,
+          "evidence": [
+            "frames/00173-0058180.jpg",
+            "frames/00174-0058430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 59930,
+          "end_ms": 60680,
+          "last_seen_ms": 59930,
+          "text": "免疫系统是怎样疯狂的保解你",
+          "confidence": 0.8401083464805896,
+          "evidence": [
+            "frames/00175-0059930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 61430,
+          "end_ms": 62930,
+          "last_seen_ms": 62180,
+          "text": "橋",
+          "confidence": 0.8262385129928589,
+          "evidence": [
+            "frames/00177-0061430.jpg",
+            "frames/00178-0062180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 62930,
+          "end_ms": 63430,
+          "last_seen_ms": 63180,
+          "text": "公",
+          "confidence": 0.9975804090499878,
+          "evidence": [
+            "frames/00179-0062930.jpg",
+            "frames/00180-0063180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 63430,
+          "end_ms": 64430,
+          "last_seen_ms": 64180,
+          "text": "可以直接在上面看",
+          "confidence": 0.9889755994081497,
+          "evidence": [
+            "frames/00181-0063430.jpg",
+            "frames/00182-0063680.jpg",
+            "frames/00183-0063930.jpg",
+            "frames/00184-0064180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 66180,
+          "end_ms": 67180,
+          "last_seen_ms": 66930,
+          "text": "想自学短视频制作的",
+          "confidence": 0.9975641369819641,
+          "evidence": [
+            "frames/00187-0066180.jpg",
+            "frames/00188-0066430.jpg",
+            "frames/00189-0066680.jpg",
+            "frames/00190-0066930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 67180,
+          "end_ms": 68680,
+          "last_seen_ms": 68430,
+          "text": "上面也给你汇总了课程",
+          "confidence": 0.9932689964771271,
+          "evidence": [
+            "frames/00191-0067180.jpg",
+            "frames/00192-0067430.jpg",
+            "frames/00193-0067680.jpg",
+            "frames/00194-0067930.jpg",
+            "frames/00195-0068180.jpg",
+            "frames/00196-0068430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 68680,
+          "end_ms": 69930,
+          "last_seen_ms": 69680,
+          "text": "而且非常系统化",
+          "confidence": 0.9914070197514124,
+          "evidence": [
+            "frames/00197-0068680.jpg",
+            "frames/00198-0068930.jpg",
+            "frames/00199-0069180.jpg",
+            "frames/00200-0069430.jpg",
+            "frames/00201-0069680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 69930,
+          "end_ms": 71430,
+          "last_seen_ms": 71180,
+          "text": "每个课程都讲的非常详细",
+          "confidence": 0.9959175261584196,
+          "evidence": [
+            "frames/00202-0069930.jpg",
+            "frames/00203-0070180.jpg",
+            "frames/00204-0070430.jpg",
+            "frames/00205-0070680.jpg",
+            "frames/00206-0070930.jpg",
+            "frames/00207-0071180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 71430,
+          "end_ms": 73430,
+          "last_seen_ms": 73180,
+          "text": "知识就这么快速的进入了脑子里",
+          "confidence": 0.9954353485788617,
+          "evidence": [
+            "frames/00208-0071430.jpg",
+            "frames/00209-0071680.jpg",
+            "frames/00210-0071930.jpg",
+            "frames/00211-0072180.jpg",
+            "frames/00212-0072430.jpg",
+            "frames/00213-0072680.jpg",
+            "frames/00214-0072930.jpg",
+            "frames/00215-0073180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 73430,
+          "end_ms": 73930,
+          "last_seen_ms": 73680,
+          "text": "到了晚上",
+          "confidence": 0.9972507506608963,
+          "evidence": [
+            "frames/00216-0073430.jpg",
+            "frames/00217-0073680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 73930,
+          "end_ms": 75430,
+          "last_seen_ms": 75180,
+          "text": "学霸甚至可以靠刷视频",
+          "confidence": 0.997719532251358,
+          "evidence": [
+            "frames/00218-0073930.jpg",
+            "frames/00219-0074180.jpg",
+            "frames/00220-0074430.jpg",
+            "frames/00221-0074680.jpg",
+            "frames/00222-0074930.jpg",
+            "frames/00223-0075180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 75430,
+          "end_ms": 75680,
+          "last_seen_ms": 75430,
+          "text": "B居居",
+          "confidence": 0.6186288694540659,
+          "evidence": [
+            "frames/00224-0075430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 76180,
+          "end_ms": 76430,
+          "last_seen_ms": 76180,
+          "text": "B国HO",
+          "confidence": 0.5838597379624844,
+          "evidence": [
+            "frames/00227-0076180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 76430,
+          "end_ms": 76680,
+          "last_seen_ms": 76430,
+          "text": "因为它还能当做",
+          "confidence": 0.9913790651730129,
+          "evidence": [
+            "frames/00228-0076430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 76680,
+          "end_ms": 77930,
+          "last_seen_ms": 77680,
+          "text": "读物",
+          "confidence": 0.9998532235622406,
+          "evidence": [
+            "frames/00229-0076680.jpg",
+            "frames/00230-0076930.jpg",
+            "frames/00231-0077180.jpg",
+            "frames/00232-0077430.jpg",
+            "frames/00233-0077680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 77930,
+          "end_ms": 78180,
+          "last_seen_ms": 77930,
+          "text": "比如你喜欢这条",
+          "confidence": 0.9877924748829433,
+          "evidence": [
+            "frames/00234-0077930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 78180,
+          "end_ms": 78930,
+          "last_seen_ms": 78680,
+          "text": "比如你喜欢这条糖瘾吗？",
+          "confidence": 0.9483130357482216,
+          "evidence": [
+            "frames/00235-0078180.jpg",
+            "frames/00236-0078430.jpg",
+            "frames/00237-0078680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 78930,
+          "end_ms": 79430,
+          "last_seen_ms": 79180,
+          "text": "你有糖愈吗？",
+          "confidence": 0.8602388203144073,
+          "evidence": [
+            "frames/00238-0078930.jpg",
+            "frames/00239-0079180.jpg"
+          ],
+          "recognition_variants": 2
+        },
+        {
+          "start_ms": 79430,
+          "end_ms": 81180,
+          "last_seen_ms": 79680,
+          "text": "《为什么糖会让人上瘾》",
+          "confidence": 0.9855787699872797,
+          "evidence": [
+            "frames/00240-0079430.jpg",
+            "frames/00241-0079680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 81180,
+          "end_ms": 82430,
+          "last_seen_ms": 81930,
+          "text": "进人抖音精选APP后",
+          "confidence": 0.9431594669818878,
+          "evidence": [
+            "frames/00242-0081180.jpg",
+            "frames/00243-0081680.jpg",
+            "frames/00244-0081930.jpg"
+          ],
+          "recognition_variants": 2
+        },
+        {
+          "start_ms": 82430,
+          "end_ms": 83180,
+          "last_seen_ms": 82430,
+          "text": "点击视频",
+          "confidence": 0.9972095340490341,
+          "evidence": [
+            "frames/00245-0082430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 83180,
+          "end_ms": 84430,
+          "last_seen_ms": 83430,
+          "text": "奶嘉",
+          "confidence": 0.705455407500267,
+          "evidence": [
+            "frames/00246-0083180.jpg",
+            "frames/00247-0083430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 84430,
+          "end_ms": 85430,
+          "last_seen_ms": 84680,
+          "text": "让它后台播放",
+          "confidence": 0.9941080609957377,
+          "evidence": [
+            "frames/00248-0084430.jpg",
+            "frames/00249-0084680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 85430,
+          "end_ms": 86680,
+          "last_seen_ms": 85680,
+          "text": "还能定时什么时候关闭",
+          "confidence": 0.9953464269638062,
+          "evidence": [
+            "frames/00250-0085430.jpg",
+            "frames/00251-0085680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 86680,
+          "end_ms": 87430,
+          "last_seen_ms": 87180,
+          "text": "利用碎片时间",
+          "confidence": 0.9949412047863007,
+          "evidence": [
+            "frames/00252-0086680.jpg",
+            "frames/00253-0086930.jpg",
+            "frames/00254-0087180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 87430,
+          "end_ms": 89180,
+          "last_seen_ms": 88930,
+          "text": "又不会陷入无目的刷视频的循环",
+          "confidence": 0.9942569647516523,
+          "evidence": [
+            "frames/00255-0087430.jpg",
+            "frames/00256-0087680.jpg",
+            "frames/00257-0087930.jpg",
+            "frames/00258-0088180.jpg",
+            "frames/00259-0088430.jpg",
+            "frames/00260-0088680.jpg",
+            "frames/00261-0088930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 89180,
+          "end_ms": 91180,
+          "last_seen_ms": 90930,
+          "text": "让大脑在放松中悄悄吸收知识",
+          "confidence": 0.9943378292597257,
+          "evidence": [
+            "frames/00262-0089180.jpg",
+            "frames/00263-0089430.jpg",
+            "frames/00264-0089680.jpg",
+            "frames/00265-0089930.jpg",
+            "frames/00266-0090180.jpg",
+            "frames/00267-0090430.jpg",
+            "frames/00268-0090680.jpg",
+            "frames/00269-0090930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 91180,
+          "end_ms": 92430,
+          "last_seen_ms": 91680,
+          "text": "普通人",
+          "confidence": 0.997978409131368,
+          "evidence": [
+            "frames/00270-0091180.jpg",
+            "frames/00271-0091430.jpg",
+            "frames/00272-0091680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 92430,
+          "end_ms": 92680,
+          "last_seen_ms": 92430,
+          "text": "普通人学霸",
+          "confidence": 0.9972634792327881,
+          "evidence": [
+            "frames/00273-0092430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 92680,
+          "end_ms": 93180,
+          "last_seen_ms": 92930,
+          "text": "普通人",
+          "confidence": 0.9891282121340433,
+          "evidence": [
+            "frames/00274-0092680.jpg",
+            "frames/00275-0092930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 93180,
+          "end_ms": 93930,
+          "last_seen_ms": 93180,
+          "text": "更酷的是",
+          "confidence": 0.9978722482919693,
+          "evidence": [
+            "frames/00276-0093180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 93930,
+          "end_ms": 95180,
+          "last_seen_ms": 93930,
+          "text": "它们用的抖音精选APP",
+          "confidence": 0.978897669098594,
+          "evidence": [
+            "frames/00277-0093930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 95180,
+          "end_ms": 97180,
+          "last_seen_ms": 96180,
+          "text": "奶茶",
+          "confidence": 0.9989744424819946,
+          "evidence": [
+            "frames/00278-0095180.jpg",
+            "frames/00279-0095430.jpg",
+            "frames/00280-0096180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 97180,
+          "end_ms": 99180,
+          "last_seen_ms": 98930,
+          "text": "像我经常会看公开课里的",
+          "confidence": 0.9946349588307467,
+          "evidence": [
+            "frames/00281-0097180.jpg",
+            "frames/00282-0097430.jpg",
+            "frames/00283-0097680.jpg",
+            "frames/00284-0097930.jpg",
+            "frames/00285-0098180.jpg",
+            "frames/00286-0098430.jpg",
+            "frames/00287-0098680.jpg",
+            "frames/00288-0098930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 99180,
+          "end_ms": 101430,
+          "last_seen_ms": 101180,
+          "text": "各大高校在线上分享理论基础课程",
+          "confidence": 0.9885941823323567,
+          "evidence": [
+            "frames/00289-0099180.jpg",
+            "frames/00290-0099430.jpg",
+            "frames/00291-0099680.jpg",
+            "frames/00292-0099930.jpg",
+            "frames/00293-0100180.jpg",
+            "frames/00294-0100430.jpg",
+            "frames/00295-0100680.jpg",
+            "frames/00296-0100930.jpg",
+            "frames/00297-0101180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 101430,
+          "end_ms": 102930,
+          "last_seen_ms": 102680,
+          "text": "我可以根据章节做跳转",
+          "confidence": 0.9970673799514772,
+          "evidence": [
+            "frames/00298-0101430.jpg",
+            "frames/00299-0101680.jpg",
+            "frames/00300-0101930.jpg",
+            "frames/00301-0102180.jpg",
+            "frames/00302-0102430.jpg",
+            "frames/00303-0102680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 102930,
+          "end_ms": 103930,
+          "last_seen_ms": 103680,
+          "text": "在听到不懂的地方",
+          "confidence": 0.9976068884134293,
+          "evidence": [
+            "frames/00304-0102930.jpg",
+            "frames/00305-0103180.jpg",
+            "frames/00306-0103430.jpg",
+            "frames/00307-0103680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 103930,
+          "end_ms": 105430,
+          "last_seen_ms": 105180,
+          "text": "就可以点右上角的AI去提问",
+          "confidence": 0.9902430818631099,
+          "evidence": [
+            "frames/00308-0103930.jpg",
+            "frames/00309-0104180.jpg",
+            "frames/00310-0104430.jpg",
+            "frames/00311-0104680.jpg",
+            "frames/00312-0104930.jpg",
+            "frames/00313-0105180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 105430,
+          "end_ms": 105680,
+          "last_seen_ms": 105430,
+          "text": "厅单的出来老板会",
+          "confidence": 0.9971149116754532,
+          "evidence": [
+            "frames/00314-0105430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 105680,
+          "end_ms": 107680,
+          "last_seen_ms": 107430,
+          "text": "《如何让AI生成行业报告》",
+          "confidence": 0.9794256733014033,
+          "evidence": [
+            "frames/00315-0105680.jpg",
+            "frames/00316-0105930.jpg",
+            "frames/00317-0106180.jpg",
+            "frames/00318-0106430.jpg",
+            "frames/00319-0106680.jpg",
+            "frames/00320-0106930.jpg",
+            "frames/00321-0107180.jpg",
+            "frames/00322-0107430.jpg"
+          ],
+          "recognition_variants": 2
+        },
+        {
+          "start_ms": 107680,
+          "end_ms": 108930,
+          "last_seen_ms": 108680,
+          "text": "刷到自己感兴趣的内容",
+          "confidence": 0.9726864993572235,
+          "evidence": [
+            "frames/00323-0107680.jpg",
+            "frames/00324-0107930.jpg",
+            "frames/00325-0108180.jpg",
+            "frames/00326-0108430.jpg",
+            "frames/00327-0108680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 108930,
+          "end_ms": 110930,
+          "last_seen_ms": 110680,
+          "text": "正好没时间看完可以点稍后再看",
+          "confidence": 0.9737094513007573,
+          "evidence": [
+            "frames/00328-0108930.jpg",
+            "frames/00329-0109180.jpg",
+            "frames/00330-0109430.jpg",
+            "frames/00331-0109680.jpg",
+            "frames/00332-0109930.jpg",
+            "frames/00333-0110180.jpg",
+            "frames/00334-0110430.jpg",
+            "frames/00335-0110680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 110930,
+          "end_ms": 112180,
+          "last_seen_ms": 111930,
+          "text": "就会添加到后台",
+          "confidence": 0.9958229150090899,
+          "evidence": [
+            "frames/00336-0110930.jpg",
+            "frames/00337-0111180.jpg",
+            "frames/00338-0111430.jpg",
+            "frames/00339-0111680.jpg",
+            "frames/00340-0111930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 112180,
+          "end_ms": 112930,
+          "last_seen_ms": 112680,
+          "text": "等你啥时候空",
+          "confidence": 0.9945013423760732,
+          "evidence": [
+            "frames/00341-0112180.jpg",
+            "frames/00342-0112430.jpg",
+            "frames/00343-0112680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 113180,
+          "end_ms": 113680,
+          "last_seen_ms": 113430,
+          "text": "普林斯顿大学的",
+          "confidence": 0.9180899092129299,
+          "evidence": [
+            "frames/00345-0113180.jpg",
+            "frames/00346-0113430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 113680,
+          "end_ms": 114680,
+          "last_seen_ms": 114430,
+          "text": "它的功能真的太强大了",
+          "confidence": 0.9974509716033936,
+          "evidence": [
+            "frames/00347-0113680.jpg",
+            "frames/00348-0113930.jpg",
+            "frames/00349-0114180.jpg",
+            "frames/00350-0114430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 114680,
+          "end_ms": 116430,
+          "last_seen_ms": 116180,
+          "text": "感觉从高中生到职场人",
+          "confidence": 0.9934849441051483,
+          "evidence": [
+            "frames/00351-0114680.jpg",
+            "frames/00352-0114930.jpg",
+            "frames/00353-0115180.jpg",
+            "frames/00354-0115430.jpg",
+            "frames/00355-0115680.jpg",
+            "frames/00356-0115930.jpg",
+            "frames/00357-0116180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 116430,
+          "end_ms": 117930,
+          "last_seen_ms": 117680,
+          "text": "会遇到生活中的方方面面",
+          "confidence": 0.9958637031641874,
+          "evidence": [
+            "frames/00358-0116430.jpg",
+            "frames/00359-0116680.jpg",
+            "frames/00360-0116930.jpg",
+            "frames/00361-0117180.jpg",
+            "frames/00362-0117430.jpg",
+            "frames/00363-0117680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 117930,
+          "end_ms": 118680,
+          "last_seen_ms": 118430,
+          "text": "它都涵盖了",
+          "confidence": 0.9963943362236023,
+          "evidence": [
+            "frames/00364-0117930.jpg",
+            "frames/00365-0118180.jpg",
+            "frames/00366-0118430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 118680,
+          "end_ms": 119180,
+          "last_seen_ms": 118930,
+          "text": "它给我一种",
+          "confidence": 0.9898827552795411,
+          "evidence": [
+            "frames/00367-0118680.jpg",
+            "frames/00368-0118930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 119180,
+          "end_ms": 121180,
+          "last_seen_ms": 120930,
+          "text": "像是一本电子版百科全书的感觉",
+          "confidence": 0.9943685148443494,
+          "evidence": [
+            "frames/00369-0119180.jpg",
+            "frames/00370-0119430.jpg",
+            "frames/00371-0119680.jpg",
+            "frames/00372-0119930.jpg",
+            "frames/00373-0120180.jpg",
+            "frames/00374-0120430.jpg",
+            "frames/00375-0120680.jpg",
+            "frames/00376-0120930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 121180,
+          "end_ms": 123680,
+          "last_seen_ms": 123430,
+          "text": "如果你也想告别“刷完就忘”的",
+          "confidence": 0.9930614829063416,
+          "evidence": [
+            "frames/00377-0121180.jpg",
+            "frames/00378-0121430.jpg",
+            "frames/00379-0121680.jpg",
+            "frames/00380-0121930.jpg",
+            "frames/00381-0122180.jpg",
+            "frames/00382-0122430.jpg",
+            "frames/00383-0122680.jpg",
+            "frames/00384-0122930.jpg",
+            "frames/00385-0123180.jpg",
+            "frames/00386-0123430.jpg"
+          ],
+          "recognition_variants": 4
+        },
+        {
+          "start_ms": 123680,
+          "end_ms": 125430,
+          "last_seen_ms": 125180,
+          "text": "让刷视频变成真正的充电时刻",
+          "confidence": 0.9963611318514898,
+          "evidence": [
+            "frames/00387-0123680.jpg",
+            "frames/00388-0123930.jpg",
+            "frames/00389-0124180.jpg",
+            "frames/00390-0124430.jpg",
+            "frames/00391-0124680.jpg",
+            "frames/00392-0124930.jpg",
+            "frames/00393-0125180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 125430,
+          "end_ms": 127680,
+          "last_seen_ms": 127180,
+          "text": "赶紧点左下角下载抖音精选APP",
+          "confidence": 0.9895920952161154,
+          "evidence": [
+            "frames/00394-0125430.jpg",
+            "frames/00395-0125680.jpg",
+            "frames/00396-0125930.jpg",
+            "frames/00397-0126430.jpg",
+            "frames/00398-0127180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 127680,
+          "end_ms": 129680,
+          "last_seen_ms": 127680,
+          "text": "这里的每一条内容都值得细品",
+          "confidence": 0.9954579793489896,
+          "evidence": [
+            "frames/00399-0127680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 129680,
+          "end_ms": 131680,
+          "last_seen_ms": 130930,
+          "text": "既能满足大脑对优质信息的需求",
+          "confidence": 0.9951615631580353,
+          "evidence": [
+            "frames/00400-0129680.jpg",
+            "frames/00401-0129930.jpg",
+            "frames/00402-0130430.jpg",
+            "frames/00403-0130680.jpg",
+            "frames/00404-0130930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 131680,
+          "end_ms": 132430,
+          "last_seen_ms": 132180,
+          "text": "又能让你刷的",
+          "confidence": 0.9991396268208822,
+          "evidence": [
+            "frames/00405-0131680.jpg",
+            "frames/00406-0131930.jpg",
+            "frames/00407-0132180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 132430,
+          "end_ms": 132680,
+          "last_seen_ms": 132430,
+          "text": "有收获",
+          "confidence": 0.9981860915819804,
+          "evidence": [
+            "frames/00408-0132430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 132680,
+          "end_ms": 133237,
+          "last_seen_ms": 133187,
+          "text": "有收获有共鸣",
+          "confidence": 0.9978894591331482,
+          "evidence": [
+            "frames/00409-0132680.jpg",
+            "frames/00410-0132930.jpg",
+            "frames/00411-0133180.jpg",
+            "frames/00412-0133187.jpg"
+          ],
+          "recognition_variants": 1
+        }
+      ],
+      "language": null,
+      "confidence": 0.9723808749604108,
+      "limitations": [
+        "visual_subtitles_only_not_spoken_audio",
+        "approximate_frame_capture_timestamps",
+        "sub_250ms_or_low_change_captions_may_be_missed",
+        "source_subtitle_errors_preserved",
+        "short_lived_ocr_variants_collapsed_by_temporal_consensus",
+        "ocr_not_manually_corrected"
+      ],
+      "source": {
+        "type": "ocr",
+        "provider": "live_browser_rapidocr",
+        "run_id": "b8e48b02-a2d4-4596-9178-beca216e7f72",
+        "request_id": "blind-positive-ocr-002",
+        "stable_aweme_id": "7589860433402531110",
+        "started_at": "2026-09-01T09:06:03.53Z",
+        "finished_at": "2026-09-01T09:08:43.643Z",
+        "fresh_capture": true,
+        "transcript_cache_read": false,
+        "frame_count": 413,
+        "checked_frames": 533,
+        "frame_hash_chain": "2854f5915ce04fd0b9a2bc31887f8a4935c5fccd2c7afa6835e38e801d151676",
+        "probe_hash_chain": "10f55f20a0403cbdf19f45bc241a495a435489e29ecf6c0b33fdc6789821b102",
+        "media_url_sha256": "f4dc3b91353d5df2858ad6751a2d66ae821a6f1a2683d2f07f481100ff8c458b",
+        "engine": {
+          "ready": true,
+          "engine": "rapidocr_onnxruntime",
+          "version": "1.4.4",
+          "models": [
+            {
+              "name": "ch_PP-OCRv4_det_infer.onnx",
+              "sha256": "d2a7720d45a54257208b1e13e36a8479894cb74155a5efe29462512d42f49da9"
+            },
+            {
+              "name": "ch_PP-OCRv4_rec_infer.onnx",
+              "sha256": "48fc40f24f6d2a207a2b1091d3437eb3cc3eb6b676dc3ef9c37384005483683b"
+            },
+            {
+              "name": "ch_ppocr_mobile_v2.0_cls_infer.onnx",
+              "sha256": "e47acedf663230f8863ff1ab0e64dd2d82b838fceb5957146dab185a89d6215c"
+            }
+          ]
+        },
+        "coverage": {
+          "start_ms": 0,
+          "end_ms": 133237,
+          "full_video_scanned": true,
+          "visual_step_ms": 250,
+          "threshold": 0.003,
+          "caption_activity": {
+            "sustained": true,
+            "active_ms": 101807,
+            "active_ratio": 0.764105,
+            "window_ms": 10000,
+            "covered_windows": 14,
+            "total_windows": 14,
+            "window_ratio": 1,
+            "minimum_active_ratio": 0.2,
+            "minimum_window_ratio": 0.75
+          }
+        }
+      },
+      "media_resolution": {
+        "stable_identity": "aweme_id",
+        "media_kind": "video",
+        "media_type": "browser_decoded_video",
+        "acquired_at": "2026-09-01T09:06:03.53Z",
+        "validated_at": "2026-09-01T09:08:43.643Z",
+        "validation": {
+          "status": "live_browser_frames_read",
+          "frame_count": 413,
+          "media_url_sha256": "f4dc3b91353d5df2858ad6751a2d66ae821a6f1a2683d2f07f481100ff8c458b"
+        }
+      }
+    }
+  }
+}

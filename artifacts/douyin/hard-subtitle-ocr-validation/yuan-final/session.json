@@ -1,0 +1,36 @@
+{
+  "run_id": "97a87ed7-1b9a-4b64-a881-682aa5a31697",
+  "request_id": "yuan-live-ocr-006",
+  "aweme_id": "7674668931734326528",
+  "started_at": "2026-09-01T04:30:30.386Z",
+  "engine": {
+    "ready": true,
+    "engine": "rapidocr_onnxruntime",
+    "version": "1.4.4",
+    "models": [
+      {
+        "name": "ch_PP-OCRv4_det_infer.onnx",
+        "sha256": "d2a7720d45a54257208b1e13e36a8479894cb74155a5efe29462512d42f49da9"
+      },
+      {
+        "name": "ch_PP-OCRv4_rec_infer.onnx",
+        "sha256": "48fc40f24f6d2a207a2b1091d3437eb3cc3eb6b676dc3ef9c37384005483683b"
+      },
+      {
+        "name": "ch_ppocr_mobile_v2.0_cls_infer.onnx",
+        "sha256": "e47acedf663230f8863ff1ab0e64dd2d82b838fceb5957146dab185a89d6215c"
+      }
+    ]
+  },
+  "playback": {
+    "duration_ms": 1119782,
+    "source_width": 1280,
+    "source_height": 720,
+    "capture_width": 1280,
+    "capture_height": 720,
+    "page_url": "https://www.douyin.com/video/7674668931734326528",
+    "expected_id": "7674668931734326528"
+  },
+  "media_url_sha256": "cd8a3b8e1138fd64295ee81a1e053c10320a265529e725237a109797eb62399b",
+  "cache_read": false
+}

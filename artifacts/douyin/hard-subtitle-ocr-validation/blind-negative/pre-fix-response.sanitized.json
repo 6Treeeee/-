@@ -1,0 +1,617 @@
+{
+  "ok": true,
+  "request_id": "blind-live-ocr-002",
+  "schema_version": "2.0",
+  "platform": "douyin",
+  "content_type": "video",
+  "source": {
+    "input_url": "https://www.douyin.com/video/7550875346879417639",
+    "resolved_url": "https://www.douyin.com/video/7550875346879417639",
+    "resolution": {
+      "finalUrl": "https://www.douyin.com/video/7550875346879417639",
+      "resolved": false,
+      "hops": []
+    },
+    "retrieval": {
+      "provider": "direct_public_web",
+      "method": "public_unauthenticated_browser",
+      "acquired_at": "2026-09-01T08:50:11.167Z",
+      "target": {
+        "host": "www.douyin.com",
+        "path": "/video/7550875346879417639"
+      },
+      "browser": {
+        "kind": "local_edge",
+        "userAgentAdjusted": true
+      },
+      "endpoints_observed": [
+        "/aweme/v1/web/aweme/detail/",
+        "/aweme/v1/web/aweme/post/"
+      ],
+      "network_media_count": 0,
+      "network_media_hosts": [],
+      "identity": {
+        "expected_aweme_id": "7550875346879417639",
+        "observed_aweme_id": "7550875346879417639",
+        "source": "public_detail",
+        "page_url_mismatch_recovered": false
+      },
+      "page": {
+        "title": "https://www.douyin.com/#2d016776ece2 - 抖音",
+        "description": "https://www.douyin.com/#2d016776ece2 - 长城财经于20250917发布在抖音，已经收获了12.8万个喜欢，来抖音，记录美好生活！",
+        "canonical_host": "www.douyin.com",
+        "canonical_path": "/video/7550875346879417639"
+      },
+      "attempts": 1
+    },
+    "provider_attempts": [
+      {
+        "provider": "direct_public_web",
+        "status": "success"
+      }
+    ]
+  },
+  "content": {
+    "id": "7550875346879417639",
+    "aweme_id": "7550875346879417639",
+    "canonical_url": "https://www.douyin.com/video/7550875346879417639",
+    "content_kind": "video",
+    "title": null,
+    "description": "https://www.douyin.com/?recommend=1",
+    "author": {
+      "id": "89191875875",
+      "display_name": "长城财经",
+      "sec_uid": null
+    },
+    "media": {
+      "duration_ms": 374144,
+      "width": 1080,
+      "height": 1920
+    },
+    "readable_content": {
+      "status": "complete",
+      "method": "hard_subtitle_ocr",
+      "text": "国家开放大学旅游行业学院\n陈学涛\n第九届旅发大会主题\n第九届旅发大会主题这么近邢么\n第九届旅发大会主题这么近邢么美周末到河北\n旅游宣传\n旅游宣传IP\n国家开放大学旅游行业学院\n这么逅\n这么近\n交通区位优势\n太行山文化旅游带\n供给优势\n邢么美\n自然资源优势\n周末到河北\n短途旅游\n陈学涛\n自然资源\n自然资源文化资源\n孔磊常务副\n研学\n亲子研学\n消费需求\n消费基础\n孔磊\n观光旅游\n亲子旅游\n度\n度假旅游\n陈学涛长城新媒体记者\n这么近邢么美周末到河北\n硬件软衣\n硬件软件双提升\n这么美那么远旅游也要到河北\n凯北文旅排头兵",
+      "segments": [
+        {
+          "start_ms": 13180,
+          "end_ms": 15930,
+          "last_seen_ms": 13180,
+          "text": "国家开放大学旅游行业学院",
+          "confidence": 0.9936667134364446,
+          "evidence": [
+            "frames/00037-0013180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 24930,
+          "end_ms": 26180,
+          "last_seen_ms": 24930,
+          "text": "陈学涛",
+          "confidence": 0.9990765849749247,
+          "evidence": [
+            "frames/00040-0024930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 26680,
+          "end_ms": 26930,
+          "last_seen_ms": 26680,
+          "text": "第九届旅发大会主题",
+          "confidence": 0.9885042508443197,
+          "evidence": [
+            "frames/00042-0026680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 26930,
+          "end_ms": 27180,
+          "last_seen_ms": 26930,
+          "text": "第九届旅发大会主题这么近邢么",
+          "confidence": 0.9392961071597206,
+          "evidence": [
+            "frames/00043-0026930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 27180,
+          "end_ms": 29430,
+          "last_seen_ms": 29180,
+          "text": "第九届旅发大会主题这么近邢么美周末到河北",
+          "confidence": 0.9697897124170053,
+          "evidence": [
+            "frames/00044-0027180.jpg",
+            "frames/00045-0027430.jpg",
+            "frames/00046-0027680.jpg",
+            "frames/00047-0027930.jpg",
+            "frames/00048-0028430.jpg",
+            "frames/00049-0028680.jpg",
+            "frames/00050-0028930.jpg",
+            "frames/00051-0029180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 31930,
+          "end_ms": 32180,
+          "last_seen_ms": 31930,
+          "text": "旅游宣传",
+          "confidence": 0.9901516884565353,
+          "evidence": [
+            "frames/00054-0031930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 32180,
+          "end_ms": 32930,
+          "last_seen_ms": 32680,
+          "text": "旅游宣传IP",
+          "confidence": 0.9646727542082468,
+          "evidence": [
+            "frames/00055-0032180.jpg",
+            "frames/00056-0032430.jpg",
+            "frames/00057-0032680.jpg"
+          ],
+          "recognition_variants": 2
+        },
+        {
+          "start_ms": 38680,
+          "end_ms": 41180,
+          "last_seen_ms": 38680,
+          "text": "国家开放大学旅游行业学院",
+          "confidence": 0.9980316708485285,
+          "evidence": [
+            "frames/00060-0038680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 41930,
+          "end_ms": 42180,
+          "last_seen_ms": 41930,
+          "text": "这么逅",
+          "confidence": 0.7613135675589243,
+          "evidence": [
+            "frames/00062-0041930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 42180,
+          "end_ms": 42930,
+          "last_seen_ms": 42430,
+          "text": "这么近",
+          "confidence": 0.8000515500704447,
+          "evidence": [
+            "frames/00063-0042180.jpg",
+            "frames/00064-0042430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 44930,
+          "end_ms": 46930,
+          "last_seen_ms": 45180,
+          "text": "交通区位优势",
+          "confidence": 0.9617747763792673,
+          "evidence": [
+            "frames/00066-0044930.jpg",
+            "frames/00067-0045180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 52930,
+          "end_ms": 55680,
+          "last_seen_ms": 55430,
+          "text": "太行山文化旅游带",
+          "confidence": 0.9987451285123825,
+          "evidence": [
+            "frames/00070-0052930.jpg",
+            "frames/00071-0053180.jpg",
+            "frames/00072-0053430.jpg",
+            "frames/00073-0053680.jpg",
+            "frames/00074-0053930.jpg",
+            "frames/00075-0054180.jpg",
+            "frames/00076-0054430.jpg",
+            "frames/00077-0054680.jpg",
+            "frames/00078-0054930.jpg",
+            "frames/00079-0055180.jpg",
+            "frames/00080-0055430.jpg"
+          ],
+          "recognition_variants": 2
+        },
+        {
+          "start_ms": 56680,
+          "end_ms": 57430,
+          "last_seen_ms": 57180,
+          "text": "供给优势",
+          "confidence": 0.991633415222168,
+          "evidence": [
+            "frames/00083-0056680.jpg",
+            "frames/00084-0056930.jpg",
+            "frames/00085-0057180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 61180,
+          "end_ms": 62180,
+          "last_seen_ms": 61680,
+          "text": "邢么美",
+          "confidence": 0.984659214814504,
+          "evidence": [
+            "frames/00088-0061180.jpg",
+            "frames/00089-0061430.jpg",
+            "frames/00090-0061680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 66180,
+          "end_ms": 67930,
+          "last_seen_ms": 67680,
+          "text": "自然资源优势",
+          "confidence": 0.9972675641377767,
+          "evidence": [
+            "frames/00092-0066180.jpg",
+            "frames/00093-0066430.jpg",
+            "frames/00094-0066680.jpg",
+            "frames/00095-0066930.jpg",
+            "frames/00096-0067180.jpg",
+            "frames/00097-0067430.jpg",
+            "frames/00098-0067680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 85930,
+          "end_ms": 87180,
+          "last_seen_ms": 86430,
+          "text": "周末到河北",
+          "confidence": 0.9941600561141968,
+          "evidence": [
+            "frames/00137-0085930.jpg",
+            "frames/00138-0086180.jpg",
+            "frames/00139-0086430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 90430,
+          "end_ms": 91930,
+          "last_seen_ms": 91680,
+          "text": "短途旅游",
+          "confidence": 0.999552771449089,
+          "evidence": [
+            "frames/00141-0090430.jpg",
+            "frames/00142-0090680.jpg",
+            "frames/00143-0090930.jpg",
+            "frames/00144-0091180.jpg",
+            "frames/00145-0091430.jpg",
+            "frames/00146-0091680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 107430,
+          "end_ms": 108680,
+          "last_seen_ms": 107430,
+          "text": "陈学涛",
+          "confidence": 0.9995158513387045,
+          "evidence": [
+            "frames/00169-0107430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 122930,
+          "end_ms": 124430,
+          "last_seen_ms": 123180,
+          "text": "自然资源",
+          "confidence": 0.9697279036045074,
+          "evidence": [
+            "frames/00173-0122930.jpg",
+            "frames/00174-0123180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 124430,
+          "end_ms": 125430,
+          "last_seen_ms": 125180,
+          "text": "自然资源文化资源",
+          "confidence": 0.9858629107475281,
+          "evidence": [
+            "frames/00175-0124430.jpg",
+            "frames/00176-0124680.jpg",
+            "frames/00177-0124930.jpg",
+            "frames/00178-0125180.jpg"
+          ],
+          "recognition_variants": 2
+        },
+        {
+          "start_ms": 130180,
+          "end_ms": 132930,
+          "last_seen_ms": 130180,
+          "text": "孔磊常务副",
+          "confidence": 0.9960380444924037,
+          "evidence": [
+            "frames/00181-0130180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 144680,
+          "end_ms": 144930,
+          "last_seen_ms": 144680,
+          "text": "研学",
+          "confidence": 0.9990687072277069,
+          "evidence": [
+            "frames/00190-0144680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 144930,
+          "end_ms": 147680,
+          "last_seen_ms": 145180,
+          "text": "亲子研学",
+          "confidence": 0.99833182990551,
+          "evidence": [
+            "frames/00191-0144930.jpg",
+            "frames/00192-0145180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 167180,
+          "end_ms": 168180,
+          "last_seen_ms": 167930,
+          "text": "消费需求",
+          "confidence": 0.9644259214401245,
+          "evidence": [
+            "frames/00207-0167180.jpg",
+            "frames/00208-0167430.jpg",
+            "frames/00209-0167680.jpg",
+            "frames/00210-0167930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 170680,
+          "end_ms": 171930,
+          "last_seen_ms": 171680,
+          "text": "消费基础",
+          "confidence": 0.9774190336465836,
+          "evidence": [
+            "frames/00212-0170680.jpg",
+            "frames/00213-0170930.jpg",
+            "frames/00214-0171180.jpg",
+            "frames/00215-0171430.jpg",
+            "frames/00216-0171680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 189180,
+          "end_ms": 191680,
+          "last_seen_ms": 189180,
+          "text": "孔磊",
+          "confidence": 0.9917518198490143,
+          "evidence": [
+            "frames/00223-0189180.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 194930,
+          "end_ms": 195680,
+          "last_seen_ms": 195430,
+          "text": "观光旅游",
+          "confidence": 0.9980517029762268,
+          "evidence": [
+            "frames/00226-0194930.jpg",
+            "frames/00227-0195180.jpg",
+            "frames/00228-0195430.jpg"
+          ],
+          "recognition_variants": 2
+        },
+        {
+          "start_ms": 196430,
+          "end_ms": 196930,
+          "last_seen_ms": 196680,
+          "text": "亲子旅游",
+          "confidence": 0.9996442496776581,
+          "evidence": [
+            "frames/00231-0196430.jpg",
+            "frames/00232-0196680.jpg"
+          ],
+          "recognition_variants": 2
+        },
+        {
+          "start_ms": 198930,
+          "end_ms": 199180,
+          "last_seen_ms": 198930,
+          "text": "度",
+          "confidence": 0.9988645315170288,
+          "evidence": [
+            "frames/00237-0198930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 199180,
+          "end_ms": 199930,
+          "last_seen_ms": 199680,
+          "text": "度假旅游",
+          "confidence": 0.9995876103639603,
+          "evidence": [
+            "frames/00238-0199180.jpg",
+            "frames/00239-0199430.jpg",
+            "frames/00240-0199680.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 214430,
+          "end_ms": 215680,
+          "last_seen_ms": 214430,
+          "text": "陈学涛长城新媒体记者",
+          "confidence": 0.9988333923476083,
+          "evidence": [
+            "frames/00258-0214430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 231680,
+          "end_ms": 233680,
+          "last_seen_ms": 231930,
+          "text": "这么近邢么美周末到河北",
+          "confidence": 0.94047550721602,
+          "evidence": [
+            "frames/00260-0231680.jpg",
+            "frames/00261-0231930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 294430,
+          "end_ms": 294680,
+          "last_seen_ms": 294430,
+          "text": "硬件软衣",
+          "confidence": 0.7515471801161766,
+          "evidence": [
+            "frames/00308-0294430.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 294680,
+          "end_ms": 297180,
+          "last_seen_ms": 296930,
+          "text": "硬件软件双提升",
+          "confidence": 0.9976838486535209,
+          "evidence": [
+            "frames/00309-0294680.jpg",
+            "frames/00310-0294930.jpg",
+            "frames/00311-0295180.jpg",
+            "frames/00312-0295430.jpg",
+            "frames/00313-0295680.jpg",
+            "frames/00314-0295930.jpg",
+            "frames/00315-0296180.jpg",
+            "frames/00316-0296430.jpg",
+            "frames/00317-0296680.jpg",
+            "frames/00318-0296930.jpg"
+          ],
+          "recognition_variants": 1
+        },
+        {
+          "start_ms": 325430,
+          "end_ms": 328180,
+          "last_seen_ms": 327930,
+          "text": "这么美那么远旅游也要到河北",
+          "confidence": 0.9537250484739029,
+          "evidence": [
+            "frames/00327-0325430.jpg",
+            "frames/00328-0325680.jpg",
+            "frames/00329-0325930.jpg",
+            "frames/00330-0326180.jpg",
+            "frames/00331-0326430.jpg",
+            "frames/00332-0326680.jpg",
+            "frames/00333-0326930.jpg",
+            "frames/00334-0327180.jpg",
+            "frames/00335-0327430.jpg",
+            "frames/00336-0327680.jpg",
+            "frames/00337-0327930.jpg"
+          ],
+          "recognition_variants": 2
+        },
+        {
+          "start_ms": 367680,
+          "end_ms": 369180,
+          "last_seen_ms": 368680,
+          "text": "凯北文旅排头兵",
+          "confidence": 0.8175439621720996,
+          "evidence": [
+            "frames/00384-0367680.jpg",
+            "frames/00385-0367930.jpg",
+            "frames/00386-0368180.jpg",
+            "frames/00387-0368680.jpg"
+          ],
+          "recognition_variants": 2
+        }
+      ],
+      "language": null,
+      "confidence": 0.9630679606214103,
+      "limitations": [
+        "visual_subtitles_only_not_spoken_audio",
+        "approximate_frame_capture_timestamps",
+        "sub_250ms_or_low_change_captions_may_be_missed",
+        "source_subtitle_errors_preserved",
+        "short_lived_ocr_variants_collapsed_by_temporal_consensus",
+        "ocr_not_manually_corrected"
+      ],
+      "source": {
+        "type": "ocr",
+        "provider": "live_browser_rapidocr",
+        "run_id": "45c17943-f47b-48cf-b62c-85e162329ae8",
+        "request_id": "blind-live-ocr-002",
+        "stable_aweme_id": "7550875346879417639",
+        "started_at": "2026-09-01T08:50:21.43Z",
+        "finished_at": "2026-09-01T08:52:47.636Z",
+        "fresh_capture": true,
+        "transcript_cache_read": false,
+        "frame_count": 390,
+        "checked_frames": 1497,
+        "frame_hash_chain": "1284afa6e63b27d736e8e17a284d176446d0555f0459508d43bfe74610f0473b",
+        "probe_hash_chain": "79ecf7aef6038727afa354cd57983405b205bf0e455129f0de7770ae30d8e4a0",
+        "media_url_sha256": "8f1e13e703f63f9353ca403d1c14ba8d1408cc1ed8cf0b0c4985bacdfeabf490",
+        "engine": {
+          "ready": true,
+          "engine": "rapidocr_onnxruntime",
+          "version": "1.4.4",
+          "models": [
+            {
+              "name": "ch_PP-OCRv4_det_infer.onnx",
+              "sha256": "d2a7720d45a54257208b1e13e36a8479894cb74155a5efe29462512d42f49da9"
+            },
+            {
+              "name": "ch_PP-OCRv4_rec_infer.onnx",
+              "sha256": "48fc40f24f6d2a207a2b1091d3437eb3cc3eb6b676dc3ef9c37384005483683b"
+            },
+            {
+              "name": "ch_ppocr_mobile_v2.0_cls_infer.onnx",
+              "sha256": "e47acedf663230f8863ff1ab0e64dd2d82b838fceb5957146dab185a89d6215c"
+            }
+          ]
+        },
+        "coverage": {
+          "start_ms": 0,
+          "end_ms": 374040,
+          "full_video_scanned": true,
+          "visual_step_ms": 250,
+          "threshold": 0.003
+        }
+      },
+      "media_resolution": {
+        "stable_identity": "aweme_id",
+        "media_kind": "video",
+        "media_type": "browser_decoded_video",
+        "acquired_at": "2026-09-01T08:50:21.43Z",
+        "validated_at": "2026-09-01T08:52:47.636Z",
+        "validation": {
+          "status": "live_browser_frames_read",
+          "frame_count": 390,
+          "media_url_sha256": "8f1e13e703f63f9353ca403d1c14ba8d1408cc1ed8cf0b0c4985bacdfeabf490"
+        }
+      }
+    }
+  }
+}

@@ -3,6 +3,7 @@ import { getVercelOidcToken } from "@vercel/oidc";
 import { readPublicContent, serviceDescription } from "../src/content-reader.js";
 import { publicError, ReaderError } from "../src/errors.js";
 import { createLocalWhisperAsr } from "../src/services/local-whisper.js";
+import { HardSubtitleOcr } from "../src/services/hard-subtitle-ocr.js";
 
 export const config = {
   maxDuration: 300
@@ -10,10 +11,17 @@ export const config = {
 
 export const REQUEST_BUDGET_MS = 292_000;
 
+export function runtimeRequestBudget(env = process.env) {
+  if (env.VERCEL || env.VERCEL_ENV || !env.CONTENT_READER_OCR_PYTHON) return REQUEST_BUDGET_MS;
+  const configured = Number(env.CONTENT_READER_LOCAL_REQUEST_BUDGET_MS ?? 1_500_000);
+  return Number.isFinite(configured) ? Math.max(REQUEST_BUDGET_MS, Math.min(1_500_000, configured)) : 1_500_000;
+}
+
 // The engine prepares and integrity-checks its pinned assets lazily on first
 // use. One instance also enforces one CPU transcription at a time per warm
 // Function process.
 const localWhisper = createLocalWhisperAsr();
+const hardSubtitles = new HardSubtitleOcr();
 
 export function withRequestDeadline(operation, deadlineAt) {
   const remainingMs = Math.floor(Number(deadlineAt) - Date.now());
@@ -58,7 +66,8 @@ function requestInput(req) {
   return {
     url: first(req.query?.url) ?? body.url,
     type: first(req.query?.type) ?? body.type ?? "auto",
-    debug: debug === "1" || debug === true
+    debug: debug === "1" || debug === true,
+    fresh: first(req.query?.fresh) === "1" || body.fresh === true
   };
 }
 
@@ -116,13 +125,14 @@ export default async function handler(req, res) {
         openaiConfigured: Boolean(process.env.OPENAI_API_KEY),
         gatewayConfigured: Boolean(gatewayAuth.aiGatewayApiKey || gatewayAuth.vercelOidcToken),
         localWhisperConfigured: localWhisperStatus.runtime_verified,
-        localWhisperStatus
+        localWhisperStatus,
+        hardSubtitleStatus: hardSubtitles.status()
       })
     });
   }
 
   try {
-    const requestDeadlineAt = startedAt + REQUEST_BUDGET_MS;
+    const requestDeadlineAt = startedAt + runtimeRequestBudget();
     const result = await withRequestDeadline(readPublicContent(input, {
       apiKey: process.env.TIKHUB_API_KEY,
       fetchImpl: globalThis.fetch,
@@ -131,6 +141,7 @@ export default async function handler(req, res) {
       aiGatewayApiKey: gatewayAuth.aiGatewayApiKey,
       vercelOidcToken: gatewayAuth.vercelOidcToken,
       localAsr: localWhisper.available ? localWhisper.transcribe : null,
+      hardSubtitleOcr: hardSubtitles.available ? hardSubtitles.read.bind(hardSubtitles) : null,
       requestDeadlineAt
     }), requestDeadlineAt);
 

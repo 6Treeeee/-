@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import {
   config,
   REQUEST_BUDGET_MS,
+  runtimeRequestBudget,
   resolveRuntimeGatewayAuth,
   withRequestDeadline
 } from "../api/index.js";
@@ -58,6 +59,12 @@ test("the request deadline returns a safe service error before the platform time
     await withRequestDeadline(Promise.resolve("complete"), Date.now() + 1_000),
     "complete"
   );
+});
+
+test("local OCR may use a bounded longer request while Vercel preserves its platform deadline", () => {
+  assert.equal(runtimeRequestBudget({ CONTENT_READER_OCR_PYTHON: "python" }), 1_500_000);
+  assert.equal(runtimeRequestBudget({ VERCEL: "1", CONTENT_READER_OCR_PYTHON: "python" }), REQUEST_BUDGET_MS);
+  assert.equal(runtimeRequestBudget({}), REQUEST_BUDGET_MS);
 });
 
 test("request-scoped ASR credentials reach the content processor", () => {

@@ -1,0 +1,12 @@
+{
+  "task_id": "CONTENT_READER_LEVEL2_BLIND_002",
+  "selected_at": "2026-09-01T17:00:36.0634821+08:00",
+  "input_url": "https://www.douyin.com/video/7589860433402531110",
+  "aweme_id": "7589860433402531110",
+  "selection_method": "First canonical Douyin single-video result from a new public knowledge-video search; the video page was not opened before the formal request.",
+  "preflight_content_read": false,
+  "prior_repository_id_matches": 0,
+  "prior_tree_mirror_id_matches": 0,
+  "prior_memory_index_id_matches": 0,
+  "purpose": "Positive unfamiliar-video acceptance after the first locked blind sample proved to contain only sparse scene labels and correctly fell through to an unavailable ASR runtime."
+}

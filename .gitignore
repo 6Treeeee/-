@@ -22,3 +22,7 @@ artifacts/douyin/tmp/
 # Superseded upstream binary; kept locally only to preserve the handed-off worktree.
 assets/whisper/whisper-bin-ubuntu-x64-b4938.tar.gz
 /.swc
+
+# Python OCR worker bytecode is local, regenerable state.
+__pycache__/
+*.pyc

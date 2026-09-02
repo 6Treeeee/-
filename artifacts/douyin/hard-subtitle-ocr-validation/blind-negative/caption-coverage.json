@@ -1,0 +1,11 @@
+{
+  "sustained": false,
+  "active_ms": 29000,
+  "active_ratio": 0.077532,
+  "window_ms": 10000,
+  "covered_windows": 21,
+  "total_windows": 38,
+  "window_ratio": 0.552632,
+  "minimum_active_ratio": 0.2,
+  "minimum_window_ratio": 0.75
+}

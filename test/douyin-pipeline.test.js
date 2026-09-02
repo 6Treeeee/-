@@ -17,8 +17,82 @@ import { ProviderChain, sanitizeDiagnostics } from "../src/services/provider-cha
 import { PublicBrowserService } from "../src/services/public-browser.js";
 import { TIKHUB_ROUTES } from "../src/services/tikhub.js";
 import { TranscriptionService } from "../src/services/transcription.js";
+import { assessCaptionCoverage, mergeCaptionFrames } from "../src/services/hard-subtitle-ocr.js";
 
 const NOW = Date.parse("2026-08-15T04:00:00.000Z");
+
+test("hard-subtitle OCR deduplicates adjacent recognized frames and preserves ordering", () => {
+  const groups = mergeCaptionFrames([
+    { time_ms: 100, text: "第一句", confidence: .99, file: "1.jpg" },
+    { time_ms: 300, text: "第一句", confidence: .98, file: "2.jpg" },
+    { time_ms: 500, text: "", confidence: 0, file: "3.jpg" },
+    { time_ms: 800, text: "第二句", confidence: .97, file: "4.jpg" }
+  ], 1000);
+  assert.deepEqual(groups.map(({ start_ms, end_ms, text }) => ({ start_ms, end_ms, text })), [
+    { start_ms: 100, end_ms: 500, text: "第一句" },
+    { start_ms: 800, end_ms: 1000, text: "第二句" }
+  ]);
+});
+
+test("hard-subtitle OCR collapses short-lived recognition variants by frame evidence", () => {
+  const groups = mergeCaptionFrames([
+    { time_ms: 100, text: "年轻人为什么找不到工作？", confidence: .98, file: "1.jpg" },
+    { time_ms: 350, text: "年轻人为什么找不到工作？", confidence: .99, file: "2.jpg" },
+    { time_ms: 600, text: "年轻火为什么找不到工作？", confidence: .94, file: "3.jpg" },
+    { time_ms: 850, text: "年轻人为什么找不到工作？", confidence: .99, file: "4.jpg" },
+    { time_ms: 1100, text: "下一句完全不同", confidence: .99, file: "5.jpg" }
+  ], 1500);
+  assert.equal(groups.length, 2);
+  assert.equal(groups[0].text, "年轻人为什么找不到工作？");
+  assert.equal(groups[0].start_ms, 100);
+  assert.equal(groups[0].end_ms, 1100);
+  assert.equal(groups[0].recognition_variants, 2);
+  assert.equal(groups[0].evidence.length, 4);
+  assert.equal(groups[1].text, "下一句完全不同");
+});
+
+test("hard-subtitle OCR rejects sparse scene labels as a complete caption track", () => {
+  const sparse = assessCaptionCoverage([
+    { start_ms: 10_000, last_seen_ms: 11_000, text: "姓名" },
+    { start_ms: 180_000, last_seen_ms: 181_000, text: "栏目标签" },
+    { start_ms: 360_000, last_seen_ms: 361_000, text: "片尾" }
+  ], 374_000);
+  assert.equal(sparse.sustained, false);
+  const sustained = assessCaptionCoverage(Array.from({ length: 38 }, (_, index) => ({
+    start_ms: index * 10_000,
+    last_seen_ms: index * 10_000 + 3_000,
+    text: `字幕${index}`
+  })), 374_000);
+  assert.equal(sustained.sustained, true);
+});
+
+test("hard-subtitle OCR excludes multi-row scene UI while retaining dialogue captions", () => {
+  const selected = (cy) => ({ cy, height: 24 });
+  const groups = mergeCaptionFrames([
+    { time_ms: 100, text: "菜单卡片一菜单卡片二菜单卡片三", confidence: .99, file: "ui.jpg",
+      selected: [selected(470), selected(500), selected(550)] },
+    { time_ms: 350, text: "真正的底部字幕", confidence: .99, file: "caption.jpg",
+      selected: [selected(590)] }
+  ], 1000);
+  assert.equal(groups.length, 1);
+  assert.equal(groups[0].text, "真正的底部字幕");
+  assert.equal(groups[0].start_ms, 350);
+});
+
+test("hard-subtitle OCR is attempted after captions and before media/ASR", async () => {
+  let mediaCalls = 0;
+  const service = new TranscriptionService({
+    mediaResolver: { resolve: async () => { mediaCalls += 1; throw new Error("must not resolve media"); } },
+    hardSubtitleOcr: async () => ({
+      status: "complete", method: "hard_subtitle_ocr", text: "现场字幕",
+      segments: [{ start_ms: 0, end_ms: 1000, text: "现场字幕" }], source: { fresh_capture: true }
+    })
+  });
+  const result = await service.read({ aweme_id: "7674668931734326528", captions: { tracks: [] } });
+  assert.equal(result.method, "hard_subtitle_ocr");
+  assert.equal(result.source.fresh_capture, true);
+  assert.equal(mediaCalls, 0);
+});
 
 test("Sparticuz Chromium uses shell mode and the fresh default browser context", async () => {
   let createContextCalls = 0;

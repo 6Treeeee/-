@@ -1,0 +1,60 @@
+{
+  "task_id": "CONTENT_READER_LEVEL2_BLIND_POSITIVE",
+  "status": "accepted_from_existing_evidence",
+  "aweme_id": "7589860433402531110",
+  "public_url": "https://www.douyin.com/video/7589860433402531110",
+  "request_id": "blind-positive-ocr-002",
+  "run_id": "b8e48b02-a2d4-4596-9178-beca216e7f72",
+  "selection": "previously unused, absent from repository and prior evidence, and not pre-read before the blind run",
+  "identity": {
+    "expected_aweme_id": "7589860433402531110",
+    "observed_aweme_id": "7589860433402531110",
+    "target_player_bound": true,
+    "media_duration_ms": 133237
+  },
+  "coverage": {
+    "start_ms": 0,
+    "end_ms": 133237,
+    "full_video_scanned": true,
+    "visual_step_ms": 250,
+    "checked_frames": 533,
+    "changed_frames": 413,
+    "final_segments": 115,
+    "active_ms": 101807,
+    "active_ratio": 0.764105,
+    "covered_10s_windows": 14,
+    "total_10s_windows": 14,
+    "window_ratio": 1.0
+  },
+  "timeline_audit": {
+    "time_reversals": 0,
+    "adjacent_exact_duplicates": 0,
+    "maximum_uncovered_gap_ms": 3000,
+    "first_text": "你门有没有发现一个神奇的现象",
+    "last_text": "有收获有共鸣"
+  },
+  "provenance": {
+    "method": "hard_subtitle_ocr",
+    "provider": "live_browser_rapidocr",
+    "fresh_capture": true,
+    "transcript_cache_read": false,
+    "asr_fallback_used": false,
+    "frame_hash_chain": "2854f5915ce04fd0b9a2bc31887f8a4935c5fccd2c7afa6835e38e801d151676",
+    "probe_hash_chain": "10f55f20a0403cbdf19f45bc241a495a435489e29ecf6c0b33fdc6789821b102"
+  },
+  "content_review": {
+    "video_identity_correct": true,
+    "coverage_complete": true,
+    "obvious_sustained_missing_subtitles": false,
+    "large_scale_repetition": false,
+    "time_order_correct": true,
+    "scene_ui_dump_present_after_fix": false,
+    "manual_correction_grade": false,
+    "known_localized_ocr_examples": [
+      "你门",
+      "保解",
+      "B国HO"
+    ]
+  },
+  "decision": "pass_with_localized_ocr_limitations"
+}
