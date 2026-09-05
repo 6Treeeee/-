@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "node scripts/build-workflows.mjs",
-    "check": "node --check api/index.js && node --check api/a2a.js && node --check api/agent-card.js && node --check api/workflow-flow.js && node --check api/workflow-step.js && node --check workflows/a2a-control.js && node --check src/a2a/auth.js && node --check src/a2a/control-service.js && node --check src/a2a/http-handler.js && node --check src/a2a/state-machine.js && node --check src/a2a/workflow-node-adapter.js && node --check src/content-reader.js && node --check src/errors.js && node --check src/platforms/douyin.js && node --check src/normalizers/douyin.js && node --check src/providers/tikhub.js && node --check src/providers/direct-public-web.js && node --check src/providers/verified-public-artifact.js && node --check src/services/analysis.js && node --check src/services/artifacts.js && node --check src/services/audio-extraction.js && node --check src/services/browser-audio-decoder.js && node --check src/services/content-processing.js && node --check src/services/hard-subtitle-ocr.js && node --check src/services/local-whisper.js && node --check src/services/media.js && node --check src/services/provider-chain.js && node --check src/services/public-browser.js && node --check src/services/tikhub.js && node --check src/services/transcription.js && node --check scripts/build-verified-artifact.mjs && node --check scripts/build-workflows.mjs && node --check scripts/capture-public-profile.mjs && node --check scripts/download-public-media.mjs && node --check scripts/generate-a2a-keys.mjs && node --check scripts/probe-public-web.mjs && node --check scripts/serve-content-reader.mjs",
+    "check": "node --check api/index.js && node --check api/a2a.js && node --check api/agent-card.js && node --check api/mcp.js && node --check api/oauth-protected-resource.js && node --check api/workflow-flow.js && node --check api/workflow-step.js && node --check workflows/a2a-control.js && node --check src/a2a/auth.js && node --check src/a2a/control-service.js && node --check src/a2a/http-handler.js && node --check src/a2a/state-machine.js && node --check src/a2a/workflow-node-adapter.js && node --check src/mcp/auth.js && node --check src/mcp/server.js && node --check src/content-reader.js && node --check src/errors.js && node --check src/platforms/douyin.js && node --check src/normalizers/douyin.js && node --check src/providers/tikhub.js && node --check src/providers/direct-public-web.js && node --check src/providers/verified-public-artifact.js && node --check src/services/analysis.js && node --check src/services/artifacts.js && node --check src/services/audio-extraction.js && node --check src/services/browser-audio-decoder.js && node --check src/services/content-processing.js && node --check src/services/hard-subtitle-ocr.js && node --check src/services/local-whisper.js && node --check src/services/media.js && node --check src/services/provider-chain.js && node --check src/services/public-browser.js && node --check src/services/tikhub.js && node --check src/services/transcription.js && node --check scripts/build-verified-artifact.mjs && node --check scripts/build-workflows.mjs && node --check scripts/capture-public-profile.mjs && node --check scripts/download-public-media.mjs && node --check scripts/generate-a2a-keys.mjs && node --check scripts/probe-public-web.mjs && node --check scripts/serve-content-reader.mjs",
     "test": "node --test \"test/*.test.js\"",
     "test:worker": "npm --prefix worker test",
     "a2a:keys": "node scripts/generate-a2a-keys.mjs",
@@ -19,10 +19,13 @@
   },
   "dependencies": {
     "@ai-sdk/gateway": "^4.0.62",
+    "@modelcontextprotocol/sdk": "^1.30.0",
     "@sparticuz/chromium": "^149.0.0",
     "@vercel/oidc": "^3.8.4",
+    "jose": "^6.2.11",
     "mp4box": "^2.4.1",
     "puppeteer-core": "^25.7.0",
+    "zod": "^4.5.4",
     "workflow": "4.8.4"
   },
   "overrides": {

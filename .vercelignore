@@ -14,3 +14,7 @@ artifacts/douyin/tmp/
 *.m4a
 *.webm
 *.wav
+.a2a/
+worker/config.json
+worker/*.pem
+artifacts/douyin/blind-runs/
