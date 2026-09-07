@@ -6,6 +6,7 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 
 import { createMcpHandler } from "../src/mcp/server.js";
+import { localCodexService } from "./helpers/local-codex-service.js";
 
 const ENV = Object.freeze({
   TREE_BRAIN_MCP_URL: "https://tree.example/mcp",
@@ -88,7 +89,7 @@ test("MCP streamable HTTP advertises bounded Tree Brain tools and calls the exis
     const tools = await client.listTools();
     assert.deepEqual(
       tools.tools.map((tool) => tool.name).sort(),
-      ["check_project", "get_connection_status", "get_task", "list_workspaces"],
+      ["check_project", "get_connection_status", "get_task", "list_workspaces", "task_resume", "task_start", "task_status"],
     );
     const check = tools.tools.find((tool) => tool.name === "check_project");
     assert.deepEqual(check._meta.securitySchemes, [{ type: "oauth2", scopes: ["treebrain:check"] }]);
@@ -145,5 +146,54 @@ test("MCP endpoint returns an OAuth challenge before touching the service", asyn
     assert.equal(serviceCalled, false);
   } finally {
     await new Promise((resolve) => server.close(resolve));
+  }
+});
+
+test("MCP task tools enforce scope, persist progress, and resume idempotently without creating a task", async () => {
+  const service = localCodexService();
+  const scopes = [];
+  const handler = createMcpHandler({ env: ENV, service, authorizer: async (_header, required) => {
+    scopes.push(required);
+    return { principal_id: "oauth:test", workspace_ids: ["content-reader"] };
+  } });
+  const server = http.createServer((req, res) => void handler(req, res));
+  const port = await listen(server);
+  const client = new Client({ name: "codex-task-test", version: "1.0.0" });
+  const transport = new StreamableHTTPClientTransport(new URL(`http://127.0.0.1:${port}/mcp`));
+  const call = (name, args) => client.callTool({ name, arguments: args });
+  const args = { workspace_id: "content-reader", request_id: "stable_start", goal: "Complete the bounded step", read_only: true };
+  try {
+    await client.connect(transport);
+    assert.equal((await call("task_start", { ...args, workspace_id: "a2a-control" })).isError, true);
+    assert.equal(service.state, null);
+    const start = await call("task_start", args);
+    assert.equal(start.isError, undefined);
+    const id = start.structuredContent.task.task_id;
+    assert.equal(start.structuredContent.task.thread_id, null);
+    assert.equal(start.structuredContent.task.status, "RUNNING");
+    assert.equal((await call("task_start", args)).structuredContent.task.task_id, id);
+    assert.equal((await call("task_resume", { task_id: id, request_id: "no_thread" })).isError, true);
+    const emit = (kind, payload = {}) => service.executorEvent(id, { kind, payload, workerId: "worker_1", workspaceId: "content-reader" });
+    await emit("CLAIM");
+    await emit("CODEX_CALL", { operation: "startThread", thread_id: null, cwd: "C:\\trusted\\repo", repo: "6Treeeee/-", branch: "codex/a2a-control-loop" });
+    await emit("THREAD_STARTED", { thread_id: "original-thread" });
+    await emit("CODEX_RESULT", { status: "BLOCKED_BY_QUOTA", result: null, error: "usage limit" });
+    const blocked = (await call("task_status", { task_id: id })).structuredContent.task;
+    assert.equal(blocked.status, "BLOCKED_BY_QUOTA");
+    assert.equal(blocked.thread_id, "original-thread");
+    assert.equal(blocked.model, "gpt-5.6-terra");
+    assert.deepEqual(blocked.remaining_steps, ["execute"]);
+    const resumeArgs = { task_id: id, request_id: "stable_resume" };
+    const resumed = await call("task_resume", resumeArgs);
+    assert.equal(resumed.structuredContent.applied, true);
+    assert.equal(resumed.structuredContent.task.thread_id, blocked.thread_id);
+    assert.equal(resumed.structuredContent.task.resume_count, 1);
+    assert.equal((await call("task_resume", resumeArgs)).structuredContent.task.resume_count, 1);
+    assert.equal(service.state.start_thread_calls, 1);
+    assert.ok(scopes.some(value => value.includes("treebrain:check")));
+    assert.ok(scopes.some(value => value.includes("treebrain:read")));
+  } finally {
+    await client.close().catch(() => {});
+    await new Promise(resolve => server.close(resolve));
   }
 });

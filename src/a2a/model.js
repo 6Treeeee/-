@@ -1,3 +1,5 @@
+import { parseCodexTask } from "./codex-task.js";
+
 export const TASK_STATUSES = Object.freeze([
   "submitted",
   "queued",
@@ -106,6 +108,7 @@ function randomModelId(prefix) {
   return `${prefix}_${uuid}`;
 }
 const TASK_KEYS = new Set([
+  "codex_task",
   "request_id",
   "context_id",
   "workspace_id",
@@ -198,6 +201,7 @@ export function parseTaskInput(input, options = {}) {
   }
 
   const task = {
+    ...(value.codex_task == null ? {} : { codex_task: parseCodexTask(value.codex_task) }),
     request_id: value.request_id == null
       ? null
       : parseId(value.request_id, "task.request_id"),

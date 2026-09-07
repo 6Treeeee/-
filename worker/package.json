@@ -7,7 +7,7 @@
     "node": ">=20.3.0"
   },
   "scripts": {
-    "check": "node --check index.mjs && node --check lib/signed-client.mjs && node --check lib/codex-runner.mjs && node --check lib/redact.mjs",
+    "check": "node --check index.mjs && node --check lib/signed-client.mjs && node --check lib/codex-runner.mjs && node --check lib/codex-task-runner.mjs && node --check lib/redact.mjs",
     "test": "node --test test/*.test.mjs",
     "start": "node index.mjs --config config.json --poll"
   },

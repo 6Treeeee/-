@@ -1,0 +1,41 @@
+{
+  "evidence_type": "extracted_local_real_sdk_probe",
+  "scope": "LOCAL_MCP_TOOL_HANDLERS_REAL_CODEX_SDK_TEST_PERSISTENCE",
+  "local_resume_acceptance": "PASS",
+  "production_acceptance": "FAIL",
+  "production_failure": "TREE_BRAIN_OAUTH_NOT_CONFIGURED",
+  "read_douyin_video_acceptance": "NOT_RUN_FIRST_PRODUCTION_GATE_BLOCKED",
+  "model": "gpt-5.6-terra",
+  "reasoning_effort": "medium",
+  "task_id": "wrun_local_d07eee5b94fc4a0b95e6c213a1c461c8",
+  "before_resume": {
+    "thread_id": "01a07cb9-dc61-7f81-8301-463fdc69a097",
+    "status": "FAILED",
+    "completed_steps": ["remember"],
+    "remaining_steps": ["recall"],
+    "last_result": "60e2f582-75dd-445d-8334-22093e5d2cd1",
+    "last_error": "The operation was aborted",
+    "start_thread_calls": 1,
+    "resume_thread_calls": 1
+  },
+  "after_resume": {
+    "thread_id": "01a07cb9-dc61-7f81-8301-463fdc69a097",
+    "status": "COMPLETED",
+    "completed_steps": ["remember", "recall"],
+    "remaining_steps": [],
+    "last_result": "60e2f582-75dd-445d-8334-22093e5d2cd1 RECOVERED",
+    "last_error": null,
+    "start_thread_calls": 1,
+    "resume_thread_calls": 2
+  },
+  "actual_sdk_method_calls": [
+    { "phase": "start", "pid": 24872, "operation": "startThread", "thread_id": null },
+    { "phase": "start", "pid": 24872, "operation": "resumeThread", "thread_id": "01a07cb9-dc61-7f81-8301-463fdc69a097" },
+    { "phase": "resume", "pid": 27972, "operation": "resumeThread", "thread_id": "01a07cb9-dc61-7f81-8301-463fdc69a097" }
+  ],
+  "recovery_process_start_thread_calls": 0,
+  "interruption_type": "controlled_actual_SDK_stream_cancellation_after_thread_checkpoint",
+  "real_quota_exhaustion_tested": false,
+  "vercel_workflow_persistence_tested": false,
+  "ordinary_gpt_invocation_tested": false
+}

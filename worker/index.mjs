@@ -5,6 +5,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { createCodexRunner } from "./lib/codex-runner.mjs";
+import { createCodexTaskRunner, classifyCodexFailure } from "./lib/codex-task-runner.mjs";
 import { A2AHttpError, SignedA2AClient } from "./lib/signed-client.mjs";
 import { createSafeLogger, redact } from "./lib/redact.mjs";
 
@@ -294,7 +295,7 @@ function startHeartbeat({ client, config, taskId, workspaceId, role, logger, onL
   };
 }
 
-export async function executeTask({ client, decisionClient = null, runner, config, task, signal, logger = createSafeLogger() }) {
+export async function executeTask({ client, decisionClient = null, runner, codexTaskRunner = createCodexTaskRunner(), config, task, signal, logger = createSafeLogger() }) {
   task = normalizeTask(task);
   if (shouldSkipTask(task)) return { ran: false, reason: "not_runnable" };
   const assignment = resolveAssignment(task);
@@ -331,6 +332,9 @@ export async function executeTask({ client, decisionClient = null, runner, confi
   const claimed = await claimTask({ client, config, task, workspaceId, signal });
   if (!claimed) return { ran: false, reason: "claimed_elsewhere" };
   if (shouldSkipTask(claimed)) return { ran: false, reason: "stopped_after_claim" };
+  if (claimed.codex_task) {
+    return executeDurableCodexTask({ client, runner: codexTaskRunner, config, task: claimed, workspaceId, workspacePath, signal, logger });
+  }
 
   // A claim may update bookkeeping fields such as current_stage. The signed,
   // pre-claim assignment remains authoritative for this one bounded run.
@@ -397,6 +401,36 @@ export async function executeTask({ client, decisionClient = null, runner, confi
     };
   }
   return { ran: true, report, fingerprint: executionFingerprint(claimed, confirmedAssignment) };
+}
+
+export async function executeDurableCodexTask({ client, runner, config, task, workspaceId, workspacePath, signal, logger = createSafeLogger() }) {
+  const controller = new AbortController();
+  let leaseLost = false;
+  const stopHeartbeat = startHeartbeat({
+    client, config, taskId: task.task_id, workspaceId, role: "executor", logger,
+    onLeaseState: current => {
+      if (current?.worker?.worker_id !== config.workerId || current?.status !== "running") {
+        leaseLost = true;
+        controller.abort(new Error("TREE_BRAIN_TASK_LEASE_LOST"));
+      }
+    },
+  });
+  const emit = async (kind, payload) => {
+    const receipt = await client.executorEvent(task.task_id, { kind, payload, workerId: config.workerId, workspaceId });
+    if (receipt.applied !== true) throw new Error(receipt.rejected_code || "TREE_BRAIN_CHECKPOINT_NOT_CONFIRMED");
+    return receipt;
+  };
+  let result;
+  try {
+    result = await runner.run({ task, workspacePath, emit, signal: signal ? AbortSignal.any([signal, controller.signal]) : controller.signal });
+  } catch (error) {
+    result = classifyCodexFailure(error);
+  } finally {
+    await stopHeartbeat();
+  }
+  if (leaseLost) return { ran: true, reason: "lease_lost_or_stopped" };
+  await emit("CODEX_RESULT", result);
+  return { ran: true, codex_result: result, fingerprint: executionFingerprint(task, { role: "executor", actionId: task.current_step }) };
 }
 
 async function pollOnce({ client, decisionClient, runner, config, processed, signal, logger }) {

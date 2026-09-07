@@ -6,6 +6,7 @@ import {
 } from "./model.js";
 import { reviewEvidence } from "./reviewer.js";
 import { evaluateStopLoss } from "./stop-loss.js";
+import { codexEventPatch, initialCodexState } from "./codex-task.js";
 
 const TERMINAL = new Set(["completed", "failed", "stopped"]);
 const DECISIONS = new Set([
@@ -186,6 +187,7 @@ export function createInitialTask(input, taskId, now = null) {
     processed_event_ids: [],
     event_receipts: [],
     last_rejected_event: null,
+    ...(input.codex_task ? initialCodexState(input.codex_task) : {}),
   };
 }
 
@@ -194,7 +196,11 @@ export function reduceTaskEvent(task, event) {
     throw new Error("A2A_EVENT_INVALID");
   }
   if (task.processed_event_ids?.includes(event.event_id)) return task;
+  if (task.codex_task && ["RESUME", "CODEX_CALL", "THREAD_STARTED", "CODEX_RESULT"].includes(event.kind)) {
+    return changed(task, event, codexEventPatch(task, event));
+  }
   if (TERMINAL.has(task.status)) throw new Error("A2A_TASK_TERMINAL");
+  if (task.codex_task && ["REPORT", "DECISION"].includes(event.kind)) throw new Error("TREE_BRAIN_USE_CODEX_TASK_PROTOCOL");
 
   if (event.kind === "CLAIM") {
     const leaseExpired =
@@ -208,6 +214,7 @@ export function reduceTaskEvent(task, event) {
     return changed(task, event, {
       status: "running",
       current_stage: task.current_stage,
+      ...(task.codex_task ? { active_codex_operation: null } : {}),
       worker: {
         worker_id: event.worker_id,
         workspace_id: event.workspace_id,
@@ -403,6 +410,7 @@ export function reduceTaskEvent(task, event) {
   if (event.kind === "STOP") {
     return changed(task, event, {
       status: "stopped",
+      ...(task.codex_task ? { codex_status: "FAILED", last_error: "TREE_BRAIN_TASK_STOPPED", active_codex_operation: null } : {}),
       current_stage: "stopped",
       next_decision_required: false,
       worker: null,

@@ -102,7 +102,7 @@ async function readMcpBody(req) {
 function requiredScopeForBody(body) {
   const messages = Array.isArray(body) ? body : [body];
   return messages.some((message) =>
-    message?.method === "tools/call" && message?.params?.name === "check_project"
+    message?.method === "tools/call" && ["check_project", "task_start", "task_resume"].includes(message?.params?.name)
   ) ? "treebrain:check" : "treebrain:read";
 }
 
@@ -158,6 +158,14 @@ function safeJsonValue(value, max = 12_000) {
 
 function publicTask(task) {
   return {
+    ...(task?.codex_task ? {
+      thread_id: task.thread_id, project_id: task.project_id, repo: task.repo,
+      branch: task.branch, cwd: task.cwd, model: task.model, reasoning_effort: task.reasoning_effort,
+      current_step: task.current_step, completed_steps: task.completed_steps,
+      remaining_steps: task.remaining_steps, last_result: task.last_result, last_error: task.last_error,
+      start_thread_calls: task.start_thread_calls, resume_thread_calls: task.resume_thread_calls,
+      codex_operations: task.codex_operations, resume_count: task.resume_count,
+    } : {}),
     task_id: boundedString(task?.task_id, 128),
     request_id: boundedString(task?.request_id, 128),
     context_id: boundedString(task?.context_id, 128),
@@ -165,7 +173,8 @@ function publicTask(task) {
     goal: boundedString(task?.goal),
     execution_goal: boundedString(task?.execution_goal),
     acceptance_criteria: boundedList(task?.acceptance_criteria, 50).map((value) => boundedString(value, 2_000)),
-    status: boundedString(task?.status, 64),
+    status: boundedString(task?.codex_status || task?.status, 64),
+    queue_status: boundedString(task?.status, 64),
     current_stage: boundedString(task?.current_stage, 128),
     next_decision_required: task?.next_decision_required === true,
     result: safeJsonValue(task?.result),
@@ -289,6 +298,64 @@ export function createMcpServer({ principal, service = workflowControlService } 
     const task = await service.getTask(taskId);
     assertWorkspaceAccess(principal, task.workspace_id);
     return toolResult({ task: publicTask(task) });
+  });
+
+  server.registerTool("task_start", {
+    title: "Start a durable Codex task",
+    description: "Start a task in the configured 6Treeeee/- repository on codex/a2a-control-loop using Terra Medium. Returns a pending receipt, not completed work. task_status returns the persisted Codex thread_id; use task_resume after interruption. No caller-provided filesystem path is accepted.",
+    inputSchema: {
+      workspace_id: z.enum(["a2a-control", "content-reader"]),
+      request_id: WORKSPACE_SCHEMA.describe("Stable idempotency ID for this start request"),
+      goal: TEXT_SCHEMA,
+      read_only: z.boolean().default(true),
+      steps: z.array(z.object({ id: WORKSPACE_SCHEMA, instruction: TEXT_SCHEMA }).strict()).min(1).max(20).optional(),
+    },
+    annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: true },
+    _meta: securityMeta(["treebrain:check"]),
+  }, async (args) => {
+    assertWorkspaceAccess(principal, args.workspace_id);
+    const input = taskInputFromArguments({ ...args, acceptance_criteria: [args.goal] });
+    input.codex_task = { read_only: args.read_only, steps: args.steps || [{ id: "execute", instruction: args.goal }] };
+    if (!args.read_only) {
+      input.allowed_actions = ["make the repository changes explicitly requested in the owner goal, inside the configured workspace"];
+      input.forbidden_actions = DEFAULT_FORBIDDEN_ACTIONS.slice(1);
+      input.constraints = ["preserve unrelated work and the existing Content Reader backend"];
+    }
+    const task = await service.createTask(parseTaskInput(input), { principal_id: principal.principal_id || principal.key_id });
+    if (task?.workspace_id !== args.workspace_id || !task.codex_task) throw new Error("TREE_BRAIN_TASK_WORKSPACE_MISMATCH");
+    return toolResult({ accepted: true, pending: task.status !== "completed", task: publicTask(task) });
+  });
+
+  server.registerTool("task_status", {
+    title: "Read durable Codex task state",
+    description: "Read persisted thread_id, progress, result, error, and startThread/resumeThread operation receipts. RUNNING is not a success claim; BLOCKED_BY_QUOTA and FAILED retain their original thread for recovery.",
+    inputSchema: { task_id: WORKSPACE_SCHEMA },
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+    _meta: securityMeta(["treebrain:read"]),
+  }, async ({ task_id }) => {
+    const task = await service.getTask(task_id);
+    assertWorkspaceAccess(principal, task.workspace_id);
+    if (!task.codex_task) throw new Error("TREE_BRAIN_NOT_CODEX_TASK");
+    return toolResult({ task: publicTask(task) });
+  });
+
+  server.registerTool("task_resume", {
+    title: "Resume the original Codex thread",
+    description: "Continue only unfinished steps of an existing task via resumeThread on its persisted thread_id. Never starts or forks a replacement thread. Rejects absent thread IDs and active leases. A completed task is an idempotent read.",
+    inputSchema: { task_id: WORKSPACE_SCHEMA, request_id: WORKSPACE_SCHEMA.describe("Stable idempotency ID for this resume request") },
+    annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: true },
+    _meta: securityMeta(["treebrain:check"]),
+  }, async ({ task_id, request_id }) => {
+    const task = await service.getTask(task_id);
+    assertWorkspaceAccess(principal, task.workspace_id);
+    if (!task.codex_task) throw new Error("TREE_BRAIN_NOT_CODEX_TASK");
+    if (task.codex_status === "COMPLETED") return toolResult({ accepted: true, pending: false, task: publicTask(task) });
+    const accepted = await service.sendDecision(task_id, {
+      event_id: request_id, kind: "RESUME", expected_version: task.version,
+      at: new Date().toISOString(), payload: {},
+    });
+    if (accepted.applied === false) throw new Error(accepted.rejected_code || "TREE_BRAIN_RESUME_REJECTED");
+    return toolResult({ ...accepted, pending: true, task: publicTask(await service.getTask(task_id)) });
   });
 
   return server;

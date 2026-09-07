@@ -11,10 +11,11 @@ import {
   parseTaskInput,
 } from "./model.js";
 import { workflowControlService } from "./control-service.js";
+import { parseCodexEvent } from "./codex-task.js";
 
 const MAX_BODY_BYTES = 256 * 1024;
 const ID_RE = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/;
-const EVENT_KINDS = new Set(["CLAIM", "HEARTBEAT", "REPORT"]);
+const EVENT_KINDS = new Set(["CLAIM", "HEARTBEAT", "REPORT", "CODEX_CALL", "THREAD_STARTED", "CODEX_RESULT"]);
 const TASK_STATUSES = new Set([
   "submitted",
   "running",
@@ -235,7 +236,9 @@ function eventEnvelope(input, principal, task, taskId, idFactory, now) {
     throw errorWithStatus("A2A_EVENT_ID_REQUIRED", 400);
   }
   const eventId = assertIdentity(event.event_id, "A2A_EVENT_ID_INVALID");
-  const payload = event.kind === "REPORT"
+  const payload = ["CODEX_CALL", "THREAD_STARTED", "CODEX_RESULT"].includes(event.kind)
+    ? parseCodexEvent(event.kind, event.payload)
+    : event.kind === "REPORT"
     ? parseExecutorReport(event.payload, { taskId })
     : assertPlainObject(event.payload || {}, "A2A_EXECUTOR_EVENT_INVALID");
   if (event.kind === "HEARTBEAT") {

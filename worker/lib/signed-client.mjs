@@ -263,7 +263,7 @@ export class SignedA2AClient {
   }
 
   executorEvent(taskId, { kind, workerId, workspaceId, payload = {} }) {
-    if (!new Set(["CLAIM", "HEARTBEAT", "REPORT"]).has(kind)) {
+    if (!new Set(["CLAIM", "HEARTBEAT", "REPORT", "CODEX_CALL", "THREAD_STARTED", "CODEX_RESULT"]).has(kind)) {
       throw new Error(`Unsupported executor event: ${kind}`);
     }
     const eventId = this.logicalEventId("event");

@@ -179,6 +179,7 @@ export function reconcileTaskWithRunStatus(task, runStatus) {
   return {
     ...task,
     status: failure.status,
+    ...(task.codex_task ? { codex_status: "FAILED", last_error: failure.blocker } : {}),
     current_stage: failure.stage,
     next_decision_required: false,
     worker: null,
