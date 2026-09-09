@@ -44,6 +44,7 @@ const DEFAULT_BUDGET = Object.freeze({
 });
 
 const WORKSPACE_SCHEMA = z.string().trim().min(1).max(128).regex(ID_PATTERN);
+const CODEX_WORKSPACE_SCHEMA = z.enum(["a2a-control", "content-reader"]);
 const REQUEST_ID_SCHEMA = z.string().trim().min(1).max(128).regex(ID_PATTERN).optional();
 const TEXT_SCHEMA = z.string().trim().min(1).max(MAX_TASK_TEXT);
 
@@ -117,6 +118,31 @@ function assertWorkspaceAccess(principal, workspaceId) {
     error.statusCode = 403;
     throw error;
   }
+}
+
+function authenticatedPrincipalId(principal) {
+  const principalId = principal?.principal_id || principal?.key_id;
+  if (typeof principalId !== "string" || !principalId.trim()) {
+    const error = new Error("TREE_BRAIN_PRINCIPAL_UNAVAILABLE");
+    error.statusCode = 403;
+    throw error;
+  }
+  return principalId;
+}
+
+async function findScopedCodexTask({ service, principal, workspaceId, taskId = null }) {
+  assertWorkspaceAccess(principal, workspaceId);
+  const task = await service.findCodexTask({
+    task_id: taskId,
+    workspace_id: workspaceId,
+    principal_id: authenticatedPrincipalId(principal),
+  });
+  if (task?.workspace_id !== workspaceId || !task.codex_task) {
+    const error = new Error("TREE_BRAIN_CODEX_TASK_NOT_FOUND");
+    error.statusCode = 404;
+    throw error;
+  }
+  return task;
 }
 
 function boundedString(value, max = MAX_TASK_TEXT) {
@@ -304,7 +330,7 @@ export function createMcpServer({ principal, service = workflowControlService } 
     title: "Start a durable Codex task",
     description: "Start a task in the configured 6Treeeee/- repository on codex/a2a-control-loop using Terra Medium. Returns a pending receipt, not completed work. task_status returns the persisted Codex thread_id; use task_resume after interruption. No caller-provided filesystem path is accepted.",
     inputSchema: {
-      workspace_id: z.enum(["a2a-control", "content-reader"]),
+      workspace_id: CODEX_WORKSPACE_SCHEMA,
       request_id: WORKSPACE_SCHEMA.describe("Stable idempotency ID for this start request"),
       goal: TEXT_SCHEMA,
       read_only: z.boolean().default(true),
@@ -321,34 +347,38 @@ export function createMcpServer({ principal, service = workflowControlService } 
       input.forbidden_actions = DEFAULT_FORBIDDEN_ACTIONS.slice(1);
       input.constraints = ["preserve unrelated work and the existing Content Reader backend"];
     }
-    const task = await service.createTask(parseTaskInput(input), { principal_id: principal.principal_id || principal.key_id });
+    const task = await service.createTask(parseTaskInput(input), { principal_id: authenticatedPrincipalId(principal) });
     if (task?.workspace_id !== args.workspace_id || !task.codex_task) throw new Error("TREE_BRAIN_TASK_WORKSPACE_MISMATCH");
     return toolResult({ accepted: true, pending: task.status !== "completed", task: publicTask(task) });
   });
 
   server.registerTool("task_status", {
     title: "Read durable Codex task state",
-    description: "Read persisted thread_id, progress, result, error, and startThread/resumeThread operation receipts. RUNNING is not a success claim; BLOCKED_BY_QUOTA and FAILED retain their original thread for recovery.",
-    inputSchema: { task_id: WORKSPACE_SCHEMA },
+    description: "Read persisted thread_id, progress, result, error, and startThread/resumeThread operation receipts. task_id is optional: when omitted, find the newest Codex task owned by the authenticated principal in the requested workspace.",
+    inputSchema: {
+      workspace_id: CODEX_WORKSPACE_SCHEMA.describe("Authorized workspace used for exact task discovery"),
+      task_id: WORKSPACE_SCHEMA.optional().describe("Optional task ID; omit to discover the newest scoped Codex task"),
+    },
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     _meta: securityMeta(["treebrain:read"]),
-  }, async ({ task_id }) => {
-    const task = await service.getTask(task_id);
-    assertWorkspaceAccess(principal, task.workspace_id);
-    if (!task.codex_task) throw new Error("TREE_BRAIN_NOT_CODEX_TASK");
+  }, async ({ workspace_id, task_id }) => {
+    const task = await findScopedCodexTask({ service, principal, workspaceId: workspace_id, taskId: task_id });
     return toolResult({ task: publicTask(task) });
   });
 
   server.registerTool("task_resume", {
     title: "Resume the original Codex thread",
-    description: "Continue only unfinished steps of an existing task via resumeThread on its persisted thread_id. Never starts or forks a replacement thread. Rejects absent thread IDs and active leases. A completed task is an idempotent read.",
-    inputSchema: { task_id: WORKSPACE_SCHEMA, request_id: WORKSPACE_SCHEMA.describe("Stable idempotency ID for this resume request") },
+    description: "Continue only unfinished steps via resumeThread on the persisted original thread. task_id is optional: when omitted, find the newest Codex task owned by the authenticated principal in the requested workspace. Never starts or forks a replacement thread.",
+    inputSchema: {
+      workspace_id: CODEX_WORKSPACE_SCHEMA.describe("Authorized workspace used for exact task discovery"),
+      task_id: WORKSPACE_SCHEMA.optional().describe("Optional task ID; omit to discover the newest scoped Codex task"),
+      request_id: WORKSPACE_SCHEMA.describe("Stable idempotency ID for this resume request"),
+    },
     annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: true },
     _meta: securityMeta(["treebrain:check"]),
-  }, async ({ task_id, request_id }) => {
-    const task = await service.getTask(task_id);
-    assertWorkspaceAccess(principal, task.workspace_id);
-    if (!task.codex_task) throw new Error("TREE_BRAIN_NOT_CODEX_TASK");
+  }, async ({ workspace_id, task_id, request_id }) => {
+    const task = await findScopedCodexTask({ service, principal, workspaceId: workspace_id, taskId: task_id });
+    task_id = task.task_id;
     if (task.codex_status === "COMPLETED") return toolResult({ accepted: true, pending: false, task: publicTask(task) });
     const accepted = await service.sendDecision(task_id, {
       event_id: request_id, kind: "RESUME", expected_version: task.version,

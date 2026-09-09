@@ -6,6 +6,7 @@ import {
 } from "workflow/api";
 
 import {
+  findCodexTaskIndexCandidates,
   findTaskIndexEntry,
   TASK_INDEX_HOOK_TOKEN,
   taskInboxToken,
@@ -141,6 +142,18 @@ async function waitForTaskWorkspace(service, taskId, workspaceId, { attempts = 3
   throw error;
 }
 
+async function waitForTaskIndexEntry(readIndexImpl, criteria, { attempts = 30 } = {}) {
+  for (let index = 0; index < attempts; index += 1) {
+    const snapshot = await readIndexImpl();
+    const entry = findTaskIndexEntry(snapshot.entries || [], criteria);
+    if (entry) return entry;
+    await delay(100);
+  }
+  const error = new Error("A2A_TASK_INDEX_NOT_READY");
+  error.statusCode = 503;
+  throw error;
+}
+
 export function eventOutcomeFromTask(task, eventId) {
   if (!task || !eventId) return null;
   const receipt = [...(task.event_receipts || [])]
@@ -192,13 +205,15 @@ export class WorkflowControlService {
   constructor({
     getRunImpl = getRun,
     readLatestImpl = readLatest,
+    readIndexImpl = readIndex,
   } = {}) {
     this.getRunImpl = getRunImpl;
     this.readLatestImpl = readLatestImpl;
+    this.readIndexImpl = readIndexImpl;
   }
 
   async createTask(input, { principal_id: principalId = "unscoped" } = {}) {
-    const index = await readIndex();
+    const index = await this.readIndexImpl();
     const existing = findTaskIndexEntry(index.entries, {
       workspace_id: input.workspace_id,
       request_id: input.request_id,
@@ -222,6 +237,11 @@ export class WorkflowControlService {
     const taskId = reservation.runId || run.runId;
     await waitForHook(taskInboxToken(taskId));
     if (taskId !== run.runId) {
+      await waitForTaskIndexEntry(this.readIndexImpl, {
+        workspace_id: input.workspace_id,
+        request_id: input.request_id,
+        principal_id: principalId,
+      });
       return waitForTaskWorkspace(this, taskId, input.workspace_id);
     }
     await resumeWithRetry(TASK_INDEX_HOOK_TOKEN, {
@@ -230,7 +250,15 @@ export class WorkflowControlService {
       request_id: input.request_id,
       workspace_id: input.workspace_id,
       principal_id: principalId,
+      task_kind: input.codex_task ? "codex" : "a2a",
       created_at: createdAt,
+    });
+    // resumeHook acknowledges delivery, while a fresh MCP request reads the
+    // durable index snapshot. Wait until discovery can actually observe it.
+    await waitForTaskIndexEntry(this.readIndexImpl, {
+      workspace_id: input.workspace_id,
+      request_id: input.request_id,
+      principal_id: principalId,
     });
     // The inbox hook can become visible just before the first durable state
     // snapshot. Do not let an Executor claim a synthetic task during that
@@ -256,12 +284,40 @@ export class WorkflowControlService {
       }, runStatus);
   }
 
+  async findCodexTask({ task_id: taskId = null, workspace_id: workspaceId, principal_id: principalId } = {}) {
+    if (!workspaceId || !principalId) {
+      const error = new Error("TREE_BRAIN_TASK_SCOPE_REQUIRED");
+      error.statusCode = 400;
+      throw error;
+    }
+    if (taskId) assertTaskId(taskId);
+    const index = await this.readIndexImpl();
+    const candidates = findCodexTaskIndexCandidates(index.entries || [], {
+      task_id: taskId,
+      workspace_id: workspaceId,
+      principal_id: principalId,
+    });
+    for (const entry of candidates) {
+      let task;
+      try {
+        task = await this.getTask(entry.task_id);
+      } catch (error) {
+        if (error?.statusCode === 404 || error?.message === "A2A_TASK_NOT_FOUND") continue;
+        throw error;
+      }
+      if (task?.workspace_id === workspaceId && task.codex_task) return task;
+    }
+    const error = new Error("TREE_BRAIN_CODEX_TASK_NOT_FOUND");
+    error.statusCode = 404;
+    throw error;
+  }
+
   async listTasks({ status, workspace_id: workspaceId, limit = 25 } = {}) {
     const statuses = String(status || "")
       .split("|")
       .map((value) => value.trim())
       .filter(Boolean);
-    const index = await readIndex();
+    const index = await this.readIndexImpl();
     const selected = index.entries
       .filter((entry) => !workspaceId || entry.workspace_id === workspaceId)
       .slice(0, Math.min(Math.max(Number(limit) || 25, 1), 50));

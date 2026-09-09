@@ -13,6 +13,7 @@ import {
 } from "../src/a2a/state-machine.js";
 import {
   applyTaskIndexEvent,
+  findCodexTaskIndexCandidates,
   findTaskIndexEntry,
   taskRequestToken
 } from "../workflows/a2a-control.js";
@@ -63,6 +64,44 @@ test("request reservations isolate identical request ids by workspace and princi
     principalId: "decision_1"
   }));
   assert.deepEqual(afterConflictingWriter, entries);
+});
+
+test("latest Codex discovery is isolated by principal and workspace and skips non-Codex tasks", async () => {
+  const entries = [
+    taskCreated({ taskId: "wrun_otherprincipal0001", workspaceId: "content-reader", principalId: "decision_2", taskKind: "codex", createdAt: "2026-08-24T00:00:05.000Z", requestId: "other_principal" }),
+    taskCreated({ taskId: "wrun_otherworkspace0001", workspaceId: "a2a-control", principalId: "decision_1", taskKind: "codex", createdAt: "2026-08-24T00:00:04.000Z", requestId: "other_workspace" }),
+    taskCreated({ taskId: "wrun_genericlatest0001", workspaceId: "content-reader", principalId: "decision_1", taskKind: "a2a", createdAt: "2026-08-24T00:00:03.000Z", requestId: "generic_latest" }),
+    // Legacy entries have no task_kind and must be verified from durable state.
+    { ...taskCreated({ taskId: "wrun_legacynoncodex01", workspaceId: "content-reader", principalId: "decision_1", createdAt: "2026-08-24T00:00:02.000Z", requestId: "legacy_generic" }), task_kind: undefined },
+    taskCreated({ taskId: "wrun_expectedcodex001", workspaceId: "content-reader", principalId: "decision_1", taskKind: "codex", createdAt: "2026-08-24T00:00:01.000Z", requestId: "expected" }),
+  ];
+  assert.deepEqual(findCodexTaskIndexCandidates(entries, {
+    workspace_id: "content-reader",
+    principal_id: "decision_1",
+  }).map((entry) => entry.task_id), ["wrun_legacynoncodex01", "wrun_expectedcodex001"]);
+
+  const states = new Map([
+    ["wrun_legacynoncodex01", { task_id: "wrun_legacynoncodex01", workspace_id: "content-reader", status: "submitted" }],
+    ["wrun_expectedcodex001", { task_id: "wrun_expectedcodex001", workspace_id: "content-reader", status: "submitted", codex_task: { read_only: true, steps: [] } }],
+  ]);
+  const service = new WorkflowControlService({
+    readIndexImpl: async () => ({ entries }),
+    readLatestImpl: async (taskId) => states.get(taskId) || null,
+    getRunImpl: () => ({ exists: Promise.resolve(true), status: Promise.resolve("running") }),
+  });
+  assert.equal((await service.findCodexTask({
+    workspace_id: "content-reader",
+    principal_id: "decision_1",
+  })).task_id, "wrun_expectedcodex001");
+  await assert.rejects(service.findCodexTask({
+    task_id: "wrun_otherprincipal0001",
+    workspace_id: "content-reader",
+    principal_id: "decision_1",
+  }), /TREE_BRAIN_CODEX_TASK_NOT_FOUND/);
+  await assert.rejects(service.findCodexTask({
+    workspace_id: "a2a-control",
+    principal_id: "decision_2",
+  }), /TREE_BRAIN_CODEX_TASK_NOT_FOUND/);
 });
 
 test("per-event receipts preserve concurrent rejection outcomes", () => {
@@ -302,14 +341,15 @@ test("cancelled and inconsistent completed Workflow runs cannot remain running f
   ));
 });
 
-function taskCreated({ taskId, workspaceId, principalId }) {
+function taskCreated({ taskId, workspaceId, principalId, taskKind = "a2a", createdAt = NOW, requestId = "request_same" }) {
   return {
     kind: "TASK_CREATED",
     task_id: taskId,
-    request_id: "request_same",
+    request_id: requestId,
     workspace_id: workspaceId,
     principal_id: principalId,
-    created_at: NOW
+    task_kind: taskKind,
+    created_at: createdAt
   };
 }
 

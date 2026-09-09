@@ -1,0 +1,65 @@
+{
+  "observed_at": "2026-09-08T19:03:50.021Z",
+  "acceptance_scope": "THREE_DISTINCT_MCP_HTTP_SESSIONS_REAL_CODEX_SDK_TEST_PERSISTENCE",
+  "local_mcp_abc": "PASS",
+  "production_ordinary_gpt": "NOT_TESTED_OAUTH_NOT_USED",
+  "task_id": "wrun_local_d53408c548b94970b7502bfd07364d22",
+  "thread_id": "01a08267-2251-7451-8e2a-681e1bcdba2e",
+  "status": "COMPLETED",
+  "completed_steps": [
+    "remember",
+    "recall"
+  ],
+  "remaining_steps": [],
+  "model": "gpt-5.6-terra",
+  "reasoning_effort": "medium",
+  "persisted_operation_counts": {
+    "startThread": 1,
+    "resumeThread": 2
+  },
+  "instrumented_sdk_calls": [
+    {
+      "phase": "a",
+      "operation": "startThread",
+      "thread_id": null
+    },
+    {
+      "phase": "a",
+      "operation": "resumeThread",
+      "thread_id": "01a08267-2251-7451-8e2a-681e1bcdba2e"
+    },
+    {
+      "phase": "b",
+      "operation": "resumeThread",
+      "thread_id": "01a08267-2251-7451-8e2a-681e1bcdba2e"
+    }
+  ],
+  "mcp_sessions": [
+    {
+      "phase": "a",
+      "session_id": "c02be8f3-851e-4db1-b336-85f87b65a599",
+      "authenticated_principal": "local-sdk-probe"
+    },
+    {
+      "phase": "b",
+      "session_id": "3eb721e3-a9aa-427b-bfc4-53869eecd1e2",
+      "authenticated_principal": "local-sdk-probe",
+      "task_status_omitted_task_id": true,
+      "task_resume_omitted_task_id": true
+    },
+    {
+      "phase": "c",
+      "session_id": "076c2437-63f4-4ccb-aa27-eae74a868fca",
+      "authenticated_principal": "local-sdk-probe",
+      "task_status_omitted_task_id": true
+    }
+  ],
+  "continuity_challenge_sha256": "2a837b903404e030c5500def251fbcbfc761e92b4de31b73cd54b87daebc868e",
+  "completed_result_sha256": "fe33c298ae64418ef0a2368d7b5d2a86f4d51c1f62bedbc7b5520e876a1b0bce",
+  "notes": [
+    "A saved the original thread and then formed a controlled interruption after a resumeThread checkpoint.",
+    "B used a new process and MCP HTTP session, omitted task_id for status and resume, and recovered the continuity challenge from prior thread history.",
+    "C used a third process and MCP HTTP session, omitted task_id, and read the same task and thread as COMPLETED.",
+    "The local authorizer and persistence adapter are test-only; this artifact is not ordinary ChatGPT or production OAuth evidence."
+  ]
+}

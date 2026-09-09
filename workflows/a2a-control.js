@@ -40,6 +40,29 @@ export function findTaskIndexEntry(entries, {
   return entries.find((entry) => entry.reservation_key === reservationKey) || null;
 }
 
+export function findCodexTaskIndexCandidates(entries, {
+  workspace_id: workspaceId,
+  principal_id: principalId,
+  task_id: taskId = null,
+}) {
+  return entries
+    .map((entry, position) => ({ entry, position }))
+    .filter(({ entry }) =>
+      entry.workspace_id === workspaceId
+      && entry.principal_id === principalId
+      && (!taskId || entry.task_id === taskId)
+      // Older durable index entries predate task_kind. They remain candidates,
+      // but the persisted task state is still checked before it is returned.
+      && (entry.task_kind == null || entry.task_kind === "codex")
+    )
+    .sort((left, right) => {
+      const leftTime = Date.parse(left.entry.created_at || "") || 0;
+      const rightTime = Date.parse(right.entry.created_at || "") || 0;
+      return rightTime - leftTime || left.position - right.position;
+    })
+    .map(({ entry }) => entry);
+}
+
 export function applyTaskIndexEvent(entries, event) {
   if (event?.kind !== "TASK_CREATED" || !event.task_id) return entries;
   const reservationKey = taskRequestKey(
@@ -54,6 +77,7 @@ export function applyTaskIndexEvent(entries, event) {
     request_id: event.request_id,
     workspace_id: event.workspace_id,
     principal_id: event.principal_id || "unscoped",
+    task_kind: event.task_kind === "codex" ? "codex" : "a2a",
     reservation_key: reservationKey,
     created_at: event.created_at,
   }, ...entries.filter((entry) => entry.task_id !== event.task_id)].slice(0, 200);

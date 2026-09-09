@@ -5,7 +5,7 @@ import http from "node:http";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 
-import { createMcpHandler } from "../src/mcp/server.js";
+import { createMcpHandler, createMcpServer } from "../src/mcp/server.js";
 import { localCodexService } from "./helpers/local-codex-service.js";
 
 const ENV = Object.freeze({
@@ -172,24 +172,41 @@ test("MCP task tools enforce scope, persist progress, and resume idempotently wi
     assert.equal(start.structuredContent.task.thread_id, null);
     assert.equal(start.structuredContent.task.status, "RUNNING");
     assert.equal((await call("task_start", args)).structuredContent.task.task_id, id);
-    assert.equal((await call("task_resume", { task_id: id, request_id: "no_thread" })).isError, true);
+    assert.equal((await call("task_resume", { workspace_id: "content-reader", task_id: id, request_id: "no_thread" })).isError, true);
     const emit = (kind, payload = {}) => service.executorEvent(id, { kind, payload, workerId: "worker_1", workspaceId: "content-reader" });
     await emit("CLAIM");
     await emit("CODEX_CALL", { operation: "startThread", thread_id: null, cwd: "C:\\trusted\\repo", repo: "6Treeeee/-", branch: "codex/a2a-control-loop" });
     await emit("THREAD_STARTED", { thread_id: "original-thread" });
     await emit("CODEX_RESULT", { status: "BLOCKED_BY_QUOTA", result: null, error: "usage limit" });
-    const blocked = (await call("task_status", { task_id: id })).structuredContent.task;
+    const blocked = (await call("task_status", { workspace_id: "content-reader" })).structuredContent.task;
     assert.equal(blocked.status, "BLOCKED_BY_QUOTA");
     assert.equal(blocked.thread_id, "original-thread");
     assert.equal(blocked.model, "gpt-5.6-terra");
     assert.deepEqual(blocked.remaining_steps, ["execute"]);
-    const resumeArgs = { task_id: id, request_id: "stable_resume" };
+    const resumeArgs = { workspace_id: "content-reader", request_id: "stable_resume" };
     const resumed = await call("task_resume", resumeArgs);
     assert.equal(resumed.structuredContent.applied, true);
     assert.equal(resumed.structuredContent.task.thread_id, blocked.thread_id);
     assert.equal(resumed.structuredContent.task.resume_count, 1);
     assert.equal((await call("task_resume", resumeArgs)).structuredContent.task.resume_count, 1);
     assert.equal(service.state.start_thread_calls, 1);
+    assert.equal((await call("task_status", { workspace_id: "a2a-control" })).isError, true);
+
+    const otherPrincipalServer = createMcpServer({
+      principal: { principal_id: "oauth:other", workspace_ids: ["content-reader"] },
+      service,
+    });
+    const [otherClientTransport, otherServerTransport] = (await import("@modelcontextprotocol/sdk/inMemory.js")).InMemoryTransport.createLinkedPair();
+    const otherClient = new Client({ name: "other-principal", version: "1.0.0" });
+    await otherPrincipalServer.connect(otherServerTransport);
+    await otherClient.connect(otherClientTransport);
+    assert.equal((await otherClient.callTool({ name: "task_status", arguments: { workspace_id: "content-reader" } })).isError, true);
+    assert.equal((await otherClient.callTool({
+      name: "task_status",
+      arguments: { workspace_id: "content-reader", task_id: id },
+    })).isError, true);
+    await otherClient.close();
+    await otherPrincipalServer.close();
     assert.ok(scopes.some(value => value.includes("treebrain:check")));
     assert.ok(scopes.some(value => value.includes("treebrain:read")));
   } finally {
