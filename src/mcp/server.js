@@ -8,7 +8,7 @@ import { parseTaskInput } from "../a2a/model.js";
 import { workflowControlService } from "../a2a/control-service.js";
 import {
   authenticationChallenge,
-  createOAuthAuthorizer,
+  createMcpAuthorizer,
   readAuthConfig,
   TreeBrainOAuthError,
 } from "./auth.js";
@@ -243,7 +243,10 @@ function taskInputFromArguments(args) {
   });
 }
 
-function securityMeta(scopes) {
+function securityMeta(scopes, principal) {
+  // The desktop transport has already authenticated its pre-provisioned token.
+  // Do not advertise an OAuth login flow for this explicitly selected mode.
+  if (principal?.auth_mode === "bearer") return {};
   return {
     securitySchemes: [{ type: "oauth2", scopes }],
   };
@@ -260,7 +263,7 @@ export function createMcpServer({ principal, service = workflowControlService } 
     description: "Report the MCP transport and backend readiness without exposing credentials or filesystem paths.",
     inputSchema: {},
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
-    _meta: securityMeta(["treebrain:read"]),
+    _meta: securityMeta(["treebrain:read"], principal),
   }, async () => toolResult({
     service: "tree-brain-codex",
     transport: "MCP Streamable HTTP",
@@ -276,7 +279,7 @@ export function createMcpServer({ principal, service = workflowControlService } 
     description: "List only workspace identifiers granted to the authenticated Tree Brain user.",
     inputSchema: {},
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
-    _meta: securityMeta(["treebrain:read"]),
+    _meta: securityMeta(["treebrain:read"], principal),
   }, async () => toolResult({
     workspaces: Array.isArray(principal?.workspace_ids) ? [...principal.workspace_ids] : [],
   }));
@@ -292,7 +295,7 @@ export function createMcpServer({ principal, service = workflowControlService } 
       acceptance_criteria: z.array(z.string().trim().min(1).max(2_000)).min(1).max(50).optional().describe("Evidence requirements for the inspection"),
     },
     annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
-    _meta: securityMeta(["treebrain:check"]),
+    _meta: securityMeta(["treebrain:check"], principal),
   }, async (args) => {
     assertWorkspaceAccess(principal, args.workspace_id);
     const taskInput = taskInputFromArguments(args);
@@ -319,7 +322,7 @@ export function createMcpServer({ principal, service = workflowControlService } 
       task_id: z.string().trim().min(1).max(128).regex(ID_PATTERN).describe("Tree Brain task identifier"),
     },
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
-    _meta: securityMeta(["treebrain:read"]),
+    _meta: securityMeta(["treebrain:read"], principal),
   }, async ({ task_id: taskId }) => {
     const task = await service.getTask(taskId);
     assertWorkspaceAccess(principal, task.workspace_id);
@@ -337,7 +340,7 @@ export function createMcpServer({ principal, service = workflowControlService } 
       steps: z.array(z.object({ id: WORKSPACE_SCHEMA, instruction: TEXT_SCHEMA }).strict()).min(1).max(20).optional(),
     },
     annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: true },
-    _meta: securityMeta(["treebrain:check"]),
+    _meta: securityMeta(["treebrain:check"], principal),
   }, async (args) => {
     assertWorkspaceAccess(principal, args.workspace_id);
     const input = taskInputFromArguments({ ...args, acceptance_criteria: [args.goal] });
@@ -360,7 +363,7 @@ export function createMcpServer({ principal, service = workflowControlService } 
       task_id: WORKSPACE_SCHEMA.optional().describe("Optional task ID; omit to discover the newest scoped Codex task"),
     },
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
-    _meta: securityMeta(["treebrain:read"]),
+    _meta: securityMeta(["treebrain:read"], principal),
   }, async ({ workspace_id, task_id }) => {
     const task = await findScopedCodexTask({ service, principal, workspaceId: workspace_id, taskId: task_id });
     return toolResult({ task: publicTask(task) });
@@ -375,7 +378,7 @@ export function createMcpServer({ principal, service = workflowControlService } 
       request_id: WORKSPACE_SCHEMA.describe("Stable idempotency ID for this resume request"),
     },
     annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: true },
-    _meta: securityMeta(["treebrain:check"]),
+    _meta: securityMeta(["treebrain:check"], principal),
   }, async ({ workspace_id, task_id, request_id }) => {
     const task = await findScopedCodexTask({ service, principal, workspaceId: workspace_id, taskId: task_id });
     task_id = task.task_id;
@@ -412,7 +415,7 @@ function sendHttpError(res, error, config, requestId = null) {
 export function createMcpHandler({
   env = process.env,
   service = workflowControlService,
-  authorizer = createOAuthAuthorizer({ env }),
+  authorizer = createMcpAuthorizer({ env }),
   idFactory = randomUUID,
 } = {}) {
   return async function mcpHandler(req, res) {
@@ -432,6 +435,13 @@ export function createMcpHandler({
       const bodyHint = parseBodyHint({ body });
       const scope = requiredScopeForBody(bodyHint);
       const principal = await authorizer(firstHeader(headerMap(req), "authorization"), [scope]);
+      if (principal?.auth_mode === "bearer") {
+        const messages = Array.isArray(bodyHint) ? bodyHint : [bodyHint];
+        if (messages.some(message => message?.method === "tools/call" &&
+            !["get_connection_status", "list_workspaces", "task_status", "task_start", "task_resume"].includes(message?.params?.name))) {
+          throw new TreeBrainOAuthError("TREE_BRAIN_FORBIDDEN", 403);
+        }
+      }
       const server = createMcpServer({ principal, service });
       const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined });
       await server.connect(transport);

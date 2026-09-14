@@ -1,4 +1,4 @@
-import { createHash } from "node:crypto";
+import { createHash, timingSafeEqual } from "node:crypto";
 import { createRemoteJWKSet, jwtVerify } from "jose";
 
 const CONFIG_KEYS = [
@@ -51,6 +51,10 @@ function httpsUrl(value, { allowQuery = false } = {}) {
 
 /** Read only resource-server settings; never create or publish an OAuth issuer. */
 export function readAuthConfig(env = process.env) {
+  if (env.TREE_BRAIN_AUTH_MODE === "bearer") return readBearerConfig(env);
+  if (env.TREE_BRAIN_AUTH_MODE && env.TREE_BRAIN_AUTH_MODE !== "oauth") {
+    throw configurationError();
+  }
   if (CONFIG_KEYS.every((key) => env[key] == null)) return null;
   const resourceUrl = httpsUrl(env.TREE_BRAIN_MCP_URL);
   if (!resourceUrl.pathname.endsWith("/mcp")) throw configurationError();
@@ -98,6 +102,9 @@ export function readAuthConfig(env = process.env) {
 
 export function protectedResourceMetadata(config) {
   if (!config) throw configurationError();
+  if (config.mode === "bearer") {
+    return { resource: config.resource, scopes_supported: [...config.scopes] };
+  }
   return {
     resource: config.resource,
     authorization_servers: [config.issuer],
@@ -106,7 +113,7 @@ export function protectedResourceMetadata(config) {
 }
 
 export function authenticationChallenge(config) {
-  if (!config) return "Bearer";
+  if (!config || config.mode === "bearer") return "Bearer";
   const metadataUrl = new URL("/.well-known/oauth-protected-resource", config.resource);
   return `Bearer resource_metadata="${metadataUrl.href}"`;
 }
@@ -175,5 +182,45 @@ export function createOAuthAuthorizer({ env = process.env, keyResolver } = {}) {
       role: "decision",
       workspace_ids: [...workspaceIds],
     };
+  };
+}
+
+// An explicit desktop grant for content-reader only. Never fall back from failed OAuth.
+function readBearerConfig(env) {
+  const invalid = () => new TreeBrainOAuthError("TREE_BRAIN_BEARER_NOT_CONFIGURED", 503);
+  let resource;
+  let grant;
+  try {
+    resource = httpsUrl(env.TREE_BRAIN_MCP_URL);
+    grant = JSON.parse(env.TREE_BRAIN_BEARER_GRANT_JSON);
+  } catch { throw invalid(); }
+  if (!resource.pathname.endsWith("/mcp") || !grant ||
+      !/^[a-f0-9]{64}$/.test(grant.sha256) ||
+      !/^bearer:[A-Za-z0-9_-]{1,80}$/.test(grant.principal_id) ||
+      !Number.isSafeInteger(grant.expires_at) || grant.expires_at <= 0 ||
+      JSON.stringify(grant.workspace_ids) !== '["content-reader"]' ||
+      !Array.isArray(grant.scopes) ||
+      !grant.scopes.includes("treebrain:read") ||
+      new Set(grant.scopes).size !== grant.scopes.length ||
+      grant.scopes.some(scope => !SUPPORTED_SCOPES.includes(scope))) throw invalid();
+  return Object.freeze({ mode: "bearer", resource: resource.href,
+    sha256: grant.sha256, principal_id: grant.principal_id,
+    expires_at: grant.expires_at,
+    workspace_ids: Object.freeze(["content-reader"]), scopes: Object.freeze([...grant.scopes]) });
+}
+
+export function createMcpAuthorizer({ env = process.env, keyResolver } = {}) {
+  if (env.TREE_BRAIN_AUTH_MODE !== "bearer") return createOAuthAuthorizer({ env, keyResolver });
+  return async (header, requiredScopes = []) => {
+    const config = readAuthConfig(env);
+    const match = typeof header === "string" && /^Bearer (tb_[A-Za-z0-9_-]{43})$/i.exec(header);
+    if (!match || Math.floor(Date.now() / 1000) >= config.expires_at) throw unauthorized();
+    const digest = createHash("sha256").update(match[1]).digest();
+    if (!timingSafeEqual(digest, Buffer.from(config.sha256, "hex"))) throw unauthorized();
+    if (!Array.isArray(requiredScopes) || requiredScopes.some(scope => !config.scopes.includes(scope))) {
+      throw forbidden();
+    }
+    return { key_id: config.principal_id, principal_id: config.principal_id,
+      role: "decision", workspace_ids: [...config.workspace_ids], auth_mode: "bearer" };
   };
 }
