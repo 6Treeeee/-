@@ -1,0 +1,37 @@
+{
+  "observed_on": "2026-09-22",
+  "scope": "READ_ONLY_TASK_STATE_MIRROR_LOCAL_CODE_AND_TESTS",
+  "tests": {
+    "command": "node --test test/task-state-mirror.test.js",
+    "passed": 9,
+    "failed": 0,
+    "live_task_execution": false
+  },
+  "syntax_checks": {
+    "src/a2a/task-state-mirror.js": "PASS",
+    "scripts/export-task-state.mjs": "PASS"
+  },
+  "historical_summary_rejection": {
+    "command": "node scripts/export-task-state.mjs --snapshot artifacts/tree-brain/task-resume-2026-09-09.json",
+    "exit_code": 1,
+    "error": "TASK_MIRROR_DURABLE_CODEX_STATE_REQUIRED",
+    "expected": true
+  },
+  "real_latest_task_state_generated": false,
+  "test_mirror_written": "Temporary isolated directory only; removed after test",
+  "github_auto_publish": false,
+  "ordinary_chatgpt_read": "NOT_TESTED",
+  "limitations": [
+    "Known historical evidence is a local-test summary, not the raw durable task object.",
+    "No real raw state or production task ID was obtained during this scoped task; live export remains unverified.",
+    "No automatic publisher was added and no push was performed.",
+    "An exported snapshot is not a live feed or a second source of task truth."
+  ],
+  "preexisting_worktree_check": {
+    "git_diff_check": "FAIL_OUTSIDE_TASK_SCOPE",
+    "file": "scripts/chatgpt-entry/start-existing-tunnel.ps1",
+    "line": 74,
+    "reason": "new blank line at EOF",
+    "modified_by_this_task": false
+  }
+}
