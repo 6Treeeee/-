@@ -1,6 +1,6 @@
 # CURRENT PROJECT STATE（当前项目状态）
 
-最后更新：2026-09-22
+最后更新：2026-09-23
 
 ## Owner Goal（用户最终目标）
 
@@ -82,6 +82,20 @@ Owner 本轮明确授权创建且仅创建 1 条标记为 infrastructure-v1-mirr
 
 该历史任务不再尝试恢复。本轮验收完全基于上面的真实新任务，不使用历史摘要反推数据。
 
-## 停止边界
+## Content Reader Level 2 生产现实审计（2026-09-23）
+
+执行入口：`docs/CONTENT_READER_LEVEL2_NEXT_TASK.md`。状态：**BLOCKED_BEFORE_IMPLEMENTATION / Level 2 未通过**。本轮完成 Step 1 的部署、API、源码和授权审计；没有修改后端、新增工具、部署或重跑已验收视频。
+
+- 真实生产入口：`https://sigma-silk-88.vercel.app/api`；现有 `api/index.js` 直接调用 `src/content-reader.js` 的 `readPublicContent`，可复用单视频请求 `type: "video", fresh: true`。
+- Vercel CLI 当前部署证据：`dpl_GLUz9U7G7rn9SAYyuoMaFbxukkxX`，READY，源码 commit `31d425b709ab329c994b451f23c434be3b5918f9`。READY 不代表内容读取验收。API / MCP 请求上限分别为 300 / 60 秒。
+- 线上 `/api` 返回 JSON、HTTP 200，`hard_subtitle_ocr.configured=false`；生产变量列表没有 `CONTENT_READER_OCR_PYTHON`。现有 `config/ocr-requirements.txt` 指定 `rapidocr-onnxruntime==1.4.4`。尚未执行生产 Python/import 探针，不能把“未配置”写成“平台绝无 Python”。OCR 生产部署缺口仍待修复。
+- 同一健康响应报告本地 Whisper runtime 已验证；Gateway 标志为 true 只表示已有认证来源，不证明付费可用或新视频转录成功。
+- 对 `/mcp` 的 `initialize`，匿名和本机已有 DPAPI 凭据均实际返回 HTTP 401 / `TREE_BRAIN_UNAUTHORIZED`。本机授权元数据到期时间为 `2026-09-14T14:45:50Z`；未读取/发布服务端完整 grant，不把本机副本当成生产配置证明。
+- 部署 commit 与当前源码均未注册 `read_douyin_video`。生产工具列表因认证拒绝未能取得；普通 ChatGPT 调用与内容级问题均未验收。
+- 当前首先需要解决的外部前提是可被现有 MCP 接受、且普通 ChatGPT 能使用的有效授权入口。按 AGENTS.md 第 4、5、6、10 条，遇到该授权阻塞后不继续扩建，不重开 OAuth / Tunnel / Tree Brain Infrastructure v1，不弱化认证。
+- 后续仍有明确工程步骤：现有 OCR 的最小生产部署补齐 → 只读工具适配 → fresh 陌生视频与普通 ChatGPT 内容级验收。**不能宣称只剩授权、其他工程已经完成。**
+- 脱敏证据：`artifacts/douyin/level2-production-audit-2026-09-23.json`。无新视频 URL / aweme_id，无新 transcript，无新 deployment；没有伪造验收样本。
+
+## Infrastructure v1 停止边界（继续有效）
 
 Tree Brain Infrastructure v1 已正式收口。除出现真实回归证据，或外部产品能力发生实质变化外，不再继续开发该基础设施；后续回到 Owner 当前最高优先级的实际项目。

@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-09-22T23:52:59Z",
+  "task_document": "docs/CONTENT_READER_LEVEL2_NEXT_TASK.md",
+  "outcome": "BLOCKED_BEFORE_IMPLEMENTATION",
+  "level2_acceptance": "NOT_PASSED",
+  "production": {
+    "origin": "https://sigma-silk-88.vercel.app",
+    "deployment_id": "dpl_GLUz9U7G7rn9SAYyuoMaFbxukkxX",
+    "deployment_url": "https://1fjstwfyh-9a7fxqyeg-1790063688-9925s-projects.vercel.app",
+    "ready_state": "READY",
+    "git_commit_sha": "31d425b709ab329c994b451f23c434be3b5918f9",
+    "plan": "hobby",
+    "node_version": "24.x",
+    "api_max_duration_seconds": 300,
+    "mcp_max_duration_seconds": 60,
+    "metadata_source": "Existing authorized Vercel CLI inspect and GET /v13/deployments/{id}; selected non-secret fields only"
+  },
+  "api_health": {
+    "method": "GET",
+    "path": "/api",
+    "http_status": 200,
+    "content_type": "application/json; charset=utf-8",
+    "request_id": "bdd7c8b0-1791-47ba-9343-a4b3c05718d2",
+    "service": "Content Reader",
+    "hard_subtitle_ocr": {
+      "configured": false,
+      "engine": "rapidocr_onnxruntime",
+      "scope": "single_video",
+      "live_frames_only": true,
+      "visual_step_ms": 250
+    },
+    "asr": {
+      "openai": false,
+      "vercel_ai_gateway": true,
+      "local_whisper_cpp_runtime_verified": true
+    },
+    "interpretation": "Live configuration/runtime health only; no new video transcript or paid gateway availability proven"
+  },
+  "production_environment_audit": {
+    "source": "vercel env ls production; names inspected, no secret values retained",
+    "content_reader_ocr_python_present": false,
+    "python_and_rapidocr_import_probe": "NOT_RUN",
+    "interpretation": "OCR is not configured for the existing production reader. This does not prove Python is absent from every platform image."
+  },
+  "reusable_entry": {
+    "http": "POST /api with {url, type: video, fresh: true}",
+    "handler": "api/index.js",
+    "service": "src/content-reader.js:readPublicContent",
+    "ocr_requirements": "config/ocr-requirements.txt",
+    "ocr_requirement": "rapidocr-onnxruntime==1.4.4",
+    "registered_read_douyin_video_in_local_or_deployed_commit_source": false,
+    "live_mcp_tools_list": "NOT_REACHED_AUTHENTICATION_REJECTED"
+  },
+  "mcp_authentication_probes": [
+    {
+      "path": "/mcp",
+      "rpc_method": "initialize",
+      "authorization": "none",
+      "http_status": 401,
+      "error_code": "TREE_BRAIN_UNAUTHORIZED",
+      "request_id": "mcp_cbc9688d-f752-4a16-80fc-a39155405002"
+    },
+    {
+      "path": "/mcp",
+      "rpc_method": "initialize",
+      "authorization": "existing desktop DPAPI credential, decrypted only in process memory",
+      "http_status": 401,
+      "error_code": "TREE_BRAIN_UNAUTHORIZED",
+      "request_id": "mcp_9bd700f7-490c-48e0-9a99-8dbe71fddf3b"
+    }
+  ],
+  "local_grant_metadata": {
+    "expires_at": "2026-09-14T14:45:50Z",
+    "workspace_ids": ["content-reader"],
+    "scopes": ["treebrain:read", "treebrain:check"],
+    "interpretation": "Existing local metadata is expired. Live rejection is confirmed; the server's current grant contents and exact rejection cause were not extracted."
+  },
+  "stop_reason": "Existing MCP authorization rejects the available credential. AGENTS.md requires minimal external capability verification before engineering and owner intervention at authorization blockers; closed OAuth/tunnel routes remain closed.",
+  "remaining_work": [
+    "Establish an accepted, authorized ordinary-ChatGPT access path without reopening prohibited infrastructure routes",
+    "Package and verify the existing OCR runtime in production within platform limits",
+    "Add the minimal read-only read_douyin_video adapter only after prerequisite gates pass",
+    "Run fresh unfamiliar-video acceptance and an ordinary-ChatGPT content-level question"
+  ],
+  "acceptance": {
+    "fresh_video_url": null,
+    "aweme_id": null,
+    "transcript_source": null,
+    "content_coverage": null,
+    "ordinary_chatgpt_content_question": "NOT_TESTED",
+    "new_deployment": null,
+    "backend_changed": false,
+    "historical_video_runs_repeated": false
+  }
+}
