@@ -60,7 +60,7 @@
 
 ## 只读状态镜像真实验收（2026-09-22）
 
-Owner 本轮明确授权创建且仅创建 1 条标记为 infrastructure-v1-mirror-acceptance 的真实 Codex 任务。实际生产执行完成，真实持久状态已生成正式镜像；最终收口等待 Owner 从 GitHub 独立读取并核对。
+Owner 本轮明确授权创建且仅创建 1 条标记为 infrastructure-v1-mirror-acceptance 的真实 Codex 任务。实际生产执行完成，真实持久状态已生成正式镜像。2026-09-22，普通 ChatGPT 已通过 GitHub 连接独立读取远程 `artifacts/tree-brain/latest-task-state.json`，并核对 task_id、thread_id、status、completed_steps、remaining_steps、start_thread_calls、resume_thread_calls 与本轮验收结果一致。Tree Brain Infrastructure v1 正式收口。
 
 - task_id：`wrun_01M33A83TFAFR2JAXT0TTP2EBS`
 - thread_id：`01a0c6a4-c76e-7422-ba49-1cfff9294931`
@@ -84,4 +84,4 @@ Owner 本轮明确授权创建且仅创建 1 条标记为 infrastructure-v1-mirr
 
 ## 停止边界
 
-完成本轮提交、推送和远程镜像核验后停止。由 Owner 独立读取 GitHub 文件并核对字段后决定 Infrastructure v1 正式收口，不继续开发其他能力。
+Tree Brain Infrastructure v1 已正式收口。除出现真实回归证据，或外部产品能力发生实质变化外，不再继续开发该基础设施；后续回到 Owner 当前最高优先级的实际项目。
