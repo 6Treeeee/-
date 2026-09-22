@@ -1,37 +1,115 @@
 {
-  "observed_on": "2026-09-22",
-  "scope": "READ_ONLY_TASK_STATE_MIRROR_LOCAL_CODE_AND_TESTS",
-  "tests": {
-    "command": "node --test test/task-state-mirror.test.js",
-    "passed": 9,
-    "failed": 0,
-    "live_task_execution": false
+  "observed_at": "2026-09-22T01:07:04.730Z",
+  "scope": "REAL_PRODUCTION_INFRASTRUCTURE_V1_MIRROR_ACCEPTANCE",
+  "marker": "infrastructure-v1-mirror-acceptance",
+  "request_id": "infrastructure-v1-mirror-acceptance-20260922-single",
+  "task_id": "wrun_01M33A83TFAFR2JAXT0TTP2EBS",
+  "thread_id": "01a0c6a4-c76e-7422-ba49-1cfff9294931",
+  "creation": {
+    "logical_codex_tasks_created": 1,
+    "implementation": "Existing WorkflowControlService.createTask with existing Vercel CLI authorization and production Workflow",
+    "preliminary_rest_attempt": {
+      "http_status": 400,
+      "code": "A2A_BODY_INVALID",
+      "task_created": false,
+      "reason": "Existing REST /tasks allowlist does not accept codex_task. No endpoint was changed."
+    }
   },
-  "syntax_checks": {
-    "src/a2a/task-state-mirror.js": "PASS",
-    "scripts/export-task-state.mjs": "PASS"
+  "execution": {
+    "implementation": "Existing executeTask and createCodexTaskRunner; real Codex SDK",
+    "model": "gpt-5.6-terra",
+    "reasoning_effort": "medium",
+    "status": "completed",
+    "codex_status": "COMPLETED",
+    "completed_steps": [
+      "infrastructure-v1-mirror-acceptance"
+    ],
+    "remaining_steps": [],
+    "start_thread_calls": 1,
+    "resume_thread_calls": 0,
+    "persisted_event_receipts": [
+      {
+        "event_id": "event_b47de89d-42ac-4960-9f53-1942530a00aa",
+        "kind": "CLAIM",
+        "applied": true,
+        "at": "2026-09-22T01:04:21.531Z",
+        "version": 2
+      },
+      {
+        "event_id": "event_c10b426e-7b83-4d7a-a61f-edbd14240a5c",
+        "kind": "CODEX_CALL",
+        "applied": true,
+        "at": "2026-09-22T01:04:33.301Z",
+        "version": 3
+      },
+      {
+        "event_id": "event_c4786838-ff6c-40cf-9897-00e66ca44c4d",
+        "kind": "THREAD_STARTED",
+        "applied": true,
+        "at": "2026-09-22T01:04:44.674Z",
+        "version": 4
+      },
+      {
+        "event_id": "event_775d0ed6-fb0c-432f-8161-6e4629e001e4",
+        "kind": "HEARTBEAT",
+        "applied": true,
+        "at": "2026-09-22T01:04:48.595Z",
+        "version": 5
+      },
+      {
+        "event_id": "event_195aaa78-d389-4eb9-ad23-078cb2e9d62a",
+        "kind": "CODEX_RESULT",
+        "applied": true,
+        "at": "2026-09-22T01:04:58.745Z",
+        "version": 6
+      }
+    ],
+    "result": "infrastructure-v1-mirror-acceptance: 17 + 25 = 42"
   },
-  "historical_summary_rejection": {
-    "command": "node scripts/export-task-state.mjs --snapshot artifacts/tree-brain/task-resume-2026-09-09.json",
-    "exit_code": 1,
-    "error": "TASK_MIRROR_DURABLE_CODEX_STATE_REQUIRED",
-    "expected": true
+  "mirror": {
+    "path": "artifacts/tree-brain/latest-task-state.json",
+    "generated": true,
+    "reader": "SignedA2AClient.getTask",
+    "source_sha256_verified": true,
+    "fields_verified": [
+      "task_id",
+      "thread_id",
+      "status",
+      "codex_status",
+      "current_step",
+      "last_result",
+      "last_error",
+      "updated_at",
+      "start_thread_calls",
+      "resume_thread_calls",
+      "completed_steps",
+      "remaining_steps",
+      "blockers"
+    ],
+    "generated_at": "2026-09-22T01:05:44.819Z",
+    "source_updated_at": "2026-09-22T01:04:58.745Z",
+    "source_version": 6
   },
-  "real_latest_task_state_generated": false,
-  "test_mirror_written": "Temporary isolated directory only; removed after test",
-  "github_auto_publish": false,
-  "ordinary_chatgpt_read": "NOT_TESTED",
-  "limitations": [
-    "Known historical evidence is a local-test summary, not the raw durable task object.",
-    "No real raw state or production task ID was obtained during this scoped task; live export remains unverified.",
-    "No automatic publisher was added and no push was performed.",
-    "An exported snapshot is not a live feed or a second source of task truth."
+  "tests": [
+    {
+      "command": "npm test",
+      "passed": 272,
+      "failed": 0,
+      "includes_mirror_tests": 9
+    },
+    {
+      "command": "npm run test:worker",
+      "passed": 34,
+      "failed": 0
+    }
   ],
-  "preexisting_worktree_check": {
-    "git_diff_check": "FAIL_OUTSIDE_TASK_SCOPE",
-    "file": "scripts/chatgpt-entry/start-existing-tunnel.ps1",
-    "line": 74,
-    "reason": "new blank line at EOF",
-    "modified_by_this_task": false
-  }
+  "publication": {
+    "branch": "codex/a2a-control-loop",
+    "verification": "Post-push remote content verification is recorded in the final acceptance receipt."
+  },
+  "limitations": [
+    "Snapshot only; no automatic refresh daemon.",
+    "Owner will independently read GitHub and confirm final closure.",
+    "No expired historical task was read or repaired in this acceptance."
+  ]
 }

@@ -58,34 +58,30 @@
 - 重做已经通过的 Control Plane / Worker / thread recovery（线程恢复）
 - 重做 Content Reader（内容读取器）已通过链路
 
-## 只读状态镜像实现与验收（2026-09-22）
+## 只读状态镜像真实验收（2026-09-22）
 
-只读导出能力已实现，9 项新增测试通过；**真实任务镜像尚未生成，普通 ChatGPT 读取验收未完成**。
+Owner 本轮明确授权创建且仅创建 1 条标记为 infrastructure-v1-mirror-acceptance 的真实 Codex 任务。实际生产执行完成，真实持久状态已生成正式镜像；最终收口等待 Owner 从 GitHub 独立读取并核对。
 
-- `src/a2a/task-state-mirror.js` 只投影持久对象字段，缺失值为 `null` / 空数组。`status` 与 `codex_status` 分别原样保留；不推断阻塞原因、不修改任务对象。
-- `scripts/export-task-state.mjs` 一次性原子写入固定路径 `artifacts/tree-brain/latest-task-state.json`。失败保留旧文件，不创建任务、索引、调度器或发布进程。
-- 在线模式直接读取已有 Workflow 的 `task-state` 流末条记录，避开会生成初始化占位状态的 `getTask` 和可能创建索引运行的读取路径。未修改现有 Control Plane、Worker 或线程恢复实现。
-- 文件模式只接受原始持久任务对象，或原有本地持久记录中的 `state` 对象；拒绝验收摘要和镜像自身。来源记录文件名、SHA-256、JSON 指针及已有 scope，明确标注非实时快照。哈希用于追溯，不代表文件真实性认证。
-- 在线来源记录任务 ID、持久版本、流名称与记录序号。`updated_at` 来自原任务，`generated_at` 仅代表导出时间。`latest` 指本次指定任务的最新读出记录，不表示跨任务自动发现。
+- task_id：`wrun_01M33A83TFAFR2JAXT0TTP2EBS`
+- thread_id：`01a0c6a4-c76e-7422-ba49-1cfff9294931`
+- status：`completed`；codex_status：`COMPLETED`
+- completed_steps：`["infrastructure-v1-mirror-acceptance"]`；remaining_steps：`[]`
+- start_thread_calls：1；resume_thread_calls：0。
+- 实际 Codex 返回：`infrastructure-v1-mirror-acceptance: 17 + 25 = 42`。
+- 通过现有 WorkflowControlService.createTask、现有 Vercel CLI 授权和生产 Workflow 创建；现有 Worker executeTask / Codex SDK 执行。未修改 Control Plane、Worker、MCP、恢复逻辑或镜像设计。
+- 初次 REST 创建请求因现有 /tasks 不允许 codex_task 字段而被 HTTP 400 拒绝，没有创建任务；随后使用上述已有服务方法完成唯一一次逻辑任务创建，沿用同一 request_id。
+- 任务完成后以现有 SignedA2AClient.getTask 重新读取真实持久对象，再调用原有 scripts/export-task-state.mjs --snapshot 导出；全部 13 个任务投影字段逐一与原始对象深比较通过，源文件 SHA-256 校验通过。
+- 正式镜像：`artifacts/tree-brain/latest-task-state.json`。source 记录真实读取链路、源文件哈希、任务版本和采样时间。原始对象保存在本机工作目录，未提交凭据或完整任务内部记录。
+- 测试：npm test 272/272（含 9 项镜像测试），npm run test:worker 34/34。证据：`artifacts/tree-brain/task-state-mirror-validation.json`。
+- 发布目标：GitHub 分支 `codex/a2a-control-loop`。推送后的远程文件核验及 commit SHA 记录在本轮最终回执中。
+- 镜像是本次采样快照，不是实时订阅；未新增自动刷新进程或第二套状态源。保留原有未提交的无关工作。
 
-运行方式（从仓库根目录执行）：
+## 已关闭的历史任务问题
 
-```powershell
-node scripts/export-task-state.mjs --task-id <已有的真实Workflow任务ID>
-node scripts/export-task-state.mjs --snapshot <原始持久任务JSON文件路径>
-```
+历史 run wrun_01M2ETX7ZQ4N530W2FW6VARDWN 的元数据仍在，但数据于 2026-09-15T02:14:05.189Z 达到存储保留期限，task-state 读取抛出 RunExpiredError，应用将其转换为 HTTP 500 / A2A_INTERNAL_ERROR。此前只读证据：`artifacts/tree-brain/workflow-run-root-cause-2026-09-22.json`。
 
-在线模式复用现有 Workflow SDK 运行环境与访问权限，不创建凭据。文件模式需要提供真实持久记录，不能将历史验收摘要当作原始状态。
+该历史任务不再尝试恢复。本轮验收完全基于上面的真实新任务，不使用历史摘要反推数据。
 
-验收证据：`artifacts/tree-brain/task-state-mirror-validation.json`。
+## 停止边界
 
-- 新增测试 9/9，通过字段来源、不变性、线程 ID / 计数保留、三种终止或阻塞状态、原有 start/resume 转移行为一致性、只读流访问及 CLI 文件写入验证。
-- 新模块和脚本语法检查通过。未重新运行已冻结系统的现场验收。
-- 对已知历史摘要 `task-resume-2026-09-09.json` 实际执行导出，返回 `TASK_MIRROR_DURABLE_CODEX_STATE_REQUIRED`，退出码 1，未生成正式镜像；这是预期拒绝，不能计作真实任务导出成功。
-- 该摘要记录的是历史本地测试任务，未包含原始 `state`，不能据此查询生产 Workflow。此次未取得可读取的真实原始状态或生产任务 ID，未尝试新增凭据或重新探测授权链路；没有声称发生新的授权故障。
-- 未实现自动发布到 GitHub，也未执行推送。本次仅实现本地只读导出；正式镜像尚不存在，不能宣称 GitHub / 普通 ChatGPT 已可读取。后续发布仍需核对状态文本适合仓库可见范围。
-- 同步前已有工作均保留并完成逐文件哈希备份，无同步冲突。全工作区 `git diff --check` 发现原有 `scripts/chatgpt-entry/start-existing-tunnel.ps1:74` 的末尾空行，未修改该文件。
-
-## 下一步（仅剩验收条件）
-
-用已有访问环境下的真实持久任务 ID，或真实原始持久状态文件，执行一次导出并核对字段；在该条件满足前，真实镜像与普通 ChatGPT 读取保持未验收。不得为此重开已关闭的路线或用测试数据补齐正式产物。
+完成本轮提交、推送和远程镜像核验后停止。由 Owner 独立读取 GitHub 文件并核对字段后决定 Infrastructure v1 正式收口，不继续开发其他能力。

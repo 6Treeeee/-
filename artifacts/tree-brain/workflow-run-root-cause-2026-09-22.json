@@ -1,0 +1,92 @@
+{
+  "observed_at": "2026-09-22T00:48:41.529Z",
+  "run_id": "wrun_01M2ETX7ZQ4N530W2FW6VARDWN",
+  "scope": "READ_ONLY_WORKFLOW_CLI_AND_EXISTING_GETTASK_REPRODUCTION",
+  "results": {
+    "run": {
+      "runId": "wrun_01M2ETX7ZQ4N530W2FW6VARDWN",
+      "status": "completed",
+      "deploymentId": "dpl_GLUz9U7G7rn9SAYyuoMaFbxukkxX",
+      "expiredAt": "2026-09-15T02:14:05.189Z",
+      "startedAt": "2026-09-14T02:11:03.967Z",
+      "completedAt": "2026-09-14T02:14:04.551Z",
+      "createdAt": "2026-09-14T02:11:02.336Z",
+      "updatedAt": "2026-09-14T02:14:05.19Z"
+    },
+    "exists": true,
+    "tail_error": {
+      "name": "RunExpiredError",
+      "code": null,
+      "status": null,
+      "statusCode": null,
+      "message": "Stream \"strm_01M2ETX7ZQ4N530W2FW6VARDWN_user_dGFzay1zdGF0ZQ\" is no longer available because run \"wrun_01M2ETX7ZQ4N530W2FW6VARDWN\" reached its storage retention limit at 2026-09-15T02:14:05.189Z (x-vercel-id=sfo1:sfo1::sfo1::rvkww-1790038123569-0c12116d2932)",
+      "stack": [
+        "RunExpiredError: Stream \"strm_01M2ETX7ZQ4N530W2FW6VARDWN_user_dGFzay1zdGF0ZQ\" is no longer available because run \"wrun_01M2ETX7ZQ4N530W2FW6VARDWN\" reached its storage retention limit at 2026-09-15T02:14:05.189Z (x-vercel-id=sfo1:sfo1::sfo1::rvkww-1790038123569-0c12116d2932)",
+        "    at errorForResponse (file:///C:/Users/Administrator/Documents/Codex/2026-08-24/a2a-control-loop/node_modules/@workflow/world-vercel/dist/http-core.js:135:16)",
+        "    at file:///C:/Users/Administrator/Documents/Codex/2026-08-24/a2a-control-loop/node_modules/@workflow/world-vercel/dist/utils.js:424:31",
+        "    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)",
+        "    at async trace (file:///C:/Users/Administrator/Documents/Codex/2026-08-24/a2a-control-loop/node_modules/@workflow/world-vercel/dist/telemetry.js:28:16)",
+        "    at async file:///C:/Users/Administrator/Documents/Codex/2026-08-24/a2a-control-loop/node_modules/@workflow/world-vercel/dist/instrumentObject.js:120:36",
+        "    at async trace (file:///C:/Users/Administrator/Documents/Codex/2026-08-24/a2a-control-loop/node_modules/@workflow/world-vercel/dist/telemetry.js:28:16)",
+        "    at async InternalReadableStream.getTailIndex (file:///C:/Users/Administrator/Documents/Codex/2026-08-24/a2a-control-loop/node_modules/@workflow/core/dist/runtime/run.js:170:30)"
+      ]
+    },
+    "stream_error": {
+      "name": "Error",
+      "code": null,
+      "status": null,
+      "statusCode": null,
+      "message": "DIAGNOSTIC_READ_TIMEOUT",
+      "stack": [
+        "Error: DIAGNOSTIC_READ_TIMEOUT",
+        "    at Timeout._onTimeout (file:///C:/Users/Administrator/Documents/Codex/2026-09-22/docs-codex-next-task-md-agents/work/inspect-run-root-cause.mjs:31:110)",
+        "    at listOnTimeout (node:internal/timers:635:17)",
+        "    at process.processTimers (node:internal/timers:571:7)"
+      ]
+    },
+    "getTask_error": {
+      "name": "RunExpiredError",
+      "code": null,
+      "status": null,
+      "statusCode": null,
+      "message": "Stream \"strm_01M2ETX7ZQ4N530W2FW6VARDWN_user_dGFzay1zdGF0ZQ\" is no longer available because run \"wrun_01M2ETX7ZQ4N530W2FW6VARDWN\" reached its storage retention limit at 2026-09-15T02:14:05.189Z (x-vercel-id=sfo1:sfo1::sfo1::klf89-1790038135306-d22d3827fab5)",
+      "stack": [
+        "RunExpiredError: Stream \"strm_01M2ETX7ZQ4N530W2FW6VARDWN_user_dGFzay1zdGF0ZQ\" is no longer available because run \"wrun_01M2ETX7ZQ4N530W2FW6VARDWN\" reached its storage retention limit at 2026-09-15T02:14:05.189Z (x-vercel-id=sfo1:sfo1::sfo1::klf89-1790038135306-d22d3827fab5)",
+        "    at errorForResponse (file:///C:/Users/Administrator/Documents/Codex/2026-08-24/a2a-control-loop/node_modules/@workflow/world-vercel/dist/http-core.js:135:16)",
+        "    at file:///C:/Users/Administrator/Documents/Codex/2026-08-24/a2a-control-loop/node_modules/@workflow/world-vercel/dist/utils.js:424:31",
+        "    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)",
+        "    at async trace (file:///C:/Users/Administrator/Documents/Codex/2026-08-24/a2a-control-loop/node_modules/@workflow/world-vercel/dist/telemetry.js:28:16)",
+        "    at async file:///C:/Users/Administrator/Documents/Codex/2026-08-24/a2a-control-loop/node_modules/@workflow/world-vercel/dist/instrumentObject.js:120:36",
+        "    at async trace (file:///C:/Users/Administrator/Documents/Codex/2026-08-24/a2a-control-loop/node_modules/@workflow/world-vercel/dist/telemetry.js:28:16)",
+        "    at async InternalReadableStream.getTailIndex (file:///C:/Users/Administrator/Documents/Codex/2026-08-24/a2a-control-loop/node_modules/@workflow/core/dist/runtime/run.js:170:30)"
+      ]
+    }
+  },
+  "cli_inspect": {
+    "run": {
+      "output": "<data expired>",
+      "exit_code": 0,
+      "input": "<data expired>"
+    },
+    "command_common": "--backend vercel --env production --project prj_d7jyKbXib4VZ4M27Lkfwv1D1Xuwp --team team_ycnNdyU7i77RkROrgI8GtooX --json --noBrowser",
+    "stream": {
+      "exit_code": 1,
+      "error": "Failed to fetch stream: 410"
+    },
+    "streams": {
+      "exit_code": 0,
+      "stream_id": "strm_01M2ETX7ZQ4N530W2FW6VARDWN_user_dGFzay1zdGF0ZQ"
+    }
+  },
+  "conclusion": {
+    "task_writes": 0,
+    "root_cause": "Storage retention expired at 2026-09-15T02:14:05.189Z",
+    "recovery": "No readable state through existing Workflow inspection or SDK; no claim about provider-internal backups.",
+    "application_500_cause": "RunExpiredError has no code/statusCode. getTask propagates it from readLatest/getTailIndex. normalizeError maps its non-code message to A2A_INTERNAL_ERROR and defaults HTTP status to 500.",
+    "reproduction_scope": "Existing local service implementation with official CLI credentials reading production Workflow data; not a captured production stack trace.",
+    "durable_task_state_readable": false,
+    "run_metadata_exists": true,
+    "production_deployments": 0,
+    "application_code_changes": 0
+  }
+}

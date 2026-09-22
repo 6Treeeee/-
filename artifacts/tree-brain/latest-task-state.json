@@ -1,0 +1,33 @@
+{
+  "task_id": "wrun_01M33A83TFAFR2JAXT0TTP2EBS",
+  "thread_id": "01a0c6a4-c76e-7422-ba49-1cfff9294931",
+  "status": "completed",
+  "codex_status": "COMPLETED",
+  "current_step": null,
+  "last_result": "infrastructure-v1-mirror-acceptance: 17 + 25 = 42",
+  "last_error": null,
+  "updated_at": "2026-09-22T01:04:58.745Z",
+  "start_thread_calls": 1,
+  "resume_thread_calls": 0,
+  "completed_steps": [
+    "infrastructure-v1-mirror-acceptance"
+  ],
+  "remaining_steps": [],
+  "blockers": [],
+  "source": {
+    "kind": "persisted-state-file",
+    "file": "acceptance-v1-durable-state.json",
+    "sha256": "1f6dc24e462aa0cf87f3650a9e31c5cd26cf2be5e3f6f26dabf71a403b82f2cc",
+    "pointer": "/state",
+    "scope": {
+      "marker": "infrastructure-v1-mirror-acceptance",
+      "reader": "SignedA2AClient.getTask",
+      "workspace_id": "content-reader",
+      "observed_at": "2026-09-22T01:05:44.787Z"
+    },
+    "freshness": "snapshot-only; not a live read",
+    "task_id": "wrun_01M33A83TFAFR2JAXT0TTP2EBS",
+    "version": 6
+  },
+  "generated_at": "2026-09-22T01:05:44.819Z"
+}
