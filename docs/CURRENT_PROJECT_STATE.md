@@ -114,3 +114,15 @@ Owner 本轮明确授权创建且仅创建 1 条标记为 infrastructure-v1-mirr
 ## Infrastructure v1 冻结边界
 
 Tree Brain Infrastructure v1 已正式收口。除出现真实回归证据，或外部产品能力发生实质变化外，不再继续开发该基础设施；后续回到 Owner 当前最高优先级的实际项目。
+
+## Content Reader 独立公开 provider 修复（2026-09-24）
+
+- 当前任务仅处理 Content Reader 读取链路；Infrastructure v1、OCR、ASR、MCP 和项目基础设施未改。
+- 已实时确认原生产部署 `dpl_BuYZkfvhdsSvvnKEvTFAVEdA7tNS` READY，正式域名 `sigma-silk-88.vercel.app` 指向它；`/api` HTTP 200，OCR configured=true。此前 OCR 打包发布已成功。
+- 源码提交 `f236a38`：仅已知视频 ID、且 direct_public_web 明确报告 provider_path 安全验证时，允许现有 TikHub 独立单视频方法。只发送规范公开 URL，不转发浏览器状态。必须有明确公开状态字段；所有 filter_list/filter_detail 或已知受限标记优先于视频对象，不能当成经验证的访问状态，也不能继续切换 TikHub 路由。
+- 独立读取失败仍保留终止型安全验证错误和脱敏尝试记录，防止媒体刷新失败后使用旧媒体、字幕或缓存。其他访问边界及 profile 路径保留原限制。
+- 修改前相关测试 142/142；修改后 168/168，三个修改源文件语法检查通过，本次改动 diff 检查通过。测试不等于生产内容验收。
+- 从干净 worktree 向同一 Vercel 项目实际提交生产部署 `dpl_HJLHxZn77rUuMzmkhuxqW2bwhsWP`；部署 API 返回 BLOCKED，seatBlock.blockCode=TEAM_ACCESS_REQUIRED，isVerified=false。旧部署成功未解除新提交的权限检查。没有改作者身份或原样反复部署。
+- 当前状态：**IMPLEMENTED_AND_TESTED / BLOCKED_BY_VERCEL_DEPLOYMENT_PERMISSION**。本次修复尚未上线，未执行或声称新版 fresh 生产内容验收，没有取得新文字稿。
+- Owner 下一步：在现有项目为这次上传部署完成真实授权或重新部署；READY 并核对正式域名后继续 fresh 陌生视频验收。无需重做代码、OCR 或 Tree Brain。
+- 证据：`artifacts/douyin/public-provider-2026-09-24/acceptance.json`、`tests.log`、`production-health.json`。

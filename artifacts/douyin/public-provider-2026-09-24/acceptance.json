@@ -1,0 +1,29 @@
+{
+  "recorded_at": "2026-09-23T18:58:49.5759878Z",
+  "source_commit": "f236a38e825543529e3b719e67d29e8b2e398714",
+  "deployment_id": "dpl_HJLHxZn77rUuMzmkhuxqW2bwhsWP",
+  "target": "production",
+  "state": "BLOCKED",
+  "seat_block": {
+    "blockCode": "TEAM_ACCESS_REQUIRED",
+    "isVerified": false
+  },
+  "production_acceptance": "NOT_RUN_NEW_VERSION_NOT_DEPLOYED",
+  "tests": {
+    "passed": 168,
+    "failed": 0
+  },
+  "baseline_tests": {
+    "passed": 142,
+    "failed": 0
+  },
+  "new_project_created": false,
+  "tree_brain_changed": false,
+  "ocr_changed": false,
+  "boundary": "Only known-ID single videos with a provider-path-only security challenge may use the independent TikHub method. Explicit public flags required; all restriction markers remain unverified, stop internal retries, and cannot override a matching object. Failed independent lookup preserves terminal challenge to prohibit stale-media fallback.",
+  "docs": [
+    "https://docs.tikhub.io/186826220e0",
+    "https://docs.tikhub.io/257556744e0"
+  ],
+  "next_step": "Owner must authorize or redeploy this uploaded deployment using the existing project. After READY and alias verification, run fresh unfamiliar public videos and inspect actual transcript coverage."
+}
