@@ -18,3 +18,8 @@ artifacts/douyin/tmp/
 worker/config.json
 worker/*.pem
 artifacts/douyin/blind-runs/
+
+# These are generated and verified in the Linux build, never uploaded from a host.
+assets/ocr/python/
+assets/ocr/python.tar.gz
+assets/ocr/manifest.json
