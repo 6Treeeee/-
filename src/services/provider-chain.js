@@ -60,6 +60,20 @@ export class ProviderChain {
         const diagnostic = {
           provider: provider.id,
           status: isTerminalAccessError(error) ? "access_restricted" : "failed",
+          // Keep the bounded TikHub HTTP summary above nested details so the
+          // existing public-error depth limit does not erase the actual cause.
+          ...(provider.id === "tikhub" && method === "readVideo" &&
+              Array.isArray(error?.details?.attempts) ? {
+            upstream_errors: error.details.attempts.slice(0, 2).map((attempt) => {
+              const details = attempt.error?.details;
+              return sanitizeDiagnostics({
+                route: typeof attempt.route === "string" ? attempt.route : null,
+                http_status: Number.isInteger(details?.http_status) ? details.http_status : null,
+                code: ["string", "number"].includes(typeof details?.code) ? details.code : null,
+                message: typeof details?.message === "string" ? details.message : null
+              });
+            })
+          } : {}),
           error: sanitizeDiagnostics({
             code: error?.code ?? "PROVIDER_ERROR",
             message: error?.message ?? "Provider failed.",

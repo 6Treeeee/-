@@ -1,4 +1,4 @@
-import { ReaderError } from "../errors.js";
+import { ReaderError, sanitizeDiagnostics } from "../errors.js";
 
 export const TIKHUB_ROUTES = Object.freeze({
   videoApp: "/api/v1/douyin/app/v3/fetch_one_video_by_share_url",
@@ -16,8 +16,12 @@ function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-function clippedText(value, max = 300) {
-  const text = typeof value === "string" ? value : "";
+function clippedText(value, apiKey, max = 300) {
+  // Upstream messages may echo credentials. Redact before clipping so a
+  // truncated credential cannot evade exact matching, then apply URL masking.
+  const raw = typeof value === "string" ? value : "";
+  const text = sanitizeDiagnostics(raw.replaceAll(apiKey, "[redacted]")
+    .replace(/((?:api[_-]?key|token|authorization|cookie)\s*:\s*)[^\r\n,]+/gi, "$1[redacted]"));
   return text.length <= max ? text : `${text.slice(0, max)}…`;
 }
 
@@ -102,7 +106,7 @@ export class TikHubClient {
                 route,
                 http_status: response.status,
                 code: envelope?.code ?? null,
-                message: clippedText(envelope?.message),
+                message: clippedText(envelope?.message, this.apiKey),
                 request_id: envelope?.request_id ?? null
               }
             }
@@ -126,8 +130,8 @@ export class TikHubClient {
                 route,
                 http_status: response.status,
                 code: envelope?.code ?? null,
-                message: clippedText(envelope?.message),
-                message_zh: clippedText(envelope?.message_zh),
+                message: clippedText(envelope?.message, this.apiKey),
+                message_zh: clippedText(envelope?.message_zh, this.apiKey),
                 request_id: envelope?.request_id ?? null
               }
             }
