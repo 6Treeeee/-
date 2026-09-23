@@ -64,3 +64,37 @@ Platform references checked on 2026-09-23:
 The platform documents 300 seconds maximum on Hobby and an opt-in large-functions
 path up to 5 GB. Actual build/runtime evidence takes precedence over assumptions
 about eligibility or successful content retrieval.
+
+## Production release result (2026-09-23)
+
+Packaging source commit: `d611d0a4e77f764d292df69fe59d216a6d5df26c`, pushed to
+`codex/a2a-control-loop`. Both variables above were saved on the existing project.
+Three model hashes match the already-accepted local evidence. Scoped regression
+tests passed 154/154; syntax and diff checks passed.
+
+Production deployment `dpl_BUT9xX7ZeyEwB7YRKjCds23WFnHh` was blocked before build.
+After pushing the commit and verifying GitHub attributes it to `6Treeeee`, one
+new attempt `dpl_82JyKemzBDCeUB4uTdfneHAt7R2M` was also blocked. The authoritative
+deployment API returns `readyState=BLOCKED`, `seatBlock.blockCode=TEAM_ACCESS_REQUIRED`,
+`seatBlock.isVerified=false`, and:
+
+> The deployment was blocked because the commit author doesn’t have permission to create deployments for this project.
+
+The CLI displays this state as UNKNOWN and may keep waiting. This is an account /
+commit-author authorization gate, **not** an established Vercel compute, Python,
+bundle-size, or timeout hard limit. The account must recognize the actual owner's
+GitHub connection/author permission before deployment can proceed; author identity
+and permission settings were not changed to evade the check. Official guidance:
+https://vercel.com/docs/deployments/troubleshoot-project-collaboration#team-configuration
+
+The production alias still points to `dpl_GLUz9U7G7rn9SAYyuoMaFbxukkxX` and its
+health response still reports OCR `configured=false`. Saved project variables do
+not retroactively modify that deployment. No fresh production video request was
+claimed against the new implementation because it has not deployed. No transcript
+or content-level answer was produced. Preserve the separate observed Douyin
+security-verification blocker from the Preview player probe.
+
+Evidence: `artifacts/douyin/production-ocr-2026-09-23/acceptance.json`, runtime
+receipts, `production-deployment-blocked.json`, and `production-health.json`.
+Resume only after the deployment authorization condition materially changes;
+deploy this existing packaging work, then perform the requested production read.

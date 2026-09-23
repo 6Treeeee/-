@@ -96,6 +96,21 @@ Owner 本轮明确授权创建且仅创建 1 条标记为 infrastructure-v1-mirr
 - 后续仍有明确工程步骤：现有 OCR 的最小生产部署补齐 → 只读工具适配 → fresh 陌生视频与普通 ChatGPT 内容级验收。**不能宣称只剩授权、其他工程已经完成。**
 - 脱敏证据：`artifacts/douyin/level2-production-audit-2026-09-23.json`。无新视频 URL / aweme_id，无新 transcript，无新 deployment；没有伪造验收样本。
 
-## Infrastructure v1 停止边界（继续有效）
+## Content Reader 生产 OCR 独立任务（2026-09-23）
+
+执行入口：`docs/CONTENT_READER_LEVEL2_PRODUCTION_OCR_TASK.md`。本轮独立推进公开 HTTP 后端，不以 ChatGPT MCP 授权阻塞工程。最终状态：**BLOCKED_BY_VERCEL_DEPLOYMENT_PERMISSION / 生产后端未通过**，不是 Level 2 完成。
+
+- 已完成最小生产打包，源码 commit `d611d0a4e77f764d292df69fe59d216a6d5df26c` 已推送至 `codex/a2a-control-loop`。固定版本 CPython + 原 RapidOCR 及依赖，仅 `/api` 包含运行包；未改解析、OCR 算法/阈值/模型、ASR、MCP 或 Tree Brain。三个 OCR 模型哈希与原验收证据相同。
+- 云端实际探针：默认 Python 不存在（ENOENT）；打包后 Python 能启动。默认 GUI OpenCV 导入缺 `libxcb.so.1`，改用同版本 headless 包后 Python / NumPy / OpenCV / ONNX Runtime / RapidOCR 初始化通过。现有 Chromium 截图通过、H.264 支持返回 probably。详细部署 ID 与证据见 `docs/CONTENT_READER_PRODUCTION_OCR_RUNTIME.md`。
+- 陌生样本 `https://www.douyin.com/video/7421538381705907475` 在既有公开浏览器播放器探针中返回 `DOUYIN_SECURITY_VERIFICATION_REQUIRED`；未绕过验证，未取得文字稿，未证明播放器绑定或全片覆盖。
+- 生产和预览环境已保存两个非敏感配置：`CONTENT_READER_OCR_PYTHON=assets/ocr/python/bin/python3.12`、`VERCEL_SUPPORT_LARGE_FUNCTIONS=1`。这些仅供包含打包改动的新部署使用，不会使旧部署自动启用 OCR。
+- 生产部署 `dpl_BUT9xX7ZeyEwB7YRKjCds23WFnHh` 被平台拒绝。推送真实提交、核对 GitHub 作者为 `6Treeeee` 后的新尝试 `dpl_82JyKemzBDCeUB4uTdfneHAt7R2M` 仍为 BLOCKED / TEAM_ACCESS_REQUIRED；平台明确说提交作者没有该项目的部署权限。没有伪造作者、变更账号身份或绕过权限。
+- 当前正式域名仍指向旧部署 `dpl_GLUz9U7G7rn9SAYyuoMaFbxukkxX`，新读的 `/api` 健康响应仍为 `hard_subtitle_ocr.configured=false`。**未发送/伪造新版本生产验收请求，未取得生产文字稿或内容级答案。**
+- 这是明确的 Vercel 账号/作者部署授权阻塞，不是已证明的运行时资源硬限制；另有预览样本的抖音安全验证阻塞。按 AGENTS.md 第 5、6、10 条停止原样重试，不重设计架构。
+- 验证：相关回归测试 154/154；既有语法检查与新增脚本语法检查通过；云端实际导入与引擎初始化通过；既有读取链路源码差异为零。
+- 证据：`artifacts/douyin/production-ocr-2026-09-23/acceptance.json` 及同目录探针/部署/健康回执。恢复条件：Vercel 正确认可真实提交作者与项目账号的关联及部署权限；随后部署现有改动，继续真实 fresh 生产验收，无需重做运行包。
+- 普通 ChatGPT 授权仍是另一独立待办；本轮未处理，未新增 `read_douyin_video`。
+
+## Infrastructure v1 冻结边界
 
 Tree Brain Infrastructure v1 已正式收口。除出现真实回归证据，或外部产品能力发生实质变化外，不再继续开发该基础设施；后续回到 Owner 当前最高优先级的实际项目。

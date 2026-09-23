@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "task_document": "docs/CONTENT_READER_LEVEL2_PRODUCTION_OCR_TASK.md",
+  "date": "2026-09-23",
+  "production_backend": "NOT_PASSED",
+  "stop_reason": "BLOCKED_BY_VERCEL_DEPLOYMENT_PERMISSION",
+  "source_commit": "d611d0a4e77f764d292df69fe59d216a6d5df26c",
+  "source_branch": "codex/a2a-control-loop",
+  "source_pushed_and_remote_verified": true,
+  "runtime_feasibility": {
+    "default_python": "ABSENT_ENOENT",
+    "bundled_python": "PASS_IN_DEPLOYED_PREVIEW",
+    "bundled_rapidocr_initialization": "PASS_IN_DEPLOYED_PREVIEW",
+    "browser_screenshot": "PASS_IN_DEPLOYED_PREVIEW",
+    "h264_can_play_type": "probably",
+    "live_douyin_player_binding": "BLOCKED_BY_DOUYIN_SECURITY_VERIFICATION_REQUIRED",
+    "positive_full_video_duration_within_production_budget": "NOT_TESTED",
+    "model_hashes_match_prior_accepted_evidence": true,
+    "ocr_algorithms_or_thresholds_changed": false,
+    "new_paid_asr": false,
+    "vercel_resource_hard_limit_proven": false
+  },
+  "deployment": {
+    "first_attempt": "dpl_BUT9xX7ZeyEwB7YRKjCds23WFnHh",
+    "after_github_push_attempt": "dpl_82JyKemzBDCeUB4uTdfneHAt7R2M",
+    "status": "BLOCKED",
+    "block_code": "TEAM_ACCESS_REQUIRED",
+    "reason": "The deployment was blocked because the commit author doesn’t have permission to create deployments for this project.",
+    "github_author_attribution_verified": "6Treeeee",
+    "author_identity_or_permissions_altered": false,
+    "current_production_deployment": "dpl_GLUz9U7G7rn9SAYyuoMaFbxukkxX",
+    "current_production_source": "31d425b709ab329c994b451f23c434be3b5918f9",
+    "current_production_ocr_configured": false
+  },
+  "project_configuration_added": {
+    "environments": ["production", "preview"],
+    "CONTENT_READER_OCR_PYTHON": "assets/ocr/python/bin/python3.12",
+    "VERCEL_SUPPORT_LARGE_FUNCTIONS": "1",
+    "note": "Saved for future deployments; this does not change the environment of the old active deployment. Deploy the packaging source before treating the configured path as runnable."
+  },
+  "unfamiliar_sample": {
+    "url": "https://www.douyin.com/video/7421538381705907475",
+    "aweme_id": "7421538381705907475",
+    "discovery": "Public web search; repository artifacts searched for this ID before probe and had no match",
+    "preview_probe_deployment": "dpl_3FeorhNkHesvtbueURK6rXx9oMmD",
+    "mode": "fresh isolated public-browser player feasibility probe; no transcript cache or artifact provider",
+    "result": "DOUYIN_SECURITY_VERIFICATION_REQUIRED",
+    "observed_aweme_id": null,
+    "production_fresh_api_request": "NOT_RUN_NEW_DEPLOYMENT_BLOCKED",
+    "transcript_source": null,
+    "text_coverage": null,
+    "content_question_and_answer": null,
+    "fixture_or_manual_transcript_used": false
+  },
+  "tests": {
+    "syntax": "npm run check and node --check on both new scripts: PASS",
+    "regression_command": "node --test test/douyin-pipeline.test.js test/content-reader.test.js test/local-whisper.test.js",
+    "passed": 154,
+    "failed": 0,
+    "skipped": 0,
+    "cloud_worker_build_startup": "PASS",
+    "preview_package_import_after_headless_compatibility_fix": "PASS",
+    "git_diff_check": "PASS",
+    "accepted_source_unchanged": "api/index.js, src/content-reader.js, OCR worker and service, public browser/provider, transcription and ASR logic"
+  },
+  "resume_condition": "Vercel accepts the actual GitHub author's deployment permission/linked account for this project. Then deploy the existing packaging commit and run production fresh acceptance. Do not repeat unchanged blocked deployments or alter author identity to evade the gate.",
+  "ordinary_chatgpt": {
+    "level2_complete": false,
+    "authorization": "Out of scope; previous audit remains unresolved, not retried in this task",
+    "read_douyin_video_added": false
+  }
+}

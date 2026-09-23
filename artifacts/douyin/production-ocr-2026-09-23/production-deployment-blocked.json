@@ -1,0 +1,15 @@
+{
+  "observed_at": "2026-09-23T14:08:48.9114533Z",
+  "deployment_id": "dpl_82JyKemzBDCeUB4uTdfneHAt7R2M",
+  "deployment_url": "1fjstwfyh-54re5dyyd-1790063688-9925s-projects.vercel.app",
+  "ready_state": "BLOCKED",
+  "reason": "The deployment was blocked because the commit author doesn’t have permission to create deployments for this project.",
+  "block_code": "TEAM_ACCESS_REQUIRED",
+  "author_verified_by_vercel": false,
+  "source_commit": "d611d0a4e77f764d292df69fe59d216a6d5df26c",
+  "prior_blocked_deployment": "dpl_BUT9xX7ZeyEwB7YRKjCds23WFnHh",
+  "github_commit_exists": true,
+  "github_author_login": "6Treeeee",
+  "permission_or_identity_settings_changed": false,
+  "source": "Vercel GET /v13/deployments/{id} and GitHub public commit API"
+}
