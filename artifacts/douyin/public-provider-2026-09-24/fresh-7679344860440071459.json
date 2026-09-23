@@ -1,0 +1,57 @@
+{
+  "at": "2026-09-23T23:19:26.717Z",
+  "deployment": "dpl_FTYosi84UgYk7jhFW9fFdeLmeL5E",
+  "id": "7679344860440071459",
+  "fresh": true,
+  "http_status": 422,
+  "duration_ms": 10358,
+  "response": {
+    "ok": false,
+    "request_id": "86cee532-d54f-4ce4-b911-a0b1bc1efd3d",
+    "error": {
+      "code": "DOUYIN_SECURITY_VERIFICATION_REQUIRED",
+      "message": "Douyin requires a visible security verification before this content can be read.",
+      "details": {
+        "provider": "direct_public_web",
+        "reason": "visible_security_challenge",
+        "access_scope": "provider_path",
+        "provider_attempts": [
+          {
+            "provider": "direct_public_web",
+            "status": "access_restricted",
+            "error": {
+              "code": "DOUYIN_SECURITY_VERIFICATION_REQUIRED",
+              "message": "Douyin requires a visible security verification before this content can be read.",
+              "details": {
+                "provider": "direct_public_web",
+                "reason": "visible_security_challenge",
+                "access_scope": "provider_path"
+              }
+            }
+          },
+          {
+            "provider": "tikhub",
+            "status": "failed",
+            "error": {
+              "code": "DOUYIN_PROVIDER_UNAVAILABLE",
+              "message": "TikHub returned no usable public video result.",
+              "details": {
+                "provider": "tikhub",
+                "attempts": [
+                  {
+                    "route": "[truncated]",
+                    "error": "[truncated]"
+                  },
+                  {
+                    "route": "[truncated]",
+                    "error": "[truncated]"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

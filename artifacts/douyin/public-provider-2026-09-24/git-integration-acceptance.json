@@ -1,0 +1,38 @@
+{
+  "recorded_at": "2026-09-23T23:21:29.8003160Z",
+  "code_commit": "f236a38e825543529e3b719e67d29e8b2e398714",
+  "pushed_head": "affe5af0c5c25e4225442a819d0e7a32ac44ae3d",
+  "remote_branch": "codex/a2a-control-loop",
+  "git_integration": {
+    "state": "READY",
+    "source": "git",
+    "sha": "affe5af0c5c25e4225442a819d0e7a32ac44ae3d",
+    "seat_block": null,
+    "id": "dpl_CQ6HRCJLHSRkPe8Fkpsm2R6frTF2",
+    "author": "6Treeeee"
+  },
+  "production": {
+    "sha": "affe5af0c5c25e4225442a819d0e7a32ac44ae3d",
+    "state": "READY",
+    "target": "production",
+    "domain_resolved_deployment": "dpl_FTYosi84UgYk7jhFW9fFdeLmeL5E",
+    "seat_block": null,
+    "domain": "sigma-silk-88.vercel.app",
+    "id": "dpl_FTYosi84UgYk7jhFW9fFdeLmeL5E",
+    "source": "cli"
+  },
+  "fresh_samples": [
+    "7679344860440071459",
+    "7673753332166430002"
+  ],
+  "fresh_result": "Both HTTP 422; browser path challenge followed by real TikHub attempt; TikHub unavailable. Second sample confirms App and Web UPSTREAM_HTTP_ERROR; nested status is truncated. No transcript.",
+  "local_diagnostic": "Production sensitive key not downloadable; no local TikHub request was sent. SERVICE_NOT_CONFIGURED here is not production configuration evidence.",
+  "acceptance": {
+    "independent_provider_routing": "PASS",
+    "production_release": "PASS",
+    "fresh_content_read": "FAIL",
+    "git_push": "PASS",
+    "git_integration": "PASS"
+  },
+  "tests": "Reuse prior 168/168; no source changes in this continuation"
+}

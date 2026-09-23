@@ -1,0 +1,16 @@
+{
+  "at": "2026-09-23T23:19:42.406Z",
+  "http_status": 200,
+  "providers": {
+    "direct_public_web": true,
+    "tikhub": true,
+    "fallback_enabled": true
+  },
+  "ocr": {
+    "configured": true,
+    "engine": "rapidocr_onnxruntime",
+    "scope": "single_video",
+    "live_frames_only": true,
+    "visual_step_ms": 250
+  }
+}

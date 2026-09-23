@@ -1,0 +1,10 @@
+{
+  "at": "2026-09-23T23:20:37.810Z",
+  "execution": "local_diagnostic_with_existing_production_provider_configuration",
+  "id": "7673753332166430002",
+  "route": "/api/v1/douyin/app/v3/fetch_one_video_by_share_url",
+  "error": {
+    "code": "SERVICE_NOT_CONFIGURED",
+    "message": "The Douyin retrieval provider is not configured."
+  }
+}

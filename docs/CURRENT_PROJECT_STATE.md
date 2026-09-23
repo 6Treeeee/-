@@ -126,3 +126,13 @@ Tree Brain Infrastructure v1 已正式收口。除出现真实回归证据，或
 - 当前状态：**IMPLEMENTED_AND_TESTED / BLOCKED_BY_VERCEL_DEPLOYMENT_PERMISSION**。本次修复尚未上线，未执行或声称新版 fresh 生产内容验收，没有取得新文字稿。
 - Owner 下一步：在现有项目为这次上传部署完成真实授权或重新部署；READY 并核对正式域名后继续 fresh 陌生视频验收。无需重做代码、OCR 或 Tree Brain。
 - 证据：`artifacts/douyin/public-provider-2026-09-24/acceptance.json`、`tests.log`、`production-health.json`。
+
+### Git Integration 发布验收续记（2026-09-24，取代上面的当前部署阻塞状态）
+
+- Owner 授权继续推送，已将 `f236a38` 及证据提交 `affe5af0c5c25e4225442a819d0e7a32ac44ae3d` 推送到原远程分支 `codex/a2a-control-loop`，远程 SHA 已核对。
+- Git Integration 自动部署 `dpl_CQ6HRCJLHSRkPe8Fkpsm2R6frTF2`：source=git、作者=6Treeeee、SHA=affe5af、READY、无 seatBlock。生产分支配置为 main，因此此部署先作为预览构建。
+- 预览健康检查通过后，现有 promote 操作实际创建生产部署 `dpl_FTYosi84UgYk7jhFW9fFdeLmeL5E`：同一 SHA，READY、target=production、无 seatBlock。正式域名独立查询已确认指向该部署；公开 /api HTTP 200，OCR configured=true。此次发布无需 Owner 操作，CLI 直接上传的旧拒绝不再作为当前发布阻塞。
+- 两条此前未运行的公开搜索样本 `7679344860440071459`、`7673753332166430002` 均通过正式生产 /api POST type=video、fresh=true 实测；均 HTTP 422。provider_attempts 证实 direct_public_web 路径级安全验证后，TikHub 已实际尝试。第二条明确记录 TikHub App/Web 两条路由均 UPSTREAM_HTTP_ERROR。没有返回视频内容或文字稿。
+- 上游具体 HTTP 状态被既有嵌套诊断深度限制截断，不能推断余额不足、401 或访问限制。补充本地诊断尝试使用既有生产环境配置，但 Vercel 拒绝导出 sensitive secrets，TIKHUB_API_KEY 未提供，本地没有发送 TikHub 请求；本地 SERVICE_NOT_CONFIGURED 不代表生产未配置。
+- 最终分项：Git 推送 PASS；Git Integration PASS；生产发布 PASS；独立 provider 路由 PASS；fresh 内容读取 FAIL。当前待查为 TikHub 上游 HTTP 拒绝的真实原因，不再是 Vercel 发布权限或 fallback 未执行。本轮无源码修改，复用此前 168/168 测试。
+- 新证据：同目录 `git-integration-acceptance.json`、`git-production-health.json`、两个 `fresh-*.json` 和 `tikhub-status-diagnostic.json`。这些续记证据保存本地，未额外推送触发另一轮部署。
