@@ -141,6 +141,27 @@ function unavailable(message, attempts, cause) {
   });
 }
 
+function accessMarker(payload) {
+  const queue = [payload];
+  const restrictedFlags = new Set([
+    "is_private", "is_prohibited", "is_part_see", "is_paid", "is_pay",
+    "is_drm", "drm_type", "private_status"
+  ]);
+  while (queue.length) {
+    const value = queue.shift();
+    if (!value || typeof value !== "object") continue;
+    for (const [key, item] of Object.entries(value)) {
+      if ((key === "filter_list" && Array.isArray(item) && item.length) ||
+          (key === "filter_detail" && item &&
+            (typeof item !== "object" || Object.keys(item).length)) ||
+          (restrictedFlags.has(key) && [true, "true"].includes(item)) ||
+          (restrictedFlags.has(key) && Number(item) > 0)) return key;
+      if (item && typeof item === "object") queue.push(item);
+    }
+  }
+  return null;
+}
+
 export class TikHubProvider {
   constructor({ apiKey, fetchImpl = globalThis.fetch, client, clientOptions = {} } = {}) {
     this.id = "tikhub";
@@ -170,7 +191,18 @@ export class TikHubProvider {
     return { secUserId, meta: response.meta };
   }
 
-  async readVideo({ inputUrl, awemeId = null }) {
+  async readIndependentPublicVideo(context) {
+    // No cookies, browser state, challenge tokens, or arbitrary share parameters.
+    if (!/^\d+$/.test(String(context.awemeId ?? ""))) {
+      throw new ReaderError("DOUYIN_PROVIDER_ACCESS_UNVERIFIED", "A known video identity is required.", { status: 422 });
+    }
+    return this.readVideo({
+      inputUrl: `https://www.douyin.com/video/${context.awemeId}`,
+      awemeId: context.awemeId
+    }, { requirePublicStatus: true });
+  }
+
+  async readVideo({ inputUrl, awemeId = null }, { requirePublicStatus = false } = {}) {
     if (!this.client) throw unavailable("TikHub is not configured.", []);
 
     const attempts = [];
@@ -187,34 +219,41 @@ export class TikHubProvider {
       const aweme = extractAweme(result.value.data);
       const receivedAwemeId = postIdentity(aweme);
       const restriction = restrictionReason(result.value.data);
+      const marker = accessMarker(result.value.data);
+      // A data object (even with the right ID) must never override a restriction.
+      // Markers are provider claims, not verified public-page access findings.
+      if (restriction || marker) {
+        throw new ReaderError(
+          "DOUYIN_PROVIDER_RESTRICTION_UNVERIFIED",
+          "TikHub returned a restriction marker; public access remains unverified.",
+          { status: 502, details: {
+            provider: this.id, authoritative: false, route,
+            request_id: result.value.meta?.request_id ?? null, restriction, marker
+          } }
+        );
+      }
       if (aweme && (!expectedAwemeId || receivedAwemeId === expectedAwemeId)) {
+        if (requirePublicStatus && !(aweme.status?.is_private === false &&
+            aweme.status?.is_prohibited === false && aweme.status?.allow_share === true &&
+            aweme.status?.private_status === 0)) {
+          throw new ReaderError(
+            "DOUYIN_PROVIDER_ACCESS_UNVERIFIED",
+            "TikHub did not explicitly report an unrestricted public video.",
+            { status: 422, details: { provider: this.id, authoritative: false, route } }
+          );
+        }
         return {
           aweme,
           meta: {
             provider: this.id,
             route,
             request_id: result.value.meta?.request_id ?? null,
-            attempts: attempts.length + 1
+            attempts: attempts.length + 1,
+            ...(requirePublicStatus ? { access_evidence: "provider_reported_public_status" } : {})
           }
         };
       }
       if (aweme && expectedAwemeId && receivedAwemeId !== expectedAwemeId) {
-        if (restriction && [5, 10].includes(restriction.reason)) {
-          throw new ReaderError(
-            "DOUYIN_PROVIDER_RESTRICTION_UNVERIFIED",
-            "TikHub returned a restriction marker that requires confirmation from the public page.",
-            {
-              status: 502,
-              details: {
-                provider: this.id,
-                authoritative: false,
-                route,
-                request_id: result.value.meta?.request_id ?? null,
-                restriction
-              }
-            }
-          );
-        }
         attempts.push({
           route,
           request_id: result.value.meta?.request_id ?? null,
@@ -226,23 +265,6 @@ export class TikHubProvider {
           }
         });
         continue;
-      }
-
-      if (restriction && [5, 10].includes(restriction.reason)) {
-        throw new ReaderError(
-          "DOUYIN_PROVIDER_RESTRICTION_UNVERIFIED",
-          "TikHub returned a restriction marker that requires confirmation from the public page.",
-          {
-            status: 502,
-            details: {
-              provider: this.id,
-              authoritative: false,
-              route,
-              request_id: result.value.meta?.request_id ?? null,
-              restriction
-            }
-          }
-        );
       }
 
       attempts.push({

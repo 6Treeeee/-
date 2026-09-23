@@ -34,14 +34,21 @@ export class ProviderChain {
       : this.providers;
     const attempts = [];
     let lastError = null;
+    let pathChallenge = null;
 
     for (const provider of requested) {
+      // A challenged browser is closed, never retried or used as a credential
+      // source. Only the separately guarded TikHub single-video method may run.
+      if (pathChallenge && (provider.id !== "tikhub" ||
+          typeof provider.readIndependentPublicVideo !== "function")) continue;
       if (typeof provider[method] !== "function") {
         attempts.push({ provider: provider.id, status: "unsupported" });
         continue;
       }
       try {
-        const value = await provider[method](context);
+        const value = pathChallenge
+          ? await provider.readIndependentPublicVideo(context)
+          : await provider[method](context);
         if (!usable(value)) {
           attempts.push({ provider: provider.id, status: "unusable_result" });
           continue;
@@ -62,12 +69,30 @@ export class ProviderChain {
         attempts.push(diagnostic);
 
         if (isTerminalAccessError(error)) {
+          if (!pathChallenge && method === "readVideo" && context?.awemeId &&
+              provider.id === "direct_public_web" &&
+              error.code === "DOUYIN_SECURITY_VERIFICATION_REQUIRED" &&
+              error.details?.provider === "direct_public_web" &&
+              error.details?.reason === "visible_security_challenge" &&
+              error.details?.access_scope === "provider_path" &&
+              requested.slice(requested.indexOf(provider) + 1).some((next) =>
+                next.id === "tikhub" && typeof next.readIndependentPublicVideo === "function")) {
+            pathChallenge = error;
+            continue;
+          }
           if (error instanceof ReaderError) {
             error.details = sanitizeDiagnostics({ ...error.details, provider_attempts: attempts });
           }
           throw error;
         }
       }
+    }
+
+    if (pathChallenge) {
+      // Preserve the terminal browser boundary for media/caption consumers:
+      // a failed independent lookup is not permission to use stale media.
+      pathChallenge.details = sanitizeDiagnostics({ ...pathChallenge.details, provider_attempts: attempts });
+      throw pathChallenge;
     }
 
     if (requested.length === 1 && lastError instanceof ReaderError) {

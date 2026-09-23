@@ -624,7 +624,12 @@ function accessError(access, { hasPublicContent = false } = {}) {
     return new ReaderError(
       "DOUYIN_SECURITY_VERIFICATION_REQUIRED",
       "Douyin requires a visible security verification before this content can be read.",
-      { status: 422, details: { provider: PROVIDER, reason: "visible_security_challenge" } }
+      { status: 422, details: {
+        provider: PROVIDER,
+        reason: "visible_security_challenge",
+        access_scope: !access.privateContent && !access.unavailable && !access.loginRequired
+          ? "provider_path" : "content_or_unknown"
+      } }
     );
   }
   if (access.privateContent) {

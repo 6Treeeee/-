@@ -219,7 +219,7 @@ test("video retrieval falls back from the documented App route to Web", async ()
     async get(route) {
       if (route === TIKHUB_ROUTES.videoApp) {
         return {
-          data: { filter_list: [{ reason: 8 }] },
+          data: { aweme_detail: null },
           meta: { route, request_id: "app-empty" }
         };
       }
