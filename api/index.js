@@ -103,42 +103,6 @@ export default async function handler(req, res) {
     });
   }
 
-  // Temporary account diagnostic: never log upstream bodies or exceptions.
-  const diagnosticDebug = first(req.query?.debug) ?? (
-    req.body && typeof req.body === "object" ? req.body.debug : undefined
-  );
-  if (diagnosticDebug === "tikhub_account") {
-    const key = process.env.TIKHUB_API_KEY;
-    const safe = { http_status: null, balance: null, free_credit: null, api_key_status: null, expires_at: null };
-    const scalar = (value) => {
-      if (typeof value === "number") return Number.isFinite(value) ? value : null;
-      if (typeof value === "boolean") return value;
-      if (typeof value !== "string" || value.length > 128 || (key && value.includes(key))) return null;
-      return value;
-    };
-    try {
-      if (key) {
-        const upstream = await fetch("https://api.tikhub.io/api/v1/tikhub/user/get_user_info", {
-          method: "GET",
-          headers: { Authorization: `Bearer ${key}` },
-          redirect: "error",
-          signal: AbortSignal.timeout(15000)
-        });
-        safe.http_status = upstream.status;
-        const payload = await upstream.json();
-        const data = payload?.data ?? payload;
-        safe.balance = scalar(data?.user_data?.balance);
-        safe.free_credit = scalar(data?.user_data?.free_credit);
-        safe.api_key_status = scalar(data?.api_key_data?.api_key_status);
-        safe.expires_at = scalar(data?.api_key_data?.expires_at);
-      }
-    } catch {
-      // Do not stringify exceptions: transports can include request credentials.
-    }
-    console.info(JSON.stringify(safe));
-    return reply(res, 200, { ok: true, diagnostic: "completed" });
-  }
-
   const input = requestInput(req);
   const id = requestId(req);
   const startedAt = Date.now();
