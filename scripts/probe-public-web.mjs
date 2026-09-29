@@ -87,3 +87,33 @@ try {
 } finally {
   await browser.close();
 }
+
+
+if (process.env.PROBE_CONTENT_READER === "1") {
+  const { DirectPublicWebProvider } = await import("../src/providers/direct-public-web.js");
+  const { PublicBrowserService } = await import("../src/services/public-browser.js");
+  const id = target.match(/\/(?:video|note)\/(\d+)/)?.[1] ?? null;
+  if (id) {
+    const provider = new DirectPublicWebProvider({
+      browserService: new PublicBrowserService({ executablePath }),
+      retries: 2,
+      videoContentWaitMs: 22_000,
+      settleMs: 700
+    });
+    const result = await provider.readVideo({
+      inputUrl: `https://www.douyin.com/video/${id}`,
+      resolvedUrl: `https://www.douyin.com/video/${id}`,
+      awemeId: id
+    });
+    console.log(JSON.stringify({
+      content_reader_probe: true,
+      aweme_id: result.aweme?.aweme_id ?? null,
+      duration: result.aweme?.video?.duration ?? null,
+      provider: result.meta?.provider ?? null,
+      method: result.meta?.method ?? null,
+      browser: result.meta?.browser ?? null,
+      attempts: result.meta?.attempts ?? null,
+      network_media_count: result.meta?.network_media_count ?? null
+    }, null, 2));
+  }
+}
