@@ -45,7 +45,7 @@ try {
       } : null,
       inlineStateScriptCount: inlineStateScripts.length,
       inlineStateContainsTarget: inlineStateScripts.some((text) => text.includes(
-        location.pathname.match(/\\/(?:video|note)\\/(\\d+)/)?.[1] ?? ""
+        location.pathname.match(/\/(?:video|note)\/(\d+)/)?.[1] ?? ""
       ))
     };
   });
