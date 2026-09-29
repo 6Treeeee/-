@@ -57,7 +57,16 @@ try {
 for (const name of requiredDynamicLibraries) {
   if (copied.includes(name)) continue;
   const row = ldconfig.split(/\r?\n/).find((line) => line.trim().startsWith(name + " "));
-  const source = row?.match(/=>\s+(\/[^\s]+)/)?.[1];
+  let source = row?.match(/=>\s+(\/[^\s]+)/)?.[1] ?? null;
+  if (!source || !existsSync(source)) {
+    try {
+      source = execFileSync("find", ["/usr/lib", "/lib", "-type", "f", "-name", name, "-print", "-quit"], {
+        encoding: "utf8"
+      }).trim() || null;
+    } catch {
+      source = null;
+    }
+  }
   if (!source || !existsSync(source)) continue;
   cpSync(source, join(out, name));
   copied.push(name);
