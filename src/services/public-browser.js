@@ -87,7 +87,7 @@ export async function resolvePublicBrowserRuntime({
     // DOM/network capture and OfflineAudioContext do not require WebGL. Turning
     // graphics off prevents Sparticuz from inflating its SwiftShader bundle on
     // every cold Function instance and adds the matching disable-WebGL flags.
-    chromium.setGraphicsMode = false;
+    chromium.setGraphicsMode = true;
     let resolvedExecutable;
     try {
       resolvedExecutable = executablePath ?? await chromium.executablePath();
@@ -154,7 +154,7 @@ export class PublicBrowserService {
     launchOptions = {},
     navigationTimeoutMs = 35_000,
     protocolTimeoutMs = 45_000,
-    viewport = { width: 1280, height: 900, deviceScaleFactor: 1 }
+    viewport = { width: 1920, height: 1080, deviceScaleFactor: 1 }
   } = {}) {
     this.puppeteer = puppeteerImpl;
     this.chromiumImpl = chromiumImpl;
