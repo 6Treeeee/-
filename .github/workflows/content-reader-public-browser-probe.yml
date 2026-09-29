@@ -37,3 +37,5 @@ jobs:
           "$CHROME" --version
       - name: Public Douyin browser probe
         run: node scripts/probe-public-web.mjs "https://www.douyin.com/video/7688672103729483058"
+      - name: Official public share-page probe
+        run: node scripts/probe-public-web.mjs "https://www.iesdouyin.com/share/video/7688672103729483058"
