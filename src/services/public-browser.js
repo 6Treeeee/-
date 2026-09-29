@@ -1,4 +1,4 @@
-import { existsSync } from "node:fs";
+import { existsSync, readdirSync, statSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import puppeteer from "puppeteer-core";
@@ -54,6 +54,38 @@ function isVercelRuntime(env = process.env) {
   return Boolean(env.VERCEL || env.VERCEL_ENV);
 }
 
+function bundledChromeExecutable(root = join(process.cwd(), "assets", "chrome")) {
+  if (!existsSync(root)) return null;
+  const queue = [root];
+  while (queue.length) {
+    const current = queue.shift();
+    let entries;
+    try {
+      entries = readdirSync(current);
+    } catch {
+      continue;
+    }
+    for (const name of entries) {
+      const candidate = join(current, name);
+      let stats;
+      try {
+        stats = statSync(candidate);
+      } catch {
+        continue;
+      }
+      if (stats.isDirectory()) {
+        queue.push(candidate);
+        continue;
+      }
+      if (name === "chrome" && /chrome-linux64[\\/]chrome$/.test(candidate)) {
+        return candidate;
+      }
+    }
+  }
+  return null;
+}
+
+
 async function loadSparticuzChromium(chromiumImpl) {
   if (chromiumImpl) return chromiumImpl;
   try {
@@ -83,6 +115,22 @@ export async function resolvePublicBrowserRuntime({
   platform = process.platform
 } = {}) {
   if (isVercelRuntime(env)) {
+    const bundledChrome = bundledChromeExecutable();
+    if (bundledChrome) {
+      return {
+        executablePath: bundledChrome,
+        args: [
+          "--no-sandbox",
+          "--disable-setuid-sandbox",
+          "--disable-dev-shm-usage",
+          "--no-first-run",
+          "--no-default-browser-check"
+        ],
+        headless: true,
+        kind: "bundled_full_chrome"
+      };
+    }
+
     const chromium = await loadSparticuzChromium(chromiumImpl);
     // DOM/network capture and OfflineAudioContext do not require WebGL. Turning
     // graphics off prevents Sparticuz from inflating its SwiftShader bundle on
