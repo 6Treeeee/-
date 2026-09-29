@@ -117,10 +117,16 @@ export async function resolvePublicBrowserRuntime({
   if (isVercelRuntime(env)) {
     const bundledChrome = bundledChromeExecutable();
     if (bundledChrome) {
-      // Chrome for Testing is a full Chrome build, but Vercel's Amazon Linux
-      // runtime does not ship every NSS/NSPR dependency it needs. Sparticuz
-      // already carries the matching Lambda compatibility libraries; invoking
-      // executablePath extracts those libraries and configures LD_LIBRARY_PATH.
+      // Chrome for Testing is a full Chrome build. Use the browser-facing
+      // libraries captured during the Vercel build and retain Sparticuz's
+      // Lambda compatibility extraction for the remaining Amazon Linux pieces.
+      const bundledLibs = join(process.cwd(), "assets", "chrome-libs");
+      if (existsSync(bundledLibs)) {
+        const current = env.LD_LIBRARY_PATH ?? process.env.LD_LIBRARY_PATH ?? "";
+        const combined = [bundledLibs, current].filter(Boolean).join(":");
+        env.LD_LIBRARY_PATH = combined;
+        process.env.LD_LIBRARY_PATH = combined;
+      }
       const chromium = await loadSparticuzChromium(chromiumImpl);
       chromium.setGraphicsMode = true;
       await chromium.executablePath();
