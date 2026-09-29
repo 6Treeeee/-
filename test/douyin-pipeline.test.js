@@ -143,7 +143,7 @@ test("Sparticuz Chromium uses shell mode and the fresh default browser context",
 
   assert.equal(runtime.kind, "sparticuz_chromium");
   assert.equal(executablePathCalls, 1);
-  assert.equal(service.chromiumImpl.setGraphicsMode, false);
+  assert.equal(service.chromiumImpl.setGraphicsMode, true);
   assert.equal(createContextCalls, 0);
   assert.deepEqual(defaultArgsInput, { args: ["--no-sandbox"], headless: "shell" });
   assert.equal(launchOptions.headless, "shell");
