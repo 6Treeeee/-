@@ -418,8 +418,11 @@ async function videoDomSnapshot(page) {
       document.querySelector("meta[property='og:description']")?.content ?? null;
     const metaTitle = document.querySelector("meta[property='og:title']")?.content ?? document.title ?? null;
     const hydration = [...document.querySelectorAll(
-      "script#__UNIVERSAL_DATA_FOR_REHYDRATION__, script#RENDER_DATA, script[id*='RENDER_DATA']"
-    )].map((element) => element.textContent).filter(Boolean).slice(0, 3);
+      "script#__UNIVERSAL_DATA_FOR_REHYDRATION__, script#RENDER_DATA, script[id*='RENDER_DATA'], script:not([src])"
+    )]
+      .map((element) => element.textContent)
+      .filter((text) => Boolean(text) && /(?:aweme_id|__INITIAL_STATE__)/.test(text))
+      .slice(0, 6);
 
     return {
       canonical,
@@ -436,20 +439,37 @@ async function videoDomSnapshot(page) {
 }
 
 function hydratedAweme(texts) {
+  const parseCandidates = (value) => {
+    const result = [];
+    if (!value) return result;
+    result.push(value);
+    const firstObject = value.indexOf("{");
+    const lastObject = value.lastIndexOf("}");
+    if (firstObject >= 0 && lastObject > firstObject) {
+      result.push(value.slice(firstObject, lastObject + 1));
+    }
+    const firstArray = value.indexOf("[");
+    const lastArray = value.lastIndexOf("]");
+    if (firstArray >= 0 && lastArray > firstArray) {
+      result.push(value.slice(firstArray, lastArray + 1));
+    }
+    return [...new Set(result)];
+  };
+
   for (const text of texts ?? []) {
-    for (const candidate of [text, (() => {
-      try {
-        return decodeURIComponent(text);
-      } catch {
-        return null;
-      }
-    })()]) {
-      if (!candidate) continue;
+    let decoded = null;
+    try {
+      decoded = decodeURIComponent(text);
+    } catch {
+      decoded = null;
+    }
+
+    for (const candidate of [...parseCandidates(text), ...parseCandidates(decoded)]) {
       try {
         const aweme = extractAweme(JSON.parse(candidate));
         if (aweme) return aweme;
       } catch {
-        // The candidate was an executable script rather than JSON state.
+        // Inline state may be executable JavaScript. Only JSON substrings are accepted.
       }
     }
   }
