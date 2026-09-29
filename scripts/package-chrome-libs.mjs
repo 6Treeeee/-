@@ -31,10 +31,40 @@ for (const line of ldd.split(/\r?\n/)) {
   const source = match[1];
   if (!existsSync(source)) continue;
   const name = basename(source);
-  // Keep the runtime loader and glibc from the Lambda host; bundle the
-  // browser-facing shared libraries from the build image.
   if (/^(?:libc\.so|libm\.so|libdl\.so|libpthread\.so|librt\.so|libresolv\.so)/.test(name)) continue;
   cpSync(source, join(out, name));
   copied.push(name);
 }
-\nconst requiredDynamicLibraries = [\n  "libnspr4.so",\n  "libplc4.so",\n  "libplds4.so",\n  "libnss3.so",\n  "libnssutil3.so",\n  "libsmime3.so",\n  "libsoftokn3.so",\n  "libfreebl3.so"\n];\nlet ldconfig = "";\ntry {\n  ldconfig = execFileSync("ldconfig", ["-p"], { encoding: "utf8" });\n} catch {\n  ldconfig = "";\n}\nfor (const name of requiredDynamicLibraries) {\n  if (copied.includes(name)) continue;\n  const rows = ldconfig.split(/\\r?\\n/);\n  const row = rows.find((line) => line.trim().startsWith(name + " "));\n  const source = row?.match(/=>\\s+(\\/[^\\s]+)/)?.[1];\n  if (!source || !existsSync(source)) continue;\n  cpSync(source, join(out, name));\n  copied.push(name);\n}\n\nconsole.log(JSON.stringify({ chrome, bundled_library_count: copied.length, libraries: copied.sort() }));
+
+const requiredDynamicLibraries = [
+  "libnspr4.so",
+  "libplc4.so",
+  "libplds4.so",
+  "libnss3.so",
+  "libnssutil3.so",
+  "libsmime3.so",
+  "libsoftokn3.so",
+  "libfreebl3.so"
+];
+
+let ldconfig = "";
+try {
+  ldconfig = execFileSync("ldconfig", ["-p"], { encoding: "utf8" });
+} catch {
+  ldconfig = "";
+}
+
+for (const name of requiredDynamicLibraries) {
+  if (copied.includes(name)) continue;
+  const row = ldconfig.split(/\r?\n/).find((line) => line.trim().startsWith(name + " "));
+  const source = row?.match(/=>\s+(\/[^\s]+)/)?.[1];
+  if (!source || !existsSync(source)) continue;
+  cpSync(source, join(out, name));
+  copied.push(name);
+}
+
+console.log(JSON.stringify({
+  chrome,
+  bundled_library_count: copied.length,
+  libraries: copied.sort()
+}));
