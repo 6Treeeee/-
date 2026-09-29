@@ -89,7 +89,7 @@ try {
 }
 
 
-if (process.env.PROBE_CONTENT_READER === "1") {
+if (target.startsWith("https://www.douyin.com/video/")) {
   const { DirectPublicWebProvider } = await import("../src/providers/direct-public-web.js");
   const { PublicBrowserService } = await import("../src/services/public-browser.js");
   const id = target.match(/\/(?:video|note)\/(\d+)/)?.[1] ?? null;
