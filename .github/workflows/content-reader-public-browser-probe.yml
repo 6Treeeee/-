@@ -1,4 +1,5 @@
 name: content-reader-public-browser-probe
+# refreshed after runtime test alignment
 
 on:
   push:
