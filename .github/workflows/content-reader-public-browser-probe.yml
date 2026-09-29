@@ -1,0 +1,38 @@
+name: content-reader-public-browser-probe
+
+on:
+  push:
+    branches:
+      - codex/a2a-control-loop
+    paths:
+      - "src/services/public-browser.js"
+      - "src/providers/direct-public-web.js"
+      - "scripts/probe-public-web.mjs"
+      - "test/douyin-pipeline.test.js"
+      - "test/public-browser-runtime.test.js"
+      - ".github/workflows/content-reader-public-browser-probe.yml"
+  workflow_dispatch:
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: npm
+      - run: npm ci
+      - name: Unit tests
+        run: node --test test/public-browser-runtime.test.js test/douyin-pipeline.test.js
+      - name: Locate Chrome
+        shell: bash
+        run: |
+          set -e
+          CHROME="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser)"
+          test -n "$CHROME"
+          echo "CHROME_PATH=$CHROME" >> "$GITHUB_ENV"
+          "$CHROME" --version
+      - name: Public Douyin browser probe
+        run: node scripts/probe-public-web.mjs "https://www.douyin.com/video/7688672103729483058"
