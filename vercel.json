@@ -1,11 +1,11 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "regions": ["hkg1"],
-  "buildCommand": "npx @puppeteer/browsers install chrome@stable --path assets/chrome && node scripts/package-ocr-runtime.mjs && npm run build",
+  "buildCommand": "npx @puppeteer/browsers install chrome@stable --path assets/chrome && node scripts/package-chrome-libs.mjs && node scripts/package-ocr-runtime.mjs && npm run build",
   "functions": {
     "api/index.js": {
       "maxDuration": 300,
-      "includeFiles": "{artifacts/douyin/verified-profile.json,assets/whisper/*,assets/ocr/python/**,assets/ocr/manifest.json,assets/chrome/**,src/services/hard-subtitle-worker.py}"
+      "includeFiles": "{artifacts/douyin/verified-profile.json,assets/whisper/*,assets/ocr/python/**,assets/ocr/manifest.json,assets/chrome/**,assets/chrome-libs/**,src/services/hard-subtitle-worker.py}"
     },
     "api/a2a.js": {
       "maxDuration": 30
