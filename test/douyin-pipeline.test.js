@@ -4203,3 +4203,45 @@ test("terminal login, CAPTCHA/security, and private errors never fall through pr
     });
   }
 });
+
+
+test("DirectPublicWebProvider accepts public __INITIAL_STATE__ JSON assignment for exact video", async () => {
+  const id = "7688672103729483058";
+  const publicMedia = "https://v5-dy-ov-experiment.zjcdn.com/public-video.mp4";
+  const initialState = `window.__INITIAL_STATE__ = ${JSON.stringify({
+    aweme_detail: aweme(id, {
+      video: {
+        duration: 440000,
+        play_addr: { url_list: [publicMedia] }
+      }
+    })
+  })};`;
+
+  const fake = fakeBrowserPage({
+    currentUrl: `https://www.douyin.com/video/${id}`,
+    videoDom: {
+      canonical: `https://www.douyin.com/video/${id}`,
+      title: "Public initial state video - 抖音",
+      description: "Public description",
+      media: [publicMedia],
+      videoPresent: true,
+      durationSeconds: 440,
+      width: 720,
+      height: 1280,
+      hydration: [initialState]
+    }
+  });
+  const provider = new DirectPublicWebProvider({
+    browserService: fake.browserService,
+    retries: 0,
+    videoContentWaitMs: 0,
+    settleMs: 0
+  });
+
+  const result = await provider.readVideo({ awemeId: id });
+
+  assert.equal(result.aweme.aweme_id, id);
+  assert.equal(result.aweme.video.duration, 440000);
+  assert.deepEqual(result.aweme.video.play_addr.url_list, [publicMedia]);
+  assert.deepEqual(result.networkMediaUrls, [publicMedia]);
+});
