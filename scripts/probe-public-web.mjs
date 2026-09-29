@@ -105,6 +105,16 @@ if (target.startsWith("https://www.douyin.com/video/")) {
       resolvedUrl: `https://www.douyin.com/video/${id}`,
       awemeId: id
     });
+    const { MediaResolver } = await import("../src/services/media.js");
+    const media = await new MediaResolver({
+      refreshVideo: async () => (await provider.readVideo({
+        inputUrl: `https://www.douyin.com/video/${id}`,
+        resolvedUrl: `https://www.douyin.com/video/${id}`,
+        awemeId: id
+      })).aweme
+    }).resolve(result.aweme);
+    let mediaHost = null;
+    try { mediaHost = new URL(media.url).hostname; } catch {}
     console.log(JSON.stringify({
       content_reader_probe: true,
       aweme_id: result.aweme?.aweme_id ?? null,
@@ -113,7 +123,11 @@ if (target.startsWith("https://www.douyin.com/video/")) {
       method: result.meta?.method ?? null,
       browser: result.meta?.browser ?? null,
       attempts: result.meta?.attempts ?? null,
-      network_media_count: result.meta?.network_media_count ?? null
+      network_media_count: result.meta?.network_media_count ?? null,
+      media_validated: Boolean(media?.url),
+      media_host: mediaHost,
+      media_type: media?.mediaType ?? media?.media_type ?? null,
+      media_size: media?.diagnostics?.size ?? null
     }, null, 2));
   }
 }
