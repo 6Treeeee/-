@@ -252,6 +252,23 @@ export class PublicBrowserService {
           typeof this.puppeteer.defaultArgs === "function"
         ? await this.puppeteer.defaultArgs({ args: runtime.args, headless: runtime.headless })
         : runtime.args;
+      if (runtime.kind === "bundled_full_chrome") {
+        const libDir = join(process.cwd(), "assets", "chrome-libs");
+        let bundledLibraries = [];
+        try {
+          bundledLibraries = existsSync(libDir) ? readdirSync(libDir).sort() : [];
+        } catch {
+          bundledLibraries = [];
+        }
+        console.log(JSON.stringify({
+          event: "public_browser.runtime",
+          kind: runtime.kind,
+          executable_path: runtime.executablePath,
+          bundled_library_count: bundledLibraries.length,
+          bundled_libraries: bundledLibraries,
+          ld_library_path: process.env.LD_LIBRARY_PATH ?? null
+        }));
+      }
       browser = await this.puppeteer.launch({
         executablePath: runtime.executablePath,
         args: launchArgs,
