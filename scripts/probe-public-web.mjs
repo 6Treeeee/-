@@ -27,12 +27,28 @@ try {
   });
   await page.goto(target, { waitUntil: "domcontentloaded", timeout: 45_000 });
   await new Promise((resolve) => setTimeout(resolve, 8_000));
-  const dom = await page.evaluate(() => ({
-    title: document.title,
-    text: document.body?.innerText?.slice(0, 5_000) ?? "",
-    postLinks: [...document.querySelectorAll('[data-e2e="user-post-list"] a[href]')]
-      .map((item) => item.getAttribute("href"))
-  }));
+  const dom = await page.evaluate(() => {
+    const video = document.querySelector("video");
+    const inlineStateScripts = [...document.querySelectorAll("script:not([src])")]
+      .map((element) => element.textContent ?? "")
+      .filter((text) => /(?:aweme_id|__INITIAL_STATE__)/.test(text));
+    return {
+      title: document.title,
+      text: document.body?.innerText?.slice(0, 5_000) ?? "",
+      postLinks: [...document.querySelectorAll('[data-e2e="user-post-list"] a[href]')]
+        .map((item) => item.getAttribute("href")),
+      video: video ? {
+        currentSrc: video.currentSrc || null,
+        duration: Number.isFinite(video.duration) ? video.duration : null,
+        readyState: video.readyState,
+        networkState: video.networkState
+      } : null,
+      inlineStateScriptCount: inlineStateScripts.length,
+      inlineStateContainsTarget: inlineStateScripts.some((text) => text.includes(
+        location.pathname.match(/\\/(?:video|note)\\/(\\d+)/)?.[1] ?? ""
+      ))
+    };
+  });
   const summarizeObject = (root) => {
     const matches = [];
     const seen = new Set();
