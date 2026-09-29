@@ -9,6 +9,7 @@ on:
       - "src/services/public-browser.js"
       - "src/providers/direct-public-web.js"
       - "scripts/probe-public-web.mjs"
+      - "scripts/probe-content-reader-full.mjs"
       - "test/douyin-pipeline.test.js"
       - "test/public-browser-runtime.test.js"
       - ".github/workflows/content-reader-public-browser-probe.yml"
@@ -17,7 +18,7 @@ on:
 jobs:
   probe:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -39,3 +40,12 @@ jobs:
         run: node scripts/probe-public-web.mjs "https://www.douyin.com/video/7688672103729483058"
       - name: Official public share-page probe
         run: node scripts/probe-public-web.mjs "https://www.iesdouyin.com/share/video/7688672103729483058"
+
+      - name: Package existing OCR runtime
+        run: node scripts/package-ocr-runtime.mjs
+      - name: Full fresh OCR acceptance
+        env:
+          CONTENT_READER_OCR_PYTHON: assets/ocr/python/bin/python3.12
+          CONTENT_READER_HARD_SUBTITLES: "1"
+          CONTENT_READER_LOCAL_REQUEST_BUDGET_MS: "1500000"
+        run: node scripts/probe-content-reader-full.mjs "https://www.douyin.com/video/7688672103729483058"
