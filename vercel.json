@@ -1,7 +1,9 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "regions": ["hkg1"],
-  "buildCommand": "npx @puppeteer/browsers install chrome@stable --path assets/chrome && node scripts/package-chrome-libs.mjs && node scripts/package-ocr-runtime.mjs && npm run build",
+  "regions": [
+    "hkg1"
+  ],
+  "buildCommand": "node scripts/package-ocr-runtime.mjs && npm run build",
   "functions": {
     "api/index.js": {
       "maxDuration": 300,
@@ -43,10 +45,25 @@
     }
   },
   "rewrites": [
-    { "source": "/mcp", "destination": "/api/mcp" },
-    { "source": "/.well-known/oauth-protected-resource", "destination": "/api/oauth-protected-resource" },
-    { "source": "/tasks", "destination": "/api/a2a?route=/tasks" },
-    { "source": "/tasks/:path*", "destination": "/api/a2a?route=/tasks/:path*" },
-    { "source": "/agent-card", "destination": "/api/agent-card" }
+    {
+      "source": "/mcp",
+      "destination": "/api/mcp"
+    },
+    {
+      "source": "/.well-known/oauth-protected-resource",
+      "destination": "/api/oauth-protected-resource"
+    },
+    {
+      "source": "/tasks",
+      "destination": "/api/a2a?route=/tasks"
+    },
+    {
+      "source": "/tasks/:path*",
+      "destination": "/api/a2a?route=/tasks/:path*"
+    },
+    {
+      "source": "/agent-card",
+      "destination": "/api/agent-card"
+    }
   ]
 }
