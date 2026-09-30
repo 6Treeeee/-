@@ -341,7 +341,7 @@ export class HardSubtitleOcr {
             "Accept-Language":"zh-CN,zh;q=0.9,en;q=0.8",
             Referer:"https://www.douyin.com/"
           });
-          await page.setContent("<!doctype html><html><body style='margin:0;background:#000'><video id='content-reader-media' muted playsinline preload='auto'></video></body></html>",{
+          await page.setContent("<!doctype html><html><body style='margin:0;background:#000;overflow:hidden'><video id='content-reader-media' muted playsinline preload='auto' style='display:block;width:1280px;height:720px;object-fit:contain;background:#000'></video></body></html>",{
             waitUntil:"domcontentloaded"
           });
           await page.evaluate((source)=>{
