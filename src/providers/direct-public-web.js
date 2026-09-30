@@ -31,6 +31,8 @@ const RETRYABLE_CODES = new Set([
   "DOUYIN_PUBLIC_WEB_EMPTY_RESULT",
   "DOUYIN_PUBLIC_WEB_IDENTITY_MISMATCH"
 ]);
+const CONSUMER_ERROR = Symbol("content_reader_consumer_error");
+
 
 function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -1043,6 +1045,7 @@ export class DirectPublicWebProvider {
         result.meta = { ...result.meta, attempts: attempt + 1 };
         return result;
       } catch (error) {
+        if (error?.[CONSUMER_ERROR]) throw error;
         if (error instanceof ReaderError && TERMINAL_ACCESS_CODES.has(error.code)) throw error;
         const retryable = isTransientError(error);
         if (!retryable) {
@@ -1327,18 +1330,30 @@ export class DirectPublicWebProvider {
           );
         }
 
-        const consumed = typeof consumeVideo === "function" ? await consumeVideo({
-          page, runtime, aweme,
-          assertAccess: async () => {
-            await capture.drain();
-            const liveAccess = await pageAccessSnapshot(page);
-            mergeSignals(liveAccess, capture.state.signals);
-            const liveFailure = accessError(liveAccess, { hasPublicContent: true });
-            if (liveFailure) throw liveFailure;
-            const current = exactPublicVideoPage(page.url(), selected.awemeId);
-            if (!current) throw identityMismatchError(target, selected.awemeId, awemeIdFromUrl(page.url()), "live_player_page");
+        let consumed;
+        if (typeof consumeVideo === "function") {
+          try {
+            consumed = await consumeVideo({
+              page, runtime, aweme,
+              networkMediaUrls: observedMediaUrls,
+              acquiredAt,
+              assertAccess: async () => {
+                await capture.drain();
+                const liveAccess = await pageAccessSnapshot(page);
+                mergeSignals(liveAccess, capture.state.signals);
+                const liveFailure = accessError(liveAccess, { hasPublicContent: true });
+                if (liveFailure) throw liveFailure;
+                const current = exactPublicVideoPage(page.url(), selected.awemeId);
+                if (!current) throw identityMismatchError(target, selected.awemeId, awemeIdFromUrl(page.url()), "live_player_page");
+              }
+            });
+          } catch (error) {
+            if (error && (typeof error === "object" || typeof error === "function")) {
+              Object.defineProperty(error, CONSUMER_ERROR, { value: true });
+            }
+            throw error;
           }
-        }) : undefined;
+        }
         return {
           aweme,
           ...(consumed !== undefined ? { consumed } : {}),
