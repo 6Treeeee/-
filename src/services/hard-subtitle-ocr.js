@@ -312,6 +312,7 @@ export class HardSubtitleOcr {
         await writeFile(join(root,"session.json"),JSON.stringify({run_id:runId,request_id:requestId,aweme_id:id,started_at:startedAt,engine,probe_engine:probeEngine,playback,media_url_sha256:mediaHash,cache_read:false},null,2));
         const records=[];let chain="",probeChain="";let checked=0,probeId=0;
         let ocrTail=Promise.resolve(),ocrFailure=null,ocrWorkerElapsedMs=0,probeWorkerElapsedMs=0;
+        const pendingOcrTasks=[];
         const queueOcrFrame=(frame)=>{
           const task=ocrTail.then(async()=>{
             if(Date.now()>=deadlineAt-1000)throw fail("OCR_DEADLINE_EXCEEDED","Live OCR could not complete the entire video inside the request budget.");
@@ -327,13 +328,19 @@ export class HardSubtitleOcr {
           });
           task.catch((error)=>{ocrFailure??=error;});
           ocrTail=task;
+          pendingOcrTasks.push(task);
           return task;
+        };
+        const drainOcrBacklog=async()=>{
+          if(pendingOcrTasks.length<160)return;
+          await Promise.all(pendingOcrTasks.splice(0,80));
+          if(ocrFailure)throw ocrFailure;
         };
         let pendingCapture=null;
         for(let start=0;start<duration/1000;start+=30){
           await assertCaptureAccess();
           const end=Math.min(start+29.75,Math.floor((duration-1)/250)*.25);
-          const chunkTasks=[],scores=[];
+          const scores=[];
           for(let target=start;target<=end+.00001;target+=.25){
             if(ocrFailure)throw ocrFailure;
             const state=await capturePage.evaluate(seekCaptureFrame,{target,deadlineAt});
@@ -348,7 +355,7 @@ export class HardSubtitleOcr {
               lowBase64=Buffer.from(await capturePage.screenshot({type:"jpeg",quality:30,clip:{x:128,y:490,width:1024,height:202},captureBeyondViewport:false})).toString("base64");
             }
             if(pendingCapture){
-              chunkTasks.push(queueOcrFrame({...state,...pendingCapture,image:highBase64}));
+              queueOcrFrame({...state,...pendingCapture,image:highBase64});
               pendingCapture=null;
             }
             const probe=await probeWorker.probe(`p${probeId++}`,lowBase64);
@@ -356,29 +363,31 @@ export class HardSubtitleOcr {
             probeChain=hash(probeChain+probe.frame_sha256+state.time_ms);checked++;
             scores.push([state.time_ms,+probe.score.toFixed(6)]);
             if(checked===1){
-              chunkTasks.push(queueOcrFrame({...state,score:probe.score,reason:"baseline",image:highBase64}));
+              queueOcrFrame({...state,score:probe.score,reason:"baseline",image:highBase64});
             }else if(probe.score>=.003){
               // Capture the changed subtitle at the next scheduled 250 ms sample.
               // This preserves the visual sampling cadence while avoiding a second
               // media seek solely for the former +180 ms stabilization frame.
               pendingCapture={score:probe.score,reason:"visual_change"};
             }
+            await drainOcrBacklog();
           }
           if(end>=duration/1000-.3){
             const target=duration/1000-.05,frameState=await capturePage.evaluate(seekCaptureFrame,{target,deadlineAt});
             const canvasFrames=await capturePage.evaluate(canvasCaptureFrame,{high:true,low:false});
             const imageBase64=canvasFrames?.high??Buffer.from(await capturePage.screenshot({type:"jpeg",quality:95,clip:{x:64,y:396,width:1152,height:324},captureBeyondViewport:false})).toString("base64");
-            chunkTasks.push(queueOcrFrame({...frameState,score:pendingCapture?.score??null,reason:"end_boundary",image:imageBase64}));
+            queueOcrFrame({...frameState,score:pendingCapture?.score??null,reason:"end_boundary",image:imageBase64});
             pendingCapture=null;
           }
           await appendFile(join(root,"visual-changes.jsonl"),JSON.stringify({start_ms:start*1000,end_ms:end*1000,scores})+"\n");
-          if(chunkTasks.length)await Promise.all(chunkTasks);
           if(ocrFailure)throw ocrFailure;
           await journal({event:"ocr.progress",scanned_ms:Math.round(end*1000),frames:records.length,checked_frames:checked,
             ocr_worker_elapsed_ms:ocrWorkerElapsedMs,probe_worker_elapsed_ms:probeWorkerElapsedMs,
             elapsed_ms:Date.now()-Date.parse(startedAt)});
         }
         await ocrTail;
+        pendingOcrTasks.length=0;
+        if(ocrFailure)throw ocrFailure;
         await assertCaptureAccess();
         const segments=mergeCaptionFrames(records,duration);
         if(!segments.length || segments.map(s=>s.text).join("").length<10)throw fail("OCR_NO_READABLE_CAPTIONS","The live video frames did not yield usable hard subtitles.");
