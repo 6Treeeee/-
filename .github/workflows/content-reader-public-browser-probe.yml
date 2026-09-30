@@ -7,6 +7,7 @@ on:
     paths:
       - "src/services/public-browser.js"
       - "src/providers/direct-public-web.js"
+      - "src/platforms/douyin.js"
       - "src/services/hard-subtitle-ocr.js"
       - "src/services/hard-subtitle-worker.py"
       - "scripts/probe-sparticuz-video.mjs"
