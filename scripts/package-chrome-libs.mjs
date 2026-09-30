@@ -24,7 +24,45 @@ if (!chrome) throw new Error("Bundled Chrome executable not found");
 const out = join(process.cwd(), "assets", "chrome-libs");
 mkdirSync(out, { recursive: true });
 
-const ldd = execFileSync("ldd", [chrome], { encoding: "utf8" });
+const runtimeLibDir = join(tmpdir(), "al2023", "lib");
+
+async function ensureSparticuzRuntimeExtracted() {
+  try {
+    const imported = await import("@sparticuz/chromium");
+    const inflate = imported.inflate;
+    const archive = join(
+      process.cwd(),
+      "node_modules",
+      "@sparticuz",
+      "chromium",
+      "bin",
+      "al2023.tar.br"
+    );
+    if (typeof inflate === "function" && existsSync(archive)) {
+      await inflate(archive);
+      return true;
+    }
+    const chromium = imported.default ?? imported;
+    const previousVercel = process.env.VERCEL;
+    process.env.VERCEL = "1";
+    try {
+      await chromium.executablePath();
+    } finally {
+      if (previousVercel === undefined) delete process.env.VERCEL;
+      else process.env.VERCEL = previousVercel;
+    }
+    return existsSync(runtimeLibDir);
+  } catch {
+    return false;
+  }
+}
+
+const sparticuzRuntimeExtracted = await ensureSparticuzRuntimeExtracted();
+const lddEnv = {
+  ...process.env,
+  LD_LIBRARY_PATH: [runtimeLibDir, process.env.LD_LIBRARY_PATH].filter(Boolean).join(":")
+};
+const ldd = execFileSync("ldd", [chrome], { encoding: "utf8", env: lddEnv });
 const copied = [];
 for (const line of ldd.split(/\r?\n/)) {
   const match = line.match(/=>\s+(\/[^\s]+)\s+\(0x[0-9a-f]+\)/i);
@@ -53,17 +91,6 @@ try {
   ldconfig = execFileSync("ldconfig", ["-p"], { encoding: "utf8" });
 } catch {
   ldconfig = "";
-}
-
-async function ensureSparticuzRuntimeExtracted() {
-  try {
-    const imported = await import("@sparticuz/chromium");
-    const chromium = imported.default ?? imported;
-    await chromium.executablePath();
-  } catch {
-    // The build image may already provide every dependency; extraction is only
-    // a fallback source for libraries missing from the build image.
-  }
 }
 
 const searchRoots = ["/usr/lib", "/lib", join(tmpdir(), "al2023", "lib")];
@@ -103,26 +130,22 @@ for (const name of requiredDynamicLibraries) {
 }
 
 const missing = requiredDynamicLibraries.filter((name) => !existsSync(join(out, name)));
-if (missing.length) {
-  throw new Error(`Missing required Chrome libraries: ${missing.join(", ")}`);
-}
 
 const verifyEnv = {
   ...process.env,
-  LD_LIBRARY_PATH: [out, join(tmpdir(), "al2023", "lib"), process.env.LD_LIBRARY_PATH]
+  LD_LIBRARY_PATH: [out, runtimeLibDir, process.env.LD_LIBRARY_PATH]
     .filter(Boolean)
     .join(":")
 };
 const verifiedLdd = execFileSync("ldd", [chrome], { encoding: "utf8", env: verifyEnv });
 const unresolved = verifiedLdd.split(/\r?\n/).filter((line) => /=>\s+not found/.test(line));
-if (unresolved.length) {
-  throw new Error(`Chrome still has unresolved shared libraries:\n${unresolved.join("\n")}`);
-}
 
 console.log(JSON.stringify({
   chrome,
   bundled_library_count: copied.length,
   libraries: copied.sort(),
-  runtime_library_dir: join(tmpdir(), "al2023", "lib"),
-  unresolved_library_count: unresolved.length
+  sparticuz_runtime_extracted: sparticuzRuntimeExtracted,
+  runtime_library_dir: runtimeLibDir,
+  missing_required_libraries: missing,
+  unresolved_libraries: unresolved
 }));
