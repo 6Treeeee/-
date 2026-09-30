@@ -1059,6 +1059,14 @@ function publicShareAccessError(html, target) {
       { status: 422, details: { provider: PROVIDER, reason: "public_share_security_challenge", access_scope: "provider_path", target: targetDiagnostic(target) } }
     );
   }
+  if (!/window\._ROUTER_DATA\s*=/.test(text) &&
+      /扫码登录|登录抖音|Log in to Douyin|请先登录|登录后(?:才可|方可|即可|可)?(?:观看|查看)/i.test(text)) {
+    return new ReaderError(
+      "DOUYIN_LOGIN_REQUIRED",
+      "Douyin requires login before this content can be read.",
+      { status: 422, details: { provider: PROVIDER, target: targetDiagnostic(target) } }
+    );
+  }
   if (/私密作品|仅自己可见|作者仅允许|私密账号/.test(text)) {
     return new ReaderError(
       "DOUYIN_PRIVATE_CONTENT",
@@ -1208,7 +1216,8 @@ export class DirectPublicWebProvider {
             expected_aweme_id: id,
             observed_aweme_id: observedId,
             source: "official_share_router_data"
-          }
+          },
+          attempts: 1
         }
       };
     } catch (error) {
