@@ -1,7 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "regions": [
-    "sfo1"
+    "hkg1"
   ],
   "buildCommand": "node scripts/package-ocr-runtime.mjs && npm run build",
   "functions": {
