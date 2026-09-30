@@ -10,6 +10,7 @@ on:
       - "src/providers/direct-public-web.js"
       - "scripts/probe-public-web.mjs"
       - "scripts/probe-content-reader-full.mjs"
+      - "scripts/probe-sparticuz-video.mjs"
       - "scripts/package-chrome-libs.mjs"
       - "test/douyin-pipeline.test.js"
       - "test/public-browser-runtime.test.js"
@@ -33,6 +34,8 @@ jobs:
         run: node scripts/package-chrome-libs.mjs
       - name: Unit tests
         run: node --test test/public-browser-runtime.test.js test/douyin-pipeline.test.js
+      - name: Serverless Chromium exact video probe
+        run: node scripts/probe-sparticuz-video.mjs "7688672103729483058"
       - name: Locate Chrome
         shell: bash
         run: |
