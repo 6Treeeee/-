@@ -8,6 +8,7 @@ import { fileURLToPath } from "node:url";
 import { ReaderError, sanitizeDiagnostics } from "../errors.js";
 import { DirectPublicWebProvider } from "../providers/direct-public-web.js";
 import { PublicBrowserService } from "./public-browser.js";
+import { MediaResolver } from "./media.js";
 
 const hash = (value) => createHash("sha256").update(value).digest("hex");
 const textKey = (text) => String(text ?? "").replace(/[\s，。！？、；：,.!?;:·•“”‘’《》（）—…↑↓]/g, "").toLowerCase();
@@ -215,12 +216,27 @@ async function seekCaptureFrame({ target, deadlineAt }) {
 }
 
 export class HardSubtitleOcr {
-  constructor({ env=process.env, provider=null, requestId=null } = {}) {
+  constructor({
+    env=process.env,
+    provider=null,
+    browserService=null,
+    mediaResolver=null,
+    fetchImpl=globalThis.fetch,
+    requestId=null
+  } = {}) {
     this.env=env; this.requestId=requestId;
     this.available=env.CONTENT_READER_HARD_SUBTITLES !== "0" && Boolean(env.CONTENT_READER_OCR_PYTHON);
+    const browser=browserService ?? provider?.browser ?? new PublicBrowserService({ protocolTimeoutMs:45_000 });
+    this.browser=browser;
     this.provider=provider ?? new DirectPublicWebProvider({
-      browserService:new PublicBrowserService({ protocolTimeoutMs:45_000 }), retries:1,
+      browserService:browser, retries:1,
       videoNavigationTimeoutMs:20_000, videoContentWaitMs:15_000
+    });
+    this.mediaResolver=mediaResolver ?? new MediaResolver({
+      fetchImpl,
+      maxBytes:100 * 1024 * 1024,
+      timeoutMs:12_000,
+      retries:0
     });
     this.busy=false;
   }
@@ -245,7 +261,7 @@ export class HardSubtitleOcr {
       worker=new OcrProcess({python:this.env.CONTENT_READER_OCR_PYTHON,env:this.env,deadlineAt});
       const engine=await worker.next();
       if(!engine.ready)throw fail("OCR_RUNTIME_UNAVAILABLE","OCR engine did not initialize.");
-      const retrieval=await this.provider.readVideo({awemeId:id,consumeVideo:async({page,assertAccess})=>{
+      const captureVideo=async({page,assertAccess,captureMode})=>{
         const rawDuration=Number(video?.duration_ms ?? video?.media?.duration_ms ?? video?.duration ?? 0);
         const expectedDurationSeconds=rawDuration>=1000?rawDuration/1000:rawDuration;
         if(!Number.isFinite(expectedDurationSeconds)||expectedDurationSeconds<=0)throw fail("OCR_EXPECTED_DURATION_MISSING","Target video duration is required to bind the live player.");
@@ -298,19 +314,54 @@ export class HardSubtitleOcr {
         const captionCoverage=assessCaptionCoverage(segments,duration);
         await writeFile(join(root,"caption-coverage.json"),JSON.stringify(captionCoverage,null,2));
         if(!captionCoverage.sustained)throw fail("OCR_CAPTIONS_SPARSE","Readable scene text was found, but it does not form a sustained hard-subtitle track.",captionCoverage);
-        const provenance={type:"ocr",provider:"live_browser_rapidocr",run_id:runId,request_id:requestId,
+        const provenance={type:"ocr",provider:captureMode==="validated_public_media"?"validated_public_media_rapidocr":"live_browser_rapidocr",run_id:runId,request_id:requestId,
           stable_aweme_id:id,started_at:startedAt,finished_at:new Date().toISOString(),fresh_capture:true,transcript_cache_read:false,
           frame_count:records.length,checked_frames:checked,frame_hash_chain:chain,probe_hash_chain:probeChain,media_url_sha256:mediaHash,engine,
           coverage:{start_ms:0,end_ms:duration,full_video_scanned:true,visual_step_ms:250,threshold:.003,caption_activity:captionCoverage}};
         const result={status:"complete",method:"hard_subtitle_ocr",text:segments.map(s=>s.text).join("\n"),segments,language:null,
           confidence:segments.reduce((a,s)=>a+s.confidence,0)/segments.length,
           limitations:["visual_subtitles_only_not_spoken_audio","approximate_frame_capture_timestamps","sub_250ms_or_low_change_captions_may_be_missed","source_subtitle_errors_preserved","short_lived_ocr_variants_collapsed_by_temporal_consensus","ocr_not_manually_corrected"],source:provenance,
-          media_resolution:{stable_identity:"aweme_id",media_kind:"video",media_type:"browser_decoded_video",acquired_at:startedAt,validated_at:provenance.finished_at,
-            validation:{status:"live_browser_frames_read",frame_count:records.length,media_url_sha256:mediaHash}}};
+          media_resolution:{stable_identity:"aweme_id",media_kind:"video",media_type:captureMode==="validated_public_media"?"browser_decoded_public_media":"browser_decoded_video",acquired_at:startedAt,validated_at:provenance.finished_at,
+            validation:{status:captureMode==="validated_public_media"?"validated_public_media_frames_read":"live_browser_frames_read",frame_count:records.length,media_url_sha256:mediaHash}}};
         await writeFile(join(root,"result.json"),JSON.stringify(result,null,2));
         await journal({event:"ocr.completed",segments:segments.length,frame_count:records.length,frame_hash_chain:chain});
         return result;
-      }});
+      };
+
+      let directMedia=null;
+      try {
+        directMedia=await this.mediaResolver.resolve(video);
+      } catch {
+        directMedia=null;
+      }
+
+      if(directMedia?.url){
+        return await this.browser.withPage(async({page})=>{
+          await page.setExtraHTTPHeaders({
+            "Accept-Language":"zh-CN,zh;q=0.9,en;q=0.8",
+            Referer:"https://www.douyin.com/"
+          });
+          await page.setContent("<!doctype html><html><body style='margin:0;background:#000'><video id='content-reader-media' muted playsinline preload='auto'></video></body></html>",{
+            waitUntil:"domcontentloaded"
+          });
+          await page.evaluate((source)=>{
+            const video=document.getElementById("content-reader-media");
+            video.src=source;video.muted=true;video.preload="auto";video.load();
+          },directMedia.url);
+          const assertMedia=async()=>{
+            const stable=await page.evaluate(()=>Boolean(
+              window.__contentReaderOcr?.v &&
+              (window.__contentReaderOcr.v.currentSrc || window.__contentReaderOcr.v.src) === window.__contentReaderOcr.originalSrc
+            ));
+            if(!stable)throw fail("OCR_PUBLIC_PLAYER_UNAVAILABLE","The validated public media player changed during OCR.");
+          };
+          return captureVideo({page,assertAccess:assertMedia,captureMode:"validated_public_media"});
+        });
+      }
+
+      const retrieval=await this.provider.readVideo({awemeId:id,consumeVideo:async({page,assertAccess})=>
+        captureVideo({page,assertAccess,captureMode:"live_public_page"})
+      });
       if(!retrieval.consumed)throw fail("OCR_PUBLIC_PLAYER_UNAVAILABLE","The public provider did not expose a playable video for OCR.");
       return retrieval.consumed;
     } catch(error) {
