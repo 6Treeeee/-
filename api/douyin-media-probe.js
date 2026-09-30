@@ -30,7 +30,9 @@ async function seek(page, target) {
 export default async function handler(req, res) {
   const id = String(Array.isArray(req.query?.id) ? req.query.id[0] : req.query?.id ?? "");
   if (!/^\d{10,25}$/.test(id)) return res.status(400).json({ ok:false, error:"invalid_id" });
+  let stage = "start";
   try {
+    stage = "share_metadata";
     const provider = new DirectPublicWebProvider({
       fetchImpl: globalThis.fetch,
       browserService: { async withPage() { throw new Error("BROWSER_METADATA_PATH_FORBIDDEN"); } }
@@ -40,11 +42,13 @@ export default async function handler(req, res) {
       resolvedUrl: `https://www.douyin.com/video/${id}`,
       awemeId: id
     });
+    stage = "normalize";
     const video = normalizeVideo(retrieval.aweme, {
       inputUrl: `https://www.douyin.com/video/${id}`,
       resolvedUrl: `https://www.douyin.com/video/${id}`,
       acquiredAt: retrieval.meta.acquired_at
     });
+    stage = "media_resolve";
     const media = await new MediaResolver({
       fetchImpl: globalThis.fetch,
       maxBytes: 100 * 1024 * 1024,
@@ -52,6 +56,7 @@ export default async function handler(req, res) {
       retries: 0
     }).resolve(video);
 
+    stage = "browser_decode";
     const browser = new PublicBrowserService({ protocolTimeoutMs: 45000 });
     const decoded = await browser.withPage(async ({ page, runtime }) => {
       await page.setExtraHTTPHeaders({
@@ -97,10 +102,13 @@ export default async function handler(req, res) {
       frames:decoded.frames
     });
   } catch (error) {
-    return res.status(500).json({
-      ok:false,
+    const safe = {
+      event:"douyin_media_probe.failed",
+      stage,
       code:error?.code ?? "PROBE_FAILED",
       message:String(error?.message ?? "").slice(0,200)
-    });
+    };
+    console.error(JSON.stringify(safe));
+    return res.status(200).json({ ok:false, ...safe });
   }
 }
