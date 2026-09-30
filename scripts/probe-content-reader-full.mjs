@@ -56,6 +56,14 @@ const last = segments.at(-1) ?? null;
 const durationMs = Number(result.content?.duration_ms ?? result.content?.media?.duration_ms ?? 0);
 const coverageEnd = Number(readable?.source?.coverage?.end_ms ?? 0);
 const elapsedMs = Date.now() - startedAt;
+const firstText = String(first?.text ?? "");
+const lastText = String(last?.text ?? "");
+const contentRegressionSafe = Boolean(
+  segments.length >= 180 &&
+  String(readable?.text ?? "").length >= 2500 &&
+  firstText.includes("2026年9月22日") &&
+  lastText.includes("那可能是这一年最贵的误会")
+);
 const fullCoverage = Boolean(
   readable?.status === "complete" &&
   readable?.method === "hard_subtitle_ocr" &&
@@ -84,7 +92,8 @@ console.log(JSON.stringify({
   elapsed_ms: elapsedMs,
   request_budget_ms: requestBudgetMs,
   serverless_runtime: serverless,
-  within_request_budget: elapsedMs < requestBudgetMs
+  within_request_budget: elapsedMs < requestBudgetMs,
+  content_regression_safe: contentRegressionSafe
 }, null, 2));
 
-if (!fullCoverage || elapsedMs >= requestBudgetMs) process.exitCode = 2;
+if (!fullCoverage || elapsedMs >= requestBudgetMs || !contentRegressionSafe) process.exitCode = 2;
