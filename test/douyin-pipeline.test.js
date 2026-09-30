@@ -414,6 +414,78 @@ function completedTranscript(text, method = "test_asr") {
   };
 }
 
+
+test("DouyinReader processes hard subtitles inside the initial verified direct-public page", async () => {
+  const id = "7688672103729483058";
+  const page = { marker: "initial-public-page" };
+  const assertAccess = async () => {};
+  let providerCalls = 0;
+  let processorCalls = 0;
+  let ocrCalls = 0;
+
+  const direct = {
+    id: "direct_public_web",
+    available: true,
+    async readVideo(context) {
+      providerCalls += 1;
+      assert.equal(typeof context.consumeVideo, "function");
+      const raw = aweme(id, {
+        video: {
+          duration: 440_000,
+          play_addr: { url_list: ["https://media.example.test/current.mp4"] }
+        }
+      });
+      const consumed = await context.consumeVideo({
+        page,
+        assertAccess,
+        aweme: raw,
+        networkMediaUrls: ["https://media.example.test/current.mp4"],
+        acquiredAt: "2026-09-30T10:00:00.000Z"
+      });
+      return {
+        aweme: raw,
+        consumed,
+        networkMediaUrls: ["https://media.example.test/current.mp4"],
+        meta: { provider: "direct_public_web", acquired_at: "2026-09-30T10:00:00.000Z" }
+      };
+    }
+  };
+
+  const processor = {
+    hardSubtitleOcr: async (video, options) => {
+      ocrCalls += 1;
+      assert.equal(video.aweme_id, id);
+      assert.equal(options.livePageContext.page, page);
+      assert.equal(options.livePageContext.assertAccess, assertAccess);
+      return completedTranscript("同一页面字幕", "hard_subtitle_ocr");
+    },
+    async processVideo(video, options) {
+      processorCalls += 1;
+      assert.equal(typeof options.hardSubtitleOcr, "function");
+      const readable = await options.hardSubtitleOcr(video, { deadlineAt: Date.now() + 1_000 });
+      return { ...video, readable_content: readable };
+    }
+  };
+
+  const reader = new DouyinReader({
+    providers: [direct],
+    processor,
+    fetchImpl: publicResolutionFetch
+  });
+  const result = await reader.read({
+    url: `https://www.douyin.com/video/${id}`,
+    type: "video",
+    fresh: true
+  });
+
+  assert.equal(providerCalls, 1);
+  assert.equal(processorCalls, 1);
+  assert.equal(ocrCalls, 1);
+  assert.equal(result.content.readable_content.text, "同一页面字幕");
+  assert.equal(result.content.media.duration_ms, 440_000);
+});
+
+
 test("TikHub HTTP 402 falls through ProviderChain/DouyinReader to the direct provider", async () => {
   const routes = [];
   const tikhub = new TikHubProvider({
