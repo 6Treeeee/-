@@ -7,7 +7,10 @@
   "functions": {
     "api/index.js": {
       "maxDuration": 300,
-      "includeFiles": "{artifacts/douyin/verified-profile.json,assets/whisper/*,assets/ocr/python/**,assets/ocr/manifest.json,assets/chrome/**,assets/chrome-libs/**,src/services/hard-subtitle-worker.py}"
+      "includeFiles": "{artifacts/douyin/verified-profile.json,assets/whisper/*,assets/ocr/python/**,assets/ocr/manifest.json,src/services/hard-subtitle-worker.py}",
+      "regions": [
+        "sfo1"
+      ]
     },
     "api/a2a.js": {
       "maxDuration": 30
