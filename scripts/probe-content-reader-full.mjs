@@ -7,10 +7,14 @@ const url = process.argv[2] || "https://www.douyin.com/video/7688672103729483058
 const id = url.match(/\/(?:video|note)\/(\d+)/)?.[1];
 if (!id) throw new Error("A canonical Douyin video URL is required.");
 
+const serverless = process.env.PROBE_SERVERLESS === "1";
 const browserService = new PublicBrowserService({
-  executablePath: process.env.CHROME_PATH,
+  ...(serverless
+    ? { env: { ...process.env, VERCEL: "1", VERCEL_ENV: "preview" }, platform: "linux" }
+    : { executablePath: process.env.CHROME_PATH }),
   navigationTimeoutMs: 45_000,
-  protocolTimeoutMs: 60_000
+  protocolTimeoutMs: 60_000,
+  viewport: { width: 1920, height: 1080, deviceScaleFactor: 1 }
 });
 const directProvider = new DirectPublicWebProvider({
   browserService,
@@ -27,7 +31,8 @@ const hardSubtitles = new HardSubtitleOcr({
 });
 
 const startedAt = Date.now();
-const deadlineAt = startedAt + 1_400_000;
+const requestBudgetMs = Number(process.env.PROBE_REQUEST_BUDGET_MS ?? 1_400_000);
+const deadlineAt = startedAt + requestBudgetMs;
 const result = await readPublicContent({
   url,
   type: "video",
@@ -50,6 +55,7 @@ const first = segments[0] ?? null;
 const last = segments.at(-1) ?? null;
 const durationMs = Number(result.content?.duration_ms ?? result.content?.media?.duration_ms ?? 0);
 const coverageEnd = Number(readable?.source?.coverage?.end_ms ?? 0);
+const elapsedMs = Date.now() - startedAt;
 const fullCoverage = Boolean(
   readable?.status === "complete" &&
   readable?.method === "hard_subtitle_ocr" &&
@@ -75,7 +81,10 @@ console.log(JSON.stringify({
   transcript_cache_read: readable?.source?.transcript_cache_read ?? null,
   full_video_scanned: readable?.source?.coverage?.full_video_scanned ?? null,
   coverage_end_ms: coverageEnd,
-  elapsed_ms: Date.now() - startedAt
+  elapsed_ms: elapsedMs,
+  request_budget_ms: requestBudgetMs,
+  serverless_runtime: serverless,
+  within_request_budget: elapsedMs < requestBudgetMs
 }, null, 2));
 
-if (!fullCoverage) process.exitCode = 2;
+if (!fullCoverage || elapsedMs >= requestBudgetMs) process.exitCode = 2;
