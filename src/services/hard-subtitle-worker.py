@@ -3,22 +3,29 @@ import base64
 import hashlib
 import importlib.metadata
 import json
+import os
 import sys
 import time
 from pathlib import Path
 
 import cv2
 import numpy as np
-from rapidocr_onnxruntime import RapidOCR
 
-engine = RapidOCR(use_cls=False, det_limit_type="max", det_limit_side_len=1280,
-                  intra_op_num_threads=2, inter_op_num_threads=1)
+probe_only = os.environ.get("CONTENT_READER_OCR_PROBE_ONLY") == "1"
+engine = None
 previous_mask = None
-package = Path(importlib.metadata.distribution("rapidocr-onnxruntime").locate_file("rapidocr_onnxruntime"))
-models = [{"name": p.name, "sha256": hashlib.sha256(p.read_bytes()).hexdigest()}
-          for p in sorted((package / "models").glob("*.onnx"))]
-print(json.dumps({"ready": True, "engine": "rapidocr_onnxruntime",
-                  "version": importlib.metadata.version("rapidocr-onnxruntime"), "models": models}), flush=True)
+
+if probe_only:
+    print(json.dumps({"ready": True, "engine": "visual_probe"}), flush=True)
+else:
+    from rapidocr_onnxruntime import RapidOCR
+    engine = RapidOCR(use_cls=False, det_limit_type="max", det_limit_side_len=1280,
+                      intra_op_num_threads=2, inter_op_num_threads=1)
+    package = Path(importlib.metadata.distribution("rapidocr-onnxruntime").locate_file("rapidocr_onnxruntime"))
+    models = [{"name": p.name, "sha256": hashlib.sha256(p.read_bytes()).hexdigest()}
+              for p in sorted((package / "models").glob("*.onnx"))]
+    print(json.dumps({"ready": True, "engine": "rapidocr_onnxruntime",
+                      "version": importlib.metadata.version("rapidocr-onnxruntime"), "models": models}), flush=True)
 for line in sys.stdin:
     if len(line) > 4_000_000:
         raise ValueError("OCR image message exceeds limit")
@@ -42,6 +49,8 @@ for line in sys.stdin:
                           "frame_sha256": hashlib.sha256(image_bytes).hexdigest(),
                           "elapsed_ms": round((time.monotonic()-started)*1000)}), flush=True)
         continue
+    if engine is None:
+        raise ValueError("Probe-only worker cannot run OCR")
     # The caller supplies the lower-center subtitle ROI only. These bounds are
     # equivalent to the previous full-frame candidate geometry after translating
     # the fixed 1280x720 capture into the 1152x324 ROI.
