@@ -29,7 +29,8 @@ const TERMINAL_ACCESS_CODES = new Set([
 const RETRYABLE_CODES = new Set([
   "DOUYIN_PUBLIC_WEB_TRANSIENT",
   "DOUYIN_PUBLIC_WEB_EMPTY_RESULT",
-  "DOUYIN_PUBLIC_WEB_IDENTITY_MISMATCH"
+  "DOUYIN_PUBLIC_WEB_IDENTITY_MISMATCH",
+  "DOUYIN_PUBLIC_SHARE_TRANSIENT"
 ]);
 
 function delay(ms) {
@@ -993,9 +994,92 @@ function mergeProfileItems({ postPages, domLinks, creator, visibleBoundary }) {
   });
 }
 
+
+const PUBLIC_SHARE_MAX_BYTES = 2 * 1024 * 1024;
+const PUBLIC_SHARE_USER_AGENT =
+  "Mozilla/5.0 (iPhone; CPU iPhone OS 17_2 like Mac OS X) " +
+  "AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1";
+
+function exactAwemeInObject(root, expectedId) {
+  const queue = [{ value: root, depth: 0 }];
+  const seen = new Set();
+  let visited = 0;
+  while (queue.length && visited < 6_000) {
+    const { value, depth } = queue.shift();
+    if (!value || typeof value !== "object" || seen.has(value)) continue;
+    seen.add(value);
+    visited += 1;
+    if (postIdentity(value) === expectedId && (value.video || value.images || value.image_post_info)) {
+      return value;
+    }
+    if (depth >= 9) continue;
+    for (const child of Object.values(value)) {
+      if (child && typeof child === "object") queue.push({ value: child, depth: depth + 1 });
+    }
+  }
+  return null;
+}
+
+export function parseOfficialShareRouterData(html, expectedAwemeId) {
+  const id = String(expectedAwemeId ?? "");
+  if (!/^\d{10,25}$/.test(id)) return null;
+  const source = String(html ?? "");
+  const match = source.match(
+    /<script[^>]*>\s*window\._ROUTER_DATA\s*=\s*([\s\S]*?)<\/script>/i
+  );
+  if (!match?.[1]) return null;
+  const raw = match[1].trim().replace(/;\s*$/, "");
+  let routerData;
+  try {
+    routerData = JSON.parse(raw);
+  } catch {
+    return null;
+  }
+
+  const loaderData = routerData?.loaderData;
+  if (!loaderData || typeof loaderData !== "object") return null;
+  const preferred = [
+    loaderData["video_(id)/page"],
+    loaderData["note_(id)/page"]
+  ].filter(Boolean);
+
+  for (const page of [...preferred, ...Object.values(loaderData)]) {
+    const exact = exactAwemeInObject(page, id);
+    if (exact) return exact;
+  }
+  return null;
+}
+
+function publicShareAccessError(html, target) {
+  const text = String(html ?? "");
+  if (/验证码|安全验证|完成验证|verifycenter|captcha/i.test(text)) {
+    return new ReaderError(
+      "DOUYIN_SECURITY_VERIFICATION_REQUIRED",
+      "Douyin requires a visible security verification before this content can be read.",
+      { status: 422, details: { provider: PROVIDER, reason: "public_share_security_challenge", access_scope: "provider_path", target: targetDiagnostic(target) } }
+    );
+  }
+  if (/私密作品|仅自己可见|作者仅允许|私密账号/.test(text)) {
+    return new ReaderError(
+      "DOUYIN_PRIVATE_CONTENT",
+      "This Douyin content is not publicly accessible.",
+      { status: 422, details: { provider: PROVIDER, target: targetDiagnostic(target) } }
+    );
+  }
+  if (/作品已删除|内容不存在|视频不见了|暂时无法观看/.test(text)) {
+    return new ReaderError(
+      "DOUYIN_CONTENT_UNAVAILABLE",
+      "This Douyin content is unavailable.",
+      { status: 422, details: { provider: PROVIDER, target: targetDiagnostic(target) } }
+    );
+  }
+  return null;
+}
+
 export class DirectPublicWebProvider {
   constructor({
     browserService,
+    fetchImpl = null,
     retries = 2,
     retryDelayMs = 350,
     contentWaitMs = 22_000,
@@ -1010,6 +1094,7 @@ export class DirectPublicWebProvider {
     this.id = PROVIDER;
     this.available = true;
     this.browser = browserService ?? new PublicBrowserService();
+    this.fetchImpl = typeof fetchImpl === "function" ? fetchImpl : null;
     this.retries = Math.max(0, retries);
     this.retryDelayMs = retryDelayMs;
     this.contentWaitMs = contentWaitMs;
@@ -1032,6 +1117,112 @@ export class DirectPublicWebProvider {
   async prepare() {
     if (typeof this.browser?.prepare !== "function") return null;
     return this.browser.prepare();
+  }
+
+
+  async readOfficialShareVideo(awemeId) {
+    if (!this.fetchImpl) return null;
+    const id = String(awemeId ?? "");
+    if (!/^\d{10,25}$/.test(id)) return null;
+    const target = `https://www.iesdouyin.com/share/video/${id}`;
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 15_000);
+    try {
+      const response = await this.fetchImpl(target, {
+        method: "GET",
+        redirect: "follow",
+        headers: {
+          "User-Agent": PUBLIC_SHARE_USER_AGENT,
+          "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.5",
+          Accept: "text/html,application/xhtml+xml"
+        },
+        signal: controller.signal
+      });
+      const declared = Number(response.headers?.get?.("content-length"));
+      if (Number.isFinite(declared) && declared > PUBLIC_SHARE_MAX_BYTES) {
+        try { await response.body?.cancel(); } catch {}
+        throw new ReaderError(
+          "DOUYIN_PUBLIC_SHARE_TRANSIENT",
+          "The official public share page was unexpectedly large.",
+          { status: 502, details: { provider: PROVIDER, upstream_status: response.status } }
+        );
+      }
+      const html = await response.text();
+      if (Buffer.byteLength(html, "utf8") > PUBLIC_SHARE_MAX_BYTES) {
+        throw new ReaderError(
+          "DOUYIN_PUBLIC_SHARE_TRANSIENT",
+          "The official public share page was unexpectedly large.",
+          { status: 502, details: { provider: PROVIDER, upstream_status: response.status } }
+        );
+      }
+
+      const accessFailure = publicShareAccessError(html, target);
+      if (accessFailure) throw accessFailure;
+      if (!response.ok) {
+        throw new ReaderError(
+          "DOUYIN_PUBLIC_SHARE_TRANSIENT",
+          "The official public Douyin share page was temporarily unavailable.",
+          { status: 502, details: { provider: PROVIDER, upstream_status: response.status } }
+        );
+      }
+
+      const finalPage = exactPublicVideoPage(response.url || target, id);
+      if (!finalPage) {
+        throw new ReaderError(
+          "DOUYIN_PUBLIC_WEB_IDENTITY_MISMATCH",
+          "The official public share page resolved to a different content identity.",
+          { status: 502, details: { provider: PROVIDER, target: targetDiagnostic(target) } }
+        );
+      }
+
+      const aweme = parseOfficialShareRouterData(html, id);
+      if (!aweme) {
+        throw new ReaderError(
+          "DOUYIN_PUBLIC_WEB_EMPTY_RESULT",
+          "The official public share page did not expose exact video metadata.",
+          { status: 502, details: { provider: PROVIDER, target: targetDiagnostic(target) } }
+        );
+      }
+      const observedId = postIdentity(aweme);
+      const mediaUrls = embeddedAwemeMediaUrls(aweme);
+      if (observedId !== id || mediaUrls.length === 0) {
+        throw new ReaderError(
+          "DOUYIN_PUBLIC_WEB_IDENTITY_MISMATCH",
+          "The official public share page did not expose exact usable video media.",
+          { status: 502, details: { provider: PROVIDER, target: targetDiagnostic(target) } }
+        );
+      }
+
+      return {
+        aweme,
+        networkMediaUrls: [],
+        meta: {
+          provider: PROVIDER,
+          method: "official_public_share_page",
+          acquired_at: new Date().toISOString(),
+          target: targetDiagnostic(target),
+          transport: "public_http",
+          network_media_count: 0,
+          network_media_hosts: [],
+          identity: {
+            expected_aweme_id: id,
+            observed_aweme_id: observedId,
+            source: "official_share_router_data"
+          }
+        }
+      };
+    } catch (error) {
+      if (error instanceof ReaderError) throw error;
+      throw new ReaderError(
+        "DOUYIN_PUBLIC_SHARE_TRANSIENT",
+        error?.name === "AbortError"
+          ? "The official public Douyin share page timed out."
+          : "The official public Douyin share page could not be reached.",
+        { status: 502, details: { provider: PROVIDER, target: targetDiagnostic(target) }, cause: error }
+      );
+    } finally {
+      clearTimeout(timer);
+    }
   }
 
   async runWithRetry(operation, target) {
@@ -1119,6 +1310,16 @@ export class DirectPublicWebProvider {
 
   async readVideo({ inputUrl, resolvedUrl, awemeId, consumeVideo = null } = {}) {
     const selected = videoTarget({ inputUrl, resolvedUrl, awemeId });
+    if (!consumeVideo && selected.awemeId && this.fetchImpl) {
+      try {
+        const shared = await this.readOfficialShareVideo(selected.awemeId);
+        if (shared) return shared;
+      } catch (error) {
+        if (error instanceof ReaderError && TERMINAL_ACCESS_CODES.has(error.code)) throw error;
+        // A malformed/transient share response falls back to the existing
+        // ordinary public browser path. It is never accepted as content.
+      }
+    }
     return this.runWithRetry((attempt, target) => this.browser.withPage(async ({ page, runtime }) => {
       const capture = createCapture({ expectedAwemeId: selected.awemeId });
       capture.attach(page);
