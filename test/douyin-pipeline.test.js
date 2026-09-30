@@ -934,6 +934,54 @@ test("DirectPublicWebProvider returns captured public video metadata and media",
   assert.equal(fake.listenerWasAttached(), true);
 });
 
+test("DirectPublicWebProvider preserves consumer deadline errors without retrying retrieval", async () => {
+  const id = "7688672103729483058";
+  const publicMedia = `https://v3-dy-o.douyinvod.com/${id}.mp4`;
+  const detailUrl = `https://www.douyin.com/aweme/v1/web/aweme/detail/?aweme_id=${id}`;
+  const fake = fakeBrowserPage({
+    currentUrl: `https://www.douyin.com/video/${id}`,
+    responses: [
+      jsonResponse(detailUrl, { aweme_detail: aweme(id) }),
+      mediaResponse(publicMedia)
+    ],
+    videoDom: {
+      canonical: `https://www.douyin.com/video/${id}`,
+      title: "Exact public video - 抖音",
+      description: "Public description",
+      media: [publicMedia],
+      videoPresent: true,
+      durationSeconds: 12,
+      width: 1080,
+      height: 1920,
+      hydration: []
+    }
+  });
+  let pageCalls = 0;
+  const provider = new DirectPublicWebProvider({
+    browserService: {
+      async withPage(operation) {
+        pageCalls += 1;
+        return fake.browserService.withPage(operation);
+      }
+    },
+    retries: 2,
+    retryDelayMs: 0,
+    videoContentWaitMs: 0,
+    settleMs: 0
+  });
+
+  await assert.rejects(
+    provider.readVideo({
+      awemeId: id,
+      consumeVideo: async () => {
+        throw new ReaderError("OCR_DEADLINE_EXCEEDED", "deadline", { status: 503 });
+      }
+    }),
+    (error) => error instanceof ReaderError && error.code === "OCR_DEADLINE_EXCEEDED"
+  );
+  assert.equal(pageCalls, 1);
+});
+
 test("DirectPublicWebProvider fetches same-page public detail when cloud playback stays idle", async () => {
   const id = "7665909560732851961";
   const publicMedia = `https://v3-dy-o.douyinvod.com/${id}.mp4`;
