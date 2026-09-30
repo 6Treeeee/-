@@ -10,6 +10,7 @@ on:
       - "src/providers/direct-public-web.js"
       - "scripts/probe-public-web.mjs"
       - "scripts/probe-content-reader-full.mjs"
+      - "scripts/package-chrome-libs.mjs"
       - "test/douyin-pipeline.test.js"
       - "test/public-browser-runtime.test.js"
       - ".github/workflows/content-reader-public-browser-probe.yml"
@@ -26,6 +27,10 @@ jobs:
           node-version: "24"
           cache: npm
       - run: npm ci
+      - name: Install Chrome for packaging check
+        run: npx @puppeteer/browsers install chrome@stable --path assets/chrome
+      - name: Package full Chrome runtime libraries
+        run: node scripts/package-chrome-libs.mjs
       - name: Unit tests
         run: node --test test/public-browser-runtime.test.js test/douyin-pipeline.test.js
       - name: Locate Chrome
