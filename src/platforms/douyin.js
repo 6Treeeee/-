@@ -352,26 +352,61 @@ export class DouyinReader {
       resolvedUrl,
       awemeId: awemeIdFromUrl(resolvedUrl) ?? awemeIdFromUrl(inputUrl)
     };
-    const retrieval = await this.retrieveVideo(context, fresh
+    const order = fresh
       ? this.orderFor("video").filter((id) => id !== "verified_public_artifact")
-      : this.orderFor("video"));
-    let content = this.normalizeRetrievedVideo(retrieval, context);
+      : this.orderFor("video");
 
-    if (this.processContent) {
-      content = await this.processor.processVideo(content, {
-        fresh,
-        refreshVideo: async (awemeId) => {
-          const canonicalUrl = `https://www.douyin.com/video/${awemeId}`;
-          const refreshed = await this.retrieveVideo({
-            inputUrl: canonicalUrl,
-            resolvedUrl: canonicalUrl,
-            awemeId
-          }, this.orderFor("video"));
-          return this.normalizeRetrievedVideo(refreshed, {
-            inputUrl: canonicalUrl,
-            resolvedUrl: canonicalUrl
+    const refreshVideo = async (awemeId) => {
+      const canonicalUrl = `https://www.douyin.com/video/${awemeId}`;
+      const refreshed = await this.retrieveVideo({
+        inputUrl: canonicalUrl,
+        resolvedUrl: canonicalUrl,
+        awemeId
+      }, this.orderFor("video"));
+      return this.normalizeRetrievedVideo(refreshed, {
+        inputUrl: canonicalUrl,
+        resolvedUrl: canonicalUrl
+      });
+    };
+
+    // DirectPublicWebProvider already owns an exact, access-checked player while
+    // retrieving metadata. When hard-subtitle OCR is configured, let the normal
+    // caption-first processor run before that page is closed. If captions are
+    // absent, OCR consumes the same verified player instead of opening Douyin a
+    // second time. Other providers simply ignore consumeVideo and use the normal
+    // post-retrieval processing path below.
+    const inlineHardSubtitleOcr = this.processor?.hardSubtitleOcr;
+    const consumeVideo = this.processContent && typeof inlineHardSubtitleOcr === "function"
+      ? async ({ page, assertAccess, aweme, networkMediaUrls = [], acquiredAt = null }) => {
+          const provisional = normalizeVideo(aweme, {
+            inputUrl: context.inputUrl,
+            resolvedUrl: context.resolvedUrl,
+            acquiredAt: acquiredAt ?? new Date().toISOString(),
+            networkMediaUrls
+          });
+          const samePageOcr = (video, options = {}) => inlineHardSubtitleOcr(video, {
+            ...options,
+            livePageContext: { page, assertAccess }
+          });
+          return this.processor.processVideo(provisional, {
+            fresh,
+            refreshVideo,
+            hardSubtitleOcr: samePageOcr
           });
         }
+      : null;
+
+    const retrieval = await this.retrieveVideo({
+      ...context,
+      ...(consumeVideo ? { consumeVideo } : {})
+    }, order);
+
+    let content = retrieval.value.consumed ?? this.normalizeRetrievedVideo(retrieval, context);
+
+    if (this.processContent && !retrieval.value.consumed) {
+      content = await this.processor.processVideo(content, {
+        fresh,
+        refreshVideo
       });
     }
 
