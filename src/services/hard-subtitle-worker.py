@@ -11,7 +11,7 @@ import cv2
 import numpy as np
 from rapidocr_onnxruntime import RapidOCR
 
-engine = RapidOCR(use_cls=False, det_limit_type="max", det_limit_side_len=896,
+engine = RapidOCR(use_cls=False, det_limit_type="max", det_limit_side_len=1280,
                   intra_op_num_threads=2, inter_op_num_threads=1)
 previous_mask = None
 package = Path(importlib.metadata.distribution("rapidocr-onnxruntime").locate_file("rapidocr_onnxruntime"))
