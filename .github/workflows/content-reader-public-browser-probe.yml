@@ -36,10 +36,13 @@ jobs:
       - name: Serverless Chromium exact video probe
         run: node scripts/probe-sparticuz-video.mjs "7688672103729483058"
       - name: Install Chrome for packaging check
+        if: github.event_name == 'workflow_dispatch'
         run: npx @puppeteer/browsers install chrome@stable --path assets/chrome
       - name: Package full Chrome runtime libraries
+        if: github.event_name == 'workflow_dispatch'
         run: node scripts/package-chrome-libs.mjs
       - name: Locate Chrome
+        if: github.event_name == 'workflow_dispatch'
         shell: bash
         run: |
           set -e
@@ -48,12 +51,16 @@ jobs:
           echo "CHROME_PATH=$CHROME" >> "$GITHUB_ENV"
           "$CHROME" --version
       - name: Public Douyin browser probe
+        if: github.event_name == 'workflow_dispatch'
         run: node scripts/probe-public-web.mjs "https://www.douyin.com/video/7688672103729483058"
       - name: Official public share-page probe
+        if: github.event_name == 'workflow_dispatch'
         run: node scripts/probe-public-web.mjs "https://www.iesdouyin.com/share/video/7688672103729483058"
       - name: Package existing OCR runtime
+        if: github.event_name == 'workflow_dispatch'
         run: node scripts/package-ocr-runtime.mjs
       - name: Full fresh OCR acceptance
+        if: github.event_name == 'workflow_dispatch'
         env:
           CONTENT_READER_OCR_PYTHON: assets/ocr/python/bin/python3.12
           CONTENT_READER_HARD_SUBTITLES: "1"
