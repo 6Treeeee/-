@@ -28,14 +28,14 @@ jobs:
           node-version: "24"
           cache: npm
       - run: npm ci
-      - name: Install Chrome for packaging check
-        run: npx @puppeteer/browsers install chrome@stable --path assets/chrome
-      - name: Package full Chrome runtime libraries
-        run: node scripts/package-chrome-libs.mjs
       - name: Unit tests
         run: node --test test/public-browser-runtime.test.js test/douyin-pipeline.test.js
       - name: Serverless Chromium exact video probe
         run: node scripts/probe-sparticuz-video.mjs "7688672103729483058"
+      - name: Install Chrome for packaging check
+        run: npx @puppeteer/browsers install chrome@stable --path assets/chrome
+      - name: Package full Chrome runtime libraries
+        run: node scripts/package-chrome-libs.mjs
       - name: Locate Chrome
         shell: bash
         run: |
@@ -48,7 +48,6 @@ jobs:
         run: node scripts/probe-public-web.mjs "https://www.douyin.com/video/7688672103729483058"
       - name: Official public share-page probe
         run: node scripts/probe-public-web.mjs "https://www.iesdouyin.com/share/video/7688672103729483058"
-
       - name: Package existing OCR runtime
         run: node scripts/package-ocr-runtime.mjs
       - name: Full fresh OCR acceptance
