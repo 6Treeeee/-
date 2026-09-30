@@ -1050,16 +1050,28 @@ export function parseOfficialShareRouterData(html, expectedAwemeId) {
   return null;
 }
 
+function visibleShareText(html) {
+  return String(html ?? "")
+    .replace(/<script\b[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style\b[\s\S]*?<\/style>/gi, " ")
+    .replace(/<noscript\b[\s\S]*?<\/noscript>/gi, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;|&#160;/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function publicShareAccessError(html, target) {
-  const text = String(html ?? "");
-  if (/验证码|安全验证|完成验证|verifycenter|captcha/i.test(text)) {
+  const source = String(html ?? "");
+  const text = visibleShareText(source);
+  if (/验证码|安全验证|完成验证|安全校验|security verification/i.test(text)) {
     return new ReaderError(
       "DOUYIN_SECURITY_VERIFICATION_REQUIRED",
       "Douyin requires a visible security verification before this content can be read.",
       { status: 422, details: { provider: PROVIDER, reason: "public_share_security_challenge", access_scope: "provider_path", target: targetDiagnostic(target) } }
     );
   }
-  if (!/window\._ROUTER_DATA\s*=/.test(text) &&
+  if (!/window\._ROUTER_DATA\s*=/.test(source) &&
       /扫码登录|登录抖音|Log in to Douyin|请先登录|登录后(?:才可|方可|即可|可)?(?:观看|查看)/i.test(text)) {
     return new ReaderError(
       "DOUYIN_LOGIN_REQUIRED",
