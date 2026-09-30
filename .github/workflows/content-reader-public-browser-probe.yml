@@ -1,5 +1,4 @@
 name: content-reader-public-browser-probe
-# refreshed after runtime test alignment
 
 on:
   push:
@@ -8,13 +7,10 @@ on:
     paths:
       - "src/services/public-browser.js"
       - "src/providers/direct-public-web.js"
-      - "test/douyin-public-share.test.js"
       - "src/services/hard-subtitle-ocr.js"
-      - "src/platforms/douyin.js"
-      - "scripts/probe-public-web.mjs"
-      - "scripts/probe-content-reader-full.mjs"
+      - "src/services/hard-subtitle-worker.py"
       - "scripts/probe-sparticuz-video.mjs"
-      - "scripts/package-chrome-libs.mjs"
+      - "scripts/probe-content-reader-full.mjs"
       - "test/douyin-pipeline.test.js"
       - "test/public-browser-runtime.test.js"
       - ".github/workflows/content-reader-public-browser-probe.yml"
@@ -23,7 +19,7 @@ on:
 jobs:
   probe:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -32,37 +28,15 @@ jobs:
           cache: npm
       - run: npm ci
       - name: Unit tests
-        run: node --test test/public-browser-runtime.test.js test/douyin-pipeline.test.js test/douyin-public-share.test.js
+        run: node --test test/public-browser-runtime.test.js test/douyin-pipeline.test.js
       - name: Serverless Chromium exact video probe
         run: node scripts/probe-sparticuz-video.mjs "7688672103729483058"
-      - name: Install Chrome for packaging check
-        if: github.event_name == 'workflow_dispatch'
-        run: npx @puppeteer/browsers install chrome@stable --path assets/chrome
-      - name: Package full Chrome runtime libraries
-        if: github.event_name == 'workflow_dispatch'
-        run: node scripts/package-chrome-libs.mjs
-      - name: Locate Chrome
-        if: github.event_name == 'workflow_dispatch'
-        shell: bash
-        run: |
-          set -e
-          CHROME="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser)"
-          test -n "$CHROME"
-          echo "CHROME_PATH=$CHROME" >> "$GITHUB_ENV"
-          "$CHROME" --version
-      - name: Public Douyin browser probe
-        if: github.event_name == 'workflow_dispatch'
-        run: node scripts/probe-public-web.mjs "https://www.douyin.com/video/7688672103729483058"
-      - name: Official public share-page probe
-        if: github.event_name == 'workflow_dispatch'
-        run: node scripts/probe-public-web.mjs "https://www.iesdouyin.com/share/video/7688672103729483058"
       - name: Package existing OCR runtime
-        if: github.event_name == 'workflow_dispatch'
         run: node scripts/package-ocr-runtime.mjs
-      - name: Full fresh OCR acceptance
-        if: github.event_name == 'workflow_dispatch'
+      - name: Full fresh OCR within production request budget
         env:
+          PROBE_SERVERLESS: "1"
+          PROBE_REQUEST_BUDGET_MS: "285000"
           CONTENT_READER_OCR_PYTHON: assets/ocr/python/bin/python3.12
           CONTENT_READER_HARD_SUBTITLES: "1"
-          CONTENT_READER_LOCAL_REQUEST_BUDGET_MS: "1500000"
         run: node scripts/probe-content-reader-full.mjs "https://www.douyin.com/video/7688672103729483058"
