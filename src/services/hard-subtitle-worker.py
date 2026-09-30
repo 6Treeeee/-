@@ -32,9 +32,7 @@ for line in sys.stdin:
     if message.get("op") == "probe":
         scaled_height = max(1, round(512 * height / width))
         small = cv2.resize(image, (512, scaled_height), interpolation=cv2.INTER_AREA)
-        x1, x2 = round(512*.1), round(512*.9)
-        y1, y2 = round(scaled_height*.68), round(scaled_height*.96)
-        gray = cv2.cvtColor(small[y1:y2, x1:x2], cv2.COLOR_BGR2GRAY)
+        gray = cv2.cvtColor(small, cv2.COLOR_BGR2GRAY)
         kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (7, 7))
         contrast = cv2.subtract(gray, cv2.erode(gray, kernel))
         mask = np.logical_and(gray > 210, contrast > 45)
@@ -44,15 +42,16 @@ for line in sys.stdin:
                           "frame_sha256": hashlib.sha256(image_bytes).hexdigest(),
                           "elapsed_ms": round((time.monotonic()-started)*1000)}), flush=True)
         continue
-    # Relative geometry works for landscape and portrait; no video-id-specific ROI.
-    top = int(height * .45)
-    result, _ = engine(image[top:, :], use_cls=False)
+    # The caller supplies the lower-center subtitle ROI only. These bounds are
+    # equivalent to the previous full-frame candidate geometry after translating
+    # the fixed 1280x720 capture into the 1152x324 ROI.
+    result, _ = engine(image, use_cls=False)
     pieces = []
     for box, text, score in result or []:
         if score < .58:
             continue
         xs = [float(p[0]) for p in box]
-        ys = [float(p[1]) + top for p in box]
+        ys = [float(p[1]) for p in box]
         x1, x2 = max(0, int(min(xs))), min(width, int(max(xs)))
         y1, y2 = max(0, int(min(ys))), min(height, int(max(ys)))
         patch = image[y1:y2, x1:x2]
@@ -61,13 +60,11 @@ for line in sys.stdin:
                        "cx": sum(xs)/4, "cy": sum(ys)/4, "height": max(ys)-min(ys),
                        "width": max(xs)-min(xs),
                        "white_fraction": white,
-                       "box": [[float(p[0]), float(p[1])+top] for p in box]})
-    # Subtitle candidates are substantial centered light text, not arbitrary scene labels.
-    candidates = [p for p in pieces if .18*width <= p["cx"] <= .82*width
-                  and p["height"] >= max(12, height*.027) and p["white_fraction"] >= .12]
-    # Dialogue captions may sit above bottom controls on portrait video, but never
-    # fall back to centered title/scene text when no lower caption is present.
-    candidates = [p for p in candidates if p["cy"] >= height*.62]
+                       "box": [[float(p[0]), float(p[1])] for p in box]})
+    # Preserve the same accepted subtitle zone as the prior full-frame filter.
+    candidates = [p for p in pieces if .145*width <= p["cx"] <= .855*width
+                  and p["height"] >= max(12, height*.06) and p["white_fraction"] >= .12]
+    candidates = [p for p in candidates if p["cy"] >= height*.155]
     if candidates:
         largest = max(p["height"] for p in candidates)
         candidates = [p for p in candidates if p["height"] >= largest*.72]
