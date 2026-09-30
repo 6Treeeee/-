@@ -276,6 +276,7 @@ export class HardSubtitleOcr {
           ocrTail=task;
           return task;
         };
+        let pendingCapture=null;
         for(let start=0;start<duration/1000;start+=30){
           await assertAccess();
           const end=Math.min(start+29.75,Math.floor((duration-1)/250)*.25);
@@ -283,22 +284,31 @@ export class HardSubtitleOcr {
           for(let target=start;target<=end+.00001;target+=.25){
             if(ocrFailure)throw ocrFailure;
             const state=await page.evaluate(seekCaptureFrame,{target,deadlineAt});
+            if(pendingCapture){
+              const image=Buffer.from(await page.screenshot({type:"jpeg",quality:95,clip:{x:64,y:396,width:1152,height:324},captureBeyondViewport:false}));
+              chunkTasks.push(queueOcrFrame({...state,...pendingCapture,image:image.toString("base64")}));
+              pendingCapture=null;
+            }
             const low=Buffer.from(await page.screenshot({type:"jpeg",quality:30,clip:{x:128,y:490,width:1024,height:202},captureBeyondViewport:false}));
             const probe=await probeWorker.probe(`p${probeId++}`,low.toString("base64"));
             probeWorkerElapsedMs+=Number(probe.elapsed_ms)||0;
             probeChain=hash(probeChain+probe.frame_sha256+state.time_ms);checked++;
             scores.push([state.time_ms,+probe.score.toFixed(6)]);
-            if(checked===1||probe.score>=.003){
-              const stable=Math.min(target+.18,duration/1000-.05);
-              const frameState=await page.evaluate(seekCaptureFrame,{target:stable,deadlineAt});
+            if(checked===1){
               const image=Buffer.from(await page.screenshot({type:"jpeg",quality:95,clip:{x:64,y:396,width:1152,height:324},captureBeyondViewport:false}));
-              chunkTasks.push(queueOcrFrame({...frameState,score:probe.score,reason:checked===1?"baseline":"visual_change",image:image.toString("base64")}));
+              chunkTasks.push(queueOcrFrame({...state,score:probe.score,reason:"baseline",image:image.toString("base64")}));
+            }else if(probe.score>=.003){
+              // Capture the changed subtitle at the next scheduled 250 ms sample.
+              // This preserves the visual sampling cadence while avoiding a second
+              // media seek solely for the former +180 ms stabilization frame.
+              pendingCapture={score:probe.score,reason:"visual_change"};
             }
           }
           if(end>=duration/1000-.3){
             const target=duration/1000-.05,frameState=await page.evaluate(seekCaptureFrame,{target,deadlineAt});
             const image=Buffer.from(await page.screenshot({type:"jpeg",quality:95,clip:{x:64,y:396,width:1152,height:324},captureBeyondViewport:false}));
-            chunkTasks.push(queueOcrFrame({...frameState,score:null,reason:"end_boundary",image:image.toString("base64")}));
+            chunkTasks.push(queueOcrFrame({...frameState,score:pendingCapture?.score??null,reason:"end_boundary",image:image.toString("base64")}));
+            pendingCapture=null;
           }
           await appendFile(join(root,"visual-changes.jsonl"),JSON.stringify({start_ms:start*1000,end_ms:end*1000,scores})+"\n");
           if(chunkTasks.length)await Promise.all(chunkTasks);
