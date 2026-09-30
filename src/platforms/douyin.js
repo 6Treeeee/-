@@ -256,14 +256,15 @@ export class DouyinReader {
       configuredProviders = [];
       if (tikhub.available) configuredProviders.push(tikhub);
       if (directProvider) configuredProviders.push(directProvider);
-      else if (!client) configuredProviders.push(new DirectPublicWebProvider(
-        hasLocalFallback ? {
+      else if (!client) configuredProviders.push(new DirectPublicWebProvider({
+        fetchImpl,
+        ...(hasLocalFallback ? {
           videoNavigationTimeoutMs: 15_000,
           videoContentWaitMs: 15_000,
           retries: 2,
           retryDelayMs: 200
-        } : {}
-      ));
+        } : {})
+      }));
       if (!client) {
         configuredProviders.push(new VerifiedPublicArtifactProvider({ artifactStore }));
       }
