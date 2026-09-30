@@ -252,7 +252,30 @@ export class HardSubtitleOcr {
         const expectedDurationSeconds=rawDuration>=1000?rawDuration/1000:rawDuration;
         if(!Number.isFinite(expectedDurationSeconds)||expectedDurationSeconds<=0)throw fail("OCR_EXPECTED_DURATION_MISSING","Target video duration is required to bind the live player.");
         await page.waitForFunction((expected)=>[...document.querySelectorAll("video")].some(v=>v.readyState>=2&&v.videoWidth&&Number.isFinite(v.duration)&&Math.abs(v.duration-expected)<=Math.max(3,expected*.02)),{timeout:15_000},expectedDurationSeconds);
-        const playback=await page.evaluate(initializeCapture,{expectedId:id,expectedDurationSeconds,deadlineAt});
+        const accessPage=page;
+        let capturePage=page,captureMode="live_public_page";
+        const freshMediaUrl=await page.evaluate(()=>document.querySelector("video")?.currentSrc || document.querySelector("video")?.src || null);
+        if(/^https?:\/\//i.test(freshMediaUrl??"") && typeof page.browserContext==="function"){
+          try{
+            const context=page.browserContext();
+            const candidate=await context.newPage();
+            await candidate.setViewport({width:1280,height:720,deviceScaleFactor:1});
+            await candidate.setExtraHTTPHeaders({"Accept-Language":"zh-CN,zh;q=0.9,en;q=0.8",Referer:"https://www.douyin.com/"});
+            await candidate.setContent("<!doctype html><html><body style='margin:0;background:#000;overflow:hidden'><video id='content-reader-media' muted playsinline preload='auto' style='display:block;width:1280px;height:720px;object-fit:contain;background:#000'></video></body></html>",{waitUntil:"domcontentloaded"});
+            await candidate.evaluate((source)=>{const v=document.getElementById("content-reader-media");v.src=source;v.muted=true;v.preload="auto";v.load();},freshMediaUrl);
+            await candidate.waitForFunction((expected)=>{const v=document.querySelector("video");return v&&v.readyState>=2&&v.videoWidth&&Number.isFinite(v.duration)&&Math.abs(v.duration-expected)<=Math.max(3,expected*.02);},{timeout:15_000},expectedDurationSeconds);
+            capturePage=candidate;captureMode="fresh_public_media";
+          }catch{
+            capturePage=page;captureMode="live_public_page";
+          }
+        }
+        const assertCaptureAccess=async()=>{
+          await assertAccess();
+          if(capturePage===accessPage)return;
+          const stable=await capturePage.evaluate((expected)=>{const v=document.querySelector("video");return Boolean(v&&v.readyState>=2&&Number.isFinite(v.duration)&&Math.abs(v.duration-expected)<=Math.max(3,expected*.02)&&(v.currentSrc||v.src));},expectedDurationSeconds);
+          if(!stable)throw fail("OCR_PUBLIC_PLAYER_UNAVAILABLE","The fresh public media player changed during OCR.");
+        };
+        const playback=await capturePage.evaluate(initializeCapture,{expectedId:id,expectedDurationSeconds,deadlineAt});
         const duration=playback.duration_ms;
         if(!Number.isFinite(duration)||duration<=0||duration>1_500_000)throw fail("OCR_DURATION_UNSUPPORTED","OCR accepts public single videos up to 25 minutes.");
         const mediaHash=hash(playback.media_url); delete playback.media_url;
@@ -278,24 +301,24 @@ export class HardSubtitleOcr {
         };
         let pendingCapture=null;
         for(let start=0;start<duration/1000;start+=30){
-          await assertAccess();
+          await assertCaptureAccess();
           const end=Math.min(start+29.75,Math.floor((duration-1)/250)*.25);
           const chunkTasks=[],scores=[];
           for(let target=start;target<=end+.00001;target+=.25){
             if(ocrFailure)throw ocrFailure;
-            const state=await page.evaluate(seekCaptureFrame,{target,deadlineAt});
+            const state=await capturePage.evaluate(seekCaptureFrame,{target,deadlineAt});
             if(pendingCapture){
-              const image=Buffer.from(await page.screenshot({type:"jpeg",quality:95,clip:{x:64,y:396,width:1152,height:324},captureBeyondViewport:false}));
+              const image=Buffer.from(await capturePage.screenshot({type:"jpeg",quality:95,clip:{x:64,y:396,width:1152,height:324},captureBeyondViewport:false}));
               chunkTasks.push(queueOcrFrame({...state,...pendingCapture,image:image.toString("base64")}));
               pendingCapture=null;
             }
-            const low=Buffer.from(await page.screenshot({type:"jpeg",quality:30,clip:{x:128,y:490,width:1024,height:202},captureBeyondViewport:false}));
+            const low=Buffer.from(await capturePage.screenshot({type:"jpeg",quality:30,clip:{x:128,y:490,width:1024,height:202},captureBeyondViewport:false}));
             const probe=await probeWorker.probe(`p${probeId++}`,low.toString("base64"));
             probeWorkerElapsedMs+=Number(probe.elapsed_ms)||0;
             probeChain=hash(probeChain+probe.frame_sha256+state.time_ms);checked++;
             scores.push([state.time_ms,+probe.score.toFixed(6)]);
             if(checked===1){
-              const image=Buffer.from(await page.screenshot({type:"jpeg",quality:95,clip:{x:64,y:396,width:1152,height:324},captureBeyondViewport:false}));
+              const image=Buffer.from(await capturePage.screenshot({type:"jpeg",quality:95,clip:{x:64,y:396,width:1152,height:324},captureBeyondViewport:false}));
               chunkTasks.push(queueOcrFrame({...state,score:probe.score,reason:"baseline",image:image.toString("base64")}));
             }else if(probe.score>=.003){
               // Capture the changed subtitle at the next scheduled 250 ms sample.
@@ -305,8 +328,8 @@ export class HardSubtitleOcr {
             }
           }
           if(end>=duration/1000-.3){
-            const target=duration/1000-.05,frameState=await page.evaluate(seekCaptureFrame,{target,deadlineAt});
-            const image=Buffer.from(await page.screenshot({type:"jpeg",quality:95,clip:{x:64,y:396,width:1152,height:324},captureBeyondViewport:false}));
+            const target=duration/1000-.05,frameState=await capturePage.evaluate(seekCaptureFrame,{target,deadlineAt});
+            const image=Buffer.from(await capturePage.screenshot({type:"jpeg",quality:95,clip:{x:64,y:396,width:1152,height:324},captureBeyondViewport:false}));
             chunkTasks.push(queueOcrFrame({...frameState,score:pendingCapture?.score??null,reason:"end_boundary",image:image.toString("base64")}));
             pendingCapture=null;
           }
@@ -318,21 +341,21 @@ export class HardSubtitleOcr {
             elapsed_ms:Date.now()-Date.parse(startedAt)});
         }
         await ocrTail;
-        await assertAccess();
+        await assertCaptureAccess();
         const segments=mergeCaptionFrames(records,duration);
         if(!segments.length || segments.map(s=>s.text).join("").length<10)throw fail("OCR_NO_READABLE_CAPTIONS","The live video frames did not yield usable hard subtitles.");
         const captionCoverage=assessCaptionCoverage(segments,duration);
         await writeFile(join(root,"caption-coverage.json"),JSON.stringify(captionCoverage,null,2));
         if(!captionCoverage.sustained)throw fail("OCR_CAPTIONS_SPARSE","Readable scene text was found, but it does not form a sustained hard-subtitle track.",captionCoverage);
-        const provenance={type:"ocr",provider:"live_browser_rapidocr",run_id:runId,request_id:requestId,
+        const provenance={type:"ocr",provider:captureMode==="fresh_public_media"?"fresh_public_media_rapidocr":"live_browser_rapidocr",run_id:runId,request_id:requestId,
           stable_aweme_id:id,started_at:startedAt,finished_at:new Date().toISOString(),fresh_capture:true,transcript_cache_read:false,
           frame_count:records.length,checked_frames:checked,frame_hash_chain:chain,probe_hash_chain:probeChain,media_url_sha256:mediaHash,engine,
           coverage:{start_ms:0,end_ms:duration,full_video_scanned:true,visual_step_ms:250,threshold:.003,caption_activity:captionCoverage}};
         const result={status:"complete",method:"hard_subtitle_ocr",text:segments.map(s=>s.text).join("\n"),segments,language:null,
           confidence:segments.reduce((a,s)=>a+s.confidence,0)/segments.length,
           limitations:["visual_subtitles_only_not_spoken_audio","subtitle_region_only_capture","approximate_frame_capture_timestamps","sub_250ms_or_low_change_captions_may_be_missed","source_subtitle_errors_preserved","short_lived_ocr_variants_collapsed_by_temporal_consensus","ocr_not_manually_corrected"],source:provenance,
-          media_resolution:{stable_identity:"aweme_id",media_kind:"video",media_type:"browser_decoded_video",acquired_at:startedAt,validated_at:provenance.finished_at,
-            validation:{status:"live_browser_frames_read",frame_count:records.length,media_url_sha256:mediaHash}}};
+          media_resolution:{stable_identity:"aweme_id",media_kind:"video",media_type:captureMode==="fresh_public_media"?"browser_decoded_fresh_public_media":"browser_decoded_video",acquired_at:startedAt,validated_at:provenance.finished_at,
+            validation:{status:captureMode==="fresh_public_media"?"fresh_public_media_frames_read":"live_browser_frames_read",frame_count:records.length,media_url_sha256:mediaHash}}};
         await writeFile(join(root,"result.json"),JSON.stringify(result,null,2));
         await journal({event:"ocr.completed",segments:segments.length,frame_count:records.length,frame_hash_chain:chain,ocr_worker_elapsed_ms:ocrWorkerElapsedMs,probe_worker_elapsed_ms:probeWorkerElapsedMs});
         return result;
