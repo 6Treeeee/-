@@ -47,11 +47,11 @@ function errorChain(error) {
 }
 
 class OcrProcess {
-  constructor({ python, env, deadlineAt }) {
+  constructor({ python, env, deadlineAt, mode="ocr" }) {
     this.lines = []; this.waiters = []; this.failure = null;
     this.child = spawn(python, ["-u", fileURLToPath(new URL("./hard-subtitle-worker.py", import.meta.url))], {
       windowsHide: true, stdio: ["pipe", "pipe", "pipe"],
-      env: { ...env, PYTHONIOENCODING: "utf-8", OMP_NUM_THREADS: "2" }
+      env: { ...env, PYTHONIOENCODING: "utf-8", OMP_NUM_THREADS: "2", CONTENT_READER_OCR_PROBE_ONLY: mode === "probe" ? "1" : "0" }
     });
     this.stderr = "";
     this.child.stderr.on("data", (value) => { this.stderr = (this.stderr + value).slice(-2000); });
@@ -234,7 +234,7 @@ export class HardSubtitleOcr {
     this.busy=true;
     const runId=randomUUID(),startedAt=new Date().toISOString();
     const root=join(this.env.CONTENT_READER_OCR_EVIDENCE_DIR || join(tmpdir(),"content-reader-ocr"),runId);
-    let worker;
+    let ocrWorker, probeWorker;
     const journal=async(event)=>{
       const entry={at:new Date().toISOString(),run_id:runId,request_id:requestId,aweme_id:id,...event};
       await appendFile(join(root,"events.jsonl"),JSON.stringify(entry)+"\n");
@@ -243,9 +243,10 @@ export class HardSubtitleOcr {
     try {
       await mkdir(join(root,"frames"),{recursive:true});
       await journal({event:"ocr.started",fresh_capture:true,transcript_cache_read:false});
-      worker=new OcrProcess({python:this.env.CONTENT_READER_OCR_PYTHON,env:this.env,deadlineAt});
-      const engine=await worker.next();
-      if(!engine.ready)throw fail("OCR_RUNTIME_UNAVAILABLE","OCR engine did not initialize.");
+      ocrWorker=new OcrProcess({python:this.env.CONTENT_READER_OCR_PYTHON,env:this.env,deadlineAt,mode:"ocr"});
+      probeWorker=new OcrProcess({python:this.env.CONTENT_READER_OCR_PYTHON,env:this.env,deadlineAt,mode:"probe"});
+      const [engine,probeEngine]=await Promise.all([ocrWorker.next(),probeWorker.next()]);
+      if(!engine.ready||!probeEngine.ready)throw fail("OCR_RUNTIME_UNAVAILABLE","OCR engine did not initialize.");
       const retrieval=await this.provider.readVideo({awemeId:id,consumeVideo:async({page,assertAccess})=>{
         const rawDuration=Number(video?.duration_ms ?? video?.media?.duration_ms ?? video?.duration ?? 0);
         const expectedDurationSeconds=rawDuration>=1000?rawDuration/1000:rawDuration;
@@ -255,44 +256,58 @@ export class HardSubtitleOcr {
         const duration=playback.duration_ms;
         if(!Number.isFinite(duration)||duration<=0||duration>1_500_000)throw fail("OCR_DURATION_UNSUPPORTED","OCR accepts public single videos up to 25 minutes.");
         const mediaHash=hash(playback.media_url); delete playback.media_url;
-        await writeFile(join(root,"session.json"),JSON.stringify({run_id:runId,request_id:requestId,aweme_id:id,started_at:startedAt,engine,playback,media_url_sha256:mediaHash,cache_read:false},null,2));
+        await writeFile(join(root,"session.json"),JSON.stringify({run_id:runId,request_id:requestId,aweme_id:id,started_at:startedAt,engine,probe_engine:probeEngine,playback,media_url_sha256:mediaHash,cache_read:false},null,2));
         const records=[];let chain="",probeChain="";let checked=0,probeId=0;
+        let ocrTail=Promise.resolve(),ocrFailure=null,ocrWorkerElapsedMs=0,probeWorkerElapsedMs=0;
+        const queueOcrFrame=(frame)=>{
+          const task=ocrTail.then(async()=>{
+            if(Date.now()>=deadlineAt-1000)throw fail("OCR_DEADLINE_EXCEEDED","Live OCR could not complete the entire video inside the request budget.");
+            const bytes=Buffer.from(frame.image,"base64"),frameHash=hash(bytes),number=records.length;
+            const file=`frames/${String(number).padStart(5,"0")}-${String(frame.time_ms).padStart(7,"0")}.jpg`;
+            await writeFile(join(root,file),bytes);
+            const ocr=await ocrWorker.read(number,frame.image);
+            ocrWorkerElapsedMs+=Number(ocr.elapsed_ms)||0;
+            if(ocr.frame_sha256!==frameHash)throw fail("OCR_FRAME_HASH_MISMATCH","OCR input does not match the newly captured image.");
+            chain=hash(chain+frameHash+frame.time_ms);
+            const record={...frame,...ocr,file,recognized_at:new Date().toISOString(),chain_sha256:chain};delete record.image;
+            records.push(record);await appendFile(join(root,"ocr-frames.jsonl"),JSON.stringify(record)+"\n");
+          });
+          task.catch((error)=>{ocrFailure??=error;});
+          ocrTail=task;
+          return task;
+        };
         for(let start=0;start<duration/1000;start+=30){
           await assertAccess();
           const end=Math.min(start+29.75,Math.floor((duration-1)/250)*.25);
-          const captured=[],scores=[];
+          const chunkTasks=[],scores=[];
           for(let target=start;target<=end+.00001;target+=.25){
+            if(ocrFailure)throw ocrFailure;
             const state=await page.evaluate(seekCaptureFrame,{target,deadlineAt});
             const low=Buffer.from(await page.screenshot({type:"jpeg",quality:30,clip:{x:128,y:490,width:1024,height:202},captureBeyondViewport:false}));
-            const probe=await worker.probe(`p${probeId++}`,low.toString("base64"));
+            const probe=await probeWorker.probe(`p${probeId++}`,low.toString("base64"));
+            probeWorkerElapsedMs+=Number(probe.elapsed_ms)||0;
             probeChain=hash(probeChain+probe.frame_sha256+state.time_ms);checked++;
             scores.push([state.time_ms,+probe.score.toFixed(6)]);
             if(checked===1||probe.score>=.003){
               const stable=Math.min(target+.18,duration/1000-.05);
               const frameState=await page.evaluate(seekCaptureFrame,{target:stable,deadlineAt});
               const image=Buffer.from(await page.screenshot({type:"jpeg",quality:95,clip:{x:64,y:396,width:1152,height:324},captureBeyondViewport:false}));
-              captured.push({...frameState,score:probe.score,reason:checked===1?"baseline":"visual_change",image:image.toString("base64")});
+              chunkTasks.push(queueOcrFrame({...frameState,score:probe.score,reason:checked===1?"baseline":"visual_change",image:image.toString("base64")}));
             }
           }
           if(end>=duration/1000-.3){
             const target=duration/1000-.05,frameState=await page.evaluate(seekCaptureFrame,{target,deadlineAt});
             const image=Buffer.from(await page.screenshot({type:"jpeg",quality:95,clip:{x:64,y:396,width:1152,height:324},captureBeyondViewport:false}));
-            captured.push({...frameState,score:null,reason:"end_boundary",image:image.toString("base64")});
+            chunkTasks.push(queueOcrFrame({...frameState,score:null,reason:"end_boundary",image:image.toString("base64")}));
           }
           await appendFile(join(root,"visual-changes.jsonl"),JSON.stringify({start_ms:start*1000,end_ms:end*1000,scores})+"\n");
-          for(const frame of captured){
-            if(Date.now()>=deadlineAt-1000)throw fail("OCR_DEADLINE_EXCEEDED","Live OCR could not complete the entire video inside the request budget.");
-            const bytes=Buffer.from(frame.image,"base64"),frameHash=hash(bytes),number=records.length;
-            const file=`frames/${String(number).padStart(5,"0")}-${String(frame.time_ms).padStart(7,"0")}.jpg`;
-            await writeFile(join(root,file),bytes);
-            const ocr=await worker.read(number,frame.image);
-            if(ocr.frame_sha256!==frameHash)throw fail("OCR_FRAME_HASH_MISMATCH","OCR input does not match the newly captured image.");
-            chain=hash(chain+frameHash+frame.time_ms);
-            const record={...frame,...ocr,file,recognized_at:new Date().toISOString(),chain_sha256:chain};delete record.image;
-            records.push(record);await appendFile(join(root,"ocr-frames.jsonl"),JSON.stringify(record)+"\n");
-          }
-          await journal({event:"ocr.progress",scanned_ms:Math.round(end*1000),frames:records.length,checked_frames:checked,elapsed_ms:Date.now()-Date.parse(startedAt)});
+          if(chunkTasks.length)await Promise.all(chunkTasks);
+          if(ocrFailure)throw ocrFailure;
+          await journal({event:"ocr.progress",scanned_ms:Math.round(end*1000),frames:records.length,checked_frames:checked,
+            ocr_worker_elapsed_ms:ocrWorkerElapsedMs,probe_worker_elapsed_ms:probeWorkerElapsedMs,
+            elapsed_ms:Date.now()-Date.parse(startedAt)});
         }
+        await ocrTail;
         await assertAccess();
         const segments=mergeCaptionFrames(records,duration);
         if(!segments.length || segments.map(s=>s.text).join("").length<10)throw fail("OCR_NO_READABLE_CAPTIONS","The live video frames did not yield usable hard subtitles.");
@@ -309,7 +324,7 @@ export class HardSubtitleOcr {
           media_resolution:{stable_identity:"aweme_id",media_kind:"video",media_type:"browser_decoded_video",acquired_at:startedAt,validated_at:provenance.finished_at,
             validation:{status:"live_browser_frames_read",frame_count:records.length,media_url_sha256:mediaHash}}};
         await writeFile(join(root,"result.json"),JSON.stringify(result,null,2));
-        await journal({event:"ocr.completed",segments:segments.length,frame_count:records.length,frame_hash_chain:chain});
+        await journal({event:"ocr.completed",segments:segments.length,frame_count:records.length,frame_hash_chain:chain,ocr_worker_elapsed_ms:ocrWorkerElapsedMs,probe_worker_elapsed_ms:probeWorkerElapsedMs});
         return result;
       }});
       if(!retrieval.consumed)throw fail("OCR_PUBLIC_PLAYER_UNAVAILABLE","The public provider did not expose a playable video for OCR.");
@@ -318,6 +333,6 @@ export class HardSubtitleOcr {
       await journal({event:"ocr.failed",code:error.code || "OCR_CAPTURE_FAILED",error_chain:errorChain(error)}).catch(()=>{});
       if(error instanceof ReaderError){error.details={...error.details,ocr_run_id:runId};throw error;}
       throw fail("OCR_CAPTURE_FAILED","The live subtitle capture failed.",{ocr_run_id:runId});
-    } finally { worker?.close();this.busy=false; }
+    } finally { probeWorker?.close();ocrWorker?.close();this.busy=false; }
   }
 }
