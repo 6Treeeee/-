@@ -205,7 +205,8 @@ async function initializeCapture({ expectedId, expectedDurationSeconds, deadline
     await state.seekOnce(target,15000);
   };
   window.__contentReaderOcr = state;
-  return { duration_ms: Math.round(v.duration*1000), source_width:v.videoWidth, source_height:v.videoHeight, capture_width:1280,capture_height:720,
+  return { duration_ms: Math.round(v.duration*1000), source_width:v.videoWidth, source_height:v.videoHeight, capture_width:1152,capture_height:324,
+    capture_roi:{x:64,y:396,width:1152,height:324}, probe_roi:{x:128,y:490,width:1024,height:202},
     media_url: originalSrc, page_url: location.href, expected_id: expectedId };
 }
 
@@ -262,20 +263,20 @@ export class HardSubtitleOcr {
           const captured=[],scores=[];
           for(let target=start;target<=end+.00001;target+=.25){
             const state=await page.evaluate(seekCaptureFrame,{target,deadlineAt});
-            const low=Buffer.from(await page.screenshot({type:"jpeg",quality:30,clip:{x:0,y:0,width:1280,height:720},captureBeyondViewport:false}));
+            const low=Buffer.from(await page.screenshot({type:"jpeg",quality:30,clip:{x:128,y:490,width:1024,height:202},captureBeyondViewport:false}));
             const probe=await worker.probe(`p${probeId++}`,low.toString("base64"));
             probeChain=hash(probeChain+probe.frame_sha256+state.time_ms);checked++;
             scores.push([state.time_ms,+probe.score.toFixed(6)]);
             if(checked===1||probe.score>=.003){
               const stable=Math.min(target+.18,duration/1000-.05);
               const frameState=await page.evaluate(seekCaptureFrame,{target:stable,deadlineAt});
-              const image=Buffer.from(await page.screenshot({type:"jpeg",quality:95,clip:{x:0,y:0,width:1280,height:720},captureBeyondViewport:false}));
+              const image=Buffer.from(await page.screenshot({type:"jpeg",quality:95,clip:{x:64,y:396,width:1152,height:324},captureBeyondViewport:false}));
               captured.push({...frameState,score:probe.score,reason:checked===1?"baseline":"visual_change",image:image.toString("base64")});
             }
           }
           if(end>=duration/1000-.3){
             const target=duration/1000-.05,frameState=await page.evaluate(seekCaptureFrame,{target,deadlineAt});
-            const image=Buffer.from(await page.screenshot({type:"jpeg",quality:95,clip:{x:0,y:0,width:1280,height:720},captureBeyondViewport:false}));
+            const image=Buffer.from(await page.screenshot({type:"jpeg",quality:95,clip:{x:64,y:396,width:1152,height:324},captureBeyondViewport:false}));
             captured.push({...frameState,score:null,reason:"end_boundary",image:image.toString("base64")});
           }
           await appendFile(join(root,"visual-changes.jsonl"),JSON.stringify({start_ms:start*1000,end_ms:end*1000,scores})+"\n");
@@ -304,7 +305,7 @@ export class HardSubtitleOcr {
           coverage:{start_ms:0,end_ms:duration,full_video_scanned:true,visual_step_ms:250,threshold:.003,caption_activity:captionCoverage}};
         const result={status:"complete",method:"hard_subtitle_ocr",text:segments.map(s=>s.text).join("\n"),segments,language:null,
           confidence:segments.reduce((a,s)=>a+s.confidence,0)/segments.length,
-          limitations:["visual_subtitles_only_not_spoken_audio","approximate_frame_capture_timestamps","sub_250ms_or_low_change_captions_may_be_missed","source_subtitle_errors_preserved","short_lived_ocr_variants_collapsed_by_temporal_consensus","ocr_not_manually_corrected"],source:provenance,
+          limitations:["visual_subtitles_only_not_spoken_audio","subtitle_region_only_capture","approximate_frame_capture_timestamps","sub_250ms_or_low_change_captions_may_be_missed","source_subtitle_errors_preserved","short_lived_ocr_variants_collapsed_by_temporal_consensus","ocr_not_manually_corrected"],source:provenance,
           media_resolution:{stable_identity:"aweme_id",media_kind:"video",media_type:"browser_decoded_video",acquired_at:startedAt,validated_at:provenance.finished_at,
             validation:{status:"live_browser_frames_read",frame_count:records.length,media_url_sha256:mediaHash}}};
         await writeFile(join(root,"result.json"),JSON.stringify(result,null,2));
