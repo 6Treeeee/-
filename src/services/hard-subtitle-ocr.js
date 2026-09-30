@@ -270,13 +270,13 @@ export class HardSubtitleOcr {
             if(checked===1||probe.score>=.003){
               const stable=Math.min(target+.18,duration/1000-.05);
               const frameState=await page.evaluate(seekCaptureFrame,{target:stable,deadlineAt});
-              const image=Buffer.from(await page.screenshot({type:"jpeg",quality:88,clip:{x:64,y:396,width:1152,height:324},captureBeyondViewport:false}));
+              const image=Buffer.from(await page.screenshot({type:"jpeg",quality:95,clip:{x:64,y:396,width:1152,height:324},captureBeyondViewport:false}));
               captured.push({...frameState,score:probe.score,reason:checked===1?"baseline":"visual_change",image:image.toString("base64")});
             }
           }
           if(end>=duration/1000-.3){
             const target=duration/1000-.05,frameState=await page.evaluate(seekCaptureFrame,{target,deadlineAt});
-            const image=Buffer.from(await page.screenshot({type:"jpeg",quality:88,clip:{x:64,y:396,width:1152,height:324},captureBeyondViewport:false}));
+            const image=Buffer.from(await page.screenshot({type:"jpeg",quality:95,clip:{x:64,y:396,width:1152,height:324},captureBeyondViewport:false}));
             captured.push({...frameState,score:null,reason:"end_boundary",image:image.toString("base64")});
           }
           await appendFile(join(root,"visual-changes.jsonl"),JSON.stringify({start_ms:start*1000,end_ms:end*1000,scores})+"\n");
