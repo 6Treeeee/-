@@ -1,3 +1,5 @@
+import { parseOfficialShareRouterData } from "../src/providers/direct-public-web.js";
+
 const MOBILE_UA =
   "Mozilla/5.0 (iPhone; CPU iPhone OS 17_2 like Mac OS X) " +
   "AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1";
@@ -23,6 +25,7 @@ export default async function handler(req, res) {
       host: finalUrl.hostname,
       path: finalUrl.pathname
     };
+    const parsed = parseOfficialShareRouterData(text, id);
     return res.status(200).json({
       ok: true,
       upstream_status: response.status,
@@ -30,8 +33,15 @@ export default async function handler(req, res) {
       body_length: text.length,
       has_router_data: /window\._ROUTER_DATA\s*=/.test(text),
       has_target_id: text.includes(id),
-      has_visible_security_text: /验证码|安全验证|完成验证|security verification/i.test(text),
-      has_login_text: /扫码登录|登录抖音|Log in to Douyin/i.test(text)
+      has_visible_security_text: /验证码|安全验证|完成验证|security verification/i.test(
+        text.replace(/<script\b[\s\S]*?<\/script>/gi, " ").replace(/<style\b[\s\S]*?<\/style>/gi, " ")
+      ),
+      has_login_text: /扫码登录|登录抖音|Log in to Douyin/i.test(
+        text.replace(/<script\b[\s\S]*?<\/script>/gi, " ").replace(/<style\b[\s\S]*?<\/style>/gi, " ")
+      ),
+      parser_exact_aweme: Boolean(parsed),
+      parsed_aweme_id: parsed?.aweme_id ?? null,
+      parsed_has_video: Boolean(parsed?.video)
     });
   } catch (error) {
     return res.status(502).json({
