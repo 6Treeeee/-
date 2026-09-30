@@ -256,7 +256,7 @@ export class HardSubtitleOcr {
     this.busy=false;
   }
   status() { return { configured:this.available, engine:"rapidocr_onnxruntime", scope:"single_video", live_frames_only:true, visual_step_ms:250 }; }
-  async read(video,{deadlineAt=Date.now()+270_000,requestId=this.requestId}={}) {
+  async read(video,{deadlineAt=Date.now()+270_000,requestId=this.requestId,livePageContext=null}={}) {
     if(!this.available)throw fail("OCR_RUNTIME_NOT_CONFIGURED","A Python runtime with the OCR requirements must be configured.");
     if(this.busy)throw fail("OCR_BUSY","The single-video OCR worker is busy; retry later.");
     const id=String(video?.aweme_id ?? video?.id ?? "");
@@ -277,7 +277,7 @@ export class HardSubtitleOcr {
       probeWorker=new OcrProcess({python:this.env.CONTENT_READER_OCR_PYTHON,env:this.env,deadlineAt,mode:"probe"});
       const [engine,probeEngine]=await Promise.all([ocrWorker.next(),probeWorker.next()]);
       if(!engine.ready||!probeEngine.ready)throw fail("OCR_RUNTIME_UNAVAILABLE","OCR engine did not initialize.");
-      const retrieval=await this.provider.readVideo({awemeId:id,consumeVideo:async({page,assertAccess})=>{
+      const consumeVideo=async({page,assertAccess})=>{
         const rawDuration=Number(video?.duration_ms ?? video?.media?.duration_ms ?? video?.duration ?? 0);
         const expectedDurationSeconds=rawDuration>=1000?rawDuration/1000:rawDuration;
         if(!Number.isFinite(expectedDurationSeconds)||expectedDurationSeconds<=0)throw fail("OCR_EXPECTED_DURATION_MISSING","Target video duration is required to bind the live player.");
@@ -397,7 +397,14 @@ export class HardSubtitleOcr {
         await writeFile(join(root,"result.json"),JSON.stringify(result,null,2));
         await journal({event:"ocr.completed",segments:segments.length,frame_count:records.length,frame_hash_chain:chain,ocr_worker_elapsed_ms:ocrWorkerElapsedMs,probe_worker_elapsed_ms:probeWorkerElapsedMs});
         return result;
-      }});
+      };
+      if(livePageContext?.page && typeof livePageContext.assertAccess==="function"){
+        return await consumeVideo({
+          page:livePageContext.page,
+          assertAccess:livePageContext.assertAccess
+        });
+      }
+      const retrieval=await this.provider.readVideo({awemeId:id,consumeVideo});
       if(!retrieval.consumed)throw fail("OCR_PUBLIC_PLAYER_UNAVAILABLE","The public provider did not expose a playable video for OCR.");
       return retrieval.consumed;
     } catch(error) {
