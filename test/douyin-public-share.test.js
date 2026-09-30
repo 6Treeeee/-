@@ -126,3 +126,27 @@ test("official public share metadata must include usable video media", async () 
     (error) => error.code === "DOUYIN_PUBLIC_WEB_IDENTITY_MISMATCH"
   );
 });
+
+
+test("official public share fetch ignores challenge keywords inside scripts when exact router data is usable", async () => {
+  const id = "7688672103729483058";
+  const html = routerHtml([sampleAweme(id)]).replace(
+    "</body>",
+    "<script>const internalCaptchaModule = 'verifycenter captcha';</script></body>"
+  );
+  const provider = new DirectPublicWebProvider({
+    fetchImpl: async () => responseFor(id, html),
+    browserService: {
+      async withPage() {
+        throw new Error("browser fallback must not be needed");
+      }
+    }
+  });
+  const result = await provider.readVideo({
+    inputUrl: `https://www.douyin.com/video/${id}`,
+    resolvedUrl: `https://www.douyin.com/video/${id}`,
+    awemeId: id
+  });
+  assert.equal(result.aweme.aweme_id, id);
+  assert.equal(result.meta.method, "official_public_share_page");
+});
