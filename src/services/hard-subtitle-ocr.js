@@ -215,6 +215,36 @@ async function seekCaptureFrame({ target, deadlineAt }) {
   await s.seek(target);return {time_ms:Math.round(s.v.currentTime*1000),requested_ms:Math.round(target*1000),ready_state:s.v.readyState,captured_at:new Date().toISOString()};
 }
 
+async function canvasCaptureFrame({ high=false, low=true }) {
+  const s=window.__contentReaderOcr;if(!s)throw new Error("OCR_CAPTURE_NOT_INITIALIZED");
+  const v=s.v;
+  if(!v||v.readyState<2||!v.videoWidth||!v.videoHeight)return null;
+  try{
+    const full=document.createElement("canvas");full.width=1280;full.height=720;
+    const ctx=full.getContext("2d",{alpha:false,willReadFrequently:false});
+    if(!ctx)return null;
+    ctx.fillStyle="#000";ctx.fillRect(0,0,1280,720);
+    const scale=Math.min(1280/v.videoWidth,720/v.videoHeight);
+    const width=v.videoWidth*scale,height=v.videoHeight*scale;
+    const x=(1280-width)/2,y=(720-height)/2;
+    ctx.drawImage(v,x,y,width,height);
+    const encode=(sx,sy,sw,sh,quality)=>{
+      const out=document.createElement("canvas");out.width=sw;out.height=sh;
+      const outCtx=out.getContext("2d",{alpha:false});
+      if(!outCtx)return null;
+      outCtx.drawImage(full,sx,sy,sw,sh,0,0,sw,sh);
+      const data=out.toDataURL("image/jpeg",quality);
+      return data.startsWith("data:image/jpeg;base64,")?data.slice("data:image/jpeg;base64,".length):null;
+    };
+    return {
+      high:high?encode(64,396,1152,324,.95):null,
+      low:low?encode(128,490,1024,202,.30):null
+    };
+  }catch{
+    return null;
+  }
+}
+
 export class HardSubtitleOcr {
   constructor({ env=process.env, provider=null, requestId=null } = {}) {
     this.env=env; this.requestId=requestId;
@@ -307,19 +337,26 @@ export class HardSubtitleOcr {
           for(let target=start;target<=end+.00001;target+=.25){
             if(ocrFailure)throw ocrFailure;
             const state=await capturePage.evaluate(seekCaptureFrame,{target,deadlineAt});
+            const needHigh=Boolean(pendingCapture)||checked===0;
+            const canvasFrames=await capturePage.evaluate(canvasCaptureFrame,{high:needHigh,low:true});
+            let highBase64=canvasFrames?.high??null;
+            let lowBase64=canvasFrames?.low??null;
+            if(needHigh&&!highBase64){
+              highBase64=Buffer.from(await capturePage.screenshot({type:"jpeg",quality:95,clip:{x:64,y:396,width:1152,height:324},captureBeyondViewport:false})).toString("base64");
+            }
+            if(!lowBase64){
+              lowBase64=Buffer.from(await capturePage.screenshot({type:"jpeg",quality:30,clip:{x:128,y:490,width:1024,height:202},captureBeyondViewport:false})).toString("base64");
+            }
             if(pendingCapture){
-              const image=Buffer.from(await capturePage.screenshot({type:"jpeg",quality:95,clip:{x:64,y:396,width:1152,height:324},captureBeyondViewport:false}));
-              chunkTasks.push(queueOcrFrame({...state,...pendingCapture,image:image.toString("base64")}));
+              chunkTasks.push(queueOcrFrame({...state,...pendingCapture,image:highBase64}));
               pendingCapture=null;
             }
-            const low=Buffer.from(await capturePage.screenshot({type:"jpeg",quality:30,clip:{x:128,y:490,width:1024,height:202},captureBeyondViewport:false}));
-            const probe=await probeWorker.probe(`p${probeId++}`,low.toString("base64"));
+            const probe=await probeWorker.probe(`p${probeId++}`,lowBase64);
             probeWorkerElapsedMs+=Number(probe.elapsed_ms)||0;
             probeChain=hash(probeChain+probe.frame_sha256+state.time_ms);checked++;
             scores.push([state.time_ms,+probe.score.toFixed(6)]);
             if(checked===1){
-              const image=Buffer.from(await capturePage.screenshot({type:"jpeg",quality:95,clip:{x:64,y:396,width:1152,height:324},captureBeyondViewport:false}));
-              chunkTasks.push(queueOcrFrame({...state,score:probe.score,reason:"baseline",image:image.toString("base64")}));
+              chunkTasks.push(queueOcrFrame({...state,score:probe.score,reason:"baseline",image:highBase64}));
             }else if(probe.score>=.003){
               // Capture the changed subtitle at the next scheduled 250 ms sample.
               // This preserves the visual sampling cadence while avoiding a second
@@ -329,8 +366,9 @@ export class HardSubtitleOcr {
           }
           if(end>=duration/1000-.3){
             const target=duration/1000-.05,frameState=await capturePage.evaluate(seekCaptureFrame,{target,deadlineAt});
-            const image=Buffer.from(await capturePage.screenshot({type:"jpeg",quality:95,clip:{x:64,y:396,width:1152,height:324},captureBeyondViewport:false}));
-            chunkTasks.push(queueOcrFrame({...frameState,score:pendingCapture?.score??null,reason:"end_boundary",image:image.toString("base64")}));
+            const canvasFrames=await capturePage.evaluate(canvasCaptureFrame,{high:true,low:false});
+            const imageBase64=canvasFrames?.high??Buffer.from(await capturePage.screenshot({type:"jpeg",quality:95,clip:{x:64,y:396,width:1152,height:324},captureBeyondViewport:false})).toString("base64");
+            chunkTasks.push(queueOcrFrame({...frameState,score:pendingCapture?.score??null,reason:"end_boundary",image:imageBase64}));
             pendingCapture=null;
           }
           await appendFile(join(root,"visual-changes.jsonl"),JSON.stringify({start_ms:start*1000,end_ms:end*1000,scores})+"\n");
