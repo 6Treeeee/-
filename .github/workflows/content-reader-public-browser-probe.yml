@@ -1,43 +1,95 @@
 name: content-reader-public-browser-probe
+run-name: ${{ inputs.mode == 'acquisition' && format('acquisition:{0}', inputs.request_id) || format('worker-smoke:{0}', github.sha) }}
 
 on:
   push:
-    branches:
-      - codex/a2a-control-loop
+    branches: [codex/a2a-control-loop]
     paths:
-      - "src/services/public-browser.js"
-      - "src/providers/direct-public-web.js"
-      - "src/platforms/douyin.js"
-      - "src/services/hard-subtitle-ocr.js"
-      - "src/services/hard-subtitle-worker.py"
-      - "scripts/probe-sparticuz-video.mjs"
-      - "scripts/probe-content-reader-full.mjs"
-      - "test/douyin-pipeline.test.js"
-      - "test/public-browser-runtime.test.js"
-      - ".github/workflows/content-reader-public-browser-probe.yml"
+      - src/services/public-browser.js
+      - src/providers/direct-public-web.js
+      - src/platforms/douyin.js
+      - src/services/hard-subtitle-ocr.js
+      - src/services/hard-subtitle-worker.py
+      - src/services/acquisition-*.js
+      - api/acquisition.js
+      - scripts/acquisition-worker.mjs
+      - scripts/probe-sparticuz-video.mjs
+      - scripts/probe-content-reader-full.mjs
+      - test/douyin-pipeline.test.js
+      - test/public-browser-runtime.test.js
+      - test/acquisition-worker.test.js
+      - .github/workflows/content-reader-public-browser-probe.yml
   workflow_dispatch:
+    inputs:
+      mode:
+        type: choice
+        options: [probe, acquisition]
+        default: probe
+      aweme_id:
+        type: string
+        default: '7688672103729483058'
+      request_id:
+        type: string
+        default: ''
+
+permissions:
+  contents: read
 
 jobs:
   probe:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
-          node-version: "24"
+          node-version: '24'
           cache: npm
       - run: npm ci
       - name: Unit tests
-        run: node --test test/public-browser-runtime.test.js test/douyin-pipeline.test.js
-      - name: Serverless Chromium exact video probe
-        run: node scripts/probe-sparticuz-video.mjs "7688672103729483058"
+        run: node --test test/public-browser-runtime.test.js test/douyin-pipeline.test.js test/acquisition-worker.test.js
+      - name: Existing fixed baseline probe (manual only)
+        if: github.event_name == 'workflow_dispatch' && inputs.mode == 'probe'
+        run: node scripts/probe-sparticuz-video.mjs '7688672103729483058'
       - name: Package existing OCR runtime
         run: node scripts/package-ocr-runtime.mjs
-      - name: Full fresh OCR within production request budget
+      - name: Existing baseline full OCR (manual only)
+        if: github.event_name == 'workflow_dispatch' && inputs.mode == 'probe'
         env:
-          PROBE_SERVERLESS: "1"
-          PROBE_REQUEST_BUDGET_MS: "285000"
+          PROBE_SERVERLESS: '1'
+          PROBE_REQUEST_BUDGET_MS: '285000'
           CONTENT_READER_OCR_PYTHON: assets/ocr/python/bin/python3.12
-          CONTENT_READER_HARD_SUBTITLES: "1"
-        run: node scripts/probe-content-reader-full.mjs "https://www.douyin.com/video/7688672103729483058"
+          CONTENT_READER_HARD_SUBTITLES: '1'
+        run: node scripts/probe-content-reader-full.mjs 'https://www.douyin.com/video/7688672103729483058'
+      - name: Validate acquisition inputs
+        id: task
+        if: github.event_name == 'push' || inputs.mode == 'acquisition'
+        env:
+          INPUT_AWEME_ID: ${{ inputs.aweme_id }}
+          INPUT_REQUEST_ID: ${{ inputs.request_id }}
+        run: |
+          node --input-type=module <<'NODE'
+          import { appendFileSync } from 'node:fs';
+          import { randomUUID } from 'node:crypto';
+          const smoke = process.env.GITHUB_EVENT_NAME === 'push';
+          const id = smoke ? '7688672103729483058' : process.env.INPUT_AWEME_ID;
+          const request = smoke ? randomUUID() : process.env.INPUT_REQUEST_ID;
+          if (!/^\d{15,22}$/.test(id ?? '') || !/^[a-f0-9-]{36}$/.test(request ?? '')) throw new Error('Invalid acquisition inputs');
+          appendFileSync(process.env.GITHUB_OUTPUT, `aweme_id=${id}\nrequest_id=${request}\n`);
+          NODE
+      - name: Fresh acquisition and existing OCR
+        if: github.event_name == 'push' || inputs.mode == 'acquisition'
+        env:
+          ACQUISITION_AWEME_ID: ${{ steps.task.outputs.aweme_id }}
+          ACQUISITION_REQUEST_ID: ${{ steps.task.outputs.request_id }}
+          CONTENT_READER_OCR_PYTHON: assets/ocr/python/bin/python3.12
+          CONTENT_READER_HARD_SUBTITLES: '1'
+        run: node scripts/acquisition-worker.mjs
+      - name: Upload full result and evidence
+        if: always() && steps.task.outputs.request_id != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: acquisition-${{ steps.task.outputs.request_id }}
+          path: acquisition-output/result.json
+          if-no-files-found: error
+          retention-days: 1
