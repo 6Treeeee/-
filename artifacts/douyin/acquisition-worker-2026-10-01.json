@@ -1,0 +1,64 @@
+{
+  "status": "WORKER_PASS_PREVIEW_E2E_BLOCKED",
+  "preview_e2e_pass": false,
+  "production_modified": false,
+  "code_commit": "363d7768ebbf8cc8f46d712663b0ce754073e427",
+  "preview": {
+    "deployment_id": "dpl_9eM2yXq4KkhrMGFboNfwjmHsXShC",
+    "state": "READY",
+    "url": "https://1fjstwfyh-iwni12zow-1790063688-9925s-projects.vercel.app",
+    "health_http_status": 200,
+    "health": {
+      "ok": true,
+      "preview_only": true,
+      "enabled": true,
+      "github_configured": false,
+      "api_auth_configured": false,
+      "repository": "6Treeeee/-",
+      "ref": "codex/a2a-control-loop",
+      "workflow": "content-reader-public-browser-probe.yml"
+    }
+  },
+  "worker": {
+    "run_id": 36840337406,
+    "run_url": "https://github.com/6Treeeee/-/actions/runs/36840337406",
+    "event": "push",
+    "request_id": "0c6c254a-4c0f-437b-9f15-d42d9e09ab06",
+    "artifact_id": 11151123240,
+    "aweme_id": "7688672103729483058",
+    "duration_ms": 440000,
+    "segments": 196,
+    "chars": 2757,
+    "fresh_capture": true,
+    "transcript_cache_read": false,
+    "full_video_scanned": true,
+    "coverage_end_ms": 440000,
+    "elapsed_ms": 269764,
+    "artifact_sha256": "6c949329638c7ec70334c165a217d0c9860068165a184081a91686ed1365e896",
+    "transcript_sha256": "a87153ee17aac2063e630dc5aba0dabdf72a0553a8c54ababe063c49303e552a",
+    "artifact_downloaded_and_validated": true
+  },
+  "trigger": {
+    "anonymous_github_dispatch_http_status": 401,
+    "authenticated_vercel_dispatch": "NOT_EXECUTED",
+    "vercel_poll_result": "NOT_EXECUTED"
+  },
+  "required_configuration": {
+    "github_credential": "ACQUISITION_GITHUB_TOKEN or GITHUB_TOKEN, repository 6Treeeee/-, Actions write plus automatic Metadata read",
+    "api_auth": "CONTENT_READER_WORKER_API_KEY, separate random secret at least 32 chars, Preview only"
+  },
+  "tests": {
+    "local_targeted": 6,
+    "github_targeted": "success"
+  },
+  "limitations": [
+    "Worker evidence is push-triggered and is not Preview end-to-end acceptance.",
+    "Preview did not recognize supported GitHub credential variable names and separate worker API key.",
+    "Preview protection may additionally require existing authorized Vercel access for the acceptance client."
+  ],
+  "prior_preview_failure": {
+    "deployment_id": "dpl_FayBFKaRsAa8uTkCG2bANsTixMhT",
+    "error": "exceeded_serverless_functions_per_deployment",
+    "fixed": "Reuse existing api/index.js with rewrite; no extra function or plan upgrade."
+  }
+}

@@ -30,7 +30,10 @@ test('Preview trigger and poll bind the exact dispatch, artifact and full fresh 
   let task, phase = 'queued'; const calls = [];
   const worker = new GithubAcquisition({ env, fetchImpl: async (url, options) => {
     calls.push({ url, options });
-    if (url.includes('/branches/')) return Response.json({ commit: { sha } });
+    if (url.includes('/branches/')) {
+      assert.equal(options.headers.Authorization, undefined, 'public branch lookup needs no Contents permission');
+      return Response.json({ commit: { sha } });
+    }
     if (url.endsWith('/dispatches')) {
       task = JSON.parse(options.body).inputs;
       assert.equal(task.aweme_id, id); assert.equal(task.mode, 'acquisition');

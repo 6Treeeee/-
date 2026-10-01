@@ -73,9 +73,9 @@ export class GithubAcquisition {
     }
     return task;
   }
-  async api(path, { method = "GET", body } = {}) {
+  async api(path, { method = "GET", body, anonymous = false } = {}) {
     const response = await this.fetch(`https://api.github.com/repos/${REPO}/${path}`, {
-      method, headers: { Accept: "application/vnd.github+json", Authorization: `Bearer ${this.token}`,
+      method, headers: { Accept: "application/vnd.github+json", ...(anonymous ? {} : { Authorization: `Bearer ${this.token}` }),
         "X-GitHub-Api-Version": "2022-11-28", "Content-Type": "application/json" },
       ...(body ? { body: JSON.stringify(body) } : {}), redirect: "manual", signal: AbortSignal.timeout(15_000)
     });
@@ -86,7 +86,8 @@ export class GithubAcquisition {
   async trigger(aweme_id) {
     this.configured();
     if (!/^\d{15,22}$/.test(aweme_id ?? "")) throw fail("INVALID_AWEME_ID", "A numeric public Douyin video ID is required.", 400);
-    const branch = await this.api(`branches/${encodeURIComponent(REF)}`);
+    // This fixed repository is public; public branch metadata needs no Contents grant.
+    const branch = await this.api(`branches/${encodeURIComponent(REF)}`, { anonymous: true });
     const created = this.now(), request_id = randomUUID();
     const task = { request_id, aweme_id, commit: branch.commit.sha, created, exp: created + 24 * 60 * 60 * 1000 };
     await this.api(`actions/workflows/${WORKFLOW}/dispatches`, { method: "POST", body: {

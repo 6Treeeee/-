@@ -1,0 +1,7 @@
+# Acquisition worker current state (2026-10-01)
+
+WORKER_PASS_PREVIEW_E2E_BLOCKED. Implementation commit 363d7768ebbf8cc8f46d712663b0ce754073e427; Preview dpl_9eM2yXq4KkhrMGFboNfwjmHsXShC READY. Worker smoke run 36840337406 independently verified: 440000ms, 196 segments, 2757 chars, elapsed 269764ms, fresh_capture=true, transcript_cache_read=false, full_video_scanned=true. Full result artifact 11151123240 downloaded and digest checked.
+
+Preview health returned github_configured=false and api_auth_configured=false for supported names. Anonymous GitHub dispatch returned actual HTTP 401. Authenticated Vercel dispatch/poll has NOT been executed; worker push smoke is not an E2E PASS. Production was not promoted or changed. Required Preview config: ACQUISITION_GITHUB_TOKEN (or GITHUB_TOKEN), scoped to 6Treeeee/- with Actions write and automatic Metadata read; separate CONTENT_READER_WORKER_API_KEY of at least 32 random characters. If an existing token is stored under another name, confirm the name and reuse it; never send secret values in chat.
+
+See artifacts/douyin/acquisition-worker-2026-10-01.json for evidence, docs/CONTENT_READER_ACQUISITION_WORKER.md for protocol, and scripts/accept-acquisition-preview.mjs for the credential-supplied real acceptance run. Vercel protection requires existing authorized access in addition to application auth; preserve it. No new infrastructure or payment needed.
