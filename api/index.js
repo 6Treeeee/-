@@ -1,3 +1,5 @@
+import acquisitionHandler from "../src/services/acquisition-http.js";
+
 import { getVercelOidcToken } from "@vercel/oidc";
 
 import { readPublicContent, serviceDescription } from "../src/content-reader.js";
@@ -91,6 +93,7 @@ export async function resolveRuntimeGatewayAuth({
 }
 
 export default async function handler(req, res) {
+  if (req.query?.worker === "1") return acquisitionHandler(req, res);
   if (req.method === "OPTIONS") {
     setCommonHeaders(res);
     return res.status(204).end();
@@ -183,3 +186,4 @@ export default async function handler(req, res) {
     });
   }
 }
+

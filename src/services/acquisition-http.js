@@ -1,5 +1,4 @@
-import { GithubAcquisition, secureEqual, workerConfiguration } from "../src/services/acquisition-github.js";
-export const config = { maxDuration: 60 };
+import { GithubAcquisition, secureEqual, workerConfiguration } from "./acquisition-github.js";
 export function createHandler({ env = process.env, fetchImpl = globalThis.fetch } = {}) {
   return async function handler(req, res) {
     res.setHeader("Cache-Control", "no-store");

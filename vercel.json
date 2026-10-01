@@ -55,6 +55,10 @@
   },
   "rewrites": [
     {
+      "source": "/api/acquisition",
+      "destination": "/api?worker=1"
+    },
+    {
       "source": "/mcp",
       "destination": "/api/mcp"
     },

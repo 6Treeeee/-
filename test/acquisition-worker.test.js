@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { deflateRawSync } from 'node:zlib';
 import { GithubAcquisition, readResultZip } from '../src/services/acquisition-github.js';
 import { verifyAcquisitionResult } from '../src/services/acquisition-result.js';
-import { createHandler } from '../api/acquisition.js';
+import { createHandler } from '../src/services/acquisition-http.js';
 
 const env = { VERCEL_ENV: 'preview', ACQUISITION_GITHUB_TOKEN: 'fake-github-token', CONTENT_READER_WORKER_API_KEY: 'k'.repeat(32) };
 const sha = 'a'.repeat(40), id = '7688672103729483058';
