@@ -46,34 +46,10 @@
         }
       ]
     },
-    "api/douyin-region-hnd.js": {
-      "maxDuration": 30,
+    "api/douyin-media-probe.js": {
+      "maxDuration": 60,
       "regions": [
         "hnd1"
-      ]
-    },
-    "api/douyin-region-kix.js": {
-      "maxDuration": 30,
-      "regions": [
-        "kix1"
-      ]
-    },
-    "api/douyin-region-hkg.js": {
-      "maxDuration": 30,
-      "regions": [
-        "hkg1"
-      ]
-    },
-    "api/douyin-region-sin.js": {
-      "maxDuration": 30,
-      "regions": [
-        "sin1"
-      ]
-    },
-    "api/douyin-region-iad.js": {
-      "maxDuration": 30,
-      "regions": [
-        "iad1"
       ]
     }
   },
