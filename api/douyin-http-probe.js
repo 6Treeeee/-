@@ -67,6 +67,51 @@ function findExactItems(root, expectedId) {
   return matches;
 }
 
+function summarizeParsedState(root) {
+  const urls = [];
+  const keyPaths = [];
+  const scalars = {};
+  const queue = [{ value: root, path: "$", depth: 0 }];
+  const seen = new Set();
+  let visited = 0;
+  while (queue.length && visited < 16000) {
+    const { value, path, depth } = queue.shift();
+    if (!value || typeof value !== "object" || seen.has(value)) continue;
+    seen.add(value);
+    visited += 1;
+    for (const [key, child] of Object.entries(value)) {
+      const childPath = `${path}.${key}`;
+      if (/video|play|cover|duration|item|token|url/i.test(key) && keyPaths.length < 160) {
+        keyPaths.push(childPath);
+      }
+      if (typeof child === "string") {
+        if (/^https?:\/\//i.test(child) && urls.length < 80) {
+          try {
+            const parsed = new URL(child.replace(/\\u002F/g, "/"));
+            urls.push({ host: parsed.hostname, path: parsed.pathname });
+          } catch {}
+        }
+        if (/^(serverToken|itemId|appName|host|lastPath|renderInSSR)$/i.test(key)) {
+          scalars[childPath] = key.toLowerCase().includes("token")
+            ? { present: Boolean(child), length: child.length }
+            : child.slice(0, 200);
+        }
+      } else if (typeof child === "number" || typeof child === "boolean") {
+        if (/^(itemId|renderInSSR|duration)$/i.test(key)) scalars[childPath] = child;
+      }
+      if (depth < 11 && child && typeof child === "object") {
+        queue.push({ value: child, path: childPath, depth: depth + 1 });
+      }
+    }
+  }
+  return {
+    visited_objects: visited,
+    media_like_key_paths: keyPaths,
+    url_hosts_paths: [...new Map(urls.map((item) => [`${item.host}${item.path}`, item])).values()],
+    selected_scalars: scalars
+  };
+}
+
 function parseStateScripts(html, expectedId) {
   const scripts = [...String(html ?? "").matchAll(/<script([^>]*)>([\s\S]*?)<\/script>/gi)]
     .map((match, index) => ({ index, attrs: match[1] ?? "", text: match[2] ?? "" }))
@@ -109,7 +154,8 @@ function parseStateScripts(html, expectedId) {
       json_parsed: Boolean(parsed),
       parse_mode,
       root_keys: parsed && typeof parsed === "object" ? Object.keys(parsed).slice(0, 50) : [],
-      exact_items: parsed ? findExactItems(parsed, expectedId) : []
+      exact_items: parsed ? findExactItems(parsed, expectedId) : [],
+      state_summary: parsed ? summarizeParsedState(parsed) : null
     };
   });
 }
