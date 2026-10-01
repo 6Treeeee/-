@@ -77,14 +77,14 @@ export default async function handler(req, res) {
             ready_state: video?.readyState ?? null,
             width: video?.videoWidth || null,
             height: video?.videoHeight || null,
-            security_challenge: [
+            challenge_seen: [
               "#captcha_container",
               "iframe[src*='captcha']",
               "iframe[src*='verify']",
               "[class*='captcha_container']"
             ].some((selector) => [...document.querySelectorAll(selector)].some(visible)) ||
               /安全验证|验证后继续|请完成(?:下列)?验证|拖动.{0,12}滑块/.test(text),
-            login_required: /请先登录|登录后(?:才可|方可|即可|可)?(?:观看|查看)/.test(text)
+            signin_gate_seen: /请先登录|登录后(?:才可|方可|即可|可)?(?:观看|查看)/.test(text)
           };
         }, id);
         if (state.video_present && (state.current_src || state.ready_state >= 2)) break;
