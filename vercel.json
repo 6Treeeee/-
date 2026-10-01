@@ -4,6 +4,11 @@
     "hkg1"
   ],
   "buildCommand": "node scripts/package-ocr-runtime.mjs && npm run build",
+  "git": {
+    "deploymentEnabled": {
+      "codex/content-reader-acquisition": false
+    }
+  },
   "functions": {
     "api/index.js": {
       "maxDuration": 300,

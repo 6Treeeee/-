@@ -3,7 +3,8 @@ import { inflateRawSync } from "node:zlib";
 import { verifyAcquisitionResult } from "./acquisition-result.js";
 
 const REPO = "6Treeeee/-";
-const REF = "codex/a2a-control-loop";
+const REF = "codex/content-reader-acquisition";
+const REQUEST_PATH = "acquisition-request.json";
 const WORKFLOW = "content-reader-public-browser-probe.yml";
 const MAX_BYTES = 4 * 1024 * 1024;
 function fail(code, message, status = 503) { return Object.assign(new Error(message), { code, status }); }
@@ -13,7 +14,7 @@ export function secureEqual(a, b) {
 }
 export function workerConfiguration(env = process.env) {
   return { preview_only: true, enabled: env.VERCEL_ENV === "preview",
-    github_configured: Boolean(env.ACQUISITION_GITHUB_TOKEN || env.GITHUB_TOKEN),
+    github_configured: Boolean(env.ACQUISITION_GITHUB_TOKEN),
     api_auth_configured: (env.CONTENT_READER_WORKER_API_KEY ?? "").length >= 32,
     repository: REPO, ref: REF, workflow: WORKFLOW };
 }
@@ -51,13 +52,13 @@ export function readResultZip(bytes) {
 export class GithubAcquisition {
   constructor({ env = process.env, fetchImpl = globalThis.fetch, now = Date.now } = {}) {
     this.env = env; this.fetch = fetchImpl; this.now = now;
-    this.token = env.ACQUISITION_GITHUB_TOKEN || env.GITHUB_TOKEN;
+    this.token = env.ACQUISITION_GITHUB_TOKEN;
     this.key = env.CONTENT_READER_WORKER_API_KEY;
   }
   configured() {
     const c = workerConfiguration(this.env);
     if (!c.enabled) throw fail("PREVIEW_ONLY", "Worker prototype only runs in Preview.", 403);
-    if (!c.github_configured || !c.api_auth_configured) throw fail("WORKER_NOT_CONFIGURED", "Preview requires GitHub Actions write credential and a separate worker API key.");
+    if (!c.github_configured || !c.api_auth_configured) throw fail("WORKER_NOT_CONFIGURED", "Preview requires GitHub Contents write and Actions read credential and a separate worker API key.");
   }
   signature(body) { return createHmac("sha256", this.key).update(body).digest("base64url"); }
   ticket(task) { const b = Buffer.from(JSON.stringify(task)).toString("base64url"); return `${b}.${this.signature(b)}`; }
@@ -86,22 +87,26 @@ export class GithubAcquisition {
   async trigger(aweme_id) {
     this.configured();
     if (!/^\d{15,22}$/.test(aweme_id ?? "")) throw fail("INVALID_AWEME_ID", "A numeric public Douyin video ID is required.", 400);
-    // This fixed repository is public; public branch metadata needs no Contents grant.
-    const branch = await this.api(`branches/${encodeURIComponent(REF)}`, { anonymous: true });
     const created = this.now(), request_id = randomUUID();
-    const task = { request_id, aweme_id, commit: branch.commit.sha, created, exp: created + 24 * 60 * 60 * 1000 };
-    await this.api(`actions/workflows/${WORKFLOW}/dispatches`, { method: "POST", body: {
-      ref: REF, inputs: { mode: "acquisition", aweme_id, request_id }
+    const prior = await this.api(`contents/${REQUEST_PATH}?ref=${encodeURIComponent(REF)}`);
+    if (!/^[a-f0-9]{40}$/.test(prior?.sha ?? "")) throw fail("WORKER_REQUEST_FILE_MISSING", "Worker request marker is missing.", 502);
+    const changed = await this.api(`contents/${REQUEST_PATH}`, { method: "PUT", body: {
+      message: `acquisition:${request_id}`, branch: REF, sha: prior.sha,
+      content: Buffer.from(JSON.stringify({ request_id, aweme_id })).toString("base64")
     } });
+    const commit = changed?.commit?.sha;
+    if (!/^[a-f0-9]{40}$/.test(commit ?? "")) throw fail("WORKER_COMMIT_MISSING", "GitHub accepted request without a commit SHA.", 502);
+    const task = { request_id, aweme_id, commit, created, exp: created + 24 * 60 * 60 * 1000 };
     return { status: "queued", request_id, aweme_id, task: this.ticket(task), poll_after_ms: 10_000 };
   }
   async poll(ticket) {
     this.configured();
     const task = this.parseTicket(ticket);
-    const list = await this.api(`actions/workflows/${WORKFLOW}/runs?event=workflow_dispatch&branch=${encodeURIComponent(REF)}&created=${encodeURIComponent(">=" + new Date(task.created - 60_000).toISOString())}&per_page=100`);
-    const run = list.workflow_runs?.find(r => r.display_title === `acquisition:${task.request_id}` && r.head_sha === task.commit);
+    const list = await this.api(`actions/runs?event=push&branch=${encodeURIComponent(REF)}&created=${encodeURIComponent(">=" + new Date(task.created - 60_000).toISOString())}&per_page=100`);
+    const run = list.workflow_runs?.find(r => r.path?.split("@")[0] === `.github/workflows/${WORKFLOW}` &&
+      r.display_title === `acquisition:${task.request_id}` && r.head_sha === task.commit);
     if (!run) {
-      if (this.now() - task.created > 120_000) throw fail("WORKER_RUN_NOT_FOUND", "Dispatch accepted but matching run was not found; check workflow registration and branch changes.", 502);
+      if (this.now() - task.created > 120_000) throw fail("WORKER_RUN_NOT_FOUND", "Request commit was accepted but matching worker run was not found.", 502);
       return { status: "queued", request_id: task.request_id, poll_after_ms: 10_000 };
     }
     const evidence = { request_id: task.request_id, aweme_id: task.aweme_id, run_id: run.id,

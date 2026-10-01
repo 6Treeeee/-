@@ -26,23 +26,27 @@ function zip(value, method = 8) {
   end.writeUInt32LE(directory.length + name.length, 12); end.writeUInt32LE(local.length + name.length + compressed.length, 16);
   return Buffer.concat([local, name, compressed, directory, name, end]);
 }
-test('Preview trigger and poll bind the exact dispatch, artifact and full fresh result', async () => {
+test('Preview trigger and poll bind the exact request commit, artifact and full fresh result', async () => {
   let task, phase = 'queued'; const calls = [];
   const worker = new GithubAcquisition({ env, fetchImpl: async (url, options) => {
     calls.push({ url, options });
-    if (url.includes('/branches/')) {
-      assert.equal(options.headers.Authorization, undefined, 'public branch lookup needs no Contents permission');
+    if (url.includes('/contents/acquisition-request.json?')) return Response.json({ sha: 'b'.repeat(40) });
+    if (url.endsWith('/contents/acquisition-request.json')) {
+      const body = JSON.parse(options.body);
+      task = JSON.parse(Buffer.from(body.content, 'base64').toString());
+      assert.equal(task.aweme_id, id);
+      assert.equal(body.branch, 'codex/content-reader-acquisition');
+      assert.equal(body.message, `acquisition:${task.request_id}`);
+      assert.equal(body.sha, 'b'.repeat(40));
       return Response.json({ commit: { sha } });
     }
-    if (url.endsWith('/dispatches')) {
-      task = JSON.parse(options.body).inputs;
-      assert.equal(task.aweme_id, id); assert.equal(task.mode, 'acquisition');
-      return new Response(null, { status: 204 });
+    if (url.includes('/runs?')) {
+      assert.match(url, /event=push/);
+      return Response.json({ workflow_runs: phase === 'queued' ? [] : [
+      { id: 1, path: '.github/workflows/unrelated.yml', display_title: 'unrelated', head_sha: sha, status: 'completed' },
+      { id: 42, path: '.github/workflows/content-reader-public-browser-probe.yml@codex/content-reader-acquisition', display_title: `acquisition:${task.request_id}`, head_sha: sha, status: phase, conclusion: 'success', run_attempt: 1 }
+      ] });
     }
-    if (url.includes('/runs?')) return Response.json({ workflow_runs: phase === 'queued' ? [] : [
-      { id: 1, display_title: 'unrelated', head_sha: sha, status: 'completed' },
-      { id: 42, display_title: `acquisition:${task.request_id}`, head_sha: sha, status: phase, conclusion: 'success', run_attempt: 1 }
-    ] });
     if (url.endsWith('/artifacts?per_page=100')) return Response.json({ artifacts: [{ id: 9, name: `acquisition-${task.request_id}`, size_in_bytes: 1000, expired: false }] });
     if (url.endsWith('/zip')) return new Response(null, { status: 302, headers: { location: 'https://results.blob.core.windows.net/test' } });
     assert.equal(options.headers, undefined, 'credential must not reach artifact host');
@@ -54,7 +58,7 @@ test('Preview trigger and poll bind the exact dispatch, artifact and full fresh 
   phase = 'completed'; const result = await worker.poll(accepted.task);
   assert.equal(result.status, 'completed'); assert.equal(result.run_id, 42);
   assert.equal(result.result.content.readable_content.text, 'Fresh complete test content');
-  assert.equal(calls.filter(c => c.url.endsWith('/dispatches')).length, 1);
+  assert.equal(calls.filter(c => c.url.endsWith('/contents/acquisition-request.json')).length, 1);
   await assert.rejects(worker.poll(accepted.task + 'x'), { code: 'INVALID_TASK' });
 });
 test('cached, partial and mismatched transcripts are rejected', () => {
@@ -84,8 +88,8 @@ test('anonymous requests and production never dispatch GitHub work', async () =>
 });
 test('missing credential and GitHub permission rejection never produce accepted/PASS', async () => {
   await assert.rejects(new GithubAcquisition({ env: { VERCEL_ENV: 'preview' } }).trigger(id), { code: 'WORKER_NOT_CONFIGURED' });
-  const worker = new GithubAcquisition({ env, fetchImpl: async url => url.includes('/branches/')
-    ? Response.json({ commit: { sha } }) : new Response(null, { status: 403 }) });
+  const worker = new GithubAcquisition({ env, fetchImpl: async url => url.includes('/contents/acquisition-request.json?')
+    ? Response.json({ sha: 'b'.repeat(40) }) : new Response(null, { status: 403 }) });
   await assert.rejects(worker.trigger(id), { code: 'GITHUB_WORKER_HTTP_ERROR' });
 });
 test('expired tasks and changed commits cannot consume unrelated results', async () => {

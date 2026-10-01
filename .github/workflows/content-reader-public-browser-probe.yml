@@ -1,10 +1,11 @@
 name: content-reader-public-browser-probe
-run-name: ${{ inputs.mode == 'acquisition' && format('acquisition:{0}', inputs.request_id) || format('worker-smoke:{0}', github.sha) }}
+run-name: ${{ github.ref == 'refs/heads/codex/content-reader-acquisition' && github.event.head_commit.message || (inputs.mode == 'acquisition' && format('acquisition:{0}', inputs.request_id) || format('worker-smoke:{0}', github.sha)) }}
 
 on:
   push:
-    branches: [codex/a2a-control-loop]
+    branches: [codex/a2a-control-loop, codex/content-reader-acquisition]
     paths:
+      - acquisition-request.json
       - src/services/public-browser.js
       - src/providers/direct-public-web.js
       - src/platforms/douyin.js
@@ -69,11 +70,13 @@ jobs:
           INPUT_REQUEST_ID: ${{ inputs.request_id }}
         run: |
           node --input-type=module <<'NODE'
-          import { appendFileSync } from 'node:fs';
+          import { appendFileSync, readFileSync } from 'node:fs';
           import { randomUUID } from 'node:crypto';
-          const smoke = process.env.GITHUB_EVENT_NAME === 'push';
-          const id = smoke ? '7688672103729483058' : process.env.INPUT_AWEME_ID;
-          const request = smoke ? randomUUID() : process.env.INPUT_REQUEST_ID;
+          const onDemand = process.env.GITHUB_REF_NAME === 'codex/content-reader-acquisition';
+          const smoke = process.env.GITHUB_EVENT_NAME === 'push' && !onDemand;
+          const data = onDemand ? JSON.parse(readFileSync('acquisition-request.json', 'utf8')) : null;
+          const id = onDemand ? data.aweme_id : smoke ? '7688672103729483058' : process.env.INPUT_AWEME_ID;
+          const request = onDemand ? data.request_id : smoke ? randomUUID() : process.env.INPUT_REQUEST_ID;
           if (!/^\d{15,22}$/.test(id ?? '') || !/^[a-f0-9-]{36}$/.test(request ?? '')) throw new Error('Invalid acquisition inputs');
           appendFileSync(process.env.GITHUB_OUTPUT, `aweme_id=${id}\nrequest_id=${request}\n`);
           NODE
