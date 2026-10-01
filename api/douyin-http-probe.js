@@ -11,6 +11,109 @@ function firstMatch(text, regex) {
   return match?.[1]?.trim() ?? null;
 }
 
+function mediaUrlsFromItem(item) {
+  const video = item?.video ?? {};
+  const addresses = [
+    video.play_addr,
+    video.play_addr_h264,
+    video.play_addr_265,
+    video.play_addr_bytevc1,
+    video.download_addr,
+    video.download_suffix_logo_addr,
+    ...(Array.isArray(video.bit_rate) ? video.bit_rate.flatMap((rate) => [
+      rate?.play_addr,
+      rate?.play_addr_265
+    ]) : [])
+  ];
+  return [...new Set(addresses.flatMap((address) =>
+    Array.isArray(address?.url_list) ? address.url_list : []
+  ).filter((value) => /^https?:\/\//i.test(String(value ?? ""))))];
+}
+
+function findExactItems(root, expectedId) {
+  const matches = [];
+  const queue = [{ value: root, path: "$", depth: 0 }];
+  const seen = new Set();
+  let visited = 0;
+  while (queue.length && visited < 12000 && matches.length < 8) {
+    const { value, path, depth } = queue.shift();
+    if (!value || typeof value !== "object" || seen.has(value)) continue;
+    seen.add(value);
+    visited += 1;
+    const id = String(value.aweme_id ?? value.awemeId ?? value.item_id ?? value.itemId ?? "");
+    if (id === String(expectedId)) {
+      const media = mediaUrlsFromItem(value);
+      matches.push({
+        path,
+        keys: Object.keys(value).slice(0, 50),
+        has_video: Boolean(value.video),
+        video_keys: value.video && typeof value.video === "object"
+          ? Object.keys(value.video).slice(0, 50) : [],
+        desc: typeof value.desc === "string" ? value.desc.slice(0, 180) : null,
+        duration: Number(value.video?.duration ?? value.duration ?? 0) || null,
+        media_count: media.length,
+        media_hosts: [...new Set(media.map((url) => {
+          try { return new URL(url).hostname; } catch { return null; }
+        }).filter(Boolean))]
+      });
+    }
+    if (depth >= 10) continue;
+    for (const [key, child] of Object.entries(value)) {
+      if (child && typeof child === "object") {
+        queue.push({ value: child, path: `${path}.${key}`, depth: depth + 1 });
+      }
+    }
+  }
+  return matches;
+}
+
+function parseStateScripts(html, expectedId) {
+  const scripts = [...String(html ?? "").matchAll(/<script([^>]*)>([\s\S]*?)<\/script>/gi)]
+    .map((match, index) => ({ index, attrs: match[1] ?? "", text: match[2] ?? "" }))
+    .filter((item) =>
+      item.text.includes(String(expectedId)) ||
+      /__INITIAL_STATE__|RENDER_DATA|UNIVERSAL_DATA_FOR_REHYDRATION|_ROUTER_DATA/.test(item.text)
+    );
+
+  return scripts.slice(0, 16).map((item) => {
+    const rawCandidates = [item.text];
+    try {
+      const decoded = decodeURIComponent(item.text);
+      if (decoded !== item.text) rawCandidates.push(decoded);
+    } catch {}
+
+    let parsed = null;
+    let parse_mode = null;
+    for (const raw of rawCandidates) {
+      const candidates = [raw];
+      const firstObject = raw.indexOf("{"), lastObject = raw.lastIndexOf("}");
+      if (firstObject >= 0 && lastObject > firstObject) {
+        candidates.push(raw.slice(firstObject, lastObject + 1));
+      }
+      for (const candidate of candidates) {
+        try {
+          parsed = JSON.parse(candidate);
+          parse_mode = raw === item.text ? "json" : "decoded_json";
+          break;
+        } catch {}
+      }
+      if (parsed) break;
+    }
+
+    const idx = item.text.indexOf(String(expectedId));
+    return {
+      index: item.index,
+      attrs: item.attrs.slice(0, 220),
+      length: item.text.length,
+      contains_expected_id: idx >= 0,
+      json_parsed: Boolean(parsed),
+      parse_mode,
+      root_keys: parsed && typeof parsed === "object" ? Object.keys(parsed).slice(0, 50) : [],
+      exact_items: parsed ? findExactItems(parsed, expectedId) : []
+    };
+  });
+}
+
 function summarize(text, type, expectedId) {
   const compact = String(text ?? "").slice(0, 2_000_000);
   const urls = [...compact.matchAll(/https?:\/\/[^"'<>\s]+/g)].map((match) => match[0]);
@@ -50,7 +153,8 @@ function summarize(text, type, expectedId) {
       root: /id=["']root["']/.test(compact),
       video_tag: /<video\b/i.test(compact),
       json_ld: /application\/ld\+json/i.test(compact)
-    }
+    },
+    state_scripts: parseStateScripts(compact, expectedId)
   };
 }
 
