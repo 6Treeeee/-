@@ -89,11 +89,21 @@ test("MCP streamable HTTP advertises bounded Tree Brain tools and calls the exis
     const tools = await client.listTools();
     assert.deepEqual(
       tools.tools.map((tool) => tool.name).sort(),
-      ["check_project", "get_connection_status", "get_task", "list_workspaces", "task_resume", "task_start", "task_status"],
+      ["check_project", "get_connection_status", "get_douyin_read_result", "get_task", "list_workspaces", "start_douyin_read", "task_resume", "task_start", "task_status"],
     );
     const check = tools.tools.find((tool) => tool.name === "check_project");
     assert.deepEqual(check._meta.securitySchemes, [{ type: "oauth2", scopes: ["treebrain:check"] }]);
     assert.equal(check.annotations.idempotentHint, true);
+    const startVideo = tools.tools.find((tool) => tool.name === "start_douyin_read");
+    const pollVideo = tools.tools.find((tool) => tool.name === "get_douyin_read_result");
+    assert.deepEqual(startVideo._meta.securitySchemes, [{ type: "oauth2", scopes: ["treebrain:check"] }]);
+    assert.deepEqual(pollVideo._meta.securitySchemes, [{ type: "oauth2", scopes: ["treebrain:read"] }]);
+    assert.equal(startVideo.annotations.readOnlyHint, false);
+    assert.equal(pollVideo.annotations.readOnlyHint, true);
+    const rejectedVideo = await client.callTool({ name: "start_douyin_read", arguments: { url: "https://example.com/video/123" } });
+    assert.equal(rejectedVideo.isError, true);
+    assert.equal(rejectedVideo.structuredContent.error.code, "UNSUPPORTED_DOUYIN_URL");
+    assert.ok(authCalls.some(({ scopes }) => scopes.includes("treebrain:check")));
 
     const workspaces = await client.callTool({ name: "list_workspaces", arguments: {} });
     assert.deepEqual(workspaces.structuredContent, { workspaces: ["content-reader"] });
@@ -214,3 +224,4 @@ test("MCP task tools enforce scope, persist progress, and resume idempotently wi
     await new Promise(resolve => server.close(resolve));
   }
 });
+

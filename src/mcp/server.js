@@ -6,6 +6,7 @@ import { z } from "zod";
 
 import { parseTaskInput } from "../a2a/model.js";
 import { workflowControlService } from "../a2a/control-service.js";
+import { registerDouyinTools } from "./douyin-tools.js";
 import {
   authenticationChallenge,
   createMcpAuthorizer,
@@ -103,7 +104,7 @@ async function readMcpBody(req) {
 function requiredScopeForBody(body) {
   const messages = Array.isArray(body) ? body : [body];
   return messages.some((message) =>
-    message?.method === "tools/call" && ["check_project", "task_start", "task_resume"].includes(message?.params?.name)
+    message?.method === "tools/call" && ["check_project", "task_start", "task_resume", "start_douyin_read"].includes(message?.params?.name)
   ) ? "treebrain:check" : "treebrain:read";
 }
 
@@ -252,10 +253,12 @@ function securityMeta(scopes, principal) {
   };
 }
 
-export function createMcpServer({ principal, service = workflowControlService } = {}) {
+export function createMcpServer({ principal, service = workflowControlService, env = process.env } = {}) {
   const server = new McpServer({
     name: "tree-brain-codex",
     version: "1.0.0",
+  }, {
+    instructions: "When asked to summarize a Douyin video URL, call start_douyin_read, then keep calling get_douyin_read_result with its task ticket until completed or failed. Summarize only the returned video text and state any coverage limits. For Codex tasks, use task_start, task_status and task_resume; pending work is not completed work.",
   });
 
   server.registerTool("get_connection_status", {
@@ -391,6 +394,7 @@ export function createMcpServer({ principal, service = workflowControlService } 
     return toolResult({ ...accepted, pending: true, task: publicTask(await service.getTask(task_id)) });
   });
 
+  registerDouyinTools(server, { principal, z, env, securityMeta: scopes => securityMeta(scopes, principal) });
   return server;
 }
 
@@ -438,11 +442,11 @@ export function createMcpHandler({
       if (principal?.auth_mode === "bearer") {
         const messages = Array.isArray(bodyHint) ? bodyHint : [bodyHint];
         if (messages.some(message => message?.method === "tools/call" &&
-            !["get_connection_status", "list_workspaces", "task_status", "task_start", "task_resume"].includes(message?.params?.name))) {
+            !["get_connection_status", "list_workspaces", "task_status", "task_start", "task_resume", "start_douyin_read", "get_douyin_read_result"].includes(message?.params?.name))) {
           throw new TreeBrainOAuthError("TREE_BRAIN_FORBIDDEN", 403);
         }
       }
-      const server = createMcpServer({ principal, service });
+      const server = createMcpServer({ principal, service, env });
       const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined });
       await server.connect(transport);
       await transport.handleRequest(req, res, body);
@@ -457,3 +461,4 @@ export function createMcpHandler({
 }
 
 export { DEFAULT_ACCEPTANCE, DEFAULT_GOAL };
+
