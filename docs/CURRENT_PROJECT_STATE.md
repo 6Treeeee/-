@@ -136,3 +136,14 @@ Tree Brain Infrastructure v1 已正式收口。除出现真实回归证据，或
 - 上游具体 HTTP 状态被既有嵌套诊断深度限制截断，不能推断余额不足、401 或访问限制。补充本地诊断尝试使用既有生产环境配置，但 Vercel 拒绝导出 sensitive secrets，TIKHUB_API_KEY 未提供，本地没有发送 TikHub 请求；本地 SERVICE_NOT_CONFIGURED 不代表生产未配置。
 - 最终分项：Git 推送 PASS；Git Integration PASS；生产发布 PASS；独立 provider 路由 PASS；fresh 内容读取 FAIL。当前待查为 TikHub 上游 HTTP 拒绝的真实原因，不再是 Vercel 发布权限或 fallback 未执行。本轮无源码修改，复用此前 168/168 测试。
 - 新证据：同目录 `git-integration-acceptance.json`、`git-production-health.json`、两个 `fresh-*.json` 和 `tikhub-status-diagnostic.json`。这些续记证据保存本地，未额外推送触发另一轮部署。
+
+## 2026-10-02：普通 ChatGPT 内容读取入口的实际状态
+
+用户目标是：在普通 ChatGPT 的 Tree 项目对话中粘贴公开视频链接，由 GPT 自己调用 Content Reader、等待读取完成并给出基于真实全片文字的总结；同时能直接查询和恢复已有 Codex 任务，不再手工传话。
+
+- 先前已真实验收 Preview 后端：aweme_id `7688672103729483058`，GitHub worker run `36954015208`，440000ms 全片、196 OCR 段、2757 字、fresh_capture=true、transcript_cache_read=false、full_video_scanned=true。证据见 `prototype/evidence/vercel-curl-preview-*.json`；该证据只证明 Preview API → worker → OCR → 结果，并不证明普通 ChatGPT 已调用。
+- 新增 MCP 工具 `start_douyin_read` 与 `get_douyin_read_result`，限定 content-reader 工作区。前者仅接受公开单视频/分享 URL、触发既有 GitHub worker 并返回签名任务票据；后者轮询，只有经过现有 worker 完整性校验后才返回文字、分段、覆盖和来源状态。媒体签名 URL、Cookie、原始上游错误不会发给 GPT。开发分支提交 `2b642c37fb2f8c001fd82e476d02d22fee206782`；后续安全收紧在本节之后的提交。单元测试 11/11 通过。
+- 对应 Vercel Preview 部署 `dpl_8iJip5W3wWio4v6Wgnoi19hZDAuh` 已 READY，源码 SHA 与提交一致；受保护 GET `/api/acquisition` 显示 Preview、GitHub、worker 密钥均已配置。GET `/mcp` 到达新函数并返回预期 405；这不是 MCP 工具调用 PASS。
+- 当前实际阻塞：Preview 的 `/.well-known/oauth-protected-resource` 返回 503 / `TREE_BRAIN_OAUTH_NOT_CONFIGURED`。现有正式域名只有静态 bearer 资源配置，不具备 ChatGPT 所需的 OAuth 授权服务器；旧 Secure MCP Tunnel 的本机运行密钥与程序不在当前电脑。普通 ChatGPT 插件页目前要求用户登录。尚未完成 MCP 真实 start/poll/result、插件安装、Tree 项目对话总结、Codex 任务写控制验收。Production 未改动。
+- 现有历史 `latest-task-state.json` 是一次性快照，不会自动更新；本轮没有把它当实时检测系统，也没有新建第二套任务状态源。MCP 的 `task_status` 是待接入的实时读入口。
+- 下一关是完成 ChatGPT 登录/工作区权限检查，选择可持续的 OAuth 或现有安全隧道入口，并用一个真实公开视频在普通 ChatGPT 对话里完成工具发现、触发、轮询、完整结果和总结。只有这些实测通过，才能把 Level 2 标记为完成。个人主页批量读取未纳入本次单视频 PASS。

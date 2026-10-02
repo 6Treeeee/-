@@ -4,6 +4,21 @@ import { resolveDouyinVideoId } from "../services/douyin-video-url.js";
 const VIDEO_WORKSPACE = "content-reader";
 const URL_MAX = 2_048;
 const TICKET_MAX = 4_096;
+const PUBLIC_ERROR_MESSAGES = Object.freeze({
+  INVALID_DOUYIN_URL: "Send one HTTPS Douyin video link.",
+  UNSUPPORTED_DOUYIN_URL: "This is not a supported single-video link.",
+  DOUYIN_SHORT_LINK_UNAVAILABLE: "The public share link could not be resolved.",
+  DOUYIN_SHORT_LINK_UNRESOLVED: "The share link did not lead to a supported public video.",
+  DOUYIN_SHORT_LINK_LOOP: "The share link redirects in a loop.",
+  DOUYIN_SHORT_LINK_TOO_MANY_REDIRECTS: "The share link has too many redirects.",
+  VIDEO_ACCESS_RESTRICTED: "This video cannot be read through public access.",
+  DOUYIN_SECURITY_VERIFICATION_REQUIRED: "Douyin requires a security check for this video.",
+  PREVIEW_ONLY: "Video acquisition is available only in Preview at present.",
+  WORKER_NOT_CONFIGURED: "The video worker is not configured.",
+  WORKER_RESULT_INVALID: "The worker result failed content or provenance checks.",
+  WORKER_RESULT_MISSING: "The worker finished without a readable result.",
+  INVALID_TASK: "The reading task ticket is invalid or expired.",
+});
 
 function requireVideoAccess(principal) {
   if (!Array.isArray(principal?.workspace_ids) || !principal.workspace_ids.includes(VIDEO_WORKSPACE)) {
@@ -20,12 +35,13 @@ function toolResult(value, isError = false) {
 }
 
 function publicError(error) {
-  const code = String(error?.code ?? "CONTENT_READER_ERROR");
+  const rawCode = String(error?.code ?? "CONTENT_READER_ERROR");
+  const code = /^[A-Z][A-Z0-9_]{2,80}$/.test(rawCode) ? rawCode : "CONTENT_READER_ERROR";
   return {
     status: "failed",
     error: {
-      code: /^[A-Z][A-Z0-9_]{2,80}$/.test(code) ? code : "CONTENT_READER_ERROR",
-      message: typeof error?.message === "string" ? error.message.slice(0, 300) : "Video reading failed.",
+      code,
+      message: PUBLIC_ERROR_MESSAGES[code] ?? "Video reading failed; try another public video.",
     },
   };
 }
@@ -126,7 +142,12 @@ export function registerDouyinTools(server, {
     try {
       const result = await worker().poll(task);
       if (result.status === "completed") return toolResult(publicDouyinResult(result));
-      if (result.status === "failed") return toolResult({ status: "failed", error: result.error, aweme_id: result.aweme_id, run_url: result.run_url }, true);
+      if (result.status === "failed") return toolResult({
+        status: "failed",
+        error: publicError(result.error).error,
+        aweme_id: result.aweme_id,
+        run_url: result.run_url,
+      }, true);
       return toolResult({ status: result.status, request_id: result.request_id, aweme_id: result.aweme_id,
         task, poll_after_ms: result.poll_after_ms ?? 10_000,
         message: "Reading is still in progress. Call this tool again after poll_after_ms; do not summarize yet." });
@@ -135,5 +156,4 @@ export function registerDouyinTools(server, {
     }
   });
 }
-
 

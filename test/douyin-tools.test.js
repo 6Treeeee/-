@@ -68,6 +68,15 @@ test("pending and failed worker states never appear as a completed transcript", 
   assert.equal(failed.structuredContent.readable_content, undefined);
 });
 
+test("worker failures never echo raw upstream error text", async () => {
+  const { tools } = fixture({ poll: () => ({ status: "failed", aweme_id: awemeId,
+    error: { code: "UPSTREAM_ERROR", message: "Bearer private-token and signed-media-url" } }) });
+  const failed = await tools.get("get_douyin_read_result").handler({ task: "signed-ticket" });
+  assert.equal(failed.structuredContent.error.code, "UPSTREAM_ERROR");
+  assert(!JSON.stringify(failed.structuredContent).includes("private-token"));
+  assert(!JSON.stringify(failed.structuredContent).includes("signed-media-url"));
+});
+
 test("a completed result exposes transcript and provenance without media URLs or cookies", async () => {
   const { tools } = fixture({ poll: () => accepted });
   const response = await tools.get("get_douyin_read_result").handler({ task: "signed-ticket" });
