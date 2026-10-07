@@ -8,6 +8,7 @@ import { fileURLToPath } from "node:url";
 import { ReaderError, sanitizeDiagnostics } from "../errors.js";
 import { DirectPublicWebProvider } from "../providers/direct-public-web.js";
 import { PublicBrowserService } from "./public-browser.js";
+import { waitForBoundPublicPlayer } from "./public-player-wait.js";
 
 const hash = (value) => createHash("sha256").update(value).digest("hex");
 const textKey = (text) => String(text ?? "").replace(/[\s，。！？、；：,.!?;:·•“”‘’《》（）—…↑↓]/g, "").toLowerCase();
@@ -281,7 +282,7 @@ export class HardSubtitleOcr {
         const rawDuration=Number(video?.duration_ms ?? video?.media?.duration_ms ?? video?.duration ?? 0);
         const expectedDurationSeconds=rawDuration>=1000?rawDuration/1000:rawDuration;
         if(!Number.isFinite(expectedDurationSeconds)||expectedDurationSeconds<=0)throw fail("OCR_EXPECTED_DURATION_MISSING","Target video duration is required to bind the live player.");
-        await page.waitForFunction((expected)=>[...document.querySelectorAll("video")].some(v=>v.readyState>=2&&v.videoWidth&&Number.isFinite(v.duration)&&Math.abs(v.duration-expected)<=Math.max(3,expected*.02)),{timeout:15_000},expectedDurationSeconds);
+        await waitForBoundPublicPlayer({page,expectedDurationSeconds,assertAccess,deadlineAt});
         const accessPage=page;
         let capturePage=page,captureMode="live_public_page";
         const freshMediaUrl=await page.evaluate(()=>document.querySelector("video")?.currentSrc || document.querySelector("video")?.src || null);

@@ -10,6 +10,7 @@ on:
       - src/providers/direct-public-web.js
       - src/platforms/douyin.js
       - src/services/hard-subtitle-ocr.js
+      - src/services/public-player-wait.js
       - src/services/hard-subtitle-worker.py
       - src/services/acquisition-*.js
       - api/acquisition.js
@@ -19,6 +20,7 @@ on:
       - test/douyin-pipeline.test.js
       - test/public-browser-runtime.test.js
       - test/acquisition-worker.test.js
+      - test/hard-subtitle-ocr-player.test.js
       - .github/workflows/content-reader-public-browser-probe.yml
   workflow_dispatch:
     inputs:
@@ -48,7 +50,7 @@ jobs:
           cache: npm
       - run: npm ci
       - name: Unit tests
-        run: node --test test/public-browser-runtime.test.js test/douyin-pipeline.test.js test/acquisition-worker.test.js
+        run: node --test test/public-browser-runtime.test.js test/douyin-pipeline.test.js test/acquisition-worker.test.js test/hard-subtitle-ocr-player.test.js
       - name: Existing fixed baseline probe (manual only)
         if: github.event_name == 'workflow_dispatch' && inputs.mode == 'probe'
         run: node scripts/probe-sparticuz-video.mjs '7688672103729483058'
