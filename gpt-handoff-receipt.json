@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "producer": "gpt-handoff-receipt-workflow-v1",
+  "task_id": "CLOUD_HANDOFF_ENTRY_001",
+  "source_status": "COMPLETE",
+  "goal": "建立可复用的固定交接入口，供新接收方恢复最近任务结果。",
+  "actual_result": "固定入口已创建；执行方结果已自动返回当前对话，主代理已从云端实际读回核验。",
+  "evidence": "gpt-handoff.md；创建提交 4073bb3392e6b03c5843b818d69c43b8554c3dc5；最终验收状态见本文件历史。",
+  "next_action": "本次交付已结束；后续获得明确目标后按本入口流程继续。",
+  "generated_at": "2026-10-08T18:11:38.665Z",
+  "repository": "6Treeeee/-",
+  "branch": "codex/a2a-control-loop",
+  "source_path": "gpt-handoff.md",
+  "source_commit_sha": "254f6ea01bbd3c8f5bf7dc21f48fd48b0cc7e22f",
+  "source_blob_sha": "05b050f88b9afbad7893412c1fcd60e40a5acd3c",
+  "source_url": "https://github.com/6Treeeee/-/blob/254f6ea01bbd3c8f5bf7dc21f48fd48b0cc7e22f/gpt-handoff.md",
+  "workflow_run_id": 37822368101,
+  "workflow_run_url": "https://github.com/6Treeeee/-/actions/runs/37822368101",
+  "scope": "Automatic cloud receipt publication; task facts require receiver verification; no chat wake-up."
+}
