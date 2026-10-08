@@ -39,7 +39,7 @@ on:
         default: ''
       profile_url:
         type: string
-        default: 'https://www.douyin.com/user/MS4wLjABAAAAMEVn6NAGiP-Cl-nSADZK95shqCYjDgAV2br2KwEmvBG4gcMAVo3BUvYw4w5iZ_xP'
+        default: 'https://www.douyin.com/user/MS4wLjABAAAAGaSl5rjFKPevBaPQ3w4pXPvwhmUICqn6kC43GjxGick'
 
 permissions:
   contents: read
@@ -121,7 +121,7 @@ jobs:
         run: node --test test/public-profile-probe.test.js test/douyin-pipeline.test.js
       - name: Fresh logged-out profile listing probe
         env:
-          PROFILE_PROBE_URL: ${{ inputs.profile_url || 'https://www.douyin.com/user/MS4wLjABAAAAMEVn6NAGiP-Cl-nSADZK95shqCYjDgAV2br2KwEmvBG4gcMAVo3BUvYw4w5iZ_xP' }}
+          PROFILE_PROBE_URL: ${{ inputs.profile_url || 'https://www.douyin.com/user/MS4wLjABAAAAGaSl5rjFKPevBaPQ3w4pXPvwhmUICqn6kC43GjxGick' }}
         run: node scripts/probe-public-profile-list.mjs "$PROFILE_PROBE_URL"
       - name: Upload limited public listing receipt
         if: always()
