@@ -1,0 +1,126 @@
+name: GPT handoff receipt
+
+on:
+  push:
+    branches:
+      - codex/a2a-control-loop
+    paths:
+      - gpt-handoff.md
+      - .github/workflows/gpt-handoff-receipt.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gpt-handoff-receipt-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  publish-receipt:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Publish cloud receipt
+        uses: actions/github-script@v8
+        with:
+          retries: 2
+          script: |
+            const branch = "codex/a2a-control-loop";
+            const inputPath = "gpt-handoff.md";
+            const outputPath = "gpt-handoff-receipt.json";
+            const producer = "gpt-handoff-receipt-workflow-v1";
+            const repo = context.repo;
+            if (context.ref !== "refs/heads/" + branch) throw new Error("Unexpected branch");
+            const readFile = async (ref, path) => {
+              const response = await github.rest.repos.getContent({ ...repo, ref, path });
+              const file = response.data;
+              if (Array.isArray(file) || file.type !== "file" || file.encoding !== "base64" || file.size > 32768) {
+                throw new Error("Expected a small UTF-8 handoff file");
+              }
+              return { sha: file.sha, text: Buffer.from(file.content.replace(/\n/g, ""), "base64").toString("utf8") };
+            };
+            const source = await readFile(context.sha, inputPath);
+            const fields = Object.create(null);
+            const pattern = /^-\s*(任务编号|目标|状态|实际结果|证据路径\/提交|下一步)：(.*)$/gm;
+            for (const match of source.text.matchAll(pattern)) {
+              if (Object.hasOwn(fields, match[1])) throw new Error("Duplicate handoff field");
+              fields[match[1]] = match[2].trim();
+            }
+            for (const key of ["任务编号", "目标", "状态", "实际结果", "证据路径/提交", "下一步"]) {
+              if (!fields[key] || fields[key].length > 8000) throw new Error("Missing or invalid field: " + key);
+            }
+            if (!/^[A-Z0-9][A-Z0-9_-]{0,100}$/.test(fields["任务编号"])) throw new Error("Invalid task ID");
+            if (!["READY_FOR_REVIEW", "COMPLETE", "RUNNING", "BLOCKED", "FAILED"].includes(fields["状态"])) {
+              throw new Error("Unknown handoff status");
+            }
+            const receipt = {
+              schema_version: 1,
+              producer,
+              task_id: fields["任务编号"],
+              source_status: fields["状态"],
+              goal: fields["目标"],
+              actual_result: fields["实际结果"],
+              evidence: fields["证据路径/提交"],
+              next_action: fields["下一步"],
+              generated_at: new Date().toISOString(),
+              repository: repo.owner + "/" + repo.repo,
+              branch,
+              source_path: inputPath,
+              source_commit_sha: context.sha,
+              source_blob_sha: source.sha,
+              source_url: "https://github.com/" + repo.owner + "/" + repo.repo + "/blob/" + context.sha + "/" + inputPath,
+              workflow_run_id: context.runId,
+              workflow_run_url: "https://github.com/" + repo.owner + "/" + repo.repo + "/actions/runs/" + context.runId,
+              scope: "Automatic cloud receipt publication; task facts require receiver verification; no chat wake-up."
+            };
+            const serialized = JSON.stringify(receipt, null, 2) + "\n";
+            const blob = await github.rest.git.createBlob({ ...repo, content: serialized, encoding: "utf-8" });
+            let published = false;
+            for (let attempt = 0; attempt < 3; attempt++) {
+              const head = await github.rest.git.getRef({ ...repo, ref: "heads/" + branch });
+              const headSha = head.data.object.sha;
+              const currentSource = await readFile(headSha, inputPath);
+              if (currentSource.sha !== source.sha) {
+                core.notice("A newer handoff replaced this event; no stale receipt was written.");
+                return { publication: "skipped_superseded", source_blob_sha: source.sha };
+              }
+              try {
+                const existing = await readFile(headSha, outputPath);
+                if (JSON.parse(existing.text).producer !== producer) throw new Error("Refusing to replace an unmanaged receipt");
+              } catch (error) {
+                if (error.status !== 404) throw error;
+              }
+              const parent = await github.rest.git.getCommit({ ...repo, commit_sha: headSha });
+              const tree = await github.rest.git.createTree({
+                ...repo,
+                base_tree: parent.data.tree.sha,
+                tree: [{ path: outputPath, mode: "100644", type: "blob", sha: blob.data.sha }]
+              });
+              const commit = await github.rest.git.createCommit({
+                ...repo,
+                message: "Update automated handoff receipt: " + receipt.task_id,
+                tree: tree.data.sha,
+                parents: [headSha]
+              });
+              try {
+                await github.rest.git.updateRef({ ...repo, ref: "heads/" + branch, sha: commit.data.sha, force: false });
+                core.info("Published cloud receipt for " + receipt.task_id);
+                await core.summary.addHeading("Cloud handoff receipt published").addTable([
+                  [{ data: "Field", header: true }, { data: "Value", header: true }],
+                  ["Task", receipt.task_id],
+                  ["Source status", receipt.source_status],
+                  ["Receipt path", outputPath],
+                  ["Source blob", source.sha],
+                  ["Receipt commit", commit.data.sha]
+                ]).write();
+                published = true;
+                break;
+              } catch (error) {
+                if (attempt === 2 || ![409, 422].includes(error.status)) throw error;
+                const latest = await github.rest.git.getRef({ ...repo, ref: "heads/" + branch });
+                if (latest.data.object.sha === headSha) throw error;
+                core.notice("Branch advanced; retrying without overwriting concurrent work.");
+              }
+            }
+            if (!published) throw new Error("Receipt was not published");
+            return { publication: "published", task_id: receipt.task_id, source_blob_sha: source.sha };
