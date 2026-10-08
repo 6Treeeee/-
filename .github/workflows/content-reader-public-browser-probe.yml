@@ -11,22 +11,25 @@ on:
       - src/platforms/douyin.js
       - src/services/hard-subtitle-ocr.js
       - src/services/public-player-wait.js
+      - src/services/public-profile-probe.js
       - src/services/hard-subtitle-worker.py
       - src/services/acquisition-*.js
       - api/acquisition.js
       - scripts/acquisition-worker.mjs
+      - scripts/probe-public-profile-list.mjs
       - scripts/probe-sparticuz-video.mjs
       - scripts/probe-content-reader-full.mjs
       - test/douyin-pipeline.test.js
       - test/public-browser-runtime.test.js
       - test/acquisition-worker.test.js
       - test/hard-subtitle-ocr-player.test.js
+      - test/public-profile-probe.test.js
       - .github/workflows/content-reader-public-browser-probe.yml
   workflow_dispatch:
     inputs:
       mode:
         type: choice
-        options: [probe, acquisition]
+        options: [probe, acquisition, profile_probe]
         default: probe
       aweme_id:
         type: string
@@ -34,12 +37,16 @@ on:
       request_id:
         type: string
         default: ''
+      profile_url:
+        type: string
+        default: 'https://www.douyin.com/user/MS4wLjABAAAAMEVn6NAGiP-Cl-nSADZK95shqCYjDgAV2br2KwEmvBG4gcMAVo3BUvYw4w5iZ_xP'
 
 permissions:
   contents: read
 
 jobs:
   probe:
+    if: ${{ !(github.event_name == 'push' && startsWith(github.event.head_commit.message, 'profile-probe:')) && !(github.event_name == 'workflow_dispatch' && inputs.mode == 'profile_probe') }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
@@ -97,4 +104,30 @@ jobs:
           name: acquisition-${{ steps.task.outputs.request_id }}
           path: acquisition-output/result.json
           if-no-files-found: error
+          retention-days: 1
+
+  profile_probe:
+    if: ${{ (github.event_name == 'push' && startsWith(github.event.head_commit.message, 'profile-probe:')) || (github.event_name == 'workflow_dispatch' && inputs.mode == 'profile_probe') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - name: Profile boundary and identity tests
+        run: node --test test/public-profile-probe.test.js test/douyin-pipeline.test.js
+      - name: Fresh logged-out profile listing probe
+        env:
+          PROFILE_PROBE_URL: ${{ inputs.profile_url || 'https://www.douyin.com/user/MS4wLjABAAAAMEVn6NAGiP-Cl-nSADZK95shqCYjDgAV2br2KwEmvBG4gcMAVo3BUvYw4w5iZ_xP' }}
+        run: node scripts/probe-public-profile-list.mjs "$PROFILE_PROBE_URL"
+      - name: Upload limited public listing receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: public-profile-probe-${{ github.run_id }}
+          path: profile-probe-output/result.json
+          if-no-files-found: ignore
           retention-days: 1

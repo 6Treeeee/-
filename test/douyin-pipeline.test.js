@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { runInNewContext } from "node:vm";
 
 import { publicError, ReaderError } from "../src/errors.js";
 import { DouyinReader, resolveDouyinUrl } from "../src/platforms/douyin.js";
@@ -253,6 +254,9 @@ function fakeBrowserPage({
     },
     async goto(value) {
       navigatedTo = String(value);
+      if (profileDom && activeCurrentUrl === "https://www.douyin.com/") {
+        activeCurrentUrl = navigatedTo;
+      }
       listenerAttachedBeforeNavigation = responseListeners.size > 0;
       if (mainDocumentStatus !== null && mainDocumentStatus !== undefined) {
         const response = {
@@ -2496,6 +2500,160 @@ test("DirectPublicWebProvider records the explicit login-for-more public boundar
   assert.equal(result.limitation.code, "LOGIN_REQUIRED_FOR_MORE_POSTS");
   assert.equal(result.limitation.public_items, 2);
   assert.equal(result.limitation.inaccessible_count, 1);
+});
+
+test("public profile rejects a profile response for a different creator", async () => {
+  const target = "public-user";
+  const fake = fakeBrowserPage({
+    profileDom: {
+      listPresent: true,
+      links: [{ id: "100", kind: "video", title: "Visible post" }],
+      explicitMoreGate: true,
+      creator: { nickname: "Visible creator", signature: null, aweme_count: 1 }
+    },
+    responses: [jsonResponse(
+      `https://www.douyin.com/aweme/v1/web/user/profile/other/?sec_user_id=${target}`,
+      { user: { sec_uid: "other-user", nickname: "Wrong creator" } }
+    )]
+  });
+  const provider = new DirectPublicWebProvider({
+    browserService: fake.browserService, retries: 0, maxScrollRounds: 1
+  });
+
+  await assert.rejects(provider.readProfile({ secUserId: target }), (error) =>
+    error.code === "DOUYIN_PUBLIC_WEB_IDENTITY_MISMATCH" &&
+    error.details?.source === "profile_response");
+});
+
+test("public profile rejects posts attributed to a different creator", async () => {
+  const target = "public-user";
+  const fake = fakeBrowserPage({
+    profileDom: {
+      listPresent: true,
+      links: [{ id: "100", kind: "video", title: "Visible post" }],
+      explicitMoreGate: true,
+      creator: { nickname: "Visible creator", signature: null, aweme_count: 1 }
+    },
+    responses: [jsonResponse(
+      `https://www.douyin.com/aweme/v1/web/aweme/post/?sec_user_id=${target}&max_cursor=0`,
+      { aweme_list: [{ aweme_id: "100", author: { sec_uid: "other-user" } }], has_more: 0 }
+    )]
+  });
+  const provider = new DirectPublicWebProvider({
+    browserService: fake.browserService, retries: 0, maxScrollRounds: 1
+  });
+
+  await assert.rejects(provider.readProfile({ secUserId: target }), (error) =>
+    error.code === "DOUYIN_PUBLIC_WEB_IDENTITY_MISMATCH" &&
+    error.details?.source === "post_author");
+});
+
+test("public profile accepts DOM-only posts on the exact creator page", async () => {
+  const fake = fakeBrowserPage({
+    profileDom: {
+      listPresent: true,
+      links: [{ id: "100", kind: "video", title: "Visible post" }],
+      explicitMoreGate: true,
+      creator: { nickname: "Visible creator", signature: null, aweme_count: 2 }
+    }
+  });
+  const provider = new DirectPublicWebProvider({
+    browserService: fake.browserService, retries: 0, maxScrollRounds: 1
+  });
+
+  const result = await provider.readProfile({ secUserId: "public-user" });
+  assert.deepEqual(result.items.map((post) => post.aweme_id), ["100"]);
+  assert.equal(result.items[0].public_post_kind, "video");
+  assert.equal(result.creator.sec_uid, "public-user");
+  assert.equal(result.pagination.stop_reason, "login_required_for_more");
+});
+
+test("public profile rejects a redirect to a different creator page", async () => {
+  const fake = fakeBrowserPage({
+    currentUrl: "https://www.douyin.com/user/other-user",
+    profileDom: {
+      listPresent: true,
+      links: [{ id: "100", kind: "video", title: "Other creator post" }],
+      explicitMoreGate: true,
+      creator: { nickname: "Other creator", signature: null, aweme_count: 1 }
+    }
+  });
+  const provider = new DirectPublicWebProvider({
+    browserService: fake.browserService, retries: 0, maxScrollRounds: 1
+  });
+
+  await assert.rejects(provider.readProfile({ secUserId: "public-user" }), (error) =>
+    error.code === "DOUYIN_PUBLIC_WEB_IDENTITY_MISMATCH" &&
+    error.details?.source === "page_url");
+});
+
+test("public profile excludes DOM links hidden by an ancestor at the login boundary", async () => {
+  const visibleId = "7688672103729483058";
+  const hiddenId = "7690725127385894198";
+  const externalId = "7690725127385894200";
+  const shown = { style: { display: "block", visibility: "visible", opacity: "1" }, parentElement: null };
+  const hiddenParent = {
+    style: { display: "block", visibility: "visible", opacity: "0" },
+    parentElement: shown
+  };
+  const anchor = (id, parentElement) => ({
+    href: `https://www.douyin.com/video/${id}`,
+    parentElement,
+    style: { display: "block", visibility: "visible", opacity: "1" },
+    getBoundingClientRect: () => ({ width: 100, height: 100 }),
+    getAttribute: () => null,
+    innerText: ""
+  });
+  const list = {
+    ...shown,
+    querySelectorAll: () => [
+      anchor(visibleId, shown),
+      anchor(hiddenId, hiddenParent),
+      { ...anchor(externalId, shown), href: `https://example.com/video/${externalId}` }
+    ]
+  };
+  const document = {
+    title: "Creator的抖音",
+    body: { innerText: "登录后查看更多作品" },
+    querySelector: (selector) => selector === "[data-e2e='user-post-list']" ? list
+      : selector === "[data-e2e='user-title']" ? { textContent: "Creator" }
+      : selector === "[data-e2e='user-tab-count']" ? { textContent: "2" }
+      : null,
+    querySelectorAll: () => []
+  };
+  const page = {
+    on() {}, off() {},
+    url: () => "https://www.douyin.com/user/public-user",
+    goto: async () => ({ status: () => 200 }),
+    evaluate: async (operation, argument) => {
+      if (operation.toString().includes("compactCount")) {
+        const browserOperation = runInNewContext(`(${operation.toString()})`, {
+          document,
+          location: { href: "https://www.douyin.com/user/public-user" },
+          window: { getComputedStyle: (element) => element.style },
+          URL
+        });
+        return browserOperation(argument);
+      }
+      return {
+        documentReadable: true,
+        explicitMoreGate: true,
+        securityChallenge: false,
+        privateContent: false,
+        unavailable: false,
+        loginRequired: false
+      };
+    }
+  };
+  const provider = new DirectPublicWebProvider({
+    browserService: { withPage: (operation) => operation({ page, runtime: { kind: "test" } }) },
+    retries: 0,
+    maxScrollRounds: 1
+  });
+
+  const result = await provider.readProfile({ secUserId: "public-user" });
+  assert.deepEqual(result.items.map((item) => item.aweme_id), [visibleId]);
+  assert.equal(result.pagination.profile_count_gap, 1);
 });
 
 test("a profile-wide login gate preserves visible creator metadata and a zero-post public boundary", async () => {

@@ -322,6 +322,8 @@ function createCapture({ expectedAwemeId = null, expectedSecUserId = null } = {}
     }
 
     if (parsed.path === PROFILE_PATH) {
+      const responseSecUserId = parsed.url.searchParams.get("sec_user_id");
+      if (expectedSecUserId && responseSecUserId && responseSecUserId !== expectedSecUserId) return;
       state.profilePayloads.push(payload);
       return;
     }
@@ -540,10 +542,14 @@ async function profileDomSnapshot(page) {
   return evaluateStable(page, (profileBoundaryPatterns) => {
     function visible(element) {
       if (!element) return false;
-      const style = window.getComputedStyle(element);
+      for (let current = element; current && current !== document; current = current.parentElement) {
+        const style = window.getComputedStyle(current);
+        if (style.display === "none" || style.visibility === "hidden" ||
+            Number(style.opacity) === 0 || current.hidden === true || current.inert === true ||
+            current.getAttribute?.("aria-hidden") === "true") return false;
+      }
       const rect = element.getBoundingClientRect();
-      return style.display !== "none" && style.visibility !== "hidden" &&
-        Number(style.opacity || 1) !== 0 && rect.width > 0 && rect.height > 0;
+      return rect.width > 0 && rect.height > 0;
     }
 
     function compactCount(value) {
@@ -557,8 +563,17 @@ async function profileDomSnapshot(page) {
     const list = document.querySelector("[data-e2e='user-post-list']");
     const links = [];
     for (const anchor of list?.querySelectorAll("a[href]") ?? []) {
-      const url = new URL(anchor.href, location.href);
-      const match = url.pathname.match(/^\/(?:video|note)\/(\d+)/);
+      if (!visible(anchor)) continue;
+      let url;
+      try {
+        url = new URL(anchor.href, location.href);
+      } catch {
+        continue;
+      }
+      const host = url.hostname.toLowerCase();
+      if (url.protocol !== "https:" || url.username || url.password || url.port ||
+          !["www.douyin.com", "www.iesdouyin.com"].includes(host)) continue;
+      const match = url.pathname.match(/^\/(?:video|note)\/(\d+)\/?$/);
       if (!match) continue;
       links.push({
         id: match[1],
@@ -842,6 +857,39 @@ function identityMismatchError(target, expectedAwemeId, observedAwemeId, source)
   );
 }
 
+function profileIdentityMismatchError(target, expectedSecUserId, observedSecUserId, source) {
+  return new ReaderError(
+    "DOUYIN_PUBLIC_WEB_IDENTITY_MISMATCH",
+    "The public Douyin page returned a different creator identity.",
+    {
+      status: 502,
+      details: {
+        provider: PROVIDER,
+        target: targetDiagnostic(target),
+        expected_sec_user_id: expectedSecUserId,
+        observed_sec_user_id: observedSecUserId,
+        source
+      }
+    }
+  );
+}
+
+function observedSecUserId(value) {
+  const id = value?.sec_uid ?? value?.sec_user_id ?? null;
+  return id == null ? null : String(id);
+}
+
+function checkedProfilePage(value, expectedSecUserId, target) {
+  const parsed = safeUrl(value);
+  const actualSecUserId = secUserIdFromUrl(value);
+  if (!parsed || parsed.url.protocol !== "https:" || parsed.url.username || parsed.url.password || parsed.url.port ||
+      !isDouyinHost(parsed.host) || !/^\/(?:share\/)?user\/[^/]+\/?$/i.test(parsed.path) ||
+      !actualSecUserId || (expectedSecUserId && actualSecUserId !== expectedSecUserId)) {
+    throw profileIdentityMismatchError(target, expectedSecUserId, actualSecUserId, "page_url");
+  }
+  return actualSecUserId;
+}
+
 function originMismatchError(target, observedUrl, source) {
   return new ReaderError(
     "DOUYIN_PUBLIC_WEB_IDENTITY_MISMATCH",
@@ -988,10 +1036,16 @@ function mergeProfileItems({ postPages, domLinks, creator, visibleBoundary }) {
 
   const domOrder = [...domLinks.keys()];
   const order = visibleBoundary ? domOrder : [...domOrder, ...apiOrder.filter((id) => !domLinks.has(id))];
-  return order.map((id) => byId.get(id) ?? {
-    aweme_id: id,
-    desc: domLinks.get(id)?.title ?? "",
-    author: creator
+  return order.map((id) => {
+    const domLink = domLinks.get(id);
+    const item = byId.get(id) ?? {
+      aweme_id: id,
+      desc: domLink?.title ?? "",
+      author: creator
+    };
+    return domLink?.kind === "video" || domLink?.kind === "note"
+      ? { ...item, public_post_kind: domLink.kind }
+      : item;
   });
 }
 
@@ -1450,7 +1504,8 @@ export class DirectPublicWebProvider {
         for (const link of dom.links) if (!domLinks.has(link.id)) domLinks.set(link.id, link);
         const access = await pageAccessSnapshot(page);
         const explicitBoundary = Boolean(dom.explicitMoreGate || access.explicitMoreGate);
-        const profileUser = capture.state.profilePayloads.map(extractUser).find(Boolean);
+        const profileUsers = capture.state.profilePayloads.map(extractUser).filter(Boolean);
+        const profileUser = profileUsers[0] ?? null;
         const readableProfileMetadata = hasReadableProfileMetadata(dom, profileUser);
         const firstAuthor = capture.state.postPages
           .flatMap((pageResult) => pageResult.items)
@@ -1476,6 +1531,22 @@ export class DirectPublicWebProvider {
           hasPublicContent: items.length > 0 || (explicitBoundary && readableProfileMetadata)
         });
         if (failure) throw failure;
+
+        const expectedSecUserId = checkedProfilePage(page.url(), selected.secUserId, selected.target);
+        for (const user of profileUsers) {
+          const actual = observedSecUserId(user);
+          if (actual && actual !== expectedSecUserId) {
+            throw profileIdentityMismatchError(selected.target, expectedSecUserId, actual, "profile_response");
+          }
+        }
+        for (const pageResult of capture.state.postPages) {
+          for (const post of pageResult.items) {
+            const actual = observedSecUserId(post?.author);
+            if (actual && actual !== expectedSecUserId) {
+              throw profileIdentityMismatchError(selected.target, expectedSecUserId, actual, "post_author");
+            }
+          }
+        }
 
         if (explicitBoundary && items.length === 0 && !readableProfileMetadata) {
           throw new ReaderError("DOUYIN_LOGIN_REQUIRED", "Douyin requires login for this content.", {
