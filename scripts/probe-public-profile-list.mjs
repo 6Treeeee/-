@@ -1,5 +1,6 @@
 import { mkdir, writeFile } from "node:fs/promises";
 
+import { errorSummary } from "../src/errors.js";
 import { DirectPublicWebProvider } from "../src/providers/direct-public-web.js";
 import { PublicBrowserService } from "../src/services/public-browser.js";
 import { parsePublicProfileProbeUrl, publicProfileProbeReceipt } from "../src/services/public-profile-probe.js";
@@ -30,10 +31,15 @@ try {
     process.exitCode = 2;
   }
 } catch (error) {
+  const safe = errorSummary(error);
   receipt = {
     schema_version: "1.0",
     pass: false,
-    error: { code: error?.code ?? "PROFILE_PROBE_FAILED" }
+    error: {
+      code: error?.code ?? safe.code,
+      ...(safe.details?.reason ? { reason: safe.details.reason } : {}),
+      ...(safe.details?.cause ? { cause: safe.details.cause } : {})
+    }
   };
   process.exitCode = 2;
 }
@@ -44,6 +50,7 @@ console.log(JSON.stringify({
   event: "public_profile_probe.completed",
   pass: receipt.pass,
   error: receipt.error?.code,
+  cause: receipt.error?.cause ?? null,
   sec_user_id: receipt.sec_user_id,
   public_post_count: receipt.public_post_count,
   public_video_count: receipt.public_video_count,
