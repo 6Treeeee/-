@@ -1,6 +1,31 @@
 # CURRENT PROJECT STATE（当前项目状态）
 
-最后更新：2026-09-23
+最后更新：2026-10-10
+
+## 当前结论：TREE_BRAIN_CLOSED_LOOP_001（2026-10-10）
+
+本节更新当前判断；下文按日期保留的阻塞与验收是历史记录。Tree / Finance Tree 继续现有主线，Infrastructure v1 保持冻结。
+
+### 普通 ChatGPT 直接消费 Content Reader：PASS；可靠性待加固
+
+- 普通 ChatGPT 已真实调用 Tree Content Reader 的 start_douyin_read / get_douyin_read_result，成功读取 aweme_id `7688672103729483058`、`7690725127385894198`；带数字 modal_id 的主页单视频链接也已成功读取。这是普通聊天 direct consumption path 的 PASS，已超出此前仅 Preview API 的可行性证明；不代表纯个人主页可批量读取。
+- 已确认的成功链路包含 fresh capture、不读 transcript cache、全片扫描与真实 OCR 返回。`7690725127385894198` 曾先后出现 `WORKER_RESULT_INVALID`、`VIDEO_READ_FAILED`，随后成功。因此能力链路 PASS 不等于可靠性验收通过，也不能据此声称连续成功。
+- 证据来源：Owner 在本任务中的明确确认，以及引用对话“大脑3”（conversation_id `6ab419c8-6754-83ea-818e-303bd709fb99`）的验收回顾。本轮归档既有事实，不重跑视频；未提供的原始工具 task/run ID、完整 OCR、modal_id 完整 URL 不补造。历史 Preview run `36954015208` 仍只证明其自身后端链路。
+- OCR 是画面可见字幕的识别，可能漏字、错字或漏掉短暂字幕；全片扫描不等于完整音轨转录，也不保证无字幕语音、画面信息均被覆盖。
+
+### 既有云端结果回传：PASS，限已验证范围
+
+- `GPT_HANDOFF_PROBE_001` 云端结果回传 PASS：Codex 留下 GitHub 结果，云端接收方读回。Owner 与“大脑3”确认云端任务已返回结果；结果属于任务所属聊天，不代表任意旧普通 ChatGPT 聊天会被自动唤醒。
+- 可核对的原始文件：`gpt-handoff-probe.md`，commit `46e17027c899cc088a74ef72c911ff972d6da91b`；独立读回记录 `gpt-handoff-probe-receipt.md`，commit `8e763ee378e1a441727ee11ab09cda7c13ec88b9`。该历史记录只证明其标注的独立 Codex 读回，保留其中 original_tree_read / automatic_trigger / unattended_discovery 的 NOT_VERIFIED，不把 Owner 后续确认倒写为当时的机器证据。
+- 固定 `gpt-handoff.md` 与既有 `.github/workflows/gpt-handoff-receipt.yml` 已提供自动云端回执；此前运行 `37822646928` 对应 source commit `5427f473877df23f9749f634a3e359f7ec617009`、receipt commit `9aff107`。这些是既有机制证据，不是本任务的新 receipt。
+
+### 本任务范围与验收边界
+
+- task_id：`TREE_BRAIN_CLOSED_LOOP_001`。本轮从 Owner 的继续请求执行文档归档，提交原分支 `codex/a2a-control-loop`，再更新固定 handoff 为 COMPLETE，等待既有工作流生成 receipt，实际读回并核对 source_blob_sha、source_commit_sha、run 与 receipt commit。
+- 文档提交与 handoff 提交分开；本任务最终验收以实际返回的 commit SHA、workflow run URL/ID、自动 receipt 与 SHA 一致性为准。此处不预填尚未发生的工作流结果。
+- 本轮交付证明当前任务执行 → GitHub 结果 → 自动 receipt → 当前执行对话读回；不单凭 receipt 宣称原始“大脑3”已自动接收、普通 ChatGPT 原生 task_start/task_resume 写控制已通过，或完整无人值守闭环成立。
+- 仅更新必要状态文档、固定交接入口和自动生成回执。Content Reader 代码、Production、Tree Brain Control Plane、Worker、task_start/task_status/task_resume、OAuth、Tunnel 均不改；不重做探针，不新增 command bus，不把 GitHub 文档变为第二套权威任务状态。
+- 完成后停止。唯一下一任务：对 `7690725127385894198` 间歇失败做最小可靠性诊断，以连续 3 次 fresh 普通 ChatGPT 读取成功为验收；保留每次真实 task/run、错误或结果、fresh_capture / transcript_cache_read / full_video_scanned 证据，不以本地或 Preview 请求替代普通 ChatGPT 验收。本轮不执行该下一任务。
 
 ## Owner Goal（用户最终目标）
 
