@@ -1,15 +1,15 @@
 # 固定云端交接入口
 
-- 任务编号：CLOUD_HANDOFF_AUTOMATION_001
-- 目标：任务结果保存后自动生成云端回执，由当前活跃对话读取并核验。
+- 任务编号：TREE_BRAIN_CLOSED_LOOP_001
+- 目标：归档 Tree / Finance Tree 已确认的普通 ChatGPT 读取事实与回传边界，通过现有固定交接入口完成本任务云端回执验收。
 - 状态：COMPLETE
-- 更新时间：2026-10-09 02:13:42（Asia/Shanghai，UTC+08:00）
+- 更新时间：2026-10-10（Asia/Shanghai，UTC+08:00）
 - 仓库：6Treeeee/-
 - 分支：codex/a2a-control-loop
 - 固定路径：gpt-handoff.md
-- 实际结果：自动回执工作流已部署并首轮运行成功；主代理已读回核对来源文件SHA、任务字段和运行编号，回执提交仅修改生成的JSON。
-- 证据路径/提交：工作流安装提交 254f6ea01bbd3c8f5bf7dc21f48fd48b0cc7e22f；首轮运行 https://github.com/6Treeeee/-/actions/runs/37822368101；首份自动回执提交 977972ec2a4c8dc48cc98f810b15a4fc83f23154；输出 gpt-handoff-receipt.json。
-- 下一步：后续执行方通过当前GitHub连接保存本入口；当前活跃接收方读取自动回执及其来源证据，核验后判断下一步。
+- 实际结果：CURRENT_PROJECT_STATE 已提交原分支；按 Owner 与大脑3确认记录两个 aweme_id 及 modal_id 单视频读取成功，direct consumption path PASS；7690725127385894198 曾 WORKER_RESULT_INVALID、VIDEO_READ_FAILED 后成功，可靠性待加固；GPT_HANDOFF_PROBE_001 云端回传 PASS，但不代表任意旧聊天自动唤醒。本轮仅文档更新，未重跑探针或修改业务与基础设施。此 COMPLETE 标记文档交付完成，本次自动 receipt 的运行与读回验收见随后实际生成的回执和执行方最终答复，不预称原始大脑3已自动收到。
+- 证据路径/提交：docs/CURRENT_PROJECT_STATE.md；文档 commit 0e49dc3dde53826b9b2eb7bb8c3dcd04e23c7424；事实来源为 Owner 本任务确认及大脑3 conversation_id 6ab419c8-6754-83ea-818e-303bd709fb99；既有 probe commit 46e17027c899cc088a74ef72c911ff972d6da91b、读回记录 commit 8e763ee378e1a441727ee11ab09cda7c13ec88b9；本任务工作流输出 gpt-handoff-receipt.json，其 source_commit_sha 指向本 handoff 提交，source_blob_sha 须与该提交的 gpt-handoff.md 一致，workflow_run_url/ID 与 receipt commit 由实际运行核验。
+- 下一步：完成本次 receipt 读回与 SHA 核验后停止。唯一下一任务为对 7690725127385894198 间歇失败做最小可靠性诊断，以连续3次 fresh 普通 ChatGPT 读取成功为验收；本轮不启动。
 
 ## 工作方式
 
@@ -29,7 +29,7 @@
 此方式不依赖旧电脑或旧 Tree 对话，也不要求用户搬运日志。
 工作范围是运行中的当前对话；本文件本身不会自动唤醒已结束的普通 ChatGPT 对话。
 本次交付是当前对话内的交接与云端自动回执，不代表普通 ChatGPT 后台自动接收已经实现。
-READY_FOR_REVIEW 表示等待验收；COMPLETE 表示执行方已自动返回且主代理已从云端读回核验。
+READY_FOR_REVIEW 表示等待验收；本任务 COMPLETE 表示上述文档交付完成，自动回执及接收方读回是否通过必须另核对真实运行和执行方最终证据。
 本次云端自动生成已完成首轮运行和真实读回；后续任务的事实正确性仍必须依据各自证据核验。
 
 ## 自动回执
