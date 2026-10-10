@@ -1,0 +1,37 @@
+[
+  {
+    "job_id": 113134067900,
+    "events": [
+      "2026-10-08T03:29:04.0123356Z {\"at\":\"2026-10-08T03:29:04.009Z\",\"run_id\":\"e739fa82-d0b4-4191-b811-d18650a05a96\",\"request_id\":\"4ec2afb2-1016-46f8-a1d6-b3d19370ffcd\",\"aweme_id\":\"7690725127385894198\",\"event\":\"ocr.failed\",\"code\":\"DOUYIN_PUBLIC_WEB_IDENTITY_MISMATCH\",\"error_chain\":[{\"name\":\"ReaderError\",\"code\":\"DOUYIN_PUBLIC_WEB_IDENTITY_MISMATCH\",\"message\":\"The public Douyin page returned a different video identity.\",\"details\":{\"provider\":\"direct_public_web\",\"target\":{\"host\":\"www.iesdouyin.com\",\"path\":\"/share/video/7690725127385894198\"},\"expected_aweme_id\":\"7690725127385894198\",\"observed_aweme_id\":\"7691602079621647651\",\"source\":\"live_player_page\"}}]}",
+      "2026-10-08T03:29:07.8808003Z {\"event\":\"acquisition.completed\",\"request_id\":\"4ec2afb2-1016-46f8-a1d6-b3d19370ffcd\",\"aweme_id\":\"7690725127385894198\",\"pass\":false,\"elapsed_ms\":79257,\"error\":{\"code\":\"TRANSCRIPTION_UNAVAILABLE\",\"message\":\"No configured speech-to-text method produced a transcript.\"}}"
+    ]
+  },
+  {
+    "job_id": 112640844465,
+    "events": [
+      "2026-10-07T05:08:03.7929921Z {\"at\":\"2026-10-07T05:08:03.792Z\",\"run_id\":\"5b09795d-3450-4e9f-9176-f300520e0bdd\",\"request_id\":\"8f9d05da-bbcc-441c-b042-91a7ef2c9d2a\",\"aweme_id\":\"7690725127385894198\",\"event\":\"ocr.completed\",\"segments\":38,\"frame_count\":214,\"frame_hash_chain\":\"4277412a5b971c7997b1eab787ee3ee2ec3b81edfabe6384b3c25ac5f817aade\",\"ocr_worker_elapsed_ms\":25136,\"probe_worker_elapsed_ms\":406}",
+      "2026-10-07T05:08:03.9353506Z {\"event\":\"acquisition.completed\",\"request_id\":\"8f9d05da-bbcc-441c-b042-91a7ef2c9d2a\",\"aweme_id\":\"7690725127385894198\",\"pass\":true,\"elapsed_ms\":61839,\"segment_count\":38,\"text_length\":323,\"fresh_capture\":true,\"transcript_cache_read\":false,\"full_video_scanned\":true}"
+    ]
+  },
+  {
+    "job_id": 112639820009,
+    "events": [
+      "2026-10-07T05:04:22.8820347Z {\"at\":\"2026-10-07T05:04:22.881Z\",\"run_id\":\"f62f80e2-ca1b-400d-997e-61f1e7279c51\",\"request_id\":\"fe9e2f3b-5571-49d7-accf-bcc03b475a3d\",\"aweme_id\":\"7690725127385894198\",\"event\":\"ocr.completed\",\"segments\":38,\"frame_count\":214,\"frame_hash_chain\":\"815f5ff4d5aa26115ef41dc7aa06f5031aff8d261f10773858b4674829254ad8\",\"ocr_worker_elapsed_ms\":31940,\"probe_worker_elapsed_ms\":475}",
+      "2026-10-07T05:04:23.0475846Z {\"event\":\"acquisition.completed\",\"request_id\":\"fe9e2f3b-5571-49d7-accf-bcc03b475a3d\",\"aweme_id\":\"7690725127385894198\",\"pass\":true,\"elapsed_ms\":75350,\"segment_count\":38,\"text_length\":323,\"fresh_capture\":true,\"transcript_cache_read\":false,\"full_video_scanned\":true}"
+    ]
+  },
+  {
+    "job_id": 112638022734,
+    "events": [
+      "2026-10-07T04:56:56.0914273Z {\"at\":\"2026-10-07T04:56:56.089Z\",\"run_id\":\"d48e16fe-6fb2-4c94-9bcd-76bcc8d2772a\",\"request_id\":\"2269a602-42ac-4fc3-9d0f-4b6beadc31b3\",\"aweme_id\":\"7690725127385894198\",\"event\":\"ocr.failed\",\"code\":\"OCR_CAPTURE_FAILED\",\"error_chain\":[{\"name\":\"TimeoutError\",\"message\":\"Waiting failed: 15000ms exceeded\"}]}",
+      "2026-10-07T04:57:00.3989006Z {\"event\":\"acquisition.completed\",\"request_id\":\"2269a602-42ac-4fc3-9d0f-4b6beadc31b3\",\"aweme_id\":\"7690725127385894198\",\"pass\":false,\"elapsed_ms\":49155,\"error\":{\"code\":\"TRANSCRIPTION_UNAVAILABLE\",\"message\":\"No configured speech-to-text method produced a transcript.\"}}"
+    ]
+  },
+  {
+    "job_id": 112237988687,
+    "events": [
+      "2026-10-06T11:09:11.4051479Z {\"at\":\"2026-10-06T11:09:11.404Z\",\"run_id\":\"1de0b60d-aaf5-4799-b716-9da83a847283\",\"request_id\":\"5a2172e6-0f26-4e80-b90f-f8065cc4a1ec\",\"aweme_id\":\"7690725127385894198\",\"event\":\"ocr.completed\",\"segments\":38,\"frame_count\":214,\"frame_hash_chain\":\"815f5ff4d5aa26115ef41dc7aa06f5031aff8d261f10773858b4674829254ad8\",\"ocr_worker_elapsed_ms\":32347,\"probe_worker_elapsed_ms\":459}",
+      "2026-10-06T11:09:11.5318989Z {\"event\":\"acquisition.completed\",\"request_id\":\"5a2172e6-0f26-4e80-b90f-f8065cc4a1ec\",\"aweme_id\":\"7690725127385894198\",\"pass\":true,\"elapsed_ms\":76532,\"segment_count\":38,\"text_length\":323,\"fresh_capture\":true,\"transcript_cache_read\":false,\"full_video_scanned\":true}"
+    ]
+  }
+]

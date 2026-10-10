@@ -2,6 +2,14 @@
 
 最后更新：2026-10-10
 
+## 最新进展：TREE_CONTENT_READER_RELIABILITY_001（2026-10-10）
+
+- 最小只读诊断已完成；Owner 明确选择“先保存诊断，普通 ChatGPT 验收待续”。新增普通 ChatGPT 连续 fresh 验收为 0/3（未执行），可靠性尚未 PASS。
+- 已从 GitHub 历史日志确认目标 7690725127385894198 的两种失败：run 37573781047 在 OCR 播放器等待阶段超过 15000ms；run 37722788945 的 live_player_page 返回其他视频 ID 7691602079621647651，身份检查正确拒绝。两者最终日志均为 TRANSCRIPTION_UNAVAILABLE，尚不能与聊天中的 WORKER_RESULT_INVALID / VIDEO_READ_FAILED 逐一对应。
+- 采集分支已有 f6f6beb2218f0e9f2c8b14cdd0999335140eef44 的有限播放器等待补丁；未重复实施。补丁后的身份不匹配说明不能把超时等待视为所有失败的统一根因。
+- 历史成功 run 37454293533、37574363370、37574693235 均有 fresh/no-cache/full-scan 日志，但并非连续三次普通 ChatGPT 成功验收。旧完整 artifacts 当前不可读取，不以日志摘要重建完整结果。
+- 详细证据、请求与运行映射、验收条件：docs/CONTENT_READER_RELIABILITY_001.md；脱敏事件：artifacts/douyin/reliability-2026-10-10/historical-log-events.json。本轮未触发新读取、修改业务代码或部署；保持冻结范围。唯一后续仍为原 Tree 普通 ChatGPT 连续 3 次 fresh 读取及真实结果核验。
+
 ## 当前结论：TREE_BRAIN_CLOSED_LOOP_001（2026-10-10）
 
 本节更新当前判断；下文按日期保留的阻塞与验收是历史记录。Tree / Finance Tree 继续现有主线，Infrastructure v1 保持冻结。
