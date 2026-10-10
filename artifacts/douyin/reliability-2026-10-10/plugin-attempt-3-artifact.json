@@ -1,0 +1,281 @@
+{
+  "task_id": "TREE_CONTENT_READER_RELIABILITY_001",
+  "client": "Codex desktop / connected Tree Content Reader plugin",
+  "ordinary_chatgpt_acceptance": false,
+  "attempt": 3,
+  "request_id": "e937b207-1306-4d32-9cfb-213b1e738292",
+  "retrieval": "GitHub original result artifact; plugin terminal not observed after temporary polling ticket was lost across turns",
+  "worker": {
+    "run_id": "38015014811",
+    "attempt": "1",
+    "commit": "2492ebf6ef6a6fa8fb84e2f503a809bf7051192c"
+  },
+  "aweme_id": "7690725127385894198",
+  "pass": true,
+  "elapsed_ms": 73169,
+  "duration_ms": 86588,
+  "readable_content": {
+    "status": "complete",
+    "method": "hard_subtitle_ocr",
+    "text": "其实从来不靠天赋\n它可以拆开练\n信息密度不是字多\n可以是一个新的观点\n可以是个新的案例\n观众不是因为\n你说的多而留下来\n而是每一句话\n决定你的内容节奏\n真正有网感的人\n而不是靠感觉\n废话的不断往下说\n而是靠结构一直往前推\n原子化结构练多了\n网感自然就出来了\n网感可以让你的视频\n决定你的IP的质量\n真正拉开差距的\n不只是网感\n它是不是\n你过去的实战经验\n得到的答案\n它是不是你对生活\n它是不是你对人性的理解\n所以你刷了几百条爆款\n还是不知道自己怎么拍\n是因为你从来缺的\n可能根本就不是网感\n而是没找到\n我自己的课程体系\n这套个性化的\n就是要结合你的\n来帮你找到真正\n适合你的内容方向\n但又没有什么头绪\n赶紧点击视频下方链接\n加入我们\n跟我们一起来",
+    "segments": [
+      {
+        "start_ms": 750,
+        "end_ms": 2500,
+        "text": "其实从来不靠天赋",
+        "confidence": 0.9945093914866447
+      },
+      {
+        "start_ms": 2500,
+        "end_ms": 3250,
+        "text": "它可以拆开练",
+        "confidence": 0.9975726008415222
+      },
+      {
+        "start_ms": 11250,
+        "end_ms": 12500,
+        "text": "信息密度不是字多",
+        "confidence": 0.9948296844959259
+      },
+      {
+        "start_ms": 15500,
+        "end_ms": 16750,
+        "text": "可以是一个新的观点",
+        "confidence": 0.9994978904724121
+      },
+      {
+        "start_ms": 16750,
+        "end_ms": 19000,
+        "text": "可以是个新的案例",
+        "confidence": 0.9981774687767029
+      },
+      {
+        "start_ms": 19000,
+        "end_ms": 19500,
+        "text": "观众不是因为",
+        "confidence": 0.9994317789872488
+      },
+      {
+        "start_ms": 19500,
+        "end_ms": 20750,
+        "text": "你说的多而留下来",
+        "confidence": 0.9939194172620773
+      },
+      {
+        "start_ms": 21000,
+        "end_ms": 23250,
+        "text": "而是每一句话",
+        "confidence": 0.9946995774904887
+      },
+      {
+        "start_ms": 24750,
+        "end_ms": 26250,
+        "text": "决定你的内容节奏",
+        "confidence": 0.9960646908730268
+      },
+      {
+        "start_ms": 26250,
+        "end_ms": 27500,
+        "text": "真正有网感的人",
+        "confidence": 0.9995384897504535
+      },
+      {
+        "start_ms": 28750,
+        "end_ms": 30000,
+        "text": "而不是靠感觉",
+        "confidence": 0.998757004737854
+      },
+      {
+        "start_ms": 30000,
+        "end_ms": 31500,
+        "text": "废话的不断往下说",
+        "confidence": 0.9961182549595833
+      },
+      {
+        "start_ms": 31500,
+        "end_ms": 34000,
+        "text": "而是靠结构一直往前推",
+        "confidence": 0.9950937747955321
+      },
+      {
+        "start_ms": 34250,
+        "end_ms": 35750,
+        "text": "原子化结构练多了",
+        "confidence": 0.9960792884230614
+      },
+      {
+        "start_ms": 35750,
+        "end_ms": 37000,
+        "text": "网感自然就出来了",
+        "confidence": 0.9937642514705658
+      },
+      {
+        "start_ms": 37500,
+        "end_ms": 39750,
+        "text": "网感可以让你的视频",
+        "confidence": 0.9961386256747775
+      },
+      {
+        "start_ms": 41250,
+        "end_ms": 43250,
+        "text": "决定你的IP的质量",
+        "confidence": 0.9961202873124017
+      },
+      {
+        "start_ms": 43250,
+        "end_ms": 44250,
+        "text": "真正拉开差距的",
+        "confidence": 0.9997826388904026
+      },
+      {
+        "start_ms": 44250,
+        "end_ms": 45250,
+        "text": "不只是网感",
+        "confidence": 0.998343002796173
+      },
+      {
+        "start_ms": 47750,
+        "end_ms": 48250,
+        "text": "它是不是",
+        "confidence": 0.9952359199523926
+      },
+      {
+        "start_ms": 48250,
+        "end_ms": 49250,
+        "text": "你过去的实战经验",
+        "confidence": 0.997981920838356
+      },
+      {
+        "start_ms": 49250,
+        "end_ms": 50000,
+        "text": "得到的答案",
+        "confidence": 0.9977195501327515
+      },
+      {
+        "start_ms": 50000,
+        "end_ms": 52750,
+        "text": "它是不是你对生活",
+        "confidence": 0.9928862527012825
+      },
+      {
+        "start_ms": 52750,
+        "end_ms": 55000,
+        "text": "它是不是你对人性的理解",
+        "confidence": 0.9950803572481329
+      },
+      {
+        "start_ms": 55000,
+        "end_ms": 56500,
+        "text": "所以你刷了几百条爆款",
+        "confidence": 0.9943856477737428
+      },
+      {
+        "start_ms": 56500,
+        "end_ms": 58250,
+        "text": "还是不知道自己怎么拍",
+        "confidence": 0.991555517911911
+      },
+      {
+        "start_ms": 58250,
+        "end_ms": 59000,
+        "text": "是因为你从来缺的",
+        "confidence": 0.9921980276703835
+      },
+      {
+        "start_ms": 59000,
+        "end_ms": 60750,
+        "text": "可能根本就不是网感",
+        "confidence": 0.9967613087760078
+      },
+      {
+        "start_ms": 60750,
+        "end_ms": 63250,
+        "text": "而是没找到",
+        "confidence": 0.996819519996643
+      },
+      {
+        "start_ms": 63250,
+        "end_ms": 64750,
+        "text": "我自己的课程体系",
+        "confidence": 0.988945983350277
+      },
+      {
+        "start_ms": 64750,
+        "end_ms": 66750,
+        "text": "这套个性化的",
+        "confidence": 0.9981367786725363
+      },
+      {
+        "start_ms": 66750,
+        "end_ms": 68000,
+        "text": "就是要结合你的",
+        "confidence": 0.993951141834259
+      },
+      {
+        "start_ms": 73250,
+        "end_ms": 74750,
+        "text": "来帮你找到真正",
+        "confidence": 0.9932364310537066
+      },
+      {
+        "start_ms": 74750,
+        "end_ms": 76000,
+        "text": "适合你的内容方向",
+        "confidence": 0.9967758134007454
+      },
+      {
+        "start_ms": 78250,
+        "end_ms": 80000,
+        "text": "但又没有什么头绪",
+        "confidence": 0.9930746033787727
+      },
+      {
+        "start_ms": 80000,
+        "end_ms": 81250,
+        "text": "赶紧点击视频下方链接",
+        "confidence": 0.9956337630748748
+      },
+      {
+        "start_ms": 81250,
+        "end_ms": 82250,
+        "text": "加入我们",
+        "confidence": 0.9997180104255676
+      },
+      {
+        "start_ms": 82250,
+        "end_ms": 83500,
+        "text": "跟我们一起来",
+        "confidence": 0.9983704288800558
+      }
+    ],
+    "limitations": [
+      "visual_subtitles_only_not_spoken_audio",
+      "subtitle_region_only_capture",
+      "approximate_frame_capture_timestamps",
+      "sub_250ms_or_low_change_captions_may_be_missed",
+      "source_subtitle_errors_preserved",
+      "short_lived_ocr_variants_collapsed_by_temporal_consensus",
+      "ocr_not_manually_corrected"
+    ],
+    "fresh_capture": true,
+    "transcript_cache_read": false,
+    "coverage": {
+      "start_ms": 0,
+      "end_ms": 86588,
+      "full_video_scanned": true,
+      "visual_step_ms": 250,
+      "threshold": 0.003,
+      "caption_activity": {
+        "sustained": true,
+        "active_ms": 42000,
+        "active_ratio": 0.485056,
+        "window_ms": 10000,
+        "covered_windows": 9,
+        "total_windows": 9,
+        "window_ratio": 1,
+        "minimum_active_ratio": 0.2,
+        "minimum_window_ratio": 0.75
+      }
+    }
+  }
+}

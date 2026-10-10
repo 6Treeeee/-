@@ -2,6 +2,13 @@
 
 最后更新：2026-10-10
 
+## 最新执行：目标视频三次 fresh 后台读取成功（2026-10-10）
+
+- Owner 后续指令“执行”“继续”后，当前 Codex 通过已连接 Tree Content Reader 串行启动且仅启动 3 次 7690725127385894198 读取；运行 38014710217、38014848065、38015014811 均 success，三个原始结果包均已核对 request_id、视频身份、worker commit/attempt/run、非空 OCR 与 coverage，全部 PASS。
+- 每次返回 38 段、323 字，fresh_capture=true、transcript_cache_read=false、full_video_scanned=true。三次采集耗时分别为 72170 / 98393 / 73169ms；完整等待时间还包含工作流准备与轮询。未重现此前两类失败，但三次小样本不证明间歇故障根除。
+- 证据范围：前两次 get_douyin_read_result 已实际返回 completed；第三次 start 成功后，跨用户轮次的临时轮询凭证未保留，未观察到插件 completed，改为读取该次 GitHub 原始结果 artifact 核验，没有另开第4次读取。结论为后台连续3/3 PASS、Codex 插件终态实际观察2/3；普通 ChatGPT 连续3次验收仍未执行，不能改写成 PASS。
+- 完整证据：artifacts/douyin/reliability-2026-10-10/plugin-attempt-1.json、plugin-attempt-2.json、plugin-attempt-3-artifact.json、fresh-run-verification.json。仅提交脱敏内容字段，不提交签名 task 凭证、临时下载链接或媒体地址。本轮未改业务代码、Production 或冻结基础设施。
+
 ## 最新进展：TREE_CONTENT_READER_RELIABILITY_001（2026-10-10）
 
 - 最小只读诊断已完成；Owner 明确选择“先保存诊断，普通 ChatGPT 验收待续”。新增普通 ChatGPT 连续 fresh 验收为 0/3（未执行），可靠性尚未 PASS。

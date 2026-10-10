@@ -2,6 +2,24 @@
 
 日期：2026-10-10（Asia/Shanghai）
 
+## 后续执行结果（取代下文历史“本轮新发请求为0”的当前状态）
+
+Owner 后续要求执行。当前 Codex 通过已连接 Tree Content Reader 串行发起3次独立 fresh 请求，没有并发、没有第4次请求，也未改代码或部署。
+
+| 次数 | run ID | request_id | 采集耗时 | 返回与验证 |
+| --- | --- | --- | --- | --- |
+| 1 | 38014710217 | c1febeaa-aaf9-4e44-9f98-2a5ebc4cfeda | 72170ms | 插件 completed；原始 artifact 独立核验 PASS |
+| 2 | 38014848065 | e277f730-b7fe-4b58-abb9-85ab9612c527 | 98393ms | 插件 completed；原始 artifact 独立核验 PASS |
+| 3 | 38015014811 | e937b207-1306-4d32-9cfb-213b1e738292 | 73169ms | 插件 start 成功；跨轮临时票据丢失，插件终态未观察；原始 artifact 核验 PASS |
+
+每次都是 aweme_id 7690725127385894198，38 段、323 字，fresh_capture=true、transcript_cache_read=false、full_video_scanned=true。原始 envelope 的 request_id、aweme_id、worker run/attempt/commit 与 GitHub 元数据匹配；method=hard_subtitle_ocr、status=complete、duration>0、扫描结束接近或达到视频时长、非空 text/segments 均通过。运行时间证实前一次 completed 后才启动下一次。
+
+证据文件位于 artifacts/douyin/reliability-2026-10-10/：plugin-attempt-1.json、plugin-attempt-2.json 为实际插件终态；plugin-attempt-3-artifact.json 为第三次原始 artifact 的白名单字段投影；fresh-run-verification.json 保存三次 run/commit/artifact 与完整性核对。未将签名票据、媒体签名链接、GitHub 下载临时地址写入仓库。
+
+**后台连续3次 fresh 采集 PASS；Codex 插件终态仅实际观察2次；普通 ChatGPT 连续3次入口验收仍未执行。** 第三次通过 GitHub 核验不替代插件终态，也不以本轮 Codex 调用代替普通 ChatGPT 验收。三次未复现失败不代表根因已修复或长期可靠性保证。本轮执行与证据归档完成后停止。
+
+## 以下为执行前的历史诊断
+
 状态：最小只读诊断完成；普通 ChatGPT 连续 3 次 fresh 验收待续。Owner 明确选择“先保存诊断，普通 ChatGPT 验收待续”。本轮新发读取请求为 0，未修改或部署业务代码、Worker、Production、Control Plane、OAuth、Tunnel。
 
 ## 已核对的历史运行
