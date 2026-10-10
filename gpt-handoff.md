@@ -7,9 +7,9 @@
 - 仓库：6Treeeee/-
 - 分支：codex/a2a-control-loop
 - 固定路径：gpt-handoff.md
-- 实际结果：最小只读诊断完成并保存；历史日志确认播放器15秒超时与另一条视频身份不匹配，已有有限等待补丁不重复实施。旧完整 artifacts 不可读取，不能将日志与聊天两个错误码强行配对。Owner 明确选择先保存诊断、普通 ChatGPT 验收待续；当前新增验收0/3，未启动新读取，未改业务代码或部署。BLOCKED 仅表示普通 ChatGPT 验收待续，不表示本轮插件或后端故障。
-- 证据路径/提交：文档与证据 commit b93e715dda8461afe355cb95bdfccc83ae447a9f；docs/CONTENT_READER_RELIABILITY_001.md；docs/CURRENT_PROJECT_STATE.md；artifacts/douyin/reliability-2026-10-10/historical-log-events.json；失败 runs 37573781047、37722788945；历史成功 runs 37454293533、37574363370、37574693235；本 handoff 的自动 receipt 由既有工作流生成并核验。
-- 下一步：按 Owner 选择停止本轮。在原 Tree 普通 ChatGPT 串行完成目标视频3次 fresh 读取，保留每次 request_id、run URL/ID、结果与 fresh/no-cache/full-scan 字段；失败时及时保存脱敏证据并建立错误码与 run 的对应关系，未通过前不标可靠性 PASS。
+- 实际结果：已通过当前 Codex 的 Tree Content Reader 串行启动3次 fresh 读取，后台 runs 38014710217、38014848065、38015014811 均 success；原始结果均身份匹配、38段323字、fresh=true、cache=false、full-scan=true，来源校验通过。前两次插件 completed 已观察；第三次跨轮临时票据丢失，仅从原始 artifact 核验完成，未冒充插件终态。后台连续3/3 PASS，Codex插件终态观察2/3；普通 ChatGPT 连续3次仍未执行，状态保留 BLOCKED。没有第4次请求，没有修改业务代码或部署。
+- 证据路径/提交：文档与完整脱敏结果 commit ac5f5a9092afce3788f98d2af7bf2106a66c4bd3；docs/CONTENT_READER_RELIABILITY_001.md；docs/CURRENT_PROJECT_STATE.md；artifacts/douyin/reliability-2026-10-10/ 下 plugin-attempt-1.json、plugin-attempt-2.json、plugin-attempt-3-artifact.json、fresh-run-verification.json；三次 worker run URL 与 source commit/attempt 已保存。本 handoff 自动 receipt 由既有工作流生成核验。
+- 下一步：本轮执行与证据归档结束。原 Tree 普通 ChatGPT 连续3次 fresh 验收仍待完成；不能用本轮 Codex 后台3次成功替代，也不能据三次未复现断言间歇故障根除。后续轮询凭证须私密跨轮保存，避免终态证据丢失；不新增控制总线。
 
 ## 工作方式
 
