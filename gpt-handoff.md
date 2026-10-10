@@ -1,15 +1,15 @@
 # 固定云端交接入口
 
-- 任务编号：TREE_BRAIN_CLOSED_LOOP_001
-- 目标：归档 Tree / Finance Tree 已确认的普通 ChatGPT 读取事实与回传边界，通过现有固定交接入口完成本任务云端回执验收。
-- 状态：COMPLETE
+- 任务编号：TREE_CONTENT_READER_RELIABILITY_001
+- 目标：对 7690725127385894198 间歇失败做最小可靠性诊断；最终以连续3次 fresh 普通 ChatGPT 读取成功为验收。
+- 状态：BLOCKED
 - 更新时间：2026-10-10（Asia/Shanghai，UTC+08:00）
 - 仓库：6Treeeee/-
 - 分支：codex/a2a-control-loop
 - 固定路径：gpt-handoff.md
-- 实际结果：CURRENT_PROJECT_STATE 已提交原分支；按 Owner 与大脑3确认记录两个 aweme_id 及 modal_id 单视频读取成功，direct consumption path PASS；7690725127385894198 曾 WORKER_RESULT_INVALID、VIDEO_READ_FAILED 后成功，可靠性待加固；GPT_HANDOFF_PROBE_001 云端回传 PASS，但不代表任意旧聊天自动唤醒。本轮仅文档更新，未重跑探针或修改业务与基础设施。此 COMPLETE 标记文档交付完成，本次自动 receipt 的运行与读回验收见随后实际生成的回执和执行方最终答复，不预称原始大脑3已自动收到。
-- 证据路径/提交：docs/CURRENT_PROJECT_STATE.md；文档 commit 0e49dc3dde53826b9b2eb7bb8c3dcd04e23c7424；事实来源为 Owner 本任务确认及大脑3 conversation_id 6ab419c8-6754-83ea-818e-303bd709fb99；既有 probe commit 46e17027c899cc088a74ef72c911ff972d6da91b、读回记录 commit 8e763ee378e1a441727ee11ab09cda7c13ec88b9；本任务工作流输出 gpt-handoff-receipt.json，其 source_commit_sha 指向本 handoff 提交，source_blob_sha 须与该提交的 gpt-handoff.md 一致，workflow_run_url/ID 与 receipt commit 由实际运行核验。
-- 下一步：完成本次 receipt 读回与 SHA 核验后停止。唯一下一任务为对 7690725127385894198 间歇失败做最小可靠性诊断，以连续3次 fresh 普通 ChatGPT 读取成功为验收；本轮不启动。
+- 实际结果：最小只读诊断完成并保存；历史日志确认播放器15秒超时与另一条视频身份不匹配，已有有限等待补丁不重复实施。旧完整 artifacts 不可读取，不能将日志与聊天两个错误码强行配对。Owner 明确选择先保存诊断、普通 ChatGPT 验收待续；当前新增验收0/3，未启动新读取，未改业务代码或部署。BLOCKED 仅表示普通 ChatGPT 验收待续，不表示本轮插件或后端故障。
+- 证据路径/提交：文档与证据 commit b93e715dda8461afe355cb95bdfccc83ae447a9f；docs/CONTENT_READER_RELIABILITY_001.md；docs/CURRENT_PROJECT_STATE.md；artifacts/douyin/reliability-2026-10-10/historical-log-events.json；失败 runs 37573781047、37722788945；历史成功 runs 37454293533、37574363370、37574693235；本 handoff 的自动 receipt 由既有工作流生成并核验。
+- 下一步：按 Owner 选择停止本轮。在原 Tree 普通 ChatGPT 串行完成目标视频3次 fresh 读取，保留每次 request_id、run URL/ID、结果与 fresh/no-cache/full-scan 字段；失败时及时保存脱敏证据并建立错误码与 run 的对应关系，未通过前不标可靠性 PASS。
 
 ## 工作方式
 
