@@ -3,13 +3,13 @@
 - 任务编号：TREE_CONTENT_READER_RELIABILITY_001
 - 目标：对 7690725127385894198 间歇失败做最小可靠性诊断；最终以连续3次 fresh 普通 ChatGPT 读取成功为验收。
 - 状态：BLOCKED
-- 更新时间：2026-10-10（Asia/Shanghai，UTC+08:00）
+- 更新时间：2026-10-11（Asia/Shanghai，UTC+08:00）
 - 仓库：6Treeeee/-
 - 分支：codex/a2a-control-loop
 - 固定路径：gpt-handoff.md
-- 实际结果：已通过当前 Codex 的 Tree Content Reader 串行启动3次 fresh 读取，后台 runs 38014710217、38014848065、38015014811 均 success；原始结果均身份匹配、38段323字、fresh=true、cache=false、full-scan=true，来源校验通过。前两次插件 completed 已观察；第三次跨轮临时票据丢失，仅从原始 artifact 核验完成，未冒充插件终态。后台连续3/3 PASS，Codex插件终态观察2/3；普通 ChatGPT 连续3次仍未执行，状态保留 BLOCKED。没有第4次请求，没有修改业务代码或部署。
-- 证据路径/提交：文档与完整脱敏结果 commit ac5f5a9092afce3788f98d2af7bf2106a66c4bd3；docs/CONTENT_READER_RELIABILITY_001.md；docs/CURRENT_PROJECT_STATE.md；artifacts/douyin/reliability-2026-10-10/ 下 plugin-attempt-1.json、plugin-attempt-2.json、plugin-attempt-3-artifact.json、fresh-run-verification.json；三次 worker run URL 与 source commit/attempt 已保存。本 handoff 自动 receipt 由既有工作流生成核验。
-- 下一步：本轮执行与证据归档结束。原 Tree 普通 ChatGPT 连续3次 fresh 验收仍待完成；不能用本轮 Codex 后台3次成功替代，也不能据三次未复现断言间歇故障根除。后续轮询凭证须私密跨轮保存，避免终态证据丢失；不新增控制总线。
+- 实际结果：最后一项普通 ChatGPT 验收 FAIL（未执行，非三次读取失败），状态 BLOCKED。当前会话为 Codex desktop，已发现 Tree Content Reader start/poll 工具，但没有普通 ChatGPT 会话执行/恢复入口；read_thread、send_message_to_thread 未暴露。不能将当前 Codex 插件调用算作普通 ChatGPT 侧证据。本轮新增读取 0 次，普通 ChatGPT completed 0/3，三次所有结果字段均为 null / NOT_EXECUTED；未使用旧 runs 替代。此阻塞不代表普通 ChatGPT 产品内插件不可用。
+- 证据路径/提交：artifacts/douyin/reliability-2026-10-11/ordinary-chatgpt-acceptance.json；docs/CONTENT_READER_RELIABILITY_001.md；docs/CURRENT_PROJECT_STATE.md。旧 Codex 证据保留在 artifacts/douyin/reliability-2026-10-10/，不计入本次普通 ChatGPT 验收。
+- 下一步：待具备普通 ChatGPT 原 Tree 会话真实执行入口后，串行 start/poll/result 三次，逐次保留 completed、fresh_capture、transcript_cache_read、full_scan（原字段 full_video_scanned）、worker run 与来源校验。三次全通过才 PASS；当前不关闭任务。
 
 ## 工作方式
 

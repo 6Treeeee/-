@@ -1,6 +1,15 @@
 # CURRENT PROJECT STATE（当前项目状态）
 
-最后更新：2026-10-10
+## 2026-10-11 最后一项验收：BLOCKED
+
+本轮验收结果 FAIL（未执行，不是视频读取失败）。已核对当前 Codex desktop 工具清单：Tree Content Reader 的 start_douyin_read / get_douyin_read_result 可用，但未暴露普通 ChatGPT 会话执行/恢复入口，也无 read_thread / send_message_to_thread。此事实仅限定当前执行环境，不推断普通 ChatGPT 内插件不可用。引用对话的缓存摘要不作为新验收证据。
+
+普通 ChatGPT completed 为 0/3；三次均 NOT_EXECUTED，completed、fresh_capture、transcript_cache_read、full_scan、worker run、来源校验均无新证据（null）。本轮新读取请求 0 次；没有以 Codex 调用或旧 runs 38014710217、38014848065、38015014811 替代。
+
+证据：artifacts/douyin/reliability-2026-10-11/ordinary-chatgpt-acceptance.json。handoff 保持 BLOCKED；未修改 Content Reader 代码、Production、基础设施或权威 task-state。恢复条件是普通 ChatGPT 原 Tree 会话具备真实执行入口，随后完成三次串行 start/poll/result 和来源校验；full_scan 对应实际结果字段 full_video_scanned。
+
+
+最后更新：2026-10-11
 
 ## 最新执行：目标视频三次 fresh 后台读取成功（2026-10-10）
 

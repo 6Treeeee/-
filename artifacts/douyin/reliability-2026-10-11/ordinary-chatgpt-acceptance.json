@@ -1,0 +1,58 @@
+{
+  "task_id": "TREE_CONTENT_READER_RELIABILITY_001",
+  "date": "2026-10-11",
+  "timezone": "Asia/Shanghai",
+  "video_id": "7690725127385894198",
+  "acceptance_result": "FAIL",
+  "handoff_status": "BLOCKED",
+  "execution_environment": "Codex desktop",
+  "ordinary_chatgpt_completed": 0,
+  "new_read_requests": 0,
+  "blocker": "Current session exposes Tree Content Reader start/poll tools to Codex, but exposes no ordinary ChatGPT conversation execution or resume tool. Codex calls cannot establish the required ordinary ChatGPT client evidence. No claim is made that the plugin is unavailable in ordinary ChatGPT itself.",
+  "available_tools": [
+    "mcp__codex_apps__tree_content_reader_start_douyin_read",
+    "mcp__codex_apps__tree_content_reader_get_douyin_read_result"
+  ],
+  "unavailable_session_tools": [
+    "read_thread",
+    "send_message_to_thread"
+  ],
+  "excluded_prior_worker_runs": [
+    "38014710217",
+    "38014848065",
+    "38015014811"
+  ],
+  "attempts": [
+    {
+      "attempt": 1,
+      "status": "NOT_EXECUTED",
+      "completed": null,
+      "fresh_capture": null,
+      "transcript_cache_read": null,
+      "full_scan": null,
+      "worker_run": null,
+      "source_validation": null
+    },
+    {
+      "attempt": 2,
+      "status": "NOT_EXECUTED",
+      "completed": null,
+      "fresh_capture": null,
+      "transcript_cache_read": null,
+      "full_scan": null,
+      "worker_run": null,
+      "source_validation": null
+    },
+    {
+      "attempt": 3,
+      "status": "NOT_EXECUTED",
+      "completed": null,
+      "fresh_capture": null,
+      "transcript_cache_read": null,
+      "full_scan": null,
+      "worker_run": null,
+      "source_validation": null
+    }
+  ],
+  "scope": "Evidence and handoff only; no code, Production, infrastructure, or authoritative task-state mutation."
+}
