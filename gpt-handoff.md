@@ -7,9 +7,9 @@
 - 仓库：6Treeeee/-
 - 分支：codex/a2a-control-loop
 - 固定路径：gpt-handoff.md
-- 实际结果：最后一项普通 ChatGPT 验收 FAIL（未执行，非三次读取失败），状态 BLOCKED。当前会话为 Codex desktop，已发现 Tree Content Reader start/poll 工具，但没有普通 ChatGPT 会话执行/恢复入口；read_thread、send_message_to_thread 未暴露。不能将当前 Codex 插件调用算作普通 ChatGPT 侧证据。本轮新增读取 0 次，普通 ChatGPT completed 0/3，三次所有结果字段均为 null / NOT_EXECUTED；未使用旧 runs 替代。此阻塞不代表普通 ChatGPT 产品内插件不可用。
+- 实际结果：普通 ChatGPT 验收 FAIL（未执行），状态 BLOCKED，completed 0/3。本轮主动查找现有入口：Browser 启动缺少所配置 26.1007.21434 的 browser-service.mjs（本地仅安装 26.1002.52244）；Opera 返回 Browser not connected；TinyFish 原大脑3会话访问检查 run 6ce3829a-163e-43ce-9c82-df9ac99804b5 被用户取消，未返回页面证据，默认 profile 未记录 ChatGPT 登录。不把未记录登录推断为真实登录失败。插件与工具搜索未找到普通 ChatGPT 会话执行工具。视频读取仍为0，三次均 NOT_EXECUTED，全部验收字段无新证据。旧后台 runs 不计入验收。
 - 证据路径/提交：artifacts/douyin/reliability-2026-10-11/ordinary-chatgpt-acceptance.json；docs/CONTENT_READER_RELIABILITY_001.md；docs/CURRENT_PROJECT_STATE.md。旧 Codex 证据保留在 artifacts/douyin/reliability-2026-10-10/，不计入本次普通 ChatGPT 验收。
-- 下一步：待具备普通 ChatGPT 原 Tree 会话真实执行入口后，串行 start/poll/result 三次，逐次保留 completed、fresh_capture、transcript_cache_read、full_scan（原字段 full_video_scanned）、worker run 与来源校验。三次全通过才 PASS；当前不关闭任务。
+- 下一步：恢复现有 Browser 连接或取得已登录普通 ChatGPT 的可控制浏览器入口后，在原 Tree 会话串行执行三次 start/poll/result。TinyFish 访问检查已被用户取消，不自行重启；该 profile 若继续使用，需要用户授权打开登录设置页并自行登录。三次 completed、fresh/no-cache/full-scan、worker run 与来源校验全满足才 PASS。
 
 ## 工作方式
 

@@ -1,5 +1,12 @@
 # CURRENT PROJECT STATE（当前项目状态）
 
+## 2026-10-11 主动查找普通 ChatGPT 入口
+
+Owner 要求“你自己找入口”后，实际尝试现有浏览器入口：Browser 初始化失败，配置引用的 26.1007.21434/scripts/browser-service.mjs 不存在，本地 Browser 插件只找到 26.1002.52244；没有取得浏览器控制对象。Opera list_tabs 返回 Browser not connected。TinyFish 使用现有默认 profile 只读访问原大脑3会话，run 6ce3829a-163e-43ce-9c82-df9ac99804b5 被用户取消，result=null；其 profile 未记录 ChatGPT 登录，不据此假定现场一定登出。未重启该已取消路线，未发视频读取请求。
+
+普通 ChatGPT 侧三次仍全部 NOT_EXECUTED（0/3）；BLOCKED / 验收 FAIL。恢复条件为取得已登录且能控制的现有普通 ChatGPT 浏览器入口，再在原 Tree 会话完成三次真实 start/poll/result。原阻塞 handoff 9704856 的自动回执已真实读回，workflow 38099618458 completed/success，source commit/blob 一致；回执不代表普通 ChatGPT 验收。入口检查证据补入 artifacts/douyin/reliability-2026-10-11/ordinary-chatgpt-acceptance.json。
+
+
 ## 2026-10-11 最后一项验收：BLOCKED
 
 本轮验收结果 FAIL（未执行，不是视频读取失败）。已核对当前 Codex desktop 工具清单：Tree Content Reader 的 start_douyin_read / get_douyin_read_result 可用，但未暴露普通 ChatGPT 会话执行/恢复入口，也无 read_thread / send_message_to_thread。此事实仅限定当前执行环境，不推断普通 ChatGPT 内插件不可用。引用对话的缓存摘要不作为新验收证据。
