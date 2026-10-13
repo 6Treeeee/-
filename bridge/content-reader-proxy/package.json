@@ -1,0 +1,11 @@
+{
+  "name": "tree-content-reader-trusted-source-proxy",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@vercel/oidc": "4.0.0"
+  }
+}
