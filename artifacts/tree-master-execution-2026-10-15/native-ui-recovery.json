@@ -21,8 +21,29 @@
     "module_exists": false,
     "error": "Cannot find module"
   },
-  "status": "EXTENSION_INSTALLED_BROWSER_RUNTIME_MISSING_RESTART_REQUIRED",
-  "pending": "Normal desktop application restart and reopen the same original task to reload Browser runtime; do not remove the installed extension.",
+  "status": "BLOCKED_CLIENT_RUNTIME_AFTER_RESTART",
+  "pending": "Official client Browser runtime repair; sanitized native feedback draft is open for owner review and has not been submitted. Do not reinstall the already installed Edge extension again.",
+  "restart_result": {
+    "original_process_id": 4144,
+    "normal_quit_request_logged_at": "2026-10-14T20:57:49.0388417+00:00",
+    "launcher_receipt_last_phase": "normal_quit_requested",
+    "launcher_completed_reopen": false,
+    "new_visible_process_id": 10148,
+    "new_process_start_local": "2026-10-15 04:58:26",
+    "original_task_reopened": true,
+    "post_restart_tool_result": "Cannot find module browser/26.1007.71326/scripts/browser-service.mjs",
+    "runtime_recovered": false
+  },
+  "feedback_draft": {
+    "entry": "Native Help -> Feedback",
+    "category": "Error",
+    "documents_attached": false,
+    "diagnostic_logs_attached": false,
+    "browser_tabs_and_logs_attached": false,
+    "submitted": false,
+    "official_reference": "https://learn.chatgpt.com/docs/reference/troubleshooting",
+    "text": "Browser fails before discovery. Cannot find module browser/26.1007.71326/scripts/browser-service.mjs. Installed versions: 26.1002.52244 and 26.1007.21434. Edge ChatGPT extension by OpenAI is installed and enabled. Desktop reports up to date. Reinstall extension, Browser off/on, and full desktop restart did not fix. Please restore the official Browser runtime package or repair its generated service path. Private documents, session and browser logs are excluded."
+  },
   "new_video_requests": 0,
   "new_control_plane_tasks": 0,
   "owner_screenshot_edge": {
