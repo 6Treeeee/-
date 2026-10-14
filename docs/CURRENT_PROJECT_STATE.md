@@ -2,6 +2,8 @@
 
 ## 2026-10-15：原任务入口复核仍 BLOCKED
 
+Owner 新截图已确认 Edge 商店的 OpenAI ChatGPT 扩展确实安装，显示“删除”和已安装说明；安装确认不再是当前待办。重试控制工具仍在初始化时报同一缺失 Browser 运行文件。当前已保存原线程检查点，准备正常重启桌面应用并通过 codex://threads/01a1317a-c479-7460-8c24-37351301787c 返回原任务，重新检查运行包是否由客户端恢复。不要移除现有扩展或新建平行任务。
+
 Owner 随后授权直接操作客户端或打开正确页面。已用官方深链接打开原桌面应用设置，实图确认 Edge 扩展已安装/启用；Chrome 未安装。已通过原生“帮助 → 检查更新”取得 ChatGPT is up to date；内置浏览器开关关闭后重开并确认恢复启用，控制工具仍报同一缺失运行文件。已进入 Edge 的官方管理页面，实际点击“重新安装扩展程序”，打开 Microsoft Edge Addons 的 ChatGPT 页面。Owner 提供的 Chrome 商店截图提示商品无法购买或下载；不能推断具体地区、付款或账号原因。当前待 Owner 在已打开的 Edge 官方页面完成安装/权限确认；未声称重装或 Browser 恢复成功。证据：artifacts/tree-master-execution-2026-10-15/native-ui-recovery.json。不要移除现有扩展、关闭验证或改写受信服务来假装通过。
 
 本日再次继续后已实际尝试官方 CLI 自行恢复：codex plugin add browser@openai-bundled --json 返回 exit 1，明确提示原 Browser 不在该市场。当前 CLI 配置的市场为 personal、openai-primary-runtime、openai-curated；完整可用列表也未返回原 bundled Browser。未将名称相近的第三方浏览器插件作为替代。CLI 的本地 Tree Brain Codex 插件确实 installed/enabled，但普通 ChatGPT 插件管理仍为 not_installed，两者不能互相替代。官方恢复文档要求桌面 Settings → Computer Use 重新安装/连接并确认 Manage；原入口恢复仍需要 Owner 完成桌面操作。未修改 trusted-service 配置或权限。

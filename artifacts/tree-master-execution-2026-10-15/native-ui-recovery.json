@@ -21,8 +21,20 @@
     "module_exists": false,
     "error": "Cannot find module"
   },
-  "status": "WAITING_FOR_OWNER_BROWSER_EXTENSION_INSTALL_CONFIRMATION",
-  "pending": "Owner completes the installation/permission confirmation in the already opened Edge Addons page, then resume this original task.",
+  "status": "EXTENSION_INSTALLED_BROWSER_RUNTIME_MISSING_RESTART_REQUIRED",
+  "pending": "Normal desktop application restart and reopen the same original task to reload Browser runtime; do not remove the installed extension.",
   "new_video_requests": 0,
-  "new_control_plane_tasks": 0
+  "new_control_plane_tasks": 0,
+  "owner_screenshot_edge": {
+    "publisher": "OpenAI",
+    "extension_name": "ChatGPT",
+    "installed": true,
+    "evidence": "Store shows Remove button and confirms installed; screenshot supplied by owner"
+  },
+  "restart_checkpoint": {
+    "thread_id": "01a1317a-c479-7460-8c24-37351301787c",
+    "reopen_uri": "codex://threads/01a1317a-c479-7460-8c24-37351301787c",
+    "main_branch": "codex/a2a-control-loop",
+    "new_tasks": 0
+  }
 }
