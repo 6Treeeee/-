@@ -1,5 +1,13 @@
 # CURRENT PROJECT STATE（当前项目状态）
 
+## 2026-10-15：原任务入口复核仍 BLOCKED
+
+Owner 要求继续后，仅复核未完成的普通 ChatGPT 入口。Tree Brain Codex 插件实时返回 not_installed，当前未发现可调用的 task_start/task_status/task_resume；本机原授权元数据仍已过期。未原样重复此前已记录的 MCP 401 请求。
+
+Browser 当前失败发生在初始化之前：Cannot find module browser/26.1007.71326/scripts/browser-service.mjs。config.toml:155 的 trusted service 指向该文件，实际该版本/文件不存在；本机只有 26.1002.52244 与 26.1007.21434，技能对应的 26.1002.52244 服务文件存在。该错误更新了 2026-10-14 的 No browser is available 现场；不能由旧 Browser 成功连接记录推断当前可用。通过官方插件更新/重装和连接界面恢复，不手工拼装受信服务或改造浏览器控制方式。
+
+已发布的 Proxy 修复和真实 Codex 插件结果继续复用，普通 ChatGPT 三次仍 0/3 NOT_EXECUTED，本轮新增视频请求 0。恢复条件是 Owner 完成 Browser 官方更新/重装、连接已登录普通 ChatGPT 的浏览器，并连接现有 Tree Brain Codex、续期原范围授权。随后从本线程继续两个真实验收；不重建后端，不重做已冻结样本。脱敏证据：artifacts/tree-master-execution-2026-10-15/entry-recheck.json。
+
 ## 2026-10-14：TREE_MASTER_EXECUTION，两个普通 ChatGPT 闭环仍待外部入口
 
 本节取代下文历史记录的当前判断。工程修复已上线，整体状态 **BLOCKED_EXTERNAL_ENTRY**，两个 GOAL 均未标记普通 ChatGPT PASS。
