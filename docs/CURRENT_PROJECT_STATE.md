@@ -2,6 +2,8 @@
 
 ## 2026-10-15：原任务入口复核仍 BLOCKED
 
+本日再次继续后已实际尝试官方 CLI 自行恢复：codex plugin add browser@openai-bundled --json 返回 exit 1，明确提示原 Browser 不在该市场。当前 CLI 配置的市场为 personal、openai-primary-runtime、openai-curated；完整可用列表也未返回原 bundled Browser。未将名称相近的第三方浏览器插件作为替代。CLI 的本地 Tree Brain Codex 插件确实 installed/enabled，但普通 ChatGPT 插件管理仍为 not_installed，两者不能互相替代。官方恢复文档要求桌面 Settings → Computer Use 重新安装/连接并确认 Manage；原入口恢复仍需要 Owner 完成桌面操作。未修改 trusted-service 配置或权限。
+
 Owner 要求继续后，仅复核未完成的普通 ChatGPT 入口。Tree Brain Codex 插件实时返回 not_installed，当前未发现可调用的 task_start/task_status/task_resume；本机原授权元数据仍已过期。未原样重复此前已记录的 MCP 401 请求。
 
 Browser 当前失败发生在初始化之前：Cannot find module browser/26.1007.71326/scripts/browser-service.mjs。config.toml:155 的 trusted service 指向该文件，实际该版本/文件不存在；本机只有 26.1002.52244 与 26.1007.21434，技能对应的 26.1002.52244 服务文件存在。该错误更新了 2026-10-14 的 No browser is available 现场；不能由旧 Browser 成功连接记录推断当前可用。通过官方插件更新/重装和连接界面恢复，不手工拼装受信服务或改造浏览器控制方式。

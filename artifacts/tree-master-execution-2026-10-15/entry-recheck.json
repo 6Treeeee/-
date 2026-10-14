@@ -29,5 +29,30 @@
     "Update/reinstall and reconnect Browser through its official plugin UI, then connect a signed-in ordinary ChatGPT browser through Settings -> Computer Use",
     "Install/connect the existing Tree Brain Codex through its legitimate owner flow and renew the same bounded authorization; do not send credentials in chat"
   ],
-  "resume": "Continue this original task and existing branch after the entry is restored; run ordinary ChatGPT acceptance without rebuilding the backend."
+  "resume": "Continue this original task and existing branch after the entry is restored; run ordinary ChatGPT acceptance without rebuilding the backend.",
+  "official_cli_recovery": {
+    "cli_version": "0.162.0-alpha.17.2",
+    "configured_marketplaces": [
+      "personal",
+      "openai-primary-runtime",
+      "openai-curated"
+    ],
+    "bundled_marketplace_query": {
+      "installed": [],
+      "available": []
+    },
+    "command": "codex plugin add browser@openai-bundled --json",
+    "exit_code": 1,
+    "error": "plugin `browser` was not found in marketplace `openai-bundled`",
+    "available_catalog": "Original bundled Browser not available from current CLI catalogs; similarly named third-party plugins were not installed as replacements",
+    "local_tree_brain_plugin": {
+      "installed": true,
+      "enabled": true,
+      "id": "tree-brain-codex@personal",
+      "scope": "local Codex only; ordinary ChatGPT plugin still not_installed"
+    },
+    "doctor": "Local installation/config/auth/runtime diagnostics completed; no general installation failure reported",
+    "official_recovery_reference": "https://learn.chatgpt.com/docs/chrome-extension",
+    "owner_recovery": "Desktop Settings -> Computer Use -> reinstall/reconnect; verify the browser shows Manage"
+  }
 }
