@@ -1,0 +1,49 @@
+{
+  "request_id": "2f9b69a7-a548-4ce3-b596-1a72abdc5350",
+  "aweme_id": "7690725127385894198",
+  "artifact_id": 11841110527,
+  "artifact_sha256": "48c653d1a5160e067120a6511ed169de9dbb635e1cd38ccd01ab3ade2af594f7",
+  "worker": {
+    "run_id": "38450670102",
+    "attempt": "1",
+    "commit": "828d7c775b81afb2c8ea3c63755d7c9b13d50226"
+  },
+  "checks": {
+    "request_id": true,
+    "aweme_id": true,
+    "pass": true,
+    "run_id": true,
+    "commit": true,
+    "attempt": true,
+    "text": true,
+    "segments": true,
+    "fresh": true,
+    "no_cache": true,
+    "full_scan": true,
+    "duration": true,
+    "coverage": true
+  },
+  "all_pass": true,
+  "text_sha256": "73abbe8e38248bd559bdfcd30acecf6b055bcf3752b53801289cd5c541b8b6c4",
+  "text_characters": 332,
+  "segment_count": 40,
+  "coverage": {
+    "start_ms": 0,
+    "end_ms": 86587,
+    "full_video_scanned": true,
+    "visual_step_ms": 250,
+    "threshold": 0.003,
+    "caption_activity": {
+      "sustained": true,
+      "active_ms": 42000,
+      "active_ratio": 0.485061,
+      "window_ms": 10000,
+      "covered_windows": 9,
+      "total_windows": 9,
+      "window_ratio": 1,
+      "minimum_active_ratio": 0.2,
+      "minimum_window_ratio": 0.75
+    }
+  },
+  "duration_ms": 86588
+}

@@ -1,5 +1,18 @@
 # CURRENT PROJECT STATE（当前项目状态）
 
+## 2026-10-14：TREE_MASTER_EXECUTION，两个普通 ChatGPT 闭环仍待外部入口
+
+本节取代下文历史记录的当前判断。工程修复已上线，整体状态 **BLOCKED_EXTERNAL_ENTRY**，两个 GOAL 均未标记普通 ChatGPT PASS。
+
+- Content Reader 当前故障根因已实时复核：Proxy 写死的旧 Preview 主机认证访问返回 HTTP 410 / GONE；Alias API 虽然指向 READY 部署，实际 HTTP 路由仍已删除。现有分支稳定 Preview 别名返回 HTTP 200、enabled/github_configured/api_auth_configured=true。
+- 从原 Proxy 部署恢复真实源码，保存在 bridge/content-reader-proxy/。运行逻辑仅替换一个固定上游地址；既有 Bearer、OIDC、受限路径/方法和大小/时间边界保留。提交 1c3e443fe1f93ba0c2e8bec58ce0b4575420d689；原 Proxy 项目部署 dpl_7yQH9H4ttXAQJJ8THgA7XJRWnvAH READY，实际生产别名已独立匹配。Vercel Authentication 仍启用。后端 Production 未执行 promote 或部署。
+- 现有私有 Sites bridge 已部署最小诊断改动：白名单错误码及受限 HTTP 状态，不转发原始正文、凭据、票据或签名链接。Sites 源码 ab4daf29f38200313a4866b2b28eab538bb7de89，部署 appgdep_6acdfe3c01e48191bc15d7cddb16cd66 succeeded。桥接测试 10/10，Proxy 测试 3/3，语法与 diff 检查通过。
+- 修复后插件无效票据返回 INVALID_TASK / HTTP 400，真实 fresh 请求 request_id=2f9b69a7-a548-4ce3-b596-1a72abdc5350 已从 queued/running 轮询到 completed。Codex 插件返回 86.588 秒、40 段、332 字；fresh_capture=true、transcript_cache_read=false、full_video_scanned=true。GitHub run 38450670102 success，artifact 11841110527 已下载校验 SHA-256，并逐一核对 request、视频身份、run/attempt/commit、正文、分段与覆盖。Worker commit=828d7c775b81afb2c8ea3c63755d7c9b13d50226。**这是真实 Codex 插件链路 PASS，不是普通 ChatGPT 验收。**
+- 普通 ChatGPT 3 次仍为 0/3 NOT_EXECUTED。此前本任务 Browser 一度连接，但 ChatGPT 页面 ERR_CONNECTION_CLOSED；最新初始化返回 No browser is available，官方发现接口返回 []。没有通过其他自动化绕过登录或浏览器边界。
+- Tree Brain Codex 插件管理实时返回 not_installed；当前会话没有 task_start/task_status/task_resume。现有凭据访问生产 MCP 实测 HTTP 401 / TREE_BRAIN_UNAUTHORIZED，request_id=mcp_985e43c0-5928-4604-a974-9f8908d0d3eb。旧授权元数据已过期；没有扩大或重新签发授权。latest-task-state.json 仍是历史只读快照，未充当实时权威状态。Issue #2 机器人仍要求为仓库创建 Cloud Environment；Codex CLI 已登录 ChatGPT、cloud list 返回空，CLI help 未提供环境创建操作。该 GitHub 路线也不等同 Tree Brain 原生工具验收。
+- Owner 必需操作：恢复一个可控制、已登录普通 ChatGPT 的 Browser 连接；通过原合法连接流程安装/连接现有 Tree Brain Codex，并续期原范围授权。不要把密钥发入聊天。恢复后从当前执行线程 01a1317a-c479-7460-8c24-37351301787c、原分支和下列证据继续，普通 ChatGPT 串行执行三次 Content Reader start/poll/result，以及 Tree Brain 真正的 status/start/resume 验收。已有 Codex 线程一律 resumeThread。
+- 证据：artifacts/tree-master-execution-2026-10-14/acceptance.json、codex-plugin-result.json、worker-provenance.json。签名任务票据保存在仓库之外的本机私有执行目录，不进入 GitHub。OCR 仍只识别画面字幕，不能把全片扫描写成完整音轨转录。
+
 ## 2026-10-11 主动查找普通 ChatGPT 入口
 
 Owner 要求“你自己找入口”后，实际尝试现有浏览器入口：Browser 初始化失败，配置引用的 26.1007.21434/scripts/browser-service.mjs 不存在，本地 Browser 插件只找到 26.1002.52244；没有取得浏览器控制对象。Opera list_tabs 返回 Browser not connected。TinyFish 使用现有默认 profile 只读访问原大脑3会话，run 6ce3829a-163e-43ce-9c82-df9ac99804b5 被用户取消，result=null；其 profile 未记录 ChatGPT 登录，不据此假定现场一定登出。未重启该已取消路线，未发视频读取请求。

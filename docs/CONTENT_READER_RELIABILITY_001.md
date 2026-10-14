@@ -1,5 +1,13 @@
 # TREE_CONTENT_READER_RELIABILITY_001
 
+## 2026-10-14：原入口故障已修复，普通 ChatGPT 三次仍待验收
+
+TREE_MASTER_EXECUTION 已定位旧 Preview 主机 HTTP 410 / GONE，并将原 Proxy 固定上游替换为现有 Preview 分支别名。Proxy 提交 1c3e443、部署 dpl_7yQH9H4ttXAQJJ8THgA7XJRWnvAH；受保护调用保持既有身份和权限。
+
+真实 Codex 插件请求 2f9b69a7-a548-4ce3-b596-1a72abdc5350 已轮询到 completed：run 38450670102、worker commit 828d7c775b81afb2c8ea3c63755d7c9b13d50226、86.588 秒、40 段、332 字，fresh/no-cache/full-scan 均满足。原始 artifact 与插件正文、分段、来源逐项独立核验通过；证据见 artifacts/tree-master-execution-2026-10-14/。
+
+本轮普通 ChatGPT 三次均 NOT_EXECUTED，0/3；最新 Browser 返回 No browser is available，浏览器列表为空。不得用该 Codex 插件成功替代客户端验收。恢复登录的普通 ChatGPT 浏览器入口后沿用现有工具完成三次串行验收；不重复既有后台样本。OCR 的错字、漏字、短暂字幕及无字幕语音覆盖限制保留。
+
 ## 2026-10-11 主动查找普通 ChatGPT 入口
 
 Owner 要求“你自己找入口”后，实际尝试现有浏览器入口：Browser 初始化失败，配置引用的 26.1007.21434/scripts/browser-service.mjs 不存在，本地 Browser 插件只找到 26.1002.52244；没有取得浏览器控制对象。Opera list_tabs 返回 Browser not connected。TinyFish 使用现有默认 profile 只读访问原大脑3会话，run 6ce3829a-163e-43ce-9c82-df9ac99804b5 被用户取消，result=null；其 profile 未记录 ChatGPT 登录，不据此假定现场一定登出。未重启该已取消路线，未发视频读取请求。
