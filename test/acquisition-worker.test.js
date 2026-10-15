@@ -57,6 +57,7 @@ test('Preview trigger and poll bind the exact request commit, artifact and full 
   phase = 'in_progress'; assert.equal((await worker.poll(accepted.task)).status, 'running');
   phase = 'completed'; const result = await worker.poll(accepted.task);
   assert.equal(result.status, 'completed'); assert.equal(result.run_id, 42);
+  assert.equal(result.attempt, 1); assert.equal(result.commit, sha);
   assert.equal(result.result.content.readable_content.text, 'Fresh complete test content');
   assert.equal(calls.filter(c => c.url.endsWith('/contents/acquisition-request.json')).length, 1);
   await assert.rejects(worker.poll(accepted.task + 'x'), { code: 'INVALID_TASK' });
