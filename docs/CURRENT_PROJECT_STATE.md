@@ -1,5 +1,15 @@
 # CURRENT PROJECT STATE（当前项目状态）
 
+## 最新进度：普通 ChatGPT 已有一轮真实读取核验，纯链接自动触发继续验收
+
+已通过原生桌面普通 ChatGPT 的既有“Tree”对话实际调用 Tree Content Reader 并取得 completed、完整 OCR 和内容分析，且已下载本轮 GitHub 原始 artifact 独立校验。request_id=70b9640f-97ae-409a-bab9-53a023e71a32，aweme_id=7690725127385894198，run=38727115080 success，attempt=1，worker commit=2d480fbb121197c9c8d3a3ab4b2ceaf09f349205；artifact=11968239746，SHA-256=fa5aa57108dc8d3f411068f838d1b2764e504d414f56440603576292b691cb06。40 段、332 字、86.588 秒，fresh=true、cache=false、full_scan=true，覆盖 0–86587ms；客户端完整 OCR 与原始 artifact 逐字一致（忽略 Markdown 引用标记及空白）。普通聊天真实读取已从 0 增至 1 轮；三次连续验收尚未完成，两个 GOAL 均未整体 PASS。
+
+验收边界：本轮先只发送旧样本链接，普通聊天走了网页搜索，未创建采集任务。随后显式选择现有 Reader 插件才真实成功。因此这轮是 PASS_EXPLICIT_PLUGIN_READ，样本也属于历史已知样本，不能采用客户端回复中“陌生 Blind Test”或“纯链接已证明”的扩大判断。
+
+已发现并最小修复客户端配置：此普通聊天所在“Tree大脑”项目的自定义指令为空；已填入 Owner 原有的抖音单视频先调用 start_douyin_read、按 poll_after_ms 查询 get_douyin_read_result、仅按真实 OCR 总结且不泄露票据的规则。已实际保存、重新打开并复制读回，逐字比对一致。没有改 synced sources、读取器、部署或安全配置。随后仅发送陌生候选链接 https://www.douyin.com/video/7650055582929456425，不附插件标签或调用提示，正在等待其真实工具调用及结果；本地 artifacts/docs 搜索未见该 ID 的历史读取记录。不要再以 Browser 缺包或此前前台问题作为当前读取验收的唯一阻塞。
+
+证据目录：artifacts/tree-master-execution-2026-10-15/ordinary-chatgpt/，包含 read-1-result.json、read-1-verification.json、read-1-client-response.md、project-instruction-repair.json。签名票据、媒体下载地址和完整原始 zip 保留在仓库之外。Goal A 的本执行会话仍未发现可调用控制工具，旧授权过期；须独立真实验收，不能由 Reader 成功代替。
+
 ## 2026-10-15：原任务入口复核仍 BLOCKED
 
 最新客户端入口：已通过桌面原生 UI 打开现有普通 ChatGPT“Tree”对话，实图确认标题 Tree、输入框“询问 ChatGPT”，与本执行线程的“使用 ChatGPT Work”不同；未创建新聊天。此候选入口不需要 Browser 运行包，但尚未验证插件调用。Owner 两次确认置前后，实际系统前台在发送链接前仍为其他原生程序，前台保护正确停止了操作，未粘贴或发送视频链接。已尝试正常窗口激活、AppActivate 及原生窗口最小化请求；实际前台未改变，未声称最小化生效，原因未知。当前唯一桌面动作是 Owner 在这台 Windows 电脑上手动 Alt+Tab 切到 ChatGPT，并在约 5–10 分钟的验收期间持续保持前台；可继续尝试原普通聊天三次串行读取，而不必先以 Browser 修复为唯一前提。仍为 0/3、未新增视频/控制任务，不把打开聊天或旧回复算作 PASS。证据：artifacts/tree-master-execution-2026-10-15/ordinary-desktop-entry.json。

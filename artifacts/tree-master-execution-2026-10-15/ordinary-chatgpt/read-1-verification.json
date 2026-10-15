@@ -1,0 +1,32 @@
+{
+  "client": "Native desktop ordinary ChatGPT, existing Tree conversation",
+  "sample": "Known historical sample; not a new blind sample",
+  "activation": "Explicit Tree Content Reader mention after bare-link message used web search",
+  "request_id": "70b9640f-97ae-409a-bab9-53a023e71a32",
+  "aweme_id": "7690725127385894198",
+  "worker": {
+    "run_id": "38727115080",
+    "attempt": "1",
+    "commit": "2d480fbb121197c9c8d3a3ab4b2ceaf09f349205"
+  },
+  "worker_conclusion": "success",
+  "artifact_id": 11968239746,
+  "artifact_sha256": "fa5aa57108dc8d3f411068f838d1b2764e504d414f56440603576292b691cb06",
+  "client_response_observed": true,
+  "checks": {
+    "complete": true,
+    "request_id": true,
+    "aweme_id": true,
+    "run_id": true,
+    "commit": true,
+    "complete_ocr_matches_artifact": true,
+    "fresh": true,
+    "no_cache": true,
+    "full_scan": true,
+    "positive_duration": true
+  },
+  "segment_count": 40,
+  "text_characters": 332,
+  "status": "PASS_EXPLICIT_PLUGIN_READ",
+  "bare_link_automatic_discovery": "NOT_YET_PASS"
+}

@@ -1,0 +1,603 @@
+{
+  "request_id": "70b9640f-97ae-409a-bab9-53a023e71a32",
+  "aweme_id": "7690725127385894198",
+  "worker": {
+    "run_id": "38727115080",
+    "attempt": "1",
+    "commit": "2d480fbb121197c9c8d3a3ab4b2ceaf09f349205"
+  },
+  "duration_ms": 86588,
+  "fresh_capture": true,
+  "transcript_cache_read": false,
+  "coverage": {
+    "start_ms": 0,
+    "end_ms": 86587,
+    "full_video_scanned": true,
+    "visual_step_ms": 250,
+    "threshold": 0.003,
+    "caption_activity": {
+      "sustained": true,
+      "active_ms": 42000,
+      "active_ratio": 0.485061,
+      "window_ms": 10000,
+      "covered_windows": 9,
+      "total_windows": 9,
+      "window_ratio": 1,
+      "minimum_active_ratio": 0.2,
+      "minimum_window_ratio": 0.75
+    }
+  },
+  "method": "hard_subtitle_ocr",
+  "limitations": [
+    "visual_subtitles_only_not_spoken_audio",
+    "subtitle_region_only_capture",
+    "approximate_frame_capture_timestamps",
+    "sub_250ms_or_low_change_captions_may_be_missed",
+    "source_subtitle_errors_preserved",
+    "short_lived_ocr_variants_collapsed_by_temporal_consensus",
+    "ocr_not_manually_corrected"
+  ],
+  "text": "其实从来不靠天赋\n它可以拆开练\n信息密度不是字多\n而是新信息\n可以是一个新的观点\n可以是个新的定义\n观众不是因为\n你说的多而留下来\n而是每一句话\n决定你的内容节奏\n真正有网感的人\n而不是靠感觉\n废话的不断往下说\n而是靠结构一直往前推\n原子化结构练多了\n网感自然就出来了\n第三\n网感可以让你的视频\n决定你的IP的质量\n真正拉开差距的\n不只是网感\n它是不是\n你过去的实战经验\n得到的答案\n它是不是你对生活\n它是不是你对人性的理解\n所以你刷了几百条爆款\n还是不知道自己怎么拍\n是因为你从来缺的\n可能根本就不是网感\n而是没找到\n我自己的课程体系\n这套个性化的\n就是要结合你的\n来帮你找到真正\n适合你的内容方向\n但又没有什么头绪\n赶紧点击视频下方链接\n加入我们\n跟我们一起来",
+  "segments": [
+    {
+      "start_ms": 1000,
+      "end_ms": 2500,
+      "last_seen_ms": 2000,
+      "text": "其实从来不靠天赋",
+      "confidence": 0.9918631613254547,
+      "evidence": [
+        "frames/00001-0001000.jpg",
+        "frames/00002-0001250.jpg",
+        "frames/00003-0001500.jpg",
+        "frames/00004-0001750.jpg",
+        "frames/00005-0002000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 2500,
+      "end_ms": 3250,
+      "last_seen_ms": 3000,
+      "text": "它可以拆开练",
+      "confidence": 0.9985285103321075,
+      "evidence": [
+        "frames/00006-0002500.jpg",
+        "frames/00007-0002750.jpg",
+        "frames/00008-0003000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 11250,
+      "end_ms": 12750,
+      "last_seen_ms": 12250,
+      "text": "信息密度不是字多",
+      "confidence": 0.9962769150733948,
+      "evidence": [
+        "frames/00032-0011250.jpg",
+        "frames/00033-0011500.jpg",
+        "frames/00034-0011750.jpg",
+        "frames/00035-0012000.jpg",
+        "frames/00036-0012250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 13000,
+      "end_ms": 15500,
+      "last_seen_ms": 13000,
+      "text": "而是新信息",
+      "confidence": 0.9993100047111512,
+      "evidence": [
+        "frames/00038-0013000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 15500,
+      "end_ms": 16750,
+      "last_seen_ms": 16250,
+      "text": "可以是一个新的观点",
+      "confidence": 0.999497824245029,
+      "evidence": [
+        "frames/00039-0015500.jpg",
+        "frames/00040-0015750.jpg",
+        "frames/00041-0016000.jpg",
+        "frames/00042-0016250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 16750,
+      "end_ms": 19000,
+      "last_seen_ms": 18000,
+      "text": "可以是个新的定义",
+      "confidence": 0.9994608834385872,
+      "evidence": [
+        "frames/00043-0016750.jpg",
+        "frames/00044-0017000.jpg",
+        "frames/00045-0017250.jpg",
+        "frames/00046-0017750.jpg",
+        "frames/00047-0018000.jpg"
+      ],
+      "recognition_variants": 2
+    },
+    {
+      "start_ms": 19000,
+      "end_ms": 19500,
+      "last_seen_ms": 19250,
+      "text": "观众不是因为",
+      "confidence": 0.999100903669993,
+      "evidence": [
+        "frames/00048-0019000.jpg",
+        "frames/00049-0019250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 19500,
+      "end_ms": 20750,
+      "last_seen_ms": 20500,
+      "text": "你说的多而留下来",
+      "confidence": 0.9958117827773094,
+      "evidence": [
+        "frames/00050-0019500.jpg",
+        "frames/00051-0019750.jpg",
+        "frames/00052-0020000.jpg",
+        "frames/00053-0020250.jpg",
+        "frames/00054-0020500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 20750,
+      "end_ms": 23250,
+      "last_seen_ms": 22750,
+      "text": "而是每一句话",
+      "confidence": 0.9946768383185068,
+      "evidence": [
+        "frames/00055-0020750.jpg",
+        "frames/00056-0021000.jpg",
+        "frames/00057-0021250.jpg",
+        "frames/00058-0021500.jpg",
+        "frames/00059-0021750.jpg",
+        "frames/00060-0022000.jpg",
+        "frames/00061-0022250.jpg",
+        "frames/00062-0022500.jpg",
+        "frames/00063-0022750.jpg"
+      ],
+      "recognition_variants": 2
+    },
+    {
+      "start_ms": 24750,
+      "end_ms": 26250,
+      "last_seen_ms": 25750,
+      "text": "决定你的内容节奏",
+      "confidence": 0.9960555732250214,
+      "evidence": [
+        "frames/00069-0024750.jpg",
+        "frames/00070-0025000.jpg",
+        "frames/00071-0025250.jpg",
+        "frames/00072-0025750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 26250,
+      "end_ms": 27500,
+      "last_seen_ms": 26250,
+      "text": "真正有网感的人",
+      "confidence": 0.999393710068294,
+      "evidence": [
+        "frames/00073-0026250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 28500,
+      "end_ms": 30000,
+      "last_seen_ms": 29750,
+      "text": "而不是靠感觉",
+      "confidence": 0.9991112351417542,
+      "evidence": [
+        "frames/00078-0028500.jpg",
+        "frames/00079-0028750.jpg",
+        "frames/00080-0029000.jpg",
+        "frames/00081-0029250.jpg",
+        "frames/00082-0029500.jpg",
+        "frames/00083-0029750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 30000,
+      "end_ms": 31750,
+      "last_seen_ms": 31250,
+      "text": "废话的不断往下说",
+      "confidence": 0.9978776127099991,
+      "evidence": [
+        "frames/00084-0030000.jpg",
+        "frames/00085-0030250.jpg",
+        "frames/00086-0030500.jpg",
+        "frames/00087-0030750.jpg",
+        "frames/00088-0031000.jpg",
+        "frames/00089-0031250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 31750,
+      "end_ms": 34000,
+      "last_seen_ms": 33750,
+      "text": "而是靠结构一直往前推",
+      "confidence": 0.9891585588455202,
+      "evidence": [
+        "frames/00090-0031750.jpg",
+        "frames/00091-0032000.jpg",
+        "frames/00092-0032250.jpg",
+        "frames/00093-0032500.jpg",
+        "frames/00094-0032750.jpg",
+        "frames/00095-0033000.jpg",
+        "frames/00096-0033250.jpg",
+        "frames/00097-0033500.jpg",
+        "frames/00098-0033750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 34250,
+      "end_ms": 35750,
+      "last_seen_ms": 35250,
+      "text": "原子化结构练多了",
+      "confidence": 0.9941173791885376,
+      "evidence": [
+        "frames/00100-0034250.jpg",
+        "frames/00101-0034500.jpg",
+        "frames/00102-0034750.jpg",
+        "frames/00103-0035000.jpg",
+        "frames/00104-0035250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 35750,
+      "end_ms": 37000,
+      "last_seen_ms": 36250,
+      "text": "网感自然就出来了",
+      "confidence": 0.9951712191104889,
+      "evidence": [
+        "frames/00105-0035750.jpg",
+        "frames/00106-0036000.jpg",
+        "frames/00107-0036250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 37000,
+      "end_ms": 37500,
+      "last_seen_ms": 37000,
+      "text": "第三",
+      "confidence": 0.9994787573814392,
+      "evidence": [
+        "frames/00108-0037000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 37500,
+      "end_ms": 39750,
+      "last_seen_ms": 39250,
+      "text": "网感可以让你的视频",
+      "confidence": 0.9979024728139242,
+      "evidence": [
+        "frames/00109-0037500.jpg",
+        "frames/00110-0037750.jpg",
+        "frames/00111-0038000.jpg",
+        "frames/00112-0038250.jpg",
+        "frames/00113-0038750.jpg",
+        "frames/00114-0039000.jpg",
+        "frames/00115-0039250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 41250,
+      "end_ms": 43250,
+      "last_seen_ms": 41500,
+      "text": "决定你的IP的质量",
+      "confidence": 0.9967851108974881,
+      "evidence": [
+        "frames/00117-0041250.jpg",
+        "frames/00118-0041500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 43250,
+      "end_ms": 44250,
+      "last_seen_ms": 43250,
+      "text": "真正拉开差距的",
+      "confidence": 0.9997274109295436,
+      "evidence": [
+        "frames/00119-0043250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 44250,
+      "end_ms": 45000,
+      "last_seen_ms": 44250,
+      "text": "不只是网感",
+      "confidence": 0.9987148642539978,
+      "evidence": [
+        "frames/00120-0044250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 47750,
+      "end_ms": 48250,
+      "last_seen_ms": 47750,
+      "text": "它是不是",
+      "confidence": 0.9931474030017853,
+      "evidence": [
+        "frames/00127-0047750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 48250,
+      "end_ms": 49250,
+      "last_seen_ms": 48750,
+      "text": "你过去的实战经验",
+      "confidence": 0.9979683011770248,
+      "evidence": [
+        "frames/00128-0048250.jpg",
+        "frames/00129-0048500.jpg",
+        "frames/00130-0048750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 49250,
+      "end_ms": 50000,
+      "last_seen_ms": 49250,
+      "text": "得到的答案",
+      "confidence": 0.9970481634140015,
+      "evidence": [
+        "frames/00131-0049250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 50000,
+      "end_ms": 52750,
+      "last_seen_ms": 52250,
+      "text": "它是不是你对生活",
+      "confidence": 0.9942308366298676,
+      "evidence": [
+        "frames/00132-0050000.jpg",
+        "frames/00133-0050250.jpg",
+        "frames/00134-0050500.jpg",
+        "frames/00135-0050750.jpg",
+        "frames/00136-0051000.jpg",
+        "frames/00137-0051250.jpg",
+        "frames/00139-0052250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 52750,
+      "end_ms": 55000,
+      "last_seen_ms": 54250,
+      "text": "它是不是你对人性的理解",
+      "confidence": 0.9971710280938583,
+      "evidence": [
+        "frames/00140-0052750.jpg",
+        "frames/00141-0053000.jpg",
+        "frames/00142-0053250.jpg",
+        "frames/00143-0053500.jpg",
+        "frames/00144-0053750.jpg",
+        "frames/00145-0054000.jpg",
+        "frames/00146-0054250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 55000,
+      "end_ms": 56750,
+      "last_seen_ms": 56250,
+      "text": "所以你刷了几百条爆款",
+      "confidence": 0.9964637815952301,
+      "evidence": [
+        "frames/00147-0055000.jpg",
+        "frames/00148-0055250.jpg",
+        "frames/00149-0055500.jpg",
+        "frames/00150-0055750.jpg",
+        "frames/00151-0056000.jpg",
+        "frames/00152-0056250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 56750,
+      "end_ms": 58000,
+      "last_seen_ms": 57500,
+      "text": "还是不知道自己怎么拍",
+      "confidence": 0.9895550727844238,
+      "evidence": [
+        "frames/00153-0056750.jpg",
+        "frames/00154-0057000.jpg",
+        "frames/00155-0057250.jpg",
+        "frames/00156-0057500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 58000,
+      "end_ms": 59000,
+      "last_seen_ms": 58750,
+      "text": "是因为你从来缺的",
+      "confidence": 0.9936369508504868,
+      "evidence": [
+        "frames/00157-0058000.jpg",
+        "frames/00158-0058250.jpg",
+        "frames/00159-0058500.jpg",
+        "frames/00160-0058750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 59000,
+      "end_ms": 60750,
+      "last_seen_ms": 60250,
+      "text": "可能根本就不是网感",
+      "confidence": 0.9966331058078342,
+      "evidence": [
+        "frames/00161-0059000.jpg",
+        "frames/00162-0059250.jpg",
+        "frames/00163-0059500.jpg",
+        "frames/00164-0059750.jpg",
+        "frames/00165-0060000.jpg",
+        "frames/00166-0060250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 60750,
+      "end_ms": 63250,
+      "last_seen_ms": 62750,
+      "text": "而是没找到",
+      "confidence": 0.9951185226440429,
+      "evidence": [
+        "frames/00167-0060750.jpg",
+        "frames/00168-0061000.jpg",
+        "frames/00169-0061250.jpg",
+        "frames/00170-0061500.jpg",
+        "frames/00171-0061750.jpg",
+        "frames/00172-0062000.jpg",
+        "frames/00173-0062250.jpg",
+        "frames/00174-0062500.jpg",
+        "frames/00175-0062750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 63250,
+      "end_ms": 64500,
+      "last_seen_ms": 64250,
+      "text": "我自己的课程体系",
+      "confidence": 0.9860516637563705,
+      "evidence": [
+        "frames/00176-0063250.jpg",
+        "frames/00177-0063500.jpg",
+        "frames/00178-0063750.jpg",
+        "frames/00179-0064000.jpg",
+        "frames/00180-0064250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 64750,
+      "end_ms": 66750,
+      "last_seen_ms": 66250,
+      "text": "这套个性化的",
+      "confidence": 0.9986678858598074,
+      "evidence": [
+        "frames/00182-0064750.jpg",
+        "frames/00183-0065000.jpg",
+        "frames/00184-0065250.jpg",
+        "frames/00185-0065500.jpg",
+        "frames/00186-0065750.jpg",
+        "frames/00187-0066250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 66750,
+      "end_ms": 68000,
+      "last_seen_ms": 67500,
+      "text": "就是要结合你的",
+      "confidence": 0.9964371749332973,
+      "evidence": [
+        "frames/00188-0066750.jpg",
+        "frames/00189-0067000.jpg",
+        "frames/00190-0067500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 73250,
+      "end_ms": 74500,
+      "last_seen_ms": 74250,
+      "text": "来帮你找到真正",
+      "confidence": 0.9918266619954791,
+      "evidence": [
+        "frames/00192-0073250.jpg",
+        "frames/00193-0073500.jpg",
+        "frames/00194-0073750.jpg",
+        "frames/00195-0074000.jpg",
+        "frames/00196-0074250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 74500,
+      "end_ms": 76000,
+      "last_seen_ms": 75250,
+      "text": "适合你的内容方向",
+      "confidence": 0.9978282451629639,
+      "evidence": [
+        "frames/00197-0074500.jpg",
+        "frames/00198-0074750.jpg",
+        "frames/00199-0075000.jpg",
+        "frames/00200-0075250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 78250,
+      "end_ms": 80000,
+      "last_seen_ms": 78250,
+      "text": "但又没有什么头绪",
+      "confidence": 0.9932389631867409,
+      "evidence": [
+        "frames/00202-0078250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 80000,
+      "end_ms": 81250,
+      "last_seen_ms": 80000,
+      "text": "赶紧点击视频下方链接",
+      "confidence": 0.9953720808029175,
+      "evidence": [
+        "frames/00203-0080000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 81250,
+      "end_ms": 82250,
+      "last_seen_ms": 81250,
+      "text": "加入我们",
+      "confidence": 0.9996160268783569,
+      "evidence": [
+        "frames/00204-0081250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 82250,
+      "end_ms": 83500,
+      "last_seen_ms": 82250,
+      "text": "跟我们一起来",
+      "confidence": 0.9985935489336649,
+      "evidence": [
+        "frames/00205-0082250.jpg"
+      ],
+      "recognition_variants": 1
+    }
+  ]
+}

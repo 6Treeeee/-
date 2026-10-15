@@ -2,16 +2,16 @@
 
 - 任务编号：TREE_MASTER_EXECUTION
 - 目标：分别完成普通 ChatGPT 真正调动现有 Codex，以及真实读取公开抖音单视频两个闭环。
-- 状态：BLOCKED
+- 状态：IN_PROGRESS
 - 更新时间：2026-10-15（Asia/Shanghai，UTC+08:00）
 - 仓库：6Treeeee/-
 - 分支：codex/a2a-control-loop
 - 固定路径：gpt-handoff.md
-- 实际结果：旧 Preview 主机实测 HTTP 410 GONE；现有 Proxy 上游改为现有分支 Preview 别名，提交 1c3e443，部署 dpl_7yQH9H4ttXAQJJ8THgA7XJRWnvAH。私有 Sites bridge 诊断提交 ab4daf2、部署 appgdep_6acdfe3c01e48191bc15d7cddb16cd66。修复后 Codex 插件真实请求 2f9b69a7-a548-4ce3-b596-1a72abdc5350 返回 completed，worker run 38450670102、86.588 秒、40 段、332 字、fresh/no-cache/full-scan 和 artifact 来源校验全部通过。普通 ChatGPT 0/3 NOT_EXECUTED：2026-10-14 Browser 不可用；2026-10-15 当前初始化更早失败：配置引用的 browser/26.1007.71326/scripts/browser-service.mjs 不存在，本机只有 26.1002.52244 和 26.1007.21434。官方 CLI 恢复也已尝试，plugin add browser@openai-bundled 返回 plugin not found；需要桌面 Settings → Computer Use 官方重装/连接。Tree Brain Codex 插件 not_installed；2026-10-14 MCP 授权实测 401 TREE_BRAIN_UNAUTHORIZED，2026-10-15 本机授权元数据仍已过期；未取得原生 task_start/status/resume 验收。两个目标均未标记普通 ChatGPT PASS。
-- 证据路径/提交：artifacts/tree-master-execution-2026-10-15/entry-recheck.json；artifacts/tree-master-execution-2026-10-14/acceptance.json、codex-plugin-result.json、worker-provenance.json；docs/CURRENT_PROJECT_STATE.md；docs/CONTENT_READER_RELIABILITY_001.md；bridge/content-reader-proxy/。Worker commit 828d7c775b81afb2c8ea3c63755d7c9b13d50226。当前执行线程 01a1317a-c479-7460-8c24-37351301787c。
-- 最新客户端恢复结果：Edge 扩展已安装/启用；官方重装入口、开关重连、检查更新与桌面正常重启均已尝试。重启后原线程恢复，但 Browser 仍缺少 26.1007.71326/scripts/browser-service.mjs。当前为 BLOCKED_CLIENT_RUNTIME_AFTER_RESTART，不再要求重复安装扩展或重启。Owner 确认发送无附件故障反馈后，已核对三项附件均取消并实际点击提交一次；窗口关闭，但未取得成功回执、反馈 ID 或可见错误，当前日志为空。反馈为 ATTEMPTED / DELIVERY_UNCONFIRMED；未重复发送。详见 artifacts/tree-master-execution-2026-10-15/native-ui-recovery.json。
-- 新候选入口：已在原生桌面客户端打开现有普通 ChatGPT“Tree”聊天，输入框为“询问 ChatGPT”，尚未发送链接或调用工具。Owner 确认后实际前台仍为其他原生程序；正常激活及最小化请求未改变前台，已停止点击，原因未知。证据 artifacts/tree-master-execution-2026-10-15/ordinary-desktop-entry.json。不要把打开聊天当作验收通过。
-- 下一步：Owner 在这台 Windows 电脑手动 Alt+Tab 切到 ChatGPT，并让其在约 5–10 分钟验收期间持续保持前台；从本执行线程控制现有普通 Tree 聊天完成三次串行 fresh start/poll/result。此候选入口不要求先修复 Browser。Tree Brain 仍须通过原合法流程连接现有插件并续期原范围授权，然后真实 status/start/resume、核对持久状态与原 thread_id。密钥不得发入聊天，不重造系统，不重复后台已验收样本。
+- 实际结果：原 Proxy 与私有 Sites bridge 最小修复已上线，Vercel Authentication 保留。现已在原生桌面普通 ChatGPT 的既有 Tree 聊天取得一轮真实 completed 并返回完整 OCR/分析，request_id=70b9640f-97ae-409a-bab9-53a023e71a32，run=38727115080 success，40 段、332 字、86.588 秒，fresh/no-cache/full-scan 和原始 artifact 校验通过。该轮用了已知样本和显式插件选择，不冒充陌生纯链接验收。两个 GOAL 仍未整体 PASS。
+- 证据路径/提交：artifacts/tree-master-execution-2026-10-15/ordinary-chatgpt/ 包含普通聊天完整回复、脱敏结果、来源校验和项目指令保存/读回证据；历史修复证据见 artifacts/tree-master-execution-2026-10-14/、bridge/content-reader-proxy/ 和 docs/CURRENT_PROJECT_STATE.md。执行线程保持 01a1317a-c479-7460-8c24-37351301787c。
+- 最新客户端恢复结果：Browser 运行包缺失及反馈送达未确认的记录保留为历史，当前原生普通聊天已能实际使用 Reader，不再以 Browser 修复或前台条件作为当前唯一阻塞。Tree大脑项目的自定义指令原为空，已补入 Owner 原有 Reader 自动调用规则，实际保存并重新打开逐字读回一致。
+- 当前普通聊天验收：仅发送陌生候选链接 https://www.douyin.com/video/7650055582929456425 ，没有插件标签或调用提示；普通聊天已自动调用 Reader 并开始轮询。实际 request_id=3dd3b53d-387c-4a3c-884f-87b67c71d4cc，run=38824126698，当前 in_progress，等待终态和完整结果；不提前计为 PASS。
+- 下一步：继续当前普通 Tree 聊天中的同一任务轮询，取得完整 OCR、分析和 Worker artifact 后独立校验；上一轮完成后再发下一轮，完成三次串行真实验收。Goal A 必须另行取得真实 task_status/start/resume 与原 thread_id 恢复证据；当前执行会话尚未发现控制工具，旧授权过期。密钥不得发入聊天，不重造系统，不重复后台已验收样本。
 
 ## 工作方式
 
