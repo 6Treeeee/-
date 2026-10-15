@@ -2,6 +2,8 @@
 
 ## 2026-10-15：原任务入口复核仍 BLOCKED
 
+最新客户端入口：已通过桌面原生 UI 打开现有普通 ChatGPT“Tree”对话，实图确认标题 Tree、输入框“询问 ChatGPT”，与本执行线程的“使用 ChatGPT Work”不同；未创建新聊天。此候选入口不需要 Browser 运行包，但尚未验证插件调用。Owner 两次确认置前后，实际系统前台在发送链接前仍为其他原生程序，前台保护正确停止了操作，未粘贴或发送视频链接。已尝试正常窗口激活、AppActivate 及原生窗口最小化请求；实际前台未改变，未声称最小化生效，原因未知。当前唯一桌面动作是 Owner 在这台 Windows 电脑上手动 Alt+Tab 切到 ChatGPT，并在约 5–10 分钟的验收期间持续保持前台；可继续尝试原普通聊天三次串行读取，而不必先以 Browser 修复为唯一前提。仍为 0/3、未新增视频/控制任务，不把打开聊天或旧回复算作 PASS。证据：artifacts/tree-master-execution-2026-10-15/ordinary-desktop-entry.json。
+
 最新反馈执行：Owner 对“是否发送无附件反馈给 OpenAI”的明确提问回复继续后，已恢复原生反馈表单，核对正文并取消文档、诊断日志、浏览器标签页/日志全部三项附件，实际点击提交一次。随后窗口关闭，没有取得成功回执、反馈 ID 或可见错误；当前客户端日志文件为 0 字节，不能补证送达。因此记录 submission_attempted=true、delivery_status=UNCONFIRMED，不声称反馈送达或 Browser 修复成功，也不重复发送。既有两个入口阻塞和普通 ChatGPT 0/3 状态不变；本轮未新增读取或控制任务。
 
 最新恢复结果：正常退出请求已记录，旧主进程 4144 已被新主进程 10148 替代，新进程本地启动时间 04:58:26；Owner 已回到原线程继续。辅助启动器只留下 normal_quit_requested 回执，不能声称其自动重开步骤完成。重启后的 Browser 工具仍实际返回缺少 26.1007.71326/scripts/browser-service.mjs，本机仍只有 26.1002.52244、26.1007.21434。当前为 BLOCKED_CLIENT_RUNTIME_AFTER_RESTART，不能继续以“需要重启/安装扩展”为待办。

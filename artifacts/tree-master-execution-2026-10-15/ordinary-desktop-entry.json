@@ -1,0 +1,33 @@
+{
+  "task": "TREE_MASTER_EXECUTION",
+  "execution_thread_id": "01a1317a-c479-7460-8c24-37351301787c",
+  "surface": "Existing ordinary ChatGPT Tree conversation in native desktop application",
+  "existing_chat_opened": true,
+  "ordinary_chat_ui_evidence": {
+    "title": "Tree",
+    "composer_placeholder": "询问 ChatGPT",
+    "work_composer_placeholder": "使用 ChatGPT Work",
+    "existing_chat_preserved": true,
+    "new_chat_created": false
+  },
+  "browser_runtime_used": false,
+  "plugin_tool_call_observed": false,
+  "video_link_sent": false,
+  "video_requests": 0,
+  "codex_tasks": 0,
+  "ordinary_chatgpt_completed": 0,
+  "status": "NATIVE_FOREGROUND_ACTIVATION_UNAVAILABLE",
+  "observed_blocker": "ChatGPT was foreground while opening the existing chat, but another application became foreground before link entry. Foreground guard stopped the action before pasting or sending.",
+  "owner_readiness_confirmations": 2,
+  "activation_recovery": {
+    "normal_window_activation_requested": true,
+    "app_activate_returned": true,
+    "foreground_changed_to_chatgpt": false,
+    "foreground_native_app_minimize_requested": true,
+    "minimization_verified": false,
+    "final_window_state": "ChatGPT is running; another native application remains foreground",
+    "cause": "Unknown; no claim about security permissions or anti-cheat"
+  },
+  "owner_action": "On this Windows computer, manually use Alt+Tab to switch to ChatGPT and keep it foreground for the approximately 5-10 minute serial acceptance session. A readiness reply alone does not establish the OS window state.",
+  "acceptance": "Actual ordinary ChatGPT tool calls and fresh results are still required. An opened chat and historical responses do not count as PASS."
+}
