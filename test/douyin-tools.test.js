@@ -4,11 +4,15 @@ import { registerDouyinTools } from "../src/mcp/douyin-tools.js";
 
 const awemeId = "7688672103729483058";
 const accepted = {
-  status: "completed", pass: true, aweme_id: awemeId, run_id: 123, run_url: "https://github.com/6Treeeee/-/actions/runs/123", elapsed_ms: 220_000,
+  status: "completed", pass: true, request_id: "request-1", aweme_id: awemeId,
+  run_id: 123, run_url: "https://github.com/6Treeeee/-/actions/runs/123", attempt: 1, commit: "c".repeat(40), elapsed_ms: 220_000,
   result: {
     source: { cookie: "do-not-return" },
     content: {
       aweme_id: awemeId, title: "Example title", description: "Example description", duration_ms: 440_000,
+      author: { id: "internal-id", display_name: "Example creator", unique_id: "creator-id",
+        sec_user_id: "MS4wLjABexample", profile_url: "https://www.douyin.com/user/MS4wLjABexample",
+        signature: "do-not-return-profile-bio", avatar_urls: ["https://avatar.example/private"] },
       media: { playback: { url: "https://media.example/private-signed-url" } },
       readable_content: {
         status: "complete", method: "hard_subtitle_ocr", text: "First subtitle. Second subtitle.", confidence: 0.98,
@@ -82,8 +86,17 @@ test("a completed result exposes transcript and provenance without media URLs or
   const response = await tools.get("get_douyin_read_result").handler({ task: "signed-ticket" });
   const value = response.structuredContent;
   assert.equal(value.status, "completed");
+  assert.equal(value.request_id, "request-1");
   assert.equal(value.aweme_id, awemeId);
   assert.equal(value.duration_ms, 440_000);
+  assert.deepEqual(value.author, {
+    display_name: "Example creator",
+    unique_id: "creator-id",
+    sec_user_id: "MS4wLjABexample",
+    profile_url: "https://www.douyin.com/user/MS4wLjABexample",
+  });
+  assert.equal(value.worker.attempt, 1);
+  assert.equal(value.worker.commit, "c".repeat(40));
   assert.equal(value.readable_content.segments.length, 2);
   assert.equal(value.readable_content.fresh_capture, true);
   assert.equal(value.readable_content.transcript_cache_read, false);
@@ -94,6 +107,8 @@ test("a completed result exposes transcript and provenance without media URLs or
   assert.equal(value.readable_content.source, undefined);
   assert(!JSON.stringify(value).includes("private-signed-url"));
   assert(!JSON.stringify(value).includes("do-not-return"));
+  assert(!JSON.stringify(value).includes("do-not-return-profile-bio"));
+  assert(!JSON.stringify(value).includes("avatar.example"));
 });
 
 test("a mismatched worker result is rejected instead of summarized", async () => {
