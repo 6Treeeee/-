@@ -110,7 +110,8 @@ export class GithubAcquisition {
       return { status: "queued", request_id: task.request_id, poll_after_ms: 10_000 };
     }
     const evidence = { request_id: task.request_id, aweme_id: task.aweme_id, run_id: run.id,
-      run_url: run.html_url, commit: run.head_sha, run_status: run.status, conclusion: run.conclusion };
+      run_url: run.html_url, attempt: run.run_attempt, commit: run.head_sha,
+      run_status: run.status, conclusion: run.conclusion };
     if (run.status !== "completed") return { status: "running", ...evidence, poll_after_ms: 10_000 };
     const artifacts = await this.api(`actions/runs/${run.id}/artifacts?per_page=100`);
     const artifact = artifacts.artifacts?.find(a => a.name === `acquisition-${task.request_id}` && !a.expired);
