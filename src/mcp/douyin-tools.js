@@ -46,6 +46,17 @@ function publicError(error) {
   };
 }
 
+function publicAuthor(author) {
+  if (!author || typeof author !== "object") return null;
+  const value = {
+    ...(typeof author.display_name === "string" && author.display_name ? { display_name: author.display_name } : {}),
+    ...(typeof author.unique_id === "string" && author.unique_id ? { unique_id: author.unique_id } : {}),
+    ...(typeof author.sec_user_id === "string" && author.sec_user_id ? { sec_user_id: author.sec_user_id } : {}),
+    ...(typeof author.profile_url === "string" && author.profile_url ? { profile_url: author.profile_url } : {}),
+  };
+  return Object.keys(value).length ? value : null;
+}
+
 export function publicDouyinResult(poll) {
   if (poll?.status !== "completed" || poll.pass !== true) {
     throw Object.assign(new Error("A complete verified worker result is required."), { code: "WORKER_RESULT_INVALID" });
@@ -54,6 +65,7 @@ export function publicDouyinResult(poll) {
   const readable = content?.readable_content;
   const awemeId = String(poll.aweme_id ?? "");
   const durationMs = Number(content?.duration_ms ?? content?.media?.duration_ms ?? 0);
+  const author = publicAuthor(content?.author);
   if (!/^\d{15,22}$/.test(awemeId) || String(content?.aweme_id ?? content?.id ?? "") !== awemeId ||
       readable?.status !== "complete" || typeof readable.text !== "string" || !readable.text.trim() ||
       !Array.isArray(readable.segments) || readable.segments.length === 0 || durationMs <= 0 ||
@@ -63,10 +75,12 @@ export function publicDouyinResult(poll) {
   }
   return {
     status: "completed",
+    request_id: poll.request_id,
     aweme_id: awemeId,
     canonical_url: `https://www.douyin.com/video/${awemeId}`,
     title: typeof content.title === "string" ? content.title : "",
     description: typeof content.description === "string" ? content.description : "",
+    ...(author ? { author } : {}),
     duration_ms: durationMs,
     readable_content: {
       status: "complete",
@@ -91,6 +105,8 @@ export function publicDouyinResult(poll) {
     worker: {
       run_id: poll.run_id,
       run_url: poll.run_url,
+      attempt: poll.attempt,
+      commit: poll.commit,
       elapsed_ms: poll.elapsed_ms,
     },
   };
