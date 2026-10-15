@@ -22,7 +22,7 @@
     "error": "Cannot find module"
   },
   "status": "BLOCKED_CLIENT_RUNTIME_AFTER_RESTART",
-  "pending": "Official client Browser runtime repair; sanitized native feedback draft is open for owner review and has not been submitted. Do not reinstall the already installed Edge extension again.",
+  "pending": "Official client Browser runtime repair and delivery confirmation for the feedback attempt. Do not resend merely because no receipt was visible, or reinstall the already installed Edge extension again.",
   "restart_result": {
     "original_process_id": 4144,
     "normal_quit_request_logged_at": "2026-10-14T20:57:49.0388417+00:00",
@@ -40,7 +40,12 @@
     "documents_attached": false,
     "diagnostic_logs_attached": false,
     "browser_tabs_and_logs_attached": false,
-    "submitted": false,
+    "owner_send_authorization": "Owner replied continue to the explicit question asking authorization to send this attachment-free feedback to OpenAI",
+    "submission_attempted": true,
+    "submit_click_count": 1,
+    "submitted": null,
+    "delivery_status": "UNCONFIRMED",
+    "observed_result": "Submit button clicked once after visual verification of body and three unchecked attachments; dialog closed. No success receipt, feedback ID or visible error was observed. Current desktop log files are empty, so they cannot confirm delivery.",
     "official_reference": "https://learn.chatgpt.com/docs/reference/troubleshooting",
     "text": "Browser fails before discovery. Cannot find module browser/26.1007.71326/scripts/browser-service.mjs. Installed versions: 26.1002.52244 and 26.1007.21434. Edge ChatGPT extension by OpenAI is installed and enabled. Desktop reports up to date. Reinstall extension, Browser off/on, and full desktop restart did not fix. Please restore the official Browser runtime package or repair its generated service path. Private documents, session and browser logs are excluded."
   },
