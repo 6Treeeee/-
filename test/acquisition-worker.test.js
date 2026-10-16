@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { deflateRawSync } from 'node:zlib';
+import { readFile } from 'node:fs/promises';
 import { GithubAcquisition, readResultZip } from '../src/services/acquisition-github.js';
 import { verifyAcquisitionResult } from '../src/services/acquisition-result.js';
 import { createHandler } from '../src/services/acquisition-http.js';
@@ -97,4 +98,14 @@ test('expired tasks and changed commits cannot consume unrelated results', async
   const worker = new GithubAcquisition({ env, now: () => now, fetchImpl: async () => Response.json({ workflow_runs: [] }) });
   const ticket = worker.ticket({ request_id: 'a'.repeat(36), aweme_id: id, commit: sha, created: now, exp: now + 1000 });
   now += 1001; await assert.rejects(worker.poll(ticket), { code: 'INVALID_TASK' });
+});
+
+
+test('fresh acquisition keeps hosted ASR disabled and wires local Whisper fallback', async () => {
+  const source = await readFile(new URL('../scripts/acquisition-worker.mjs', import.meta.url), 'utf8');
+  assert.match(source, /createLocalWhisperAsr/);
+  assert.match(source, /localAsr:\s*localWhisper\.available\s*\?\s*localWhisper\.transcribe\s*:\s*null/);
+  assert.match(source, /openAiApiKey:\s*null/);
+  assert.match(source, /aiGatewayApiKey:\s*null/);
+  assert.match(source, /vercelOidcToken:\s*null/);
 });
