@@ -37,7 +37,8 @@ try {
 } catch (error) {
   const safe = publicError(error);
   envelope = { request_id, aweme_id, pass: false, elapsed_ms: Date.now() - started,
-    error: { code: error.code ?? safe.code, message: safe.message },
+    error: { code: error.code ?? safe.code, message: safe.message,
+      ...(safe.details ? { details: safe.details } : {}) },
     worker: { run_id: process.env.GITHUB_RUN_ID, attempt: process.env.GITHUB_RUN_ATTEMPT, commit: process.env.GITHUB_SHA } };
   process.exitCode = 2;
 }

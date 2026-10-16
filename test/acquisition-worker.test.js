@@ -5,6 +5,7 @@ import { readFile } from 'node:fs/promises';
 import { GithubAcquisition, readResultZip } from '../src/services/acquisition-github.js';
 import { verifyAcquisitionResult } from '../src/services/acquisition-result.js';
 import { createHandler } from '../src/services/acquisition-http.js';
+import { publicError } from '../src/errors.js';
 
 const env = { VERCEL_ENV: 'preview', ACQUISITION_GITHUB_TOKEN: 'fake-github-token', CONTENT_READER_WORKER_API_KEY: 'k'.repeat(32) };
 const sha = 'a'.repeat(40), id = '7688672103729483058';
@@ -71,6 +72,23 @@ test('cached, partial and mismatched transcripts are rejected', () => {
     e => e.result.content.aweme_id = '1234567890123456',
     e => e.request_id = 'another-task'
   ]) { const e = envelope(task); mutate(e); assert.throws(() => verifyAcquisitionResult(e, task), { code: 'WORKER_RESULT_INVALID' }); }
+});
+test('non-OCR results stay rejected with a useful credential-free public error', () => {
+  const task = { request_id: 'test', aweme_id: id };
+  for (const method of ['local_whisper_cpp_base_q5_1', 'https://media.invalid/video?token=private']) {
+    const e = envelope(task);
+    e.result.content.readable_content.method = method;
+    assert.throws(() => verifyAcquisitionResult(e, task), error => {
+      const safe = publicError(error);
+      assert.equal(safe.code, 'WORKER_RESULT_INVALID');
+      assert.match(safe.message, /hard-subtitle OCR/);
+      assert.equal(safe.details.required_method, 'hard_subtitle_ocr');
+      assert.equal(safe.details.actual_method,
+        method === 'local_whisper_cpp_base_q5_1' ? method : 'unknown');
+      assert.doesNotMatch(JSON.stringify(safe), /private|media\.invalid/);
+      return true;
+    });
+  }
 });
 test('ZIP reader supports stored and deflated results and rejects invalid/oversized data', () => {
   for (const method of [0, 8]) assert.deepEqual(readResultZip(zip({ pass: false }, method)), { pass: false });
