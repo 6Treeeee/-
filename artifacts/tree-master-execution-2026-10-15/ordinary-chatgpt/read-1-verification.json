@@ -23,7 +23,8 @@
     "fresh": true,
     "no_cache": true,
     "full_scan": true,
-    "positive_duration": true
+    "positive_duration": true,
+    "existing_contract_verifier": true
   },
   "segment_count": 40,
   "text_characters": 332,

@@ -1,0 +1,4321 @@
+{
+  "request_id": "3dd3b53d-387c-4a3c-884f-87b67c71d4cc",
+  "aweme_id": "7650055582929456425",
+  "worker": {
+    "run_id": "38824126698",
+    "attempt": "1",
+    "commit": "d2f73fdbb0c7e7c8f4a4be50253f180a9e09a292"
+  },
+  "duration_ms": 650741,
+  "fresh_capture": true,
+  "transcript_cache_read": false,
+  "coverage": {
+    "start_ms": 0,
+    "end_ms": 650740,
+    "full_video_scanned": true,
+    "visual_step_ms": 250,
+    "threshold": 0.003,
+    "caption_activity": {
+      "sustained": true,
+      "active_ms": 237490,
+      "active_ratio": 0.364954,
+      "window_ms": 10000,
+      "covered_windows": 66,
+      "total_windows": 66,
+      "window_ratio": 1,
+      "minimum_active_ratio": 0.2,
+      "minimum_window_ratio": 0.75
+    }
+  },
+  "method": "hard_subtitle_ocr",
+  "limitations": [
+    "visual_subtitles_only_not_spoken_audio",
+    "subtitle_region_only_capture",
+    "approximate_frame_capture_timestamps",
+    "sub_250ms_or_low_change_captions_may_be_missed",
+    "source_subtitle_errors_preserved",
+    "short_lived_ocr_variants_collapsed_by_temporal_consensus",
+    "ocr_not_manually_corrected"
+  ],
+  "text": "三条视频\n讲透AI完整产业链\n从中端应用到芯片底层的五层结构\n我赌你现在刷到的每一条A新闻\n你看了三遍\n都没搞明白他到底在说哪一层\n一提到AI产业链\n脑海里浮现的画面大概是这样的\n要么是铺天盖地的资本新闻\n摩根士丹利又上调了英伟达目标价\n要么是眼花缭乱的模型评测\n今天GPT-5干掉了Claude4.5\n明天deepseek又开源了新版本\n阿里腾讯的AI应用又在搞补贴大战\n这些信息单个拎出来都没毛病\n可一旦拼在一起\n你是不是经常觉得好像每条都懂\n串起来却是一团浆糊\n没事今天咱们就把这事彻底盘清楚\n我借用一个很有意思的框架\n英伟达老大黄仁勋\n提出的5层蛋糕模型\n从脚下的地基能源\n到顶层的消费应用\n一层一层开揉碎讲透\n保证你看完之后\n再刷到任何AI新闻\n都能秒懂它属于哪一层\n2026年的AI市场到底有多疯狂\n在正式切蛋糕之前\n咱先感受一下现在的温度\n据市场研究机构Gardner预测\n2026年全球A1总支出将达到2.59万亿美元\n同比增长47%\n其中\n光是AI基础设施这一项就占了1.43万亿\nAI模型层的支出也将达到326亿美元\n同比增速更是高达110%\n换个更直白的说法\n现在几乎每一笔大型科技开支后面\n都跟着一个AI标签\n从硅谷到深圳\n从云端到核电站\n钱就像开了闸一样往这个赛道里灌\n那这些钱到底流\n物理硬件向了哪里\n答案就藏在这5层蛋糕里\n每一层都在疯狂烧钱\n好那咱们从最底下\n最容易被忽略的那一层开始\n第一层能源层AI的真正地基\n你可能觉得AI的尽头是算力\n算力的尽头是芯片\n但你得再往下挖一层\n芯片的背后是电\n想象一下\n你养了一只巨大的食电兽GPT-6\n这只怪兽每一次思考和输出\n答案都在大口大口的喝电流\n黄仁勋自已就在博文里点明了这一点\n没有能源\n我们就无法建造芯片工厂\n计算机系统工厂和AI数据中心\n座万卡智算中心的年耗电量\n堪比一座小型城市\n为了支撑未来的AI版图\nGoogle微软这些巨头\n甚至开始亲自下场搞核聚变\n你可能会觉得不可思议\n好好的科技公司\n怎么跑去建电厂了\n这正是第一层的残酷逻辑\n不做能源\n上面的软件再好\n也只是空中楼阁\n那放眼全球\n能源层的格局是怎样的呢\n中国发电总量稳居世界第一\n在火电风电水电光电核电等主要领域\n都名列前茅\n有网友总结过一句话AI的尽头是算力\n算力的尽头是电力\n电力的尽头是中国\n美国发电总量不到中国的一半\n还面临着电网设施老化\n东西部电网各自为政等结构性问题\n所以你看\n能源层已经不光是拼芯片拼算法了\n而是拼谁的光伏板铺的更广\n谁的核电建的更快\n这背后折射出一个深层趋势\nAI正在从比特世界回归原子世界\n能源的稀缺性直接决定了AI\n产业的扩张边界聊完了\n地基咱们往上爬\n层第二层芯片层算力的心脏\n没错这一层就是芯片\n它不仅是五层蛋糕里最硬的一块\n也是最贵的一块\n目前英伟达手里\n着数据中心\nAI性能硬件市场大约八成的份额\nAMD只占了几个百分点\n截至2026年初\n英伟达在全球训练端芯片市场中\n更是霸着九成左右\n你可能听过得GPU者得天下这句话\n但在2026年\n这句话得改一改\n得生态者得天下\n英伟达真正的护城河不是那块硅片\nCD\nCUDA\n而是CUDA\n将近20年的积累\n全球1，500万活跃A1开发者被深度绑定\n这个生态系统才是它最可怕的武器\n但别以为这一层就没人挑战了\n相反玩家们正排着队呢\nAMDM1300系列加速器强势入局\nOpenAl的Sam Altman\n甚至用了令人难以置信\n来形容AMD的MI400系列\n不过分析师预计\n英伟达Blackwell平台\n今年出货量仍将主导市场\nAMD的下一代Helios平台\n可能要等到年底才能大规模落地\nGoogleTPU已经磨刀霍霍\n今年专用AI芯片市场的增速\n预计会远超通用TPU\nGPU (通用)40%行业平均\n英特尔以18A制成新品切入推理市场\n试图从不同角度\n打破英伟达的垄断格局\n在堆算力这个旧逻辑上\n英伟达依然是王者\n但2026年大家逐渐觉醒了\n跑大模型的方法\n不再只有堆显卡一条路\n通过对算法架构的创新训练\n成本断崖式下降\n成本断崖式下降成本正在断崖式下降\n芯片聊完了\n你可能会问那芯片差到哪里去呢\n这就得引\n出下一层第三层基础设施层\n被严重低估的印钞机\n在黄仁勋的5层模型中\n基础设施层包括了土地供电冷却系统\n建筑网络通信\n以及将成千上万处理器\n编排到一台机器的系统\n这些系统的集合体就叫AI工厂\n听起来是不是最无聊最重资产\n最没有性感故事可讲\n但正是这一层\n投人权重最高\nGardner指出\nAI基础设施是最大的细分支出领域\n今年\n大概要花掉全球AI总支出的将近一半\n更具体的说\n座智算中心的建设\n是从烧钱买地开始\n接着铺光纤建冷却塔\n最后才轮到插上GPU\n其中散热问题尤其让人头疼\n英伟达新一代B200芯片的功耗\n已经冲到1千瓦\n今年数据中心的水冷系统渗透率\n预计会接近一半\n而且正在从“液-空”混合架构\n逐步转向全“液-液”架构\n还有另一个关键维度全球云基础设施\n今年第一季度\n全球laaS云市场\n美国三巨头合计份额大约六成出头\n中国三枪加起来占了一成多\n这意味着\n从训练大模型到大规模部署\nAI应用的算力供给和全球网络资源\n仍然掌握在美国云大厂手中\n你可能不知道的是\nAI时代数据中心的机柜密度\n已经比传统云时代翻了好几倍\n单笔订单规模也动不动就超过50兆瓦\n基础设施层\n已经从过去拿着电费单补贴的配角\n摇身变成了AI竞赛中的兵家必争之地\n建好了\n接下来该生产什么了\n对就是模型\n咱们再往上走第四层模型层\n当开源追上了闭源\n如果说基础设施是造\n那模型层就是造车\n这一层的故事在2026年格外精彩\n全球生成式AI市场\n已经从openAl的单极霸权\n演变为openAl加Google\n双寡头加开源军团的结构\n网络流量数据显示\nchat g b t的全球份额\n已经从去年初的接近九成\n大幅下滑到六成半左右\n而Google Gemini则凭借Nano Banana\n在一年内翻了4倍\n拿下了两成多\n开源模型的爆发\n是今年模型层最有标志性的事件\n斯坦福大学最新的《AI指数报告》显示\n中美顶尖大模型性能差距\n已经从前两年的300多分\n收窄到40来分\n更惊人的是\n在全球API调用量上\n中国模型已经反超了美国模型\n这一数据\n来自统计全球180多种大模型的\nOpenRouter平台\n中国几大主流模型合计占6成出头\n而美国模型合计占3成左右\n2026年模型层还有一个新风向\n从参数竞赛转向智能体元年\n行业越来越意识到\n参数再大跑分再高\n如果不能真正干活\n就无法产生商业价值\n所以OpenClaw这类个人Agent产品\n被视为下一个现象级机会\n《2026十大AI技术趋势》中智源研究院也在\n指出消费端\nAllinOne的超级应用入口正在逐步形成\n看到这你可能忍不住想问\n中国和美国的模型到底还差多少\n如果看Elo评分\n海外顶级模型大约1,500分出头\n国产最佳大约1，460分上下\n性能差距<2.7%\n2%点凡的差距\n19 20222324252622%点几的差距\n已经快被吃到统计误差的区间里了363738394\n已经快被吃到统计误差的区间里了\n192022232已经快被吃到统计误差的区间里了\n2已经快被吃到统计误差的区间里了\n说白了\n顶级模型之间的性能差距正在消失\n真正的胜负手\n不取决于\n谁再做一次军备竞赛式的参数膨胀\n而是谁能把闭源的极致性能\n开源的普惠生态\n和Agent的商业化场景\n这三股力量拧成一股绳\n模型做得再好\n最终也得拿出来给人用\n这就到了蛋糕最顶上\n离你钱包最近的那一层\noadVehicleCompactSUV\n第五层应用层\n谁赢了蛋糕顶上的那颗樱桃\n终于来到了5层蛋糕的最顶上\n这一层再回答两个核心问题\n谁能做出真正的AI超级应用\n谁能靠AI赚到真金白银\n先看活跃度\n根据量子位智库统计\n2026年4月\n国内AI应用Web端月访问量突破9亿\nAPP端月下载量超2.4亿\n日活同比增长223%\n再看变现能力\n快手可灵AI用户破亿\n单季营收超6.5亿元\n阿里云AI收入占比\n在上个财季已经超过三成\n这些信号说明一件事\nAI从烧钱走向挣钱的拐点已经到来\n连续两年支持春晚红包活动\n在c端入口争夺上\n各大厂商火力不减\n仅春节档字节\n阿里腾讯百度四家巨头\n合计投入超45亿进行市场推\n争的不是简单的用户数量\n2023年已经过去，我们的团队在这一年中取而是用户打开哪个APP\n2023年已经过去，我们的团队在这一年中取得了显著的进步和成就。这是对过去一年工而是用户打开哪个APP\n完成第一件AI任务的下意识选择\n与此同时\nDeepSeek V4-Pro的API\n价格低到几乎可以忽略不计\n大约只有GPT5.5的1/7\n成本的大幅下降\n让更多中小企业和个人开发者\n有了入场的机会\n微信生态开放\n至于AlAgent赛道\n从微信向京东美\n团滴滴开放AI生态\n到阿里巴巴成立TokenFoundry事业部\n并宣布开放第三方Agent\n再到OpenClaw等海外项目的爆发\n都在说明一个事实\nAI正在从回答问题走向完成工作\n好了5层蛋糕我们全切完了\n现在回过头来看\n你会发现一个很有意思的结构\n能源与芯片层能源层和芯片层\n代表你的体力肌肉够不够强壮\n决定了你跑不跑得动基础设施层\n能源与芯片层是你的骨架\n撑起庞大规模的硬实力模型层\n能源与芯片层是你的大脑\n能源与芯片层聪明不聪明\n有没有智力优势应用层是你的手\n能源与芯片层\n能源与芯片层最终要触达用户\n能源与芯片层创造价值\n现在你再看AI新闻\n是不是清晰多了\n哪个国家又在搞核聚变了\n是第一层\n哪家公司又发布了新一代AI芯片\n是第二层\n哪个大厂的云计算资本开支超预期了\n是第三层DeepSeek又开源了一个新模型\n是第四层\n腾讯阿里在打AI应用补贴大战\n是第5层\n看懂AI产业链\n其实没有那么难\n以后谁再跟你聊AI\n你就可以优雅的说一句要不\n我从5层蛋糕给你盘一盘\n好了本期视频到此结束\n本视频由AI启示录科普教育原创发布\n关注我深度拆解最硬核的科技链\n与全球前沿动态",
+  "segments": [
+    {
+      "start_ms": 750,
+      "end_ms": 1250,
+      "last_seen_ms": 750,
+      "text": "三条视频",
+      "confidence": 0.9555213302373886,
+      "evidence": [
+        "frames/00001-0000750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 1250,
+      "end_ms": 2750,
+      "last_seen_ms": 1250,
+      "text": "讲透AI完整产业链",
+      "confidence": 0.9526662230491638,
+      "evidence": [
+        "frames/00002-0001250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 2750,
+      "end_ms": 5250,
+      "last_seen_ms": 2750,
+      "text": "从中端应用到芯片底层的五层结构",
+      "confidence": 0.9927476843198141,
+      "evidence": [
+        "frames/00003-0002750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 5500,
+      "end_ms": 7750,
+      "last_seen_ms": 6500,
+      "text": "我赌你现在刷到的每一条A新闻",
+      "confidence": 0.9926482949938092,
+      "evidence": [
+        "frames/00005-0005500.jpg",
+        "frames/00006-0005750.jpg",
+        "frames/00007-0006250.jpg",
+        "frames/00008-0006500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 7750,
+      "end_ms": 8750,
+      "last_seen_ms": 8250,
+      "text": "你看了三遍",
+      "confidence": 0.9987795829772951,
+      "evidence": [
+        "frames/00009-0007750.jpg",
+        "frames/00010-0008000.jpg",
+        "frames/00011-0008250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 8750,
+      "end_ms": 10500,
+      "last_seen_ms": 10250,
+      "text": "都没搞明白他到底在说哪一层",
+      "confidence": 0.9922860218928411,
+      "evidence": [
+        "frames/00012-0008750.jpg",
+        "frames/00013-0009000.jpg",
+        "frames/00014-0009750.jpg",
+        "frames/00015-0010000.jpg",
+        "frames/00016-0010250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 10750,
+      "end_ms": 12000,
+      "last_seen_ms": 11750,
+      "text": "一提到AI产业链",
+      "confidence": 0.9926209822297096,
+      "evidence": [
+        "frames/00018-0010750.jpg",
+        "frames/00019-0011000.jpg",
+        "frames/00020-0011250.jpg",
+        "frames/00021-0011500.jpg",
+        "frames/00022-0011750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 12000,
+      "end_ms": 14250,
+      "last_seen_ms": 14000,
+      "text": "脑海里浮现的画面大概是这样的",
+      "confidence": 0.9930049095835004,
+      "evidence": [
+        "frames/00023-0012000.jpg",
+        "frames/00024-0012250.jpg",
+        "frames/00025-0012500.jpg",
+        "frames/00026-0012750.jpg",
+        "frames/00027-0013000.jpg",
+        "frames/00028-0013250.jpg",
+        "frames/00029-0013500.jpg",
+        "frames/00030-0013750.jpg",
+        "frames/00031-0014000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 14750,
+      "end_ms": 16750,
+      "last_seen_ms": 16250,
+      "text": "要么是铺天盖地的资本新闻",
+      "confidence": 0.9935442606608073,
+      "evidence": [
+        "frames/00034-0014750.jpg",
+        "frames/00035-0015000.jpg",
+        "frames/00036-0015250.jpg",
+        "frames/00037-0015500.jpg",
+        "frames/00038-0015750.jpg",
+        "frames/00039-0016000.jpg",
+        "frames/00040-0016250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 17000,
+      "end_ms": 19250,
+      "last_seen_ms": 19000,
+      "text": "摩根士丹利又上调了英伟达目标价",
+      "confidence": 0.9870599374175073,
+      "evidence": [
+        "frames/00042-0017000.jpg",
+        "frames/00043-0017250.jpg",
+        "frames/00044-0017500.jpg",
+        "frames/00045-0017750.jpg",
+        "frames/00046-0018000.jpg",
+        "frames/00047-0018250.jpg",
+        "frames/00048-0018500.jpg",
+        "frames/00049-0018750.jpg",
+        "frames/00050-0019000.jpg"
+      ],
+      "recognition_variants": 2
+    },
+    {
+      "start_ms": 19500,
+      "end_ms": 21750,
+      "last_seen_ms": 19750,
+      "text": "要么是眼花缭乱的模型评测",
+      "confidence": 0.969267855087916,
+      "evidence": [
+        "frames/00052-0019500.jpg",
+        "frames/00053-0019750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 21750,
+      "end_ms": 24500,
+      "last_seen_ms": 21750,
+      "text": "今天GPT-5干掉了Claude4.5",
+      "confidence": 0.9788744135906822,
+      "evidence": [
+        "frames/00054-0021750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 24500,
+      "end_ms": 26750,
+      "last_seen_ms": 24500,
+      "text": "明天deepseek又开源了新版本",
+      "confidence": 0.9946950603933895,
+      "evidence": [
+        "frames/00055-0024500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 26750,
+      "end_ms": 29500,
+      "last_seen_ms": 27000,
+      "text": "阿里腾讯的AI应用又在搞补贴大战",
+      "confidence": 0.9862177148461342,
+      "evidence": [
+        "frames/00056-0026750.jpg",
+        "frames/00057-0027000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 29500,
+      "end_ms": 31750,
+      "last_seen_ms": 31500,
+      "text": "这些信息单个拎出来都没毛病",
+      "confidence": 0.9946900514455942,
+      "evidence": [
+        "frames/00058-0029500.jpg",
+        "frames/00059-0029750.jpg",
+        "frames/00060-0030000.jpg",
+        "frames/00061-0030250.jpg",
+        "frames/00062-0030500.jpg",
+        "frames/00063-0030750.jpg",
+        "frames/00064-0031000.jpg",
+        "frames/00065-0031250.jpg",
+        "frames/00066-0031500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 31750,
+      "end_ms": 33000,
+      "last_seen_ms": 32750,
+      "text": "可一旦拼在一起",
+      "confidence": 0.9988642675536019,
+      "evidence": [
+        "frames/00067-0031750.jpg",
+        "frames/00068-0032000.jpg",
+        "frames/00069-0032250.jpg",
+        "frames/00070-0032500.jpg",
+        "frames/00071-0032750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 33000,
+      "end_ms": 35750,
+      "last_seen_ms": 35500,
+      "text": "你是不是经常觉得好像每条都懂",
+      "confidence": 0.9954427438122887,
+      "evidence": [
+        "frames/00072-0033000.jpg",
+        "frames/00073-0033250.jpg",
+        "frames/00074-0033500.jpg",
+        "frames/00075-0033750.jpg",
+        "frames/00076-0034000.jpg",
+        "frames/00077-0034250.jpg",
+        "frames/00078-0034500.jpg",
+        "frames/00079-0034750.jpg",
+        "frames/00080-0035000.jpg",
+        "frames/00081-0035250.jpg",
+        "frames/00082-0035500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 35750,
+      "end_ms": 37250,
+      "last_seen_ms": 37000,
+      "text": "串起来却是一团浆糊",
+      "confidence": 0.9581601156128777,
+      "evidence": [
+        "frames/00083-0035750.jpg",
+        "frames/00084-0036000.jpg",
+        "frames/00085-0036250.jpg",
+        "frames/00086-0036500.jpg",
+        "frames/00087-0036750.jpg",
+        "frames/00088-0037000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 37500,
+      "end_ms": 39750,
+      "last_seen_ms": 39500,
+      "text": "没事今天咱们就把这事彻底盘清楚",
+      "confidence": 0.9927549481391905,
+      "evidence": [
+        "frames/00090-0037500.jpg",
+        "frames/00091-0037750.jpg",
+        "frames/00092-0038000.jpg",
+        "frames/00093-0038250.jpg",
+        "frames/00094-0038500.jpg",
+        "frames/00095-0038750.jpg",
+        "frames/00096-0039000.jpg",
+        "frames/00097-0039250.jpg",
+        "frames/00098-0039500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 40000,
+      "end_ms": 42250,
+      "last_seen_ms": 40250,
+      "text": "我借用一个很有意思的框架",
+      "confidence": 0.998477910955747,
+      "evidence": [
+        "frames/00100-0040000.jpg",
+        "frames/00101-0040250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 42250,
+      "end_ms": 43500,
+      "last_seen_ms": 42250,
+      "text": "英伟达老大黄仁勋",
+      "confidence": 0.9932793378829956,
+      "evidence": [
+        "frames/00102-0042250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 43500,
+      "end_ms": 45500,
+      "last_seen_ms": 43500,
+      "text": "提出的5层蛋糕模型",
+      "confidence": 0.9982847571372986,
+      "evidence": [
+        "frames/00103-0043500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 45500,
+      "end_ms": 47500,
+      "last_seen_ms": 45750,
+      "text": "从脚下的地基能源",
+      "confidence": 0.9979754760861397,
+      "evidence": [
+        "frames/00104-0045500.jpg",
+        "frames/00105-0045750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 47500,
+      "end_ms": 49000,
+      "last_seen_ms": 47500,
+      "text": "到顶层的消费应用",
+      "confidence": 0.9917593896389008,
+      "evidence": [
+        "frames/00106-0047500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 49000,
+      "end_ms": 51500,
+      "last_seen_ms": 49250,
+      "text": "一层一层开揉碎讲透",
+      "confidence": 0.9904890192879571,
+      "evidence": [
+        "frames/00107-0049000.jpg",
+        "frames/00108-0049250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 51500,
+      "end_ms": 53000,
+      "last_seen_ms": 51750,
+      "text": "保证你看完之后",
+      "confidence": 0.9974736145564488,
+      "evidence": [
+        "frames/00109-0051500.jpg",
+        "frames/00110-0051750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 53000,
+      "end_ms": 54750,
+      "last_seen_ms": 53000,
+      "text": "再刷到任何AI新闻",
+      "confidence": 0.9861885971493192,
+      "evidence": [
+        "frames/00111-0053000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 54750,
+      "end_ms": 56500,
+      "last_seen_ms": 54750,
+      "text": "都能秒懂它属于哪一层",
+      "confidence": 0.988644939661026,
+      "evidence": [
+        "frames/00112-0054750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 56500,
+      "end_ms": 59500,
+      "last_seen_ms": 56750,
+      "text": "2026年的AI市场到底有多疯狂",
+      "confidence": 0.9834436662495136,
+      "evidence": [
+        "frames/00113-0056500.jpg",
+        "frames/00114-0056750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 59500,
+      "end_ms": 61250,
+      "last_seen_ms": 59750,
+      "text": "在正式切蛋糕之前",
+      "confidence": 0.9979616329073906,
+      "evidence": [
+        "frames/00115-0059500.jpg",
+        "frames/00116-0059750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 61250,
+      "end_ms": 62750,
+      "last_seen_ms": 61250,
+      "text": "咱先感受一下现在的温度",
+      "confidence": 0.9945479252121665,
+      "evidence": [
+        "frames/00117-0061250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 63250,
+      "end_ms": 65250,
+      "last_seen_ms": 63250,
+      "text": "据市场研究机构Gardner预测",
+      "confidence": 0.9960924722254276,
+      "evidence": [
+        "frames/00119-0063250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 65250,
+      "end_ms": 69000,
+      "last_seen_ms": 65250,
+      "text": "2026年全球A1总支出将达到2.59万亿美元",
+      "confidence": 0.9719471620476764,
+      "evidence": [
+        "frames/00120-0065250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 69000,
+      "end_ms": 70750,
+      "last_seen_ms": 69000,
+      "text": "同比增长47%",
+      "confidence": 0.9996583206312997,
+      "evidence": [
+        "frames/00121-0069000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 70750,
+      "end_ms": 71000,
+      "last_seen_ms": 70750,
+      "text": "其中",
+      "confidence": 0.9997492432594299,
+      "evidence": [
+        "frames/00122-0070750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 71000,
+      "end_ms": 74500,
+      "last_seen_ms": 74250,
+      "text": "光是AI基础设施这一项就占了1.43万亿",
+      "confidence": 0.9649917582670847,
+      "evidence": [
+        "frames/00123-0071000.jpg",
+        "frames/00124-0071250.jpg",
+        "frames/00125-0071500.jpg",
+        "frames/00126-0071750.jpg",
+        "frames/00127-0072000.jpg",
+        "frames/00128-0072250.jpg",
+        "frames/00129-0072500.jpg",
+        "frames/00130-0072750.jpg",
+        "frames/00131-0073000.jpg",
+        "frames/00132-0073250.jpg",
+        "frames/00133-0073500.jpg",
+        "frames/00134-0073750.jpg",
+        "frames/00135-0074000.jpg",
+        "frames/00136-0074250.jpg"
+      ],
+      "recognition_variants": 2
+    },
+    {
+      "start_ms": 74750,
+      "end_ms": 78250,
+      "last_seen_ms": 75250,
+      "text": "AI模型层的支出也将达到326亿美元",
+      "confidence": 0.9777400857872434,
+      "evidence": [
+        "frames/00138-0074750.jpg",
+        "frames/00139-0075000.jpg",
+        "frames/00140-0075250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 78250,
+      "end_ms": 80750,
+      "last_seen_ms": 78500,
+      "text": "同比增速更是高达110%",
+      "confidence": 0.9958909998337427,
+      "evidence": [
+        "frames/00141-0078250.jpg",
+        "frames/00142-0078500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 80750,
+      "end_ms": 82500,
+      "last_seen_ms": 81000,
+      "text": "换个更直白的说法",
+      "confidence": 0.9948764070868492,
+      "evidence": [
+        "frames/00143-0080750.jpg",
+        "frames/00144-0081000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 82500,
+      "end_ms": 85250,
+      "last_seen_ms": 82500,
+      "text": "现在几乎每一笔大型科技开支后面",
+      "confidence": 0.9935644626617431,
+      "evidence": [
+        "frames/00145-0082500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 85250,
+      "end_ms": 87000,
+      "last_seen_ms": 85250,
+      "text": "都跟着一个AI标签",
+      "confidence": 0.9958530598216586,
+      "evidence": [
+        "frames/00146-0085250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 87000,
+      "end_ms": 88500,
+      "last_seen_ms": 87250,
+      "text": "从硅谷到深圳",
+      "confidence": 0.9971549808979034,
+      "evidence": [
+        "frames/00147-0087000.jpg",
+        "frames/00148-0087250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 88500,
+      "end_ms": 90000,
+      "last_seen_ms": 88500,
+      "text": "从云端到核电站",
+      "confidence": 0.9990102308137077,
+      "evidence": [
+        "frames/00149-0088500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 90000,
+      "end_ms": 92500,
+      "last_seen_ms": 90000,
+      "text": "钱就像开了闸一样往这个赛道里灌",
+      "confidence": 0.9928097486495971,
+      "evidence": [
+        "frames/00150-0090000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 93000,
+      "end_ms": 93500,
+      "last_seen_ms": 93000,
+      "text": "那这些钱到底流",
+      "confidence": 0.9957773430006844,
+      "evidence": [
+        "frames/00152-0093000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 93500,
+      "end_ms": 94750,
+      "last_seen_ms": 94000,
+      "text": "物理硬件向了哪里",
+      "confidence": 0.9963284358382225,
+      "evidence": [
+        "frames/00153-0093500.jpg",
+        "frames/00154-0093750.jpg",
+        "frames/00155-0094000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 94750,
+      "end_ms": 96500,
+      "last_seen_ms": 96250,
+      "text": "答案就藏在这5层蛋糕里",
+      "confidence": 0.9969798163934187,
+      "evidence": [
+        "frames/00156-0094750.jpg",
+        "frames/00157-0096250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 96500,
+      "end_ms": 98750,
+      "last_seen_ms": 98000,
+      "text": "每一层都在疯狂烧钱",
+      "confidence": 0.9976648423406813,
+      "evidence": [
+        "frames/00158-0096500.jpg",
+        "frames/00159-0096750.jpg",
+        "frames/00160-0097000.jpg",
+        "frames/00161-0097250.jpg",
+        "frames/00162-0097500.jpg",
+        "frames/00163-0097750.jpg",
+        "frames/00164-0098000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 98750,
+      "end_ms": 100500,
+      "last_seen_ms": 99000,
+      "text": "好那咱们从最底下",
+      "confidence": 0.9939312934875488,
+      "evidence": [
+        "frames/00165-0098750.jpg",
+        "frames/00166-0099000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 100500,
+      "end_ms": 102250,
+      "last_seen_ms": 100500,
+      "text": "最容易被忽略的那一层开始",
+      "confidence": 0.99106993774573,
+      "evidence": [
+        "frames/00167-0100500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 102750,
+      "end_ms": 105750,
+      "last_seen_ms": 102750,
+      "text": "第一层能源层AI的真正地基",
+      "confidence": 0.9923401979299692,
+      "evidence": [
+        "frames/00169-0102750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 106500,
+      "end_ms": 108250,
+      "last_seen_ms": 108000,
+      "text": "你可能觉得AI的尽头是算力",
+      "confidence": 0.9906787230418279,
+      "evidence": [
+        "frames/00171-0106500.jpg",
+        "frames/00172-0107250.jpg",
+        "frames/00173-0107500.jpg",
+        "frames/00174-0107750.jpg",
+        "frames/00175-0108000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 108250,
+      "end_ms": 109750,
+      "last_seen_ms": 109250,
+      "text": "算力的尽头是芯片",
+      "confidence": 0.9999189749360085,
+      "evidence": [
+        "frames/00176-0108250.jpg",
+        "frames/00177-0108500.jpg",
+        "frames/00178-0108750.jpg",
+        "frames/00179-0109000.jpg",
+        "frames/00180-0109250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 109750,
+      "end_ms": 111250,
+      "last_seen_ms": 110500,
+      "text": "但你得再往下挖一层",
+      "confidence": 0.9916024075614082,
+      "evidence": [
+        "frames/00181-0109750.jpg",
+        "frames/00182-0110000.jpg",
+        "frames/00183-0110250.jpg",
+        "frames/00184-0110500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 111250,
+      "end_ms": 112750,
+      "last_seen_ms": 111750,
+      "text": "芯片的背后是电",
+      "confidence": 0.999312026160104,
+      "evidence": [
+        "frames/00185-0111250.jpg",
+        "frames/00186-0111500.jpg",
+        "frames/00187-0111750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 112750,
+      "end_ms": 114000,
+      "last_seen_ms": 113000,
+      "text": "想象一下",
+      "confidence": 0.9987308233976364,
+      "evidence": [
+        "frames/00188-0112750.jpg",
+        "frames/00189-0113000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 114000,
+      "end_ms": 117000,
+      "last_seen_ms": 114000,
+      "text": "你养了一只巨大的食电兽GPT-6",
+      "confidence": 0.9981348291039467,
+      "evidence": [
+        "frames/00190-0114000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 117500,
+      "end_ms": 119250,
+      "last_seen_ms": 117500,
+      "text": "这只怪兽每一次思考和输出",
+      "confidence": 0.9946331679821014,
+      "evidence": [
+        "frames/00192-0117500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 119250,
+      "end_ms": 122000,
+      "last_seen_ms": 119250,
+      "text": "答案都在大口大口的喝电流",
+      "confidence": 0.997940331697464,
+      "evidence": [
+        "frames/00193-0119250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 122000,
+      "end_ms": 124750,
+      "last_seen_ms": 122250,
+      "text": "黄仁勋自已就在博文里点明了这一点",
+      "confidence": 0.9750659912824631,
+      "evidence": [
+        "frames/00194-0122000.jpg",
+        "frames/00195-0122250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 124750,
+      "end_ms": 125750,
+      "last_seen_ms": 125250,
+      "text": "没有能源",
+      "confidence": 0.9977938532829285,
+      "evidence": [
+        "frames/00196-0124750.jpg",
+        "frames/00197-0125000.jpg",
+        "frames/00198-0125250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 125750,
+      "end_ms": 127750,
+      "last_seen_ms": 125750,
+      "text": "我们就无法建造芯片工厂",
+      "confidence": 0.9983011971820485,
+      "evidence": [
+        "frames/00199-0125750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 127750,
+      "end_ms": 130000,
+      "last_seen_ms": 127750,
+      "text": "计算机系统工厂和AI数据中心",
+      "confidence": 0.9954957493713924,
+      "evidence": [
+        "frames/00200-0127750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 130250,
+      "end_ms": 132750,
+      "last_seen_ms": 130500,
+      "text": "座万卡智算中心的年耗电量",
+      "confidence": 0.9970847914616267,
+      "evidence": [
+        "frames/00202-0130250.jpg",
+        "frames/00203-0130500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 132750,
+      "end_ms": 134250,
+      "last_seen_ms": 134000,
+      "text": "堪比一座小型城市",
+      "confidence": 0.9944806173443794,
+      "evidence": [
+        "frames/00204-0132750.jpg",
+        "frames/00205-0133000.jpg",
+        "frames/00206-0133250.jpg",
+        "frames/00207-0133500.jpg",
+        "frames/00208-0133750.jpg",
+        "frames/00209-0134000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 134500,
+      "end_ms": 136500,
+      "last_seen_ms": 134750,
+      "text": "为了支撑未来的AI版图",
+      "confidence": 0.9977791038426486,
+      "evidence": [
+        "frames/00211-0134500.jpg",
+        "frames/00212-0134750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 136500,
+      "end_ms": 138000,
+      "last_seen_ms": 136500,
+      "text": "Google微软这些巨头",
+      "confidence": 0.9992008060216904,
+      "evidence": [
+        "frames/00213-0136500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 138000,
+      "end_ms": 140250,
+      "last_seen_ms": 138000,
+      "text": "甚至开始亲自下场搞核聚变",
+      "confidence": 0.997911274433136,
+      "evidence": [
+        "frames/00214-0138000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 140250,
+      "end_ms": 141750,
+      "last_seen_ms": 141500,
+      "text": "你可能会觉得不可思议",
+      "confidence": 0.9977041304111479,
+      "evidence": [
+        "frames/00215-0140250.jpg",
+        "frames/00216-0140500.jpg",
+        "frames/00217-0140750.jpg",
+        "frames/00218-0141000.jpg",
+        "frames/00219-0141250.jpg",
+        "frames/00220-0141500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 141750,
+      "end_ms": 143000,
+      "last_seen_ms": 142750,
+      "text": "好好的科技公司",
+      "confidence": 0.9939464160374232,
+      "evidence": [
+        "frames/00221-0141750.jpg",
+        "frames/00222-0142000.jpg",
+        "frames/00223-0142250.jpg",
+        "frames/00224-0142500.jpg",
+        "frames/00225-0142750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 143000,
+      "end_ms": 144250,
+      "last_seen_ms": 144000,
+      "text": "怎么跑去建电厂了",
+      "confidence": 0.9971485435962677,
+      "evidence": [
+        "frames/00226-0143000.jpg",
+        "frames/00227-0143250.jpg",
+        "frames/00228-0143500.jpg",
+        "frames/00229-0143750.jpg",
+        "frames/00230-0144000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 144500,
+      "end_ms": 146500,
+      "last_seen_ms": 146250,
+      "text": "这正是第一层的残酷逻辑",
+      "confidence": 0.9940123449672352,
+      "evidence": [
+        "frames/00232-0144500.jpg",
+        "frames/00233-0144750.jpg",
+        "frames/00234-0145000.jpg",
+        "frames/00235-0145250.jpg",
+        "frames/00236-0145500.jpg",
+        "frames/00237-0145750.jpg",
+        "frames/00238-0146000.jpg",
+        "frames/00239-0146250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 146500,
+      "end_ms": 147500,
+      "last_seen_ms": 147250,
+      "text": "不做能源",
+      "confidence": 0.9992232471704483,
+      "evidence": [
+        "frames/00240-0146500.jpg",
+        "frames/00241-0146750.jpg",
+        "frames/00242-0147000.jpg",
+        "frames/00243-0147250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 147500,
+      "end_ms": 148750,
+      "last_seen_ms": 148500,
+      "text": "上面的软件再好",
+      "confidence": 0.9965241977146693,
+      "evidence": [
+        "frames/00244-0147500.jpg",
+        "frames/00245-0147750.jpg",
+        "frames/00246-0148000.jpg",
+        "frames/00247-0148250.jpg",
+        "frames/00248-0148500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 148750,
+      "end_ms": 150000,
+      "last_seen_ms": 149750,
+      "text": "也只是空中楼阁",
+      "confidence": 0.994875397000994,
+      "evidence": [
+        "frames/00249-0148750.jpg",
+        "frames/00250-0149000.jpg",
+        "frames/00251-0149500.jpg",
+        "frames/00252-0149750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 150500,
+      "end_ms": 151750,
+      "last_seen_ms": 151500,
+      "text": "那放眼全球",
+      "confidence": 0.9940840721130371,
+      "evidence": [
+        "frames/00255-0150500.jpg",
+        "frames/00256-0150750.jpg",
+        "frames/00257-0151000.jpg",
+        "frames/00258-0151250.jpg",
+        "frames/00259-0151500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 151750,
+      "end_ms": 153250,
+      "last_seen_ms": 153000,
+      "text": "能源层的格局是怎样的呢",
+      "confidence": 0.9942275285720825,
+      "evidence": [
+        "frames/00260-0151750.jpg",
+        "frames/00261-0152000.jpg",
+        "frames/00262-0152250.jpg",
+        "frames/00263-0152500.jpg",
+        "frames/00264-0152750.jpg",
+        "frames/00265-0153000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 153750,
+      "end_ms": 156750,
+      "last_seen_ms": 154000,
+      "text": "中国发电总量稳居世界第一",
+      "confidence": 0.9647484769423803,
+      "evidence": [
+        "frames/00268-0153750.jpg",
+        "frames/00269-0154000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 156750,
+      "end_ms": 160250,
+      "last_seen_ms": 156750,
+      "text": "在火电风电水电光电核电等主要领域",
+      "confidence": 0.997387882322073,
+      "evidence": [
+        "frames/00270-0156750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 160250,
+      "end_ms": 161250,
+      "last_seen_ms": 160250,
+      "text": "都名列前茅",
+      "confidence": 0.9997446537017822,
+      "evidence": [
+        "frames/00271-0160250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 161500,
+      "end_ms": 164500,
+      "last_seen_ms": 164250,
+      "text": "有网友总结过一句话AI的尽头是算力",
+      "confidence": 0.9650080133886898,
+      "evidence": [
+        "frames/00273-0161500.jpg",
+        "frames/00274-0161750.jpg",
+        "frames/00275-0162000.jpg",
+        "frames/00276-0162250.jpg",
+        "frames/00277-0162500.jpg",
+        "frames/00278-0162750.jpg",
+        "frames/00279-0163000.jpg",
+        "frames/00280-0163250.jpg",
+        "frames/00281-0163500.jpg",
+        "frames/00282-0163750.jpg",
+        "frames/00283-0164000.jpg",
+        "frames/00284-0164250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 164500,
+      "end_ms": 166250,
+      "last_seen_ms": 166000,
+      "text": "算力的尽头是电力",
+      "confidence": 0.9841030016541481,
+      "evidence": [
+        "frames/00285-0164500.jpg",
+        "frames/00286-0164750.jpg",
+        "frames/00287-0165000.jpg",
+        "frames/00288-0165250.jpg",
+        "frames/00289-0165500.jpg",
+        "frames/00290-0165750.jpg",
+        "frames/00291-0166000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 166250,
+      "end_ms": 168000,
+      "last_seen_ms": 167750,
+      "text": "电力的尽头是中国",
+      "confidence": 0.9990999549627304,
+      "evidence": [
+        "frames/00292-0166250.jpg",
+        "frames/00293-0166500.jpg",
+        "frames/00294-0166750.jpg",
+        "frames/00295-0167000.jpg",
+        "frames/00296-0167250.jpg",
+        "frames/00297-0167500.jpg",
+        "frames/00298-0167750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 168500,
+      "end_ms": 170500,
+      "last_seen_ms": 170250,
+      "text": "美国发电总量不到中国的一半",
+      "confidence": 0.9975701157863324,
+      "evidence": [
+        "frames/00301-0168500.jpg",
+        "frames/00302-0168750.jpg",
+        "frames/00303-0169000.jpg",
+        "frames/00304-0169250.jpg",
+        "frames/00305-0169500.jpg",
+        "frames/00306-0169750.jpg",
+        "frames/00307-0170000.jpg",
+        "frames/00308-0170250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 170500,
+      "end_ms": 172250,
+      "last_seen_ms": 172000,
+      "text": "还面临着电网设施老化",
+      "confidence": 0.9595459163188934,
+      "evidence": [
+        "frames/00309-0170500.jpg",
+        "frames/00310-0170750.jpg",
+        "frames/00311-0171000.jpg",
+        "frames/00312-0171250.jpg",
+        "frames/00313-0171500.jpg",
+        "frames/00314-0171750.jpg",
+        "frames/00315-0172000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 172250,
+      "end_ms": 174750,
+      "last_seen_ms": 174500,
+      "text": "东西部电网各自为政等结构性问题",
+      "confidence": 0.9907517552375793,
+      "evidence": [
+        "frames/00316-0172250.jpg",
+        "frames/00317-0172500.jpg",
+        "frames/00318-0172750.jpg",
+        "frames/00319-0173000.jpg",
+        "frames/00320-0173250.jpg",
+        "frames/00321-0173500.jpg",
+        "frames/00322-0173750.jpg",
+        "frames/00323-0174000.jpg",
+        "frames/00324-0174250.jpg",
+        "frames/00325-0174500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 174750,
+      "end_ms": 175750,
+      "last_seen_ms": 175000,
+      "text": "所以你看",
+      "confidence": 0.998604342341423,
+      "evidence": [
+        "frames/00326-0174750.jpg",
+        "frames/00327-0175000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 175750,
+      "end_ms": 178750,
+      "last_seen_ms": 176000,
+      "text": "能源层已经不光是拼芯片拼算法了",
+      "confidence": 0.9979870796203614,
+      "evidence": [
+        "frames/00328-0175750.jpg",
+        "frames/00329-0176000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 178750,
+      "end_ms": 181000,
+      "last_seen_ms": 178750,
+      "text": "而是拼谁的光伏板铺的更广",
+      "confidence": 0.986505518356959,
+      "evidence": [
+        "frames/00330-0178750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 181000,
+      "end_ms": 182750,
+      "last_seen_ms": 181000,
+      "text": "谁的核电建的更快",
+      "confidence": 0.9939830973744392,
+      "evidence": [
+        "frames/00331-0181000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 182750,
+      "end_ms": 184750,
+      "last_seen_ms": 182750,
+      "text": "这背后折射出一个深层趋势",
+      "confidence": 0.9882356574138006,
+      "evidence": [
+        "frames/00332-0182750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 184750,
+      "end_ms": 188000,
+      "last_seen_ms": 185000,
+      "text": "AI正在从比特世界回归原子世界",
+      "confidence": 0.9926317056020101,
+      "evidence": [
+        "frames/00333-0184750.jpg",
+        "frames/00334-0185000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 188000,
+      "end_ms": 190500,
+      "last_seen_ms": 188000,
+      "text": "能源的稀缺性直接决定了AI",
+      "confidence": 0.9677984072611883,
+      "evidence": [
+        "frames/00335-0188000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 190500,
+      "end_ms": 192250,
+      "last_seen_ms": 191750,
+      "text": "产业的扩张边界聊完了",
+      "confidence": 0.9975079417228698,
+      "evidence": [
+        "frames/00336-0190500.jpg",
+        "frames/00337-0191750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 192250,
+      "end_ms": 193750,
+      "last_seen_ms": 192250,
+      "text": "地基咱们往上爬",
+      "confidence": 0.9958106023924691,
+      "evidence": [
+        "frames/00338-0192250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 193750,
+      "end_ms": 197000,
+      "last_seen_ms": 193750,
+      "text": "层第二层芯片层算力的心脏",
+      "confidence": 0.997783879439036,
+      "evidence": [
+        "frames/00339-0193750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 197500,
+      "end_ms": 199000,
+      "last_seen_ms": 197500,
+      "text": "没错这一层就是芯片",
+      "confidence": 0.9977767798635695,
+      "evidence": [
+        "frames/00341-0197500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 199500,
+      "end_ms": 201750,
+      "last_seen_ms": 199500,
+      "text": "它不仅是五层蛋糕里最硬的一块",
+      "confidence": 0.9943434510912214,
+      "evidence": [
+        "frames/00343-0199500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 201750,
+      "end_ms": 203000,
+      "last_seen_ms": 201750,
+      "text": "也是最贵的一块",
+      "confidence": 0.9960444228989738,
+      "evidence": [
+        "frames/00344-0201750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 203000,
+      "end_ms": 204000,
+      "last_seen_ms": 203750,
+      "text": "目前英伟达手里",
+      "confidence": 0.971685562814985,
+      "evidence": [
+        "frames/00345-0203000.jpg",
+        "frames/00346-0203250.jpg",
+        "frames/00347-0203500.jpg",
+        "frames/00348-0203750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 204000,
+      "end_ms": 205000,
+      "last_seen_ms": 204750,
+      "text": "着数据中心",
+      "confidence": 0.9977413773536682,
+      "evidence": [
+        "frames/00349-0204000.jpg",
+        "frames/00350-0204250.jpg",
+        "frames/00351-0204500.jpg",
+        "frames/00352-0204750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 205000,
+      "end_ms": 207500,
+      "last_seen_ms": 207250,
+      "text": "AI性能硬件市场大约八成的份额",
+      "confidence": 0.9636503497759501,
+      "evidence": [
+        "frames/00353-0205000.jpg",
+        "frames/00354-0205250.jpg",
+        "frames/00355-0205500.jpg",
+        "frames/00356-0205750.jpg",
+        "frames/00357-0206000.jpg",
+        "frames/00358-0206250.jpg",
+        "frames/00359-0206500.jpg",
+        "frames/00360-0206750.jpg",
+        "frames/00361-0207000.jpg",
+        "frames/00362-0207250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 207750,
+      "end_ms": 209500,
+      "last_seen_ms": 209250,
+      "text": "AMD只占了几个百分点",
+      "confidence": 0.9922042145873561,
+      "evidence": [
+        "frames/00364-0207750.jpg",
+        "frames/00365-0208000.jpg",
+        "frames/00366-0208250.jpg",
+        "frames/00367-0208500.jpg",
+        "frames/00368-0208750.jpg",
+        "frames/00369-0209000.jpg",
+        "frames/00370-0209250.jpg"
+      ],
+      "recognition_variants": 2
+    },
+    {
+      "start_ms": 209750,
+      "end_ms": 211500,
+      "last_seen_ms": 210000,
+      "text": "截至2026年初",
+      "confidence": 0.9998767599463463,
+      "evidence": [
+        "frames/00372-0209750.jpg",
+        "frames/00373-0210000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 211500,
+      "end_ms": 213750,
+      "last_seen_ms": 211500,
+      "text": "英伟达在全球训练端芯片市场中",
+      "confidence": 0.9984287662165505,
+      "evidence": [
+        "frames/00374-0211500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 213750,
+      "end_ms": 215000,
+      "last_seen_ms": 213750,
+      "text": "更是霸着九成左右",
+      "confidence": 0.9990839883685112,
+      "evidence": [
+        "frames/00375-0213750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 215500,
+      "end_ms": 218250,
+      "last_seen_ms": 216250,
+      "text": "你可能听过得GPU者得天下这句话",
+      "confidence": 0.9971438013017178,
+      "evidence": [
+        "frames/00378-0215500.jpg",
+        "frames/00379-0215750.jpg",
+        "frames/00380-0216250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 218250,
+      "end_ms": 219500,
+      "last_seen_ms": 218500,
+      "text": "但在2026年",
+      "confidence": 0.9992624265807015,
+      "evidence": [
+        "frames/00381-0218250.jpg",
+        "frames/00382-0218500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 219500,
+      "end_ms": 220250,
+      "last_seen_ms": 219750,
+      "text": "这句话得改一改",
+      "confidence": 0.9950097629002163,
+      "evidence": [
+        "frames/00383-0219500.jpg",
+        "frames/00384-0219750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 220500,
+      "end_ms": 222000,
+      "last_seen_ms": 220750,
+      "text": "得生态者得天下",
+      "confidence": 0.9951922467776707,
+      "evidence": [
+        "frames/00386-0220500.jpg",
+        "frames/00387-0220750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 222000,
+      "end_ms": 223000,
+      "last_seen_ms": 222750,
+      "text": "英伟达真正的护城河不是那块硅片",
+      "confidence": 0.9938721179962158,
+      "evidence": [
+        "frames/00388-0222000.jpg",
+        "frames/00389-0222250.jpg",
+        "frames/00390-0222500.jpg",
+        "frames/00391-0222750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 223000,
+      "end_ms": 223250,
+      "last_seen_ms": 223000,
+      "text": "CD",
+      "confidence": 0.6507452428340912,
+      "evidence": [
+        "frames/00392-0223000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 223250,
+      "end_ms": 224500,
+      "last_seen_ms": 224250,
+      "text": "CUDA",
+      "confidence": 0.9960609525442123,
+      "evidence": [
+        "frames/00393-0223250.jpg",
+        "frames/00394-0223500.jpg",
+        "frames/00395-0223750.jpg",
+        "frames/00396-0224000.jpg",
+        "frames/00397-0224250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 224500,
+      "end_ms": 226000,
+      "last_seen_ms": 225000,
+      "text": "而是CUDA",
+      "confidence": 0.9994262456893921,
+      "evidence": [
+        "frames/00398-0224500.jpg",
+        "frames/00399-0224750.jpg",
+        "frames/00400-0225000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 226000,
+      "end_ms": 227500,
+      "last_seen_ms": 226250,
+      "text": "将近20年的积累",
+      "confidence": 0.9992654919624329,
+      "evidence": [
+        "frames/00401-0226000.jpg",
+        "frames/00402-0226250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 227500,
+      "end_ms": 230750,
+      "last_seen_ms": 227500,
+      "text": "全球1，500万活跃A1开发者被深度绑定",
+      "confidence": 0.9417325720191002,
+      "evidence": [
+        "frames/00403-0227500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 231250,
+      "end_ms": 233500,
+      "last_seen_ms": 231250,
+      "text": "这个生态系统才是它最可怕的武器",
+      "confidence": 0.9931929032007853,
+      "evidence": [
+        "frames/00405-0231250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 233500,
+      "end_ms": 235750,
+      "last_seen_ms": 235000,
+      "text": "但别以为这一层就没人挑战了",
+      "confidence": 0.9967652330031763,
+      "evidence": [
+        "frames/00406-0233500.jpg",
+        "frames/00407-0233750.jpg",
+        "frames/00408-0234000.jpg",
+        "frames/00409-0234250.jpg",
+        "frames/00410-0234500.jpg",
+        "frames/00411-0234750.jpg",
+        "frames/00412-0235000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 235750,
+      "end_ms": 238000,
+      "last_seen_ms": 236000,
+      "text": "相反玩家们正排着队呢",
+      "confidence": 0.9885825335979461,
+      "evidence": [
+        "frames/00413-0235750.jpg",
+        "frames/00414-0236000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 238500,
+      "end_ms": 241750,
+      "last_seen_ms": 238500,
+      "text": "AMDM1300系列加速器强势入局",
+      "confidence": 0.9688044120283688,
+      "evidence": [
+        "frames/00416-0238500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 241750,
+      "end_ms": 243250,
+      "last_seen_ms": 242000,
+      "text": "OpenAl的Sam Altman",
+      "confidence": 0.9734915985780603,
+      "evidence": [
+        "frames/00417-0241750.jpg",
+        "frames/00418-0242000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 243250,
+      "end_ms": 244750,
+      "last_seen_ms": 243250,
+      "text": "甚至用了令人难以置信",
+      "confidence": 0.9968680083751679,
+      "evidence": [
+        "frames/00419-0243250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 244750,
+      "end_ms": 247000,
+      "last_seen_ms": 244750,
+      "text": "来形容AMD的MI400系列",
+      "confidence": 0.9852775590760368,
+      "evidence": [
+        "frames/00420-0244750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 247500,
+      "end_ms": 248750,
+      "last_seen_ms": 247500,
+      "text": "不过分析师预计",
+      "confidence": 0.9997334820883614,
+      "evidence": [
+        "frames/00422-0247500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 248750,
+      "end_ms": 250250,
+      "last_seen_ms": 248750,
+      "text": "英伟达Blackwell平台",
+      "confidence": 0.9845928209168571,
+      "evidence": [
+        "frames/00423-0248750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 250250,
+      "end_ms": 252250,
+      "last_seen_ms": 250250,
+      "text": "今年出货量仍将主导市场",
+      "confidence": 0.9981876503337513,
+      "evidence": [
+        "frames/00424-0250250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 252250,
+      "end_ms": 254250,
+      "last_seen_ms": 252500,
+      "text": "AMD的下一代Helios平台",
+      "confidence": 0.9932844082514445,
+      "evidence": [
+        "frames/00425-0252250.jpg",
+        "frames/00426-0252500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 254250,
+      "end_ms": 256250,
+      "last_seen_ms": 254250,
+      "text": "可能要等到年底才能大规模落地",
+      "confidence": 0.9967775983469827,
+      "evidence": [
+        "frames/00427-0254250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 256750,
+      "end_ms": 258750,
+      "last_seen_ms": 256750,
+      "text": "GoogleTPU已经磨刀霍霍",
+      "confidence": 0.9840955456097921,
+      "evidence": [
+        "frames/00429-0256750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 258750,
+      "end_ms": 261000,
+      "last_seen_ms": 258750,
+      "text": "今年专用AI芯片市场的增速",
+      "confidence": 0.9850202890542837,
+      "evidence": [
+        "frames/00430-0258750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 261000,
+      "end_ms": 262750,
+      "last_seen_ms": 261000,
+      "text": "预计会远超通用TPU",
+      "confidence": 0.994411826133728,
+      "evidence": [
+        "frames/00431-0261000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 262750,
+      "end_ms": 263250,
+      "last_seen_ms": 262750,
+      "text": "GPU (通用)40%行业平均",
+      "confidence": 0.9978113124767939,
+      "evidence": [
+        "frames/00432-0262750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 263250,
+      "end_ms": 266750,
+      "last_seen_ms": 263250,
+      "text": "英特尔以18A制成新品切入推理市场",
+      "confidence": 0.99448342183057,
+      "evidence": [
+        "frames/00433-0263250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 266750,
+      "end_ms": 268000,
+      "last_seen_ms": 266750,
+      "text": "试图从不同角度",
+      "confidence": 0.9947044508797782,
+      "evidence": [
+        "frames/00434-0266750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 268000,
+      "end_ms": 269750,
+      "last_seen_ms": 268000,
+      "text": "打破英伟达的垄断格局",
+      "confidence": 0.9760071694850921,
+      "evidence": [
+        "frames/00435-0268000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 270250,
+      "end_ms": 272000,
+      "last_seen_ms": 271750,
+      "text": "在堆算力这个旧逻辑上",
+      "confidence": 0.9962312698364257,
+      "evidence": [
+        "frames/00437-0270250.jpg",
+        "frames/00438-0271750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 272000,
+      "end_ms": 273500,
+      "last_seen_ms": 272250,
+      "text": "英伟达依然是王者",
+      "confidence": 0.9958776831626892,
+      "evidence": [
+        "frames/00439-0272000.jpg",
+        "frames/00440-0272250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 273500,
+      "end_ms": 275750,
+      "last_seen_ms": 275500,
+      "text": "但2026年大家逐渐觉醒了",
+      "confidence": 0.9973157928103491,
+      "evidence": [
+        "frames/00441-0273500.jpg",
+        "frames/00442-0273750.jpg",
+        "frames/00443-0275000.jpg",
+        "frames/00444-0275250.jpg",
+        "frames/00445-0275500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 275750,
+      "end_ms": 277000,
+      "last_seen_ms": 276750,
+      "text": "跑大模型的方法",
+      "confidence": 0.9946926406451635,
+      "evidence": [
+        "frames/00446-0275750.jpg",
+        "frames/00447-0276000.jpg",
+        "frames/00448-0276250.jpg",
+        "frames/00449-0276500.jpg",
+        "frames/00450-0276750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 277000,
+      "end_ms": 278750,
+      "last_seen_ms": 278500,
+      "text": "不再只有堆显卡一条路",
+      "confidence": 0.9932912886142731,
+      "evidence": [
+        "frames/00451-0277000.jpg",
+        "frames/00452-0277250.jpg",
+        "frames/00453-0277500.jpg",
+        "frames/00454-0277750.jpg",
+        "frames/00455-0278000.jpg",
+        "frames/00456-0278250.jpg",
+        "frames/00457-0278500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 279500,
+      "end_ms": 281250,
+      "last_seen_ms": 279500,
+      "text": "通过对算法架构的创新训练",
+      "confidence": 0.9954950908819834,
+      "evidence": [
+        "frames/00460-0279500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 281250,
+      "end_ms": 282250,
+      "last_seen_ms": 282000,
+      "text": "成本断崖式下降",
+      "confidence": 0.9927454420498439,
+      "evidence": [
+        "frames/00461-0281250.jpg",
+        "frames/00462-0281500.jpg",
+        "frames/00463-0281750.jpg",
+        "frames/00464-0282000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 282250,
+      "end_ms": 283250,
+      "last_seen_ms": 282250,
+      "text": "成本断崖式下降成本正在断崖式下降",
+      "confidence": 0.9958519784231035,
+      "evidence": [
+        "frames/00465-0282250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 283500,
+      "end_ms": 284500,
+      "last_seen_ms": 283750,
+      "text": "芯片聊完了",
+      "confidence": 0.9993063569068908,
+      "evidence": [
+        "frames/00467-0283500.jpg",
+        "frames/00468-0283750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 284500,
+      "end_ms": 286750,
+      "last_seen_ms": 284500,
+      "text": "你可能会问那芯片差到哪里去呢",
+      "confidence": 0.9955335089138576,
+      "evidence": [
+        "frames/00469-0284500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 286750,
+      "end_ms": 287250,
+      "last_seen_ms": 287000,
+      "text": "这就得引",
+      "confidence": 0.9973293542861938,
+      "evidence": [
+        "frames/00470-0286750.jpg",
+        "frames/00471-0287000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 287250,
+      "end_ms": 290750,
+      "last_seen_ms": 290250,
+      "text": "出下一层第三层基础设施层",
+      "confidence": 0.99856898188591,
+      "evidence": [
+        "frames/00472-0287250.jpg",
+        "frames/00473-0287500.jpg",
+        "frames/00474-0287750.jpg",
+        "frames/00475-0288000.jpg",
+        "frames/00476-0288250.jpg",
+        "frames/00477-0288500.jpg",
+        "frames/00478-0288750.jpg",
+        "frames/00479-0289000.jpg",
+        "frames/00480-0289250.jpg",
+        "frames/00481-0289500.jpg",
+        "frames/00482-0289750.jpg",
+        "frames/00483-0290000.jpg",
+        "frames/00484-0290250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 290750,
+      "end_ms": 292500,
+      "last_seen_ms": 290750,
+      "text": "被严重低估的印钞机",
+      "confidence": 0.9923595322502984,
+      "evidence": [
+        "frames/00485-0290750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 293250,
+      "end_ms": 295000,
+      "last_seen_ms": 293250,
+      "text": "在黄仁勋的5层模型中",
+      "confidence": 0.9981956064701081,
+      "evidence": [
+        "frames/00488-0293250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 295000,
+      "end_ms": 299000,
+      "last_seen_ms": 295000,
+      "text": "基础设施层包括了土地供电冷却系统",
+      "confidence": 0.9882410652935505,
+      "evidence": [
+        "frames/00489-0295000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 299000,
+      "end_ms": 301000,
+      "last_seen_ms": 299000,
+      "text": "建筑网络通信",
+      "confidence": 0.998070498307546,
+      "evidence": [
+        "frames/00490-0299000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 301000,
+      "end_ms": 302750,
+      "last_seen_ms": 301000,
+      "text": "以及将成千上万处理器",
+      "confidence": 0.994005811214447,
+      "evidence": [
+        "frames/00491-0301000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 302750,
+      "end_ms": 304500,
+      "last_seen_ms": 302750,
+      "text": "编排到一台机器的系统",
+      "confidence": 0.9973068296909332,
+      "evidence": [
+        "frames/00492-0302750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 305000,
+      "end_ms": 308000,
+      "last_seen_ms": 307250,
+      "text": "这些系统的集合体就叫AI工厂",
+      "confidence": 0.9913097747734615,
+      "evidence": [
+        "frames/00494-0305000.jpg",
+        "frames/00495-0305750.jpg",
+        "frames/00496-0306000.jpg",
+        "frames/00497-0306250.jpg",
+        "frames/00498-0306500.jpg",
+        "frames/00499-0306750.jpg",
+        "frames/00500-0307000.jpg",
+        "frames/00501-0307250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 308000,
+      "end_ms": 310250,
+      "last_seen_ms": 308250,
+      "text": "听起来是不是最无聊最重资产",
+      "confidence": 0.9962568604029142,
+      "evidence": [
+        "frames/00502-0308000.jpg",
+        "frames/00503-0308250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 310250,
+      "end_ms": 311500,
+      "last_seen_ms": 310250,
+      "text": "最没有性感故事可讲",
+      "confidence": 0.9954690800772773,
+      "evidence": [
+        "frames/00504-0310250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 312000,
+      "end_ms": 313250,
+      "last_seen_ms": 312000,
+      "text": "但正是这一层",
+      "confidence": 0.9991529782613119,
+      "evidence": [
+        "frames/00506-0312000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 313250,
+      "end_ms": 314750,
+      "last_seen_ms": 313500,
+      "text": "投人权重最高",
+      "confidence": 0.9961465497811636,
+      "evidence": [
+        "frames/00507-0313250.jpg",
+        "frames/00508-0313500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 314750,
+      "end_ms": 316000,
+      "last_seen_ms": 315500,
+      "text": "Gardner指出",
+      "confidence": 0.9942689339319865,
+      "evidence": [
+        "frames/00509-0314750.jpg",
+        "frames/00510-0315000.jpg",
+        "frames/00511-0315250.jpg",
+        "frames/00512-0315500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 316000,
+      "end_ms": 319000,
+      "last_seen_ms": 316250,
+      "text": "AI基础设施是最大的细分支出领域",
+      "confidence": 0.9851181209087372,
+      "evidence": [
+        "frames/00513-0316000.jpg",
+        "frames/00514-0316250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 319000,
+      "end_ms": 319250,
+      "last_seen_ms": 319000,
+      "text": "今年",
+      "confidence": 0.9999250769615173,
+      "evidence": [
+        "frames/00515-0319000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 319250,
+      "end_ms": 322000,
+      "last_seen_ms": 320750,
+      "text": "大概要花掉全球AI总支出的将近一半",
+      "confidence": 0.9836201772970312,
+      "evidence": [
+        "frames/00516-0319250.jpg",
+        "frames/00517-0319500.jpg",
+        "frames/00518-0319750.jpg",
+        "frames/00519-0320250.jpg",
+        "frames/00520-0320750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 322250,
+      "end_ms": 323500,
+      "last_seen_ms": 322500,
+      "text": "更具体的说",
+      "confidence": 0.9962722897529602,
+      "evidence": [
+        "frames/00522-0322250.jpg",
+        "frames/00523-0322500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 323500,
+      "end_ms": 325250,
+      "last_seen_ms": 323500,
+      "text": "座智算中心的建设",
+      "confidence": 0.994014322757721,
+      "evidence": [
+        "frames/00524-0323500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 325250,
+      "end_ms": 327000,
+      "last_seen_ms": 325250,
+      "text": "是从烧钱买地开始",
+      "confidence": 0.9960924088954926,
+      "evidence": [
+        "frames/00525-0325250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 327000,
+      "end_ms": 329250,
+      "last_seen_ms": 327000,
+      "text": "接着铺光纤建冷却塔",
+      "confidence": 0.9747959706518385,
+      "evidence": [
+        "frames/00526-0327000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 329250,
+      "end_ms": 331000,
+      "last_seen_ms": 329250,
+      "text": "最后才轮到插上GPU",
+      "confidence": 0.9984201788902283,
+      "evidence": [
+        "frames/00527-0329250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 331000,
+      "end_ms": 333500,
+      "last_seen_ms": 331250,
+      "text": "其中散热问题尤其让人头疼",
+      "confidence": 0.9968039790789286,
+      "evidence": [
+        "frames/00528-0331000.jpg",
+        "frames/00529-0331250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 333500,
+      "end_ms": 335750,
+      "last_seen_ms": 333500,
+      "text": "英伟达新一代B200芯片的功耗",
+      "confidence": 0.9976272980372111,
+      "evidence": [
+        "frames/00530-0333500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 335750,
+      "end_ms": 337250,
+      "last_seen_ms": 335750,
+      "text": "已经冲到1千瓦",
+      "confidence": 0.9992720229285104,
+      "evidence": [
+        "frames/00531-0335750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 337250,
+      "end_ms": 339500,
+      "last_seen_ms": 337500,
+      "text": "今年数据中心的水冷系统渗透率",
+      "confidence": 0.9972811383860452,
+      "evidence": [
+        "frames/00532-0337250.jpg",
+        "frames/00533-0337500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 339500,
+      "end_ms": 340750,
+      "last_seen_ms": 339500,
+      "text": "预计会接近一半",
+      "confidence": 0.9968287093298775,
+      "evidence": [
+        "frames/00534-0339500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 340750,
+      "end_ms": 343500,
+      "last_seen_ms": 340750,
+      "text": "而且正在从“液-空”混合架构",
+      "confidence": 0.9950418770313263,
+      "evidence": [
+        "frames/00535-0340750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 343500,
+      "end_ms": 345250,
+      "last_seen_ms": 343500,
+      "text": "逐步转向全“液-液”架构",
+      "confidence": 0.9958137720823288,
+      "evidence": [
+        "frames/00536-0343500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 345750,
+      "end_ms": 349250,
+      "last_seen_ms": 346000,
+      "text": "还有另一个关键维度全球云基础设施",
+      "confidence": 0.9969078451395035,
+      "evidence": [
+        "frames/00538-0345750.jpg",
+        "frames/00539-0346000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 349250,
+      "end_ms": 350500,
+      "last_seen_ms": 349500,
+      "text": "今年第一季度",
+      "confidence": 0.9996267855167389,
+      "evidence": [
+        "frames/00540-0349250.jpg",
+        "frames/00541-0349500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 350500,
+      "end_ms": 352500,
+      "last_seen_ms": 350500,
+      "text": "全球laaS云市场",
+      "confidence": 0.9954349795977274,
+      "evidence": [
+        "frames/00542-0350500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 352500,
+      "end_ms": 355000,
+      "last_seen_ms": 352500,
+      "text": "美国三巨头合计份额大约六成出头",
+      "confidence": 0.9974104960759481,
+      "evidence": [
+        "frames/00543-0352500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 355000,
+      "end_ms": 357250,
+      "last_seen_ms": 355000,
+      "text": "中国三枪加起来占了一成多",
+      "confidence": 0.9953151494264603,
+      "evidence": [
+        "frames/00544-0355000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 357250,
+      "end_ms": 358000,
+      "last_seen_ms": 357500,
+      "text": "这意味着",
+      "confidence": 0.9980292767286301,
+      "evidence": [
+        "frames/00545-0357250.jpg",
+        "frames/00546-0357500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 358000,
+      "end_ms": 360000,
+      "last_seen_ms": 358000,
+      "text": "从训练大模型到大规模部署",
+      "confidence": 0.9982611884673437,
+      "evidence": [
+        "frames/00547-0358000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 360000,
+      "end_ms": 362750,
+      "last_seen_ms": 360000,
+      "text": "AI应用的算力供给和全球网络资源",
+      "confidence": 0.9958919771015644,
+      "evidence": [
+        "frames/00548-0360000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 362750,
+      "end_ms": 365000,
+      "last_seen_ms": 362750,
+      "text": "仍然掌握在美国云大厂手中",
+      "confidence": 0.9980252087116241,
+      "evidence": [
+        "frames/00549-0362750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 365500,
+      "end_ms": 366750,
+      "last_seen_ms": 365500,
+      "text": "你可能不知道的是",
+      "confidence": 0.998554639518261,
+      "evidence": [
+        "frames/00551-0365500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 366750,
+      "end_ms": 368750,
+      "last_seen_ms": 368000,
+      "text": "AI时代数据中心的机柜密度",
+      "confidence": 0.9919300583692697,
+      "evidence": [
+        "frames/00552-0366750.jpg",
+        "frames/00553-0368000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 368750,
+      "end_ms": 370500,
+      "last_seen_ms": 370250,
+      "text": "已经比传统云时代翻了好几倍",
+      "confidence": 0.9924794343801645,
+      "evidence": [
+        "frames/00554-0368750.jpg",
+        "frames/00555-0369250.jpg",
+        "frames/00556-0369500.jpg",
+        "frames/00557-0369750.jpg",
+        "frames/00558-0370000.jpg",
+        "frames/00559-0370250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 370750,
+      "end_ms": 373750,
+      "last_seen_ms": 371500,
+      "text": "单笔订单规模也动不动就超过50兆瓦",
+      "confidence": 0.9972638698185191,
+      "evidence": [
+        "frames/00561-0370750.jpg",
+        "frames/00562-0371000.jpg",
+        "frames/00563-0371250.jpg",
+        "frames/00564-0371500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 374000,
+      "end_ms": 375000,
+      "last_seen_ms": 374250,
+      "text": "基础设施层",
+      "confidence": 0.9989600777626038,
+      "evidence": [
+        "frames/00566-0374000.jpg",
+        "frames/00567-0374250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 375000,
+      "end_ms": 377750,
+      "last_seen_ms": 375000,
+      "text": "已经从过去拿着电费单补贴的配角",
+      "confidence": 0.996184496084849,
+      "evidence": [
+        "frames/00568-0375000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 377750,
+      "end_ms": 381000,
+      "last_seen_ms": 378000,
+      "text": "摇身变成了AI竞赛中的兵家必争之地",
+      "confidence": 0.9771097688113942,
+      "evidence": [
+        "frames/00569-0377750.jpg",
+        "frames/00570-0378000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 381000,
+      "end_ms": 382000,
+      "last_seen_ms": 381000,
+      "text": "建好了",
+      "confidence": 0.994658629099528,
+      "evidence": [
+        "frames/00571-0381000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 382000,
+      "end_ms": 383000,
+      "last_seen_ms": 382000,
+      "text": "接下来该生产什么了",
+      "confidence": 0.9937440289391412,
+      "evidence": [
+        "frames/00572-0382000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 383000,
+      "end_ms": 384000,
+      "last_seen_ms": 383000,
+      "text": "对就是模型",
+      "confidence": 0.9978935718536377,
+      "evidence": [
+        "frames/00573-0383000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 384250,
+      "end_ms": 387000,
+      "last_seen_ms": 384500,
+      "text": "咱们再往上走第四层模型层",
+      "confidence": 0.9931183209021887,
+      "evidence": [
+        "frames/00575-0384250.jpg",
+        "frames/00576-0384500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 387500,
+      "end_ms": 389000,
+      "last_seen_ms": 387500,
+      "text": "当开源追上了闭源",
+      "confidence": 0.9958840236067772,
+      "evidence": [
+        "frames/00578-0387500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 389500,
+      "end_ms": 391250,
+      "last_seen_ms": 389500,
+      "text": "如果说基础设施是造",
+      "confidence": 0.9953564405441284,
+      "evidence": [
+        "frames/00580-0389500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 391250,
+      "end_ms": 392750,
+      "last_seen_ms": 391250,
+      "text": "那模型层就是造车",
+      "confidence": 0.9967325329780579,
+      "evidence": [
+        "frames/00581-0391250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 392750,
+      "end_ms": 395500,
+      "last_seen_ms": 393000,
+      "text": "这一层的故事在2026年格外精彩",
+      "confidence": 0.9982125610113144,
+      "evidence": [
+        "frames/00582-0392750.jpg",
+        "frames/00583-0393000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 395500,
+      "end_ms": 397000,
+      "last_seen_ms": 395750,
+      "text": "全球生成式AI市场",
+      "confidence": 0.9781556129455566,
+      "evidence": [
+        "frames/00584-0395500.jpg",
+        "frames/00585-0395750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 397000,
+      "end_ms": 399000,
+      "last_seen_ms": 397000,
+      "text": "已经从openAl的单极霸权",
+      "confidence": 0.976430071251733,
+      "evidence": [
+        "frames/00586-0397000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 399000,
+      "end_ms": 401000,
+      "last_seen_ms": 399000,
+      "text": "演变为openAl加Google",
+      "confidence": 0.964864119887352,
+      "evidence": [
+        "frames/00587-0399000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 401000,
+      "end_ms": 403000,
+      "last_seen_ms": 401000,
+      "text": "双寡头加开源军团的结构",
+      "confidence": 0.9972101937640797,
+      "evidence": [
+        "frames/00588-0401000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 403000,
+      "end_ms": 404500,
+      "last_seen_ms": 403250,
+      "text": "网络流量数据显示",
+      "confidence": 0.9988345429301262,
+      "evidence": [
+        "frames/00589-0403000.jpg",
+        "frames/00590-0403250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 404500,
+      "end_ms": 406000,
+      "last_seen_ms": 404750,
+      "text": "chat g b t的全球份额",
+      "confidence": 0.9659473061561584,
+      "evidence": [
+        "frames/00591-0404500.jpg",
+        "frames/00592-0404750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 406000,
+      "end_ms": 408000,
+      "last_seen_ms": 406000,
+      "text": "已经从去年初的接近九成",
+      "confidence": 0.9973543015393344,
+      "evidence": [
+        "frames/00593-0406000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 408000,
+      "end_ms": 409750,
+      "last_seen_ms": 408000,
+      "text": "大幅下滑到六成半左右",
+      "confidence": 0.9990480959415435,
+      "evidence": [
+        "frames/00594-0408000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 409750,
+      "end_ms": 412250,
+      "last_seen_ms": 409750,
+      "text": "而Google Gemini则凭借Nano Banana",
+      "confidence": 0.9859395367758614,
+      "evidence": [
+        "frames/00595-0409750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 412250,
+      "end_ms": 413750,
+      "last_seen_ms": 412250,
+      "text": "在一年内翻了4倍",
+      "confidence": 0.9987085536122322,
+      "evidence": [
+        "frames/00596-0412250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 413750,
+      "end_ms": 415000,
+      "last_seen_ms": 413750,
+      "text": "拿下了两成多",
+      "confidence": 0.9994950691858927,
+      "evidence": [
+        "frames/00597-0413750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 415250,
+      "end_ms": 416500,
+      "last_seen_ms": 415500,
+      "text": "开源模型的爆发",
+      "confidence": 0.9974484784262521,
+      "evidence": [
+        "frames/00599-0415250.jpg",
+        "frames/00600-0415500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 416500,
+      "end_ms": 419000,
+      "last_seen_ms": 416500,
+      "text": "是今年模型层最有标志性的事件",
+      "confidence": 0.997984243290765,
+      "evidence": [
+        "frames/00601-0416500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 419250,
+      "end_ms": 422000,
+      "last_seen_ms": 419750,
+      "text": "斯坦福大学最新的《AI指数报告》显示",
+      "confidence": 0.994524876276652,
+      "evidence": [
+        "frames/00603-0419250.jpg",
+        "frames/00604-0419500.jpg",
+        "frames/00605-0419750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 422000,
+      "end_ms": 424000,
+      "last_seen_ms": 422000,
+      "text": "中美顶尖大模型性能差距",
+      "confidence": 0.9991740855303678,
+      "evidence": [
+        "frames/00606-0422000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 424000,
+      "end_ms": 425750,
+      "last_seen_ms": 424000,
+      "text": "已经从前两年的300多分",
+      "confidence": 0.9987697949012121,
+      "evidence": [
+        "frames/00607-0424000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 425750,
+      "end_ms": 427250,
+      "last_seen_ms": 425750,
+      "text": "收窄到40来分",
+      "confidence": 0.999734137739454,
+      "evidence": [
+        "frames/00608-0425750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 427250,
+      "end_ms": 428250,
+      "last_seen_ms": 428000,
+      "text": "更惊人的是",
+      "confidence": 0.9995091080665588,
+      "evidence": [
+        "frames/00609-0427250.jpg",
+        "frames/00610-0427500.jpg",
+        "frames/00611-0427750.jpg",
+        "frames/00612-0428000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 428250,
+      "end_ms": 430250,
+      "last_seen_ms": 430000,
+      "text": "在全球API调用量上",
+      "confidence": 0.9938659369945526,
+      "evidence": [
+        "frames/00613-0428250.jpg",
+        "frames/00614-0428500.jpg",
+        "frames/00615-0428750.jpg",
+        "frames/00616-0429000.jpg",
+        "frames/00617-0429250.jpg",
+        "frames/00618-0429500.jpg",
+        "frames/00619-0429750.jpg",
+        "frames/00620-0430000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 430250,
+      "end_ms": 432750,
+      "last_seen_ms": 432500,
+      "text": "中国模型已经反超了美国模型",
+      "confidence": 0.9972626062539908,
+      "evidence": [
+        "frames/00621-0430250.jpg",
+        "frames/00622-0430500.jpg",
+        "frames/00623-0430750.jpg",
+        "frames/00624-0431000.jpg",
+        "frames/00625-0431250.jpg",
+        "frames/00626-0431500.jpg",
+        "frames/00627-0431750.jpg",
+        "frames/00628-0432000.jpg",
+        "frames/00629-0432250.jpg",
+        "frames/00630-0432500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 433000,
+      "end_ms": 433750,
+      "last_seen_ms": 433250,
+      "text": "这一数据",
+      "confidence": 0.999205470085144,
+      "evidence": [
+        "frames/00632-0433000.jpg",
+        "frames/00633-0433250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 433750,
+      "end_ms": 436250,
+      "last_seen_ms": 433750,
+      "text": "来自统计全球180多种大模型的",
+      "confidence": 0.9979692459106445,
+      "evidence": [
+        "frames/00634-0433750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 436250,
+      "end_ms": 437250,
+      "last_seen_ms": 436250,
+      "text": "OpenRouter平台",
+      "confidence": 0.9991489698489507,
+      "evidence": [
+        "frames/00635-0436250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 437750,
+      "end_ms": 440500,
+      "last_seen_ms": 437750,
+      "text": "中国几大主流模型合计占6成出头",
+      "confidence": 0.9970767458279928,
+      "evidence": [
+        "frames/00637-0437750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 440500,
+      "end_ms": 442750,
+      "last_seen_ms": 440500,
+      "text": "而美国模型合计占3成左右",
+      "confidence": 0.9967704166968664,
+      "evidence": [
+        "frames/00638-0440500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 443250,
+      "end_ms": 445500,
+      "last_seen_ms": 443250,
+      "text": "2026年模型层还有一个新风向",
+      "confidence": 0.9984092036883037,
+      "evidence": [
+        "frames/00640-0443250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 445500,
+      "end_ms": 448250,
+      "last_seen_ms": 445500,
+      "text": "从参数竞赛转向智能体元年",
+      "confidence": 0.9927885135014852,
+      "evidence": [
+        "frames/00641-0445500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 448250,
+      "end_ms": 449750,
+      "last_seen_ms": 448500,
+      "text": "行业越来越意识到",
+      "confidence": 0.9878039062023163,
+      "evidence": [
+        "frames/00642-0448250.jpg",
+        "frames/00643-0448500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 449750,
+      "end_ms": 451500,
+      "last_seen_ms": 449750,
+      "text": "参数再大跑分再高",
+      "confidence": 0.996254026889801,
+      "evidence": [
+        "frames/00644-0449750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 451500,
+      "end_ms": 453000,
+      "last_seen_ms": 451500,
+      "text": "如果不能真正干活",
+      "confidence": 0.9933787882328033,
+      "evidence": [
+        "frames/00645-0451500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 453000,
+      "end_ms": 454500,
+      "last_seen_ms": 453000,
+      "text": "就无法产生商业价值",
+      "confidence": 0.9970125489764743,
+      "evidence": [
+        "frames/00646-0453000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 454500,
+      "end_ms": 456750,
+      "last_seen_ms": 454750,
+      "text": "所以OpenClaw这类个人Agent产品",
+      "confidence": 0.967116219656808,
+      "evidence": [
+        "frames/00647-0454500.jpg",
+        "frames/00648-0454750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 456750,
+      "end_ms": 458750,
+      "last_seen_ms": 456750,
+      "text": "被视为下一个现象级机会",
+      "confidence": 0.9949288259853016,
+      "evidence": [
+        "frames/00649-0456750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 459000,
+      "end_ms": 462000,
+      "last_seen_ms": 459250,
+      "text": "《2026十大AI技术趋势》中智源研究院也在",
+      "confidence": 0.9814588328202565,
+      "evidence": [
+        "frames/00651-0459000.jpg",
+        "frames/00652-0459250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 462000,
+      "end_ms": 463250,
+      "last_seen_ms": 462000,
+      "text": "指出消费端",
+      "confidence": 0.9995174765586853,
+      "evidence": [
+        "frames/00653-0462000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 463250,
+      "end_ms": 465750,
+      "last_seen_ms": 463250,
+      "text": "AllinOne的超级应用入口正在逐步形成",
+      "confidence": 0.9895092021851313,
+      "evidence": [
+        "frames/00654-0463250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 465750,
+      "end_ms": 468000,
+      "last_seen_ms": 466000,
+      "text": "看到这你可能忍不住想问",
+      "confidence": 0.9966320883144032,
+      "evidence": [
+        "frames/00655-0465750.jpg",
+        "frames/00656-0466000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 468000,
+      "end_ms": 470750,
+      "last_seen_ms": 468250,
+      "text": "中国和美国的模型到底还差多少",
+      "confidence": 0.9990229223455701,
+      "evidence": [
+        "frames/00657-0468000.jpg",
+        "frames/00658-0468250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 470750,
+      "end_ms": 472250,
+      "last_seen_ms": 472000,
+      "text": "如果看Elo评分",
+      "confidence": 0.9830323681235313,
+      "evidence": [
+        "frames/00659-0470750.jpg",
+        "frames/00660-0471000.jpg",
+        "frames/00661-0471250.jpg",
+        "frames/00662-0471500.jpg",
+        "frames/00663-0471750.jpg",
+        "frames/00664-0472000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 472250,
+      "end_ms": 475000,
+      "last_seen_ms": 474750,
+      "text": "海外顶级模型大约1,500分出头",
+      "confidence": 0.968098945915699,
+      "evidence": [
+        "frames/00665-0472250.jpg",
+        "frames/00666-0472500.jpg",
+        "frames/00667-0472750.jpg",
+        "frames/00668-0473000.jpg",
+        "frames/00669-0473250.jpg",
+        "frames/00670-0473500.jpg",
+        "frames/00671-0473750.jpg",
+        "frames/00672-0474000.jpg",
+        "frames/00673-0474250.jpg",
+        "frames/00674-0474500.jpg",
+        "frames/00675-0474750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 475000,
+      "end_ms": 477500,
+      "last_seen_ms": 477250,
+      "text": "国产最佳大约1，460分上下",
+      "confidence": 0.9689059385231563,
+      "evidence": [
+        "frames/00676-0475000.jpg",
+        "frames/00677-0475250.jpg",
+        "frames/00678-0475750.jpg",
+        "frames/00679-0476000.jpg",
+        "frames/00680-0476250.jpg",
+        "frames/00681-0476500.jpg",
+        "frames/00682-0476750.jpg",
+        "frames/00683-0477000.jpg",
+        "frames/00684-0477250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 477750,
+      "end_ms": 478000,
+      "last_seen_ms": 477750,
+      "text": "性能差距<2.7%",
+      "confidence": 0.9647314349810282,
+      "evidence": [
+        "frames/00686-0477750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 478000,
+      "end_ms": 479250,
+      "last_seen_ms": 479000,
+      "text": "2%点凡的差距",
+      "confidence": 0.9314284069197519,
+      "evidence": [
+        "frames/00687-0478000.jpg",
+        "frames/00688-0478250.jpg",
+        "frames/00689-0478500.jpg",
+        "frames/00690-0478750.jpg",
+        "frames/00691-0479000.jpg"
+      ],
+      "recognition_variants": 2
+    },
+    {
+      "start_ms": 479250,
+      "end_ms": 479500,
+      "last_seen_ms": 479250,
+      "text": "19 20222324252622%点几的差距",
+      "confidence": 0.9530519454375558,
+      "evidence": [
+        "frames/00692-0479250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 479500,
+      "end_ms": 480500,
+      "last_seen_ms": 480250,
+      "text": "已经快被吃到统计误差的区间里了363738394",
+      "confidence": 0.9967842772603035,
+      "evidence": [
+        "frames/00693-0479500.jpg",
+        "frames/00694-0479750.jpg",
+        "frames/00695-0480000.jpg",
+        "frames/00696-0480250.jpg"
+      ],
+      "recognition_variants": 4
+    },
+    {
+      "start_ms": 480500,
+      "end_ms": 481000,
+      "last_seen_ms": 480750,
+      "text": "已经快被吃到统计误差的区间里了",
+      "confidence": 0.9973348697026571,
+      "evidence": [
+        "frames/00697-0480500.jpg",
+        "frames/00698-0480750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 481000,
+      "end_ms": 481500,
+      "last_seen_ms": 481250,
+      "text": "192022232已经快被吃到统计误差的区间里了",
+      "confidence": 0.9950431982676188,
+      "evidence": [
+        "frames/00699-0481000.jpg",
+        "frames/00700-0481250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 481500,
+      "end_ms": 482000,
+      "last_seen_ms": 481750,
+      "text": "2已经快被吃到统计误差的区间里了",
+      "confidence": 0.9963086247444153,
+      "evidence": [
+        "frames/00701-0481500.jpg",
+        "frames/00702-0481750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 482250,
+      "end_ms": 483250,
+      "last_seen_ms": 482500,
+      "text": "说白了",
+      "confidence": 0.9924628734588623,
+      "evidence": [
+        "frames/00704-0482250.jpg",
+        "frames/00705-0482500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 483250,
+      "end_ms": 485750,
+      "last_seen_ms": 483250,
+      "text": "顶级模型之间的性能差距正在消失",
+      "confidence": 0.9962266842524211,
+      "evidence": [
+        "frames/00706-0483250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 485750,
+      "end_ms": 487000,
+      "last_seen_ms": 486000,
+      "text": "真正的胜负手",
+      "confidence": 0.998735249042511,
+      "evidence": [
+        "frames/00707-0485750.jpg",
+        "frames/00708-0486000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 487000,
+      "end_ms": 487750,
+      "last_seen_ms": 487000,
+      "text": "不取决于",
+      "confidence": 0.9991110414266586,
+      "evidence": [
+        "frames/00709-0487000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 487750,
+      "end_ms": 490250,
+      "last_seen_ms": 487750,
+      "text": "谁再做一次军备竞赛式的参数膨胀",
+      "confidence": 0.986315389474233,
+      "evidence": [
+        "frames/00710-0487750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 490250,
+      "end_ms": 492750,
+      "last_seen_ms": 490250,
+      "text": "而是谁能把闭源的极致性能",
+      "confidence": 0.9978925536076227,
+      "evidence": [
+        "frames/00711-0490250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 492750,
+      "end_ms": 494250,
+      "last_seen_ms": 492750,
+      "text": "开源的普惠生态",
+      "confidence": 0.9992237091064453,
+      "evidence": [
+        "frames/00712-0492750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 494250,
+      "end_ms": 495750,
+      "last_seen_ms": 494250,
+      "text": "和Agent的商业化场景",
+      "confidence": 0.9995004485050837,
+      "evidence": [
+        "frames/00713-0494250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 495750,
+      "end_ms": 497750,
+      "last_seen_ms": 495750,
+      "text": "这三股力量拧成一股绳",
+      "confidence": 0.9934682607650757,
+      "evidence": [
+        "frames/00714-0495750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 497750,
+      "end_ms": 499000,
+      "last_seen_ms": 498000,
+      "text": "模型做得再好",
+      "confidence": 0.9959988991419474,
+      "evidence": [
+        "frames/00715-0497750.jpg",
+        "frames/00716-0498000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 499000,
+      "end_ms": 500750,
+      "last_seen_ms": 499000,
+      "text": "最终也得拿出来给人用",
+      "confidence": 0.996451461315155,
+      "evidence": [
+        "frames/00717-0499000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 500750,
+      "end_ms": 502500,
+      "last_seen_ms": 502250,
+      "text": "这就到了蛋糕最顶上",
+      "confidence": 0.9979639848073324,
+      "evidence": [
+        "frames/00718-0500750.jpg",
+        "frames/00719-0501000.jpg",
+        "frames/00720-0501750.jpg",
+        "frames/00721-0502000.jpg",
+        "frames/00722-0502250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 502500,
+      "end_ms": 504000,
+      "last_seen_ms": 503750,
+      "text": "离你钱包最近的那一层",
+      "confidence": 0.9969172060489656,
+      "evidence": [
+        "frames/00723-0502500.jpg",
+        "frames/00724-0502750.jpg",
+        "frames/00725-0503000.jpg",
+        "frames/00726-0503250.jpg",
+        "frames/00727-0503500.jpg",
+        "frames/00728-0503750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 504000,
+      "end_ms": 504500,
+      "last_seen_ms": 504250,
+      "text": "oadVehicleCompactSUV",
+      "confidence": 0.9676779001951218,
+      "evidence": [
+        "frames/00729-0504000.jpg",
+        "frames/00730-0504250.jpg"
+      ],
+      "recognition_variants": 2
+    },
+    {
+      "start_ms": 504750,
+      "end_ms": 506250,
+      "last_seen_ms": 506000,
+      "text": "第五层应用层",
+      "confidence": 0.9995378653208414,
+      "evidence": [
+        "frames/00732-0504750.jpg",
+        "frames/00733-0505000.jpg",
+        "frames/00734-0505250.jpg",
+        "frames/00735-0505500.jpg",
+        "frames/00736-0505750.jpg",
+        "frames/00737-0506000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 506500,
+      "end_ms": 508750,
+      "last_seen_ms": 507250,
+      "text": "谁赢了蛋糕顶上的那颗樱桃",
+      "confidence": 0.9945551057656606,
+      "evidence": [
+        "frames/00739-0506500.jpg",
+        "frames/00740-0506750.jpg",
+        "frames/00741-0507000.jpg",
+        "frames/00742-0507250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 509500,
+      "end_ms": 511750,
+      "last_seen_ms": 509500,
+      "text": "终于来到了5层蛋糕的最顶上",
+      "confidence": 0.9970850165073688,
+      "evidence": [
+        "frames/00744-0509500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 511750,
+      "end_ms": 514000,
+      "last_seen_ms": 512750,
+      "text": "这一层再回答两个核心问题",
+      "confidence": 0.9961423128843307,
+      "evidence": [
+        "frames/00745-0511750.jpg",
+        "frames/00746-0512000.jpg",
+        "frames/00747-0512250.jpg",
+        "frames/00748-0512500.jpg",
+        "frames/00749-0512750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 514000,
+      "end_ms": 516500,
+      "last_seen_ms": 514000,
+      "text": "谁能做出真正的AI超级应用",
+      "confidence": 0.9868468596385076,
+      "evidence": [
+        "frames/00750-0514000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 516500,
+      "end_ms": 518750,
+      "last_seen_ms": 516500,
+      "text": "谁能靠AI赚到真金白银",
+      "confidence": 0.9866586110808633,
+      "evidence": [
+        "frames/00751-0516500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 519000,
+      "end_ms": 520500,
+      "last_seen_ms": 519250,
+      "text": "先看活跃度",
+      "confidence": 0.9985067486763001,
+      "evidence": [
+        "frames/00753-0519000.jpg",
+        "frames/00754-0519250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 520500,
+      "end_ms": 522250,
+      "last_seen_ms": 520750,
+      "text": "根据量子位智库统计",
+      "confidence": 0.9969853030310737,
+      "evidence": [
+        "frames/00755-0520500.jpg",
+        "frames/00756-0520750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 522250,
+      "end_ms": 523500,
+      "last_seen_ms": 522250,
+      "text": "2026年4月",
+      "confidence": 0.9999428221157619,
+      "evidence": [
+        "frames/00757-0522250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 523500,
+      "end_ms": 526500,
+      "last_seen_ms": 523500,
+      "text": "国内AI应用Web端月访问量突破9亿",
+      "confidence": 0.9683032201396095,
+      "evidence": [
+        "frames/00758-0523500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 526500,
+      "end_ms": 528750,
+      "last_seen_ms": 526500,
+      "text": "APP端月下载量超2.4亿",
+      "confidence": 0.9985016721945542,
+      "evidence": [
+        "frames/00759-0526500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 528750,
+      "end_ms": 531250,
+      "last_seen_ms": 529000,
+      "text": "日活同比增长223%",
+      "confidence": 0.9981105864048004,
+      "evidence": [
+        "frames/00760-0528750.jpg",
+        "frames/00761-0529000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 531250,
+      "end_ms": 532500,
+      "last_seen_ms": 531500,
+      "text": "再看变现能力",
+      "confidence": 0.9985748132069906,
+      "evidence": [
+        "frames/00762-0531250.jpg",
+        "frames/00763-0531500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 532500,
+      "end_ms": 534500,
+      "last_seen_ms": 532750,
+      "text": "快手可灵AI用户破亿",
+      "confidence": 0.9652645587921143,
+      "evidence": [
+        "frames/00764-0532500.jpg",
+        "frames/00765-0532750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 534500,
+      "end_ms": 536250,
+      "last_seen_ms": 536000,
+      "text": "单季营收超6.5亿元",
+      "confidence": 0.9976252377033233,
+      "evidence": [
+        "frames/00766-0534500.jpg",
+        "frames/00767-0534750.jpg",
+        "frames/00768-0535500.jpg",
+        "frames/00769-0535750.jpg",
+        "frames/00770-0536000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 536500,
+      "end_ms": 537750,
+      "last_seen_ms": 537500,
+      "text": "阿里云AI收入占比",
+      "confidence": 0.9267676340209113,
+      "evidence": [
+        "frames/00772-0536500.jpg",
+        "frames/00773-0536750.jpg",
+        "frames/00774-0537000.jpg",
+        "frames/00775-0537250.jpg",
+        "frames/00776-0537500.jpg"
+      ],
+      "recognition_variants": 2
+    },
+    {
+      "start_ms": 537750,
+      "end_ms": 539750,
+      "last_seen_ms": 539500,
+      "text": "在上个财季已经超过三成",
+      "confidence": 0.994817544113506,
+      "evidence": [
+        "frames/00777-0537750.jpg",
+        "frames/00778-0538000.jpg",
+        "frames/00779-0538250.jpg",
+        "frames/00780-0538500.jpg",
+        "frames/00781-0538750.jpg",
+        "frames/00782-0539000.jpg",
+        "frames/00783-0539250.jpg",
+        "frames/00784-0539500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 540000,
+      "end_ms": 541750,
+      "last_seen_ms": 540750,
+      "text": "这些信号说明一件事",
+      "confidence": 0.9980610145462884,
+      "evidence": [
+        "frames/00786-0540000.jpg",
+        "frames/00787-0540250.jpg",
+        "frames/00788-0540500.jpg",
+        "frames/00789-0540750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 541750,
+      "end_ms": 545250,
+      "last_seen_ms": 542000,
+      "text": "AI从烧钱走向挣钱的拐点已经到来",
+      "confidence": 0.98649537935853,
+      "evidence": [
+        "frames/00790-0541750.jpg",
+        "frames/00791-0542000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 545250,
+      "end_ms": 545750,
+      "last_seen_ms": 545250,
+      "text": "连续两年支持春晚红包活动",
+      "confidence": 0.99514007071654,
+      "evidence": [
+        "frames/00792-0545250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 545750,
+      "end_ms": 547250,
+      "last_seen_ms": 545750,
+      "text": "在c端入口争夺上",
+      "confidence": 0.9902984276413918,
+      "evidence": [
+        "frames/00793-0545750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 547250,
+      "end_ms": 548750,
+      "last_seen_ms": 547250,
+      "text": "各大厂商火力不减",
+      "confidence": 0.9919667914509773,
+      "evidence": [
+        "frames/00794-0547250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 548750,
+      "end_ms": 550500,
+      "last_seen_ms": 549000,
+      "text": "仅春节档字节",
+      "confidence": 0.9939048488934835,
+      "evidence": [
+        "frames/00795-0548750.jpg",
+        "frames/00796-0549000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 550500,
+      "end_ms": 552500,
+      "last_seen_ms": 550500,
+      "text": "阿里腾讯百度四家巨头",
+      "confidence": 0.9963495612144471,
+      "evidence": [
+        "frames/00797-0550500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 552500,
+      "end_ms": 555250,
+      "last_seen_ms": 554500,
+      "text": "合计投入超45亿进行市场推",
+      "confidence": 0.9965618206904485,
+      "evidence": [
+        "frames/00798-0552500.jpg",
+        "frames/00799-0554000.jpg",
+        "frames/00800-0554500.jpg"
+      ],
+      "recognition_variants": 2
+    },
+    {
+      "start_ms": 555250,
+      "end_ms": 557000,
+      "last_seen_ms": 556750,
+      "text": "争的不是简单的用户数量",
+      "confidence": 0.995215117931366,
+      "evidence": [
+        "frames/00801-0555250.jpg",
+        "frames/00802-0555500.jpg",
+        "frames/00803-0556000.jpg",
+        "frames/00804-0556250.jpg",
+        "frames/00805-0556500.jpg",
+        "frames/00806-0556750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 557000,
+      "end_ms": 558250,
+      "last_seen_ms": 558000,
+      "text": "2023年已经过去，我们的团队在这一年中取而是用户打开哪个APP",
+      "confidence": 0.9970795036136331,
+      "evidence": [
+        "frames/00807-0557000.jpg",
+        "frames/00808-0557250.jpg",
+        "frames/00809-0557500.jpg",
+        "frames/00810-0557750.jpg",
+        "frames/00811-0558000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 558250,
+      "end_ms": 558750,
+      "last_seen_ms": 558500,
+      "text": "2023年已经过去，我们的团队在这一年中取得了显著的进步和成就。这是对过去一年工而是用户打开哪个APP",
+      "confidence": 0.9964630675359314,
+      "evidence": [
+        "frames/00812-0558250.jpg",
+        "frames/00813-0558500.jpg"
+      ],
+      "recognition_variants": 2
+    },
+    {
+      "start_ms": 558750,
+      "end_ms": 561250,
+      "last_seen_ms": 561000,
+      "text": "完成第一件AI任务的下意识选择",
+      "confidence": 0.979913385046853,
+      "evidence": [
+        "frames/00814-0558750.jpg",
+        "frames/00815-0559000.jpg",
+        "frames/00816-0559250.jpg",
+        "frames/00817-0559500.jpg",
+        "frames/00818-0559750.jpg",
+        "frames/00819-0560000.jpg",
+        "frames/00820-0560250.jpg",
+        "frames/00821-0560500.jpg",
+        "frames/00822-0560750.jpg",
+        "frames/00823-0561000.jpg"
+      ],
+      "recognition_variants": 3
+    },
+    {
+      "start_ms": 561500,
+      "end_ms": 562500,
+      "last_seen_ms": 561750,
+      "text": "与此同时",
+      "confidence": 0.9968744814395905,
+      "evidence": [
+        "frames/00825-0561500.jpg",
+        "frames/00826-0561750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 562500,
+      "end_ms": 564250,
+      "last_seen_ms": 562750,
+      "text": "DeepSeek V4-Pro的API",
+      "confidence": 0.9491926745364541,
+      "evidence": [
+        "frames/00827-0562500.jpg",
+        "frames/00828-0562750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 564250,
+      "end_ms": 566250,
+      "last_seen_ms": 564250,
+      "text": "价格低到几乎可以忽略不计",
+      "confidence": 0.9935500373442968,
+      "evidence": [
+        "frames/00829-0564250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 566250,
+      "end_ms": 568750,
+      "last_seen_ms": 566250,
+      "text": "大约只有GPT5.5的1/7",
+      "confidence": 0.9959215819835663,
+      "evidence": [
+        "frames/00830-0566250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 568750,
+      "end_ms": 570000,
+      "last_seen_ms": 569000,
+      "text": "成本的大幅下降",
+      "confidence": 0.9985019479479108,
+      "evidence": [
+        "frames/00831-0568750.jpg",
+        "frames/00832-0569000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 570000,
+      "end_ms": 572250,
+      "last_seen_ms": 572000,
+      "text": "让更多中小企业和个人开发者",
+      "confidence": 0.9984551805716294,
+      "evidence": [
+        "frames/00833-0570000.jpg",
+        "frames/00834-0570250.jpg",
+        "frames/00835-0570500.jpg",
+        "frames/00836-0570750.jpg",
+        "frames/00837-0571000.jpg",
+        "frames/00838-0571250.jpg",
+        "frames/00839-0571500.jpg",
+        "frames/00840-0571750.jpg",
+        "frames/00841-0572000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 572250,
+      "end_ms": 573500,
+      "last_seen_ms": 573250,
+      "text": "有了入场的机会",
+      "confidence": 0.9982928378241402,
+      "evidence": [
+        "frames/00842-0572250.jpg",
+        "frames/00843-0572500.jpg",
+        "frames/00844-0572750.jpg",
+        "frames/00845-0573000.jpg",
+        "frames/00846-0573250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 573500,
+      "end_ms": 573750,
+      "last_seen_ms": 573500,
+      "text": "微信生态开放",
+      "confidence": 0.9984233975410461,
+      "evidence": [
+        "frames/00847-0573500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 573750,
+      "end_ms": 575500,
+      "last_seen_ms": 574000,
+      "text": "至于AlAgent赛道",
+      "confidence": 0.9632050882686268,
+      "evidence": [
+        "frames/00848-0573750.jpg",
+        "frames/00849-0574000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 575500,
+      "end_ms": 577250,
+      "last_seen_ms": 576500,
+      "text": "从微信向京东美",
+      "confidence": 0.9981887936592102,
+      "evidence": [
+        "frames/00850-0575500.jpg",
+        "frames/00851-0575750.jpg",
+        "frames/00852-0576250.jpg",
+        "frames/00853-0576500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 577250,
+      "end_ms": 579250,
+      "last_seen_ms": 577250,
+      "text": "团滴滴开放AI生态",
+      "confidence": 0.9911418027347989,
+      "evidence": [
+        "frames/00854-0577250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 579250,
+      "end_ms": 581500,
+      "last_seen_ms": 580000,
+      "text": "到阿里巴巴成立TokenFoundry事业部",
+      "confidence": 0.9966128143397245,
+      "evidence": [
+        "frames/00855-0579250.jpg",
+        "frames/00856-0580000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 581500,
+      "end_ms": 583500,
+      "last_seen_ms": 581500,
+      "text": "并宣布开放第三方Agent",
+      "confidence": 0.9993125521219693,
+      "evidence": [
+        "frames/00857-0581500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 583500,
+      "end_ms": 586000,
+      "last_seen_ms": 583750,
+      "text": "再到OpenClaw等海外项目的爆发",
+      "confidence": 0.97212815284729,
+      "evidence": [
+        "frames/00858-0583500.jpg",
+        "frames/00859-0583750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 586000,
+      "end_ms": 587500,
+      "last_seen_ms": 587000,
+      "text": "都在说明一个事实",
+      "confidence": 0.998169869184494,
+      "evidence": [
+        "frames/00860-0586000.jpg",
+        "frames/00861-0586250.jpg",
+        "frames/00862-0586750.jpg",
+        "frames/00863-0587000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 587500,
+      "end_ms": 590750,
+      "last_seen_ms": 587750,
+      "text": "AI正在从回答问题走向完成工作",
+      "confidence": 0.9854812939961751,
+      "evidence": [
+        "frames/00864-0587500.jpg",
+        "frames/00865-0587750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 591000,
+      "end_ms": 593500,
+      "last_seen_ms": 591250,
+      "text": "好了5层蛋糕我们全切完了",
+      "confidence": 0.9951632817586263,
+      "evidence": [
+        "frames/00867-0591000.jpg",
+        "frames/00868-0591250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 593500,
+      "end_ms": 594500,
+      "last_seen_ms": 593500,
+      "text": "现在回过头来看",
+      "confidence": 0.9986579673630851,
+      "evidence": [
+        "frames/00869-0593500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 594500,
+      "end_ms": 596250,
+      "last_seen_ms": 596000,
+      "text": "你会发现一个很有意思的结构",
+      "confidence": 0.9973684044984671,
+      "evidence": [
+        "frames/00870-0594500.jpg",
+        "frames/00871-0594750.jpg",
+        "frames/00872-0595000.jpg",
+        "frames/00873-0595250.jpg",
+        "frames/00874-0595500.jpg",
+        "frames/00875-0595750.jpg",
+        "frames/00876-0596000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 596500,
+      "end_ms": 598250,
+      "last_seen_ms": 597000,
+      "text": "能源与芯片层能源层和芯片层",
+      "confidence": 0.9971694399913152,
+      "evidence": [
+        "frames/00878-0596500.jpg",
+        "frames/00879-0596750.jpg",
+        "frames/00880-0597000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 598250,
+      "end_ms": 600750,
+      "last_seen_ms": 600000,
+      "text": "代表你的体力肌肉够不够强壮",
+      "confidence": 0.9935226165331327,
+      "evidence": [
+        "frames/00881-0598250.jpg",
+        "frames/00882-0599750.jpg",
+        "frames/00883-0600000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 600750,
+      "end_ms": 603500,
+      "last_seen_ms": 601750,
+      "text": "决定了你跑不跑得动基础设施层",
+      "confidence": 0.9910424138818469,
+      "evidence": [
+        "frames/00884-0600750.jpg",
+        "frames/00885-0601250.jpg",
+        "frames/00886-0601500.jpg",
+        "frames/00887-0601750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 603500,
+      "end_ms": 604500,
+      "last_seen_ms": 603500,
+      "text": "能源与芯片层是你的骨架",
+      "confidence": 0.9981153547763825,
+      "evidence": [
+        "frames/00888-0603500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 604500,
+      "end_ms": 608000,
+      "last_seen_ms": 604750,
+      "text": "撑起庞大规模的硬实力模型层",
+      "confidence": 0.9948075184455285,
+      "evidence": [
+        "frames/00889-0604500.jpg",
+        "frames/00890-0604750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 608000,
+      "end_ms": 609250,
+      "last_seen_ms": 608000,
+      "text": "能源与芯片层是你的大脑",
+      "confidence": 0.9982025484244028,
+      "evidence": [
+        "frames/00891-0608000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 609250,
+      "end_ms": 610000,
+      "last_seen_ms": 609750,
+      "text": "能源与芯片层聪明不聪明",
+      "confidence": 0.9973485827445984,
+      "evidence": [
+        "frames/00892-0609250.jpg",
+        "frames/00893-0609500.jpg",
+        "frames/00894-0609750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 610000,
+      "end_ms": 613250,
+      "last_seen_ms": 613000,
+      "text": "有没有智力优势应用层是你的手",
+      "confidence": 0.9927076058728356,
+      "evidence": [
+        "frames/00895-0610000.jpg",
+        "frames/00896-0610250.jpg",
+        "frames/00897-0610500.jpg",
+        "frames/00898-0610750.jpg",
+        "frames/00899-0611000.jpg",
+        "frames/00900-0611250.jpg",
+        "frames/00901-0611500.jpg",
+        "frames/00902-0612250.jpg",
+        "frames/00903-0612500.jpg",
+        "frames/00904-0612750.jpg",
+        "frames/00905-0613000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 613250,
+      "end_ms": 613500,
+      "last_seen_ms": 613250,
+      "text": "能源与芯片层",
+      "confidence": 0.9982152779897054,
+      "evidence": [
+        "frames/00906-0613250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 613500,
+      "end_ms": 615000,
+      "last_seen_ms": 613750,
+      "text": "能源与芯片层最终要触达用户",
+      "confidence": 0.9984232882658641,
+      "evidence": [
+        "frames/00907-0613500.jpg",
+        "frames/00908-0613750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 615000,
+      "end_ms": 615750,
+      "last_seen_ms": 615000,
+      "text": "能源与芯片层创造价值",
+      "confidence": 0.998866247634093,
+      "evidence": [
+        "frames/00909-0615000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 616000,
+      "end_ms": 617750,
+      "last_seen_ms": 616250,
+      "text": "现在你再看AI新闻",
+      "confidence": 0.9594080117013719,
+      "evidence": [
+        "frames/00911-0616000.jpg",
+        "frames/00912-0616250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 617750,
+      "end_ms": 618500,
+      "last_seen_ms": 617750,
+      "text": "是不是清晰多了",
+      "confidence": 0.9996243459837777,
+      "evidence": [
+        "frames/00913-0617750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 619000,
+      "end_ms": 620500,
+      "last_seen_ms": 619000,
+      "text": "哪个国家又在搞核聚变了",
+      "confidence": 0.9982920505783774,
+      "evidence": [
+        "frames/00915-0619000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 620500,
+      "end_ms": 621000,
+      "last_seen_ms": 620500,
+      "text": "是第一层",
+      "confidence": 0.9997346848249435,
+      "evidence": [
+        "frames/00916-0620500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 621000,
+      "end_ms": 623500,
+      "last_seen_ms": 621000,
+      "text": "哪家公司又发布了新一代AI芯片",
+      "confidence": 0.9758192936579386,
+      "evidence": [
+        "frames/00917-0621000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 623500,
+      "end_ms": 624250,
+      "last_seen_ms": 623500,
+      "text": "是第二层",
+      "confidence": 0.9998578131198883,
+      "evidence": [
+        "frames/00918-0623500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 624250,
+      "end_ms": 626750,
+      "last_seen_ms": 624500,
+      "text": "哪个大厂的云计算资本开支超预期了",
+      "confidence": 0.9971983395516872,
+      "evidence": [
+        "frames/00919-0624250.jpg",
+        "frames/00920-0624500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 626750,
+      "end_ms": 629750,
+      "last_seen_ms": 626750,
+      "text": "是第三层DeepSeek又开源了一个新模型",
+      "confidence": 0.9958219017301287,
+      "evidence": [
+        "frames/00921-0626750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 629750,
+      "end_ms": 630500,
+      "last_seen_ms": 629750,
+      "text": "是第四层",
+      "confidence": 0.9999237805604935,
+      "evidence": [
+        "frames/00922-0629750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 630500,
+      "end_ms": 632750,
+      "last_seen_ms": 630750,
+      "text": "腾讯阿里在打AI应用补贴大战",
+      "confidence": 0.993443489074707,
+      "evidence": [
+        "frames/00923-0630500.jpg",
+        "frames/00924-0630750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 632750,
+      "end_ms": 633750,
+      "last_seen_ms": 632750,
+      "text": "是第5层",
+      "confidence": 0.999864250421524,
+      "evidence": [
+        "frames/00925-0632750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 633750,
+      "end_ms": 635250,
+      "last_seen_ms": 634000,
+      "text": "看懂AI产业链",
+      "confidence": 0.9884552359580994,
+      "evidence": [
+        "frames/00926-0633750.jpg",
+        "frames/00927-0634000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 635250,
+      "end_ms": 636250,
+      "last_seen_ms": 635250,
+      "text": "其实没有那么难",
+      "confidence": 0.9981362649372646,
+      "evidence": [
+        "frames/00928-0635250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 636750,
+      "end_ms": 638250,
+      "last_seen_ms": 636750,
+      "text": "以后谁再跟你聊AI",
+      "confidence": 0.9831907947858175,
+      "evidence": [
+        "frames/00930-0636750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 638250,
+      "end_ms": 640250,
+      "last_seen_ms": 638250,
+      "text": "你就可以优雅的说一句要不",
+      "confidence": 0.9954581956068674,
+      "evidence": [
+        "frames/00931-0638250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 640250,
+      "end_ms": 642250,
+      "last_seen_ms": 641750,
+      "text": "我从5层蛋糕给你盘一盘",
+      "confidence": 0.9980294758623297,
+      "evidence": [
+        "frames/00932-0640250.jpg",
+        "frames/00933-0641750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 642250,
+      "end_ms": 644250,
+      "last_seen_ms": 644000,
+      "text": "好了本期视频到此结束",
+      "confidence": 0.9933004915714264,
+      "evidence": [
+        "frames/00934-0642250.jpg",
+        "frames/00935-0642500.jpg",
+        "frames/00936-0642750.jpg",
+        "frames/00937-0643000.jpg",
+        "frames/00938-0643250.jpg",
+        "frames/00939-0643500.jpg",
+        "frames/00940-0643750.jpg",
+        "frames/00941-0644000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 644250,
+      "end_ms": 647250,
+      "last_seen_ms": 644750,
+      "text": "本视频由AI启示录科普教育原创发布",
+      "confidence": 0.9887724729145274,
+      "evidence": [
+        "frames/00942-0644250.jpg",
+        "frames/00943-0644500.jpg",
+        "frames/00944-0644750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 647250,
+      "end_ms": 649500,
+      "last_seen_ms": 649250,
+      "text": "关注我深度拆解最硬核的科技链",
+      "confidence": 0.9883909608636584,
+      "evidence": [
+        "frames/00945-0647250.jpg",
+        "frames/00946-0647500.jpg",
+        "frames/00947-0647750.jpg",
+        "frames/00948-0648000.jpg",
+        "frames/00949-0648250.jpg",
+        "frames/00950-0648500.jpg",
+        "frames/00951-0648750.jpg",
+        "frames/00952-0649000.jpg",
+        "frames/00953-0649250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 649500,
+      "end_ms": 650740,
+      "last_seen_ms": 650690,
+      "text": "与全球前沿动态",
+      "confidence": 0.9986644302095685,
+      "evidence": [
+        "frames/00954-0649500.jpg",
+        "frames/00955-0649750.jpg",
+        "frames/00956-0650000.jpg",
+        "frames/00957-0650250.jpg",
+        "frames/00958-0650500.jpg",
+        "frames/00959-0650690.jpg"
+      ],
+      "recognition_variants": 1
+    }
+  ]
+}

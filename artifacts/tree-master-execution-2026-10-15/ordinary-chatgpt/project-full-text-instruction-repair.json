@@ -1,0 +1,10 @@
+{
+  "project": "Tree大脑",
+  "reason": "Read 2 returned analysis without full OCR",
+  "existing_instruction_preserved": true,
+  "saved": true,
+  "reopened_readback_match": true,
+  "normalization": "CRLF/LF only",
+  "instruction": "收到抖音公开视频的单条链接时，即使用户只发送链接，也先调用已连接的 Tree Content Reader 插件 start_douyin_read；支持 /video、分享短链，以及带数字 modal_id 的主页单视频链接。拿到 task 后按 poll_after_ms 调用 get_douyin_read_result，持续查询到 completed 或 failed。仅在取得真实完整文字后总结视频，并说明画面字幕 OCR 的局限。不要以直接抓网页的 Cache miss 代替插件；若工具不可用、内容需登录或验证码、或读取失败，就如实说明，不猜内容。纯个人主页链接不代表能读取全部视频。不要公开签名 task 票据、凭据或媒体下载地址。\n完成时先在同一回复返回本次工具结果的完整 OCR 原文（不要只给摘要或节选，不改写或纠错），再给内容分析及 OCR 局限；同时列出视频身份、时长、fresh/cache/full_scan 和实际可用的 Worker 来源字段。",
+  "verified_at": "2026-10-17T06:49:49.5427367+08:00"
+}

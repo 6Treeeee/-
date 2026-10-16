@@ -1,0 +1,31 @@
+{
+  "client": "Native desktop ordinary ChatGPT, existing Tree conversation",
+  "sample": "Unfamiliar at send time; no prior ID in local docs/artifacts",
+  "activation": "Bare canonical URL only after saved project instruction",
+  "request_id": "3dd3b53d-387c-4a3c-884f-87b67c71d4cc",
+  "aweme_id": "7650055582929456425",
+  "worker": {
+    "run_id": "38824126698",
+    "attempt": "1",
+    "commit": "d2f73fdbb0c7e7c8f4a4be50253f180a9e09a292"
+  },
+  "worker_conclusion": "success",
+  "artifact_id": 12014621540,
+  "artifact_sha256": "15f3f182598e6b35508902feef95c91cc0820fd29c99bfe847be02aa1cb41c64",
+  "client_response_observed": true,
+  "checks": {
+    "full_scan": true,
+    "fresh": true,
+    "artifact_digest": true,
+    "automatic_tool_call_observed": true,
+    "no_cache": true,
+    "existing_contract_verifier": true,
+    "positive_duration": true,
+    "client_identity_and_worker_match": true,
+    "complete_ocr_returned_in_client_reply": false
+  },
+  "segment_count": 339,
+  "text_characters": 4125,
+  "status": "PASS_AUTOMATIC_READ_AND_ANALYSIS_FULL_TEXT_DELIVERY_GAP",
+  "verified_at": "2026-10-17T03:29:54.6023046+08:00"
+}

@@ -1,5 +1,19 @@
 # CURRENT PROJECT STATE（当前项目状态）
 
+## 2026-10-17：陌生长视频自动读取已核验；全量文字展示缺口已修复配置，第三轮正在执行
+
+第二轮仅发送陌生链接 7650055582929456425，普通 ChatGPT 自动调用 Reader 并返回 completed 和内容分析。request_id=3dd3b53d-387c-4a3c-884f-87b67c71d4cc，run=38824126698 success，attempt=1，worker commit=d2f73fdbb0c7e7c8f4a4be50253f180a9e09a292。原始 artifact 12014621540 已及时下载到仓库外，SHA-256=15f3f182598e6b35508902feef95c91cc0820fd29c99bfe847be02aa1cb41c64，现有结果契约校验通过：650741ms、339 段、4125 字、fresh=true、cache=false、full_scan=true、覆盖 0–650740ms。客户端视频身份、run、时长、覆盖与原始证据一致。
+
+必须保留的缺口：第二轮客户端回复只展示分析和节选，没有展示全部 OCR；后续在原聊天要求补回时，它明确说原工具原文当前不可见，没有编造。不能宣称第二轮全量文字交付 PASS，也不能用 artifact 代替客户端完整返回。已在原 Tree大脑 项目保留已有指令并补充“同一回复先返回完整 OCR 原文，再分析及局限”，保存、重新打开、复制读回比对一致（仅归一化 CRLF/LF）。没有重新采集第二轮。
+
+第三轮仍使用既有普通 Tree 聊天，仅发送另一陌生链接 7693397287104890490，未选 Reader 标签或附工具提示。已真实自动开始采集，request_id=f8dcf988-2fae-4522-b1f9-c144865d3d7e，run=38978117206，commit=f6dba2e77d1f4e985b3becaf5d43808ffa5985ae；请求 marker 的视频身份匹配，尚待客户端终态、完整原文和 artifact 验收。当前普通聊天 completed 已观察 2 轮，其中完整 OCR 交付独立验证仅 1 轮；三次连续完整交付及 GOAL B 尚未整体 PASS。
+
+GOAL A 已在同一个普通聊天显式选中现有 Tree Brain Codex 并完成只读探测，实际返回 TREE_BRAIN_CODEX_TOOL_NOT_AVAILABLE：连接检查、task_status 未暴露，task_id/thread_id/status/remaining_steps 均 NOT_READ，历史 task 未查询，未执行 task_start/task_resume。这是客户端工具暴露阻塞，不能用旧镜像、插件标签或过期授权解释替代实际调用；没有更新授权、重建控制系统或创建替代 Work 任务。
+
+实时部署只读复核：Production sigma-silk-88.vercel.app 仍指向 dpl_BrtVwjcUrEQtoaJTYgxsQjQ7zsJq；原 Preview 分支别名现指向 dpl_7CmSsArRnzMgyAf4uRnxkvWGAArE。本执行未改部署/环境变量。其他对话已经发布的作者字段和本地 Whisper 改动已快进保留，不能将其声明当成本执行的验收结果。
+
+本轮证据：artifacts/tree-master-execution-2026-10-15/ordinary-chatgpt/read-2-{result,verification}.json、read-2-client-response.txt、brain-readonly-probe-response.txt、project-full-text-instruction-repair.json。原始 zip、媒体地址和签名票据留在仓库外。原执行线程 01a1317a-c479-7460-8c24-37351301787c 不变。
+
 ## 最新进度：普通 ChatGPT 已有一轮真实读取核验，纯链接自动触发继续验收
 
 已通过原生桌面普通 ChatGPT 的既有“Tree”对话实际调用 Tree Content Reader 并取得 completed、完整 OCR 和内容分析，且已下载本轮 GitHub 原始 artifact 独立校验。request_id=70b9640f-97ae-409a-bab9-53a023e71a32，aweme_id=7690725127385894198，run=38727115080 success，attempt=1，worker commit=2d480fbb121197c9c8d3a3ab4b2ceaf09f349205；artifact=11968239746，SHA-256=fa5aa57108dc8d3f411068f838d1b2764e504d414f56440603576292b691cb06。40 段、332 字、86.588 秒，fresh=true、cache=false、full_scan=true，覆盖 0–86587ms；客户端完整 OCR 与原始 artifact 逐字一致（忽略 Markdown 引用标记及空白）。普通聊天真实读取已从 0 增至 1 轮；三次连续验收尚未完成，两个 GOAL 均未整体 PASS。

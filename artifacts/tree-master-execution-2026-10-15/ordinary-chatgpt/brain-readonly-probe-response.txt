@@ -1,0 +1,39 @@
+只读验收结果
+TREE_BRAIN_CODEX_TOOL_NOT_AVAILABLE
+
+本会话实际工具发现结果中，没有暴露属于 Tree Brain Codex 的可调用工具，也没有发现：
+
+get_connection_status
+等价连接状态检查工具
+task_status
+因此我没有继续伪造调用，也没有用 GitHub 文档、历史镜像或插件标签替代真实工具调用。
+
+实际结果：
+
+Tree Brain Codex callable tools = NONE
+
+get_connection_status = NOT_AVAILABLE
+task_status = NOT_AVAILABLE
+
+workspace_id = content-reader
+task_id = NOT_READ
+thread_id = NOT_READ
+status = NOT_READ
+remaining_steps = NOT_READ
+
+historical task_id:
+wrun_01M33A83TFAFR2JAXT0TTP2EBS
+= NOT_QUERIED
+本次也没有执行：
+
+task_start
+task_resume
+代码修改
+部署
+授权
+替代 Codex/Work 流程
+所以当前不能基于真实工具证据判断 content-reader 持久任务的实时状态。问题停在第一层：这个会话没有实际加载 Tree Brain Codex 的状态查询工具。
+
+
+
+

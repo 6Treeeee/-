@@ -1,0 +1,21 @@
+{
+  "observed_at": "2026-10-17T06:51:17.7089830+08:00",
+  "surface": "Native desktop ordinary ChatGPT, existing Tree conversation",
+  "plugin_tag_selected": "Tree Brain Codex",
+  "probe": "Read-only connection check and task_status",
+  "status": "BLOCKED_CLIENT_TOOL_EXPOSURE",
+  "error": "TREE_BRAIN_CODEX_TOOL_NOT_AVAILABLE",
+  "callable_tools": [],
+  "connection_check": "NOT_AVAILABLE",
+  "task_status": "NOT_AVAILABLE",
+  "task_start_executed": false,
+  "task_resume_executed": false,
+  "task_id": "NOT_READ",
+  "thread_id": "NOT_READ",
+  "persisted_state_status": "NOT_READ",
+  "remaining_steps": "NOT_READ",
+  "historical_task_id": "wrun_01M33A83TFAFR2JAXT0TTP2EBS",
+  "historical_task_queried": false,
+  "substitute_flow_created": false,
+  "authorization_changed": false
+}
