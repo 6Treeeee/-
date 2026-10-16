@@ -1,3 +1,5 @@
+import { ReaderError } from "../errors.js";
+
 export function verifyAcquisitionResult(envelope, expected) {
   const content = envelope?.result?.content;
   const readable = content?.readable_content;
@@ -11,7 +13,15 @@ export function verifyAcquisitionResult(envelope, expected) {
       Number(readable?.source?.coverage?.end_ms ?? 0) < duration - 1000 ||
       !Array.isArray(readable?.segments) || readable.segments.length === 0 ||
       typeof readable?.text !== "string" || !readable.text.trim()) {
-    throw Object.assign(new Error("Worker result failed identity, freshness or full-coverage validation."), { code: "WORKER_RESULT_INVALID", status: 502 });
+    throw new ReaderError("WORKER_RESULT_INVALID",
+      "Worker result did not provide a complete fresh hard-subtitle OCR transcript.", {
+        status: 502,
+        details: {
+          required_method: "hard_subtitle_ocr",
+          actual_method: ["hard_subtitle_ocr", "local_whisper_cpp_base_q5_1", "captions"]
+            .includes(readable?.method) ? readable.method : "unknown"
+        }
+      });
   }
   return envelope;
 }
