@@ -3,6 +3,7 @@ import { readPublicContent } from "../src/content-reader.js";
 import { DirectPublicWebProvider } from "../src/providers/direct-public-web.js";
 import { PublicBrowserService } from "../src/services/public-browser.js";
 import { HardSubtitleOcr } from "../src/services/hard-subtitle-ocr.js";
+import { createLocalWhisperAsr } from "../src/services/local-whisper.js";
 import { publicError } from "../src/errors.js";
 import { verifyAcquisitionResult } from "../src/services/acquisition-result.js";
 
@@ -20,12 +21,14 @@ const browserService = new PublicBrowserService({
 const directProvider = new DirectPublicWebProvider({ browserService, retries: 2,
   retryDelayMs: 500, videoNavigationTimeoutMs: 45_000, videoContentWaitMs: 22_000, settleMs: 700 });
 const hardSubtitles = new HardSubtitleOcr({ env: process.env, provider: directProvider, requestId: request_id });
+const localWhisper = createLocalWhisperAsr();
 let envelope;
 try {
   const result = await readPublicContent({ url: `https://www.douyin.com/video/${aweme_id}`, type: "video", fresh: true }, {
     fetchImpl: globalThis.fetch, providers: [directProvider],
     hardSubtitleOcr: hardSubtitles.read.bind(hardSubtitles),
-    localAsr: null, openAiApiKey: null, aiGatewayApiKey: null, vercelOidcToken: null,
+    localAsr: localWhisper.available ? localWhisper.transcribe : null,
+    openAiApiKey: null, aiGatewayApiKey: null, vercelOidcToken: null,
     requestId: request_id, requestDeadlineAt: started + 1_000_000
   });
   envelope = { request_id, aweme_id, pass: true, result, elapsed_ms: Date.now() - started,
@@ -46,4 +49,5 @@ console.log(JSON.stringify({ event: "acquisition.completed", request_id, aweme_i
   duration_ms: envelope.result?.content?.duration_ms,
   segment_count: readable?.segments?.length, text_length: readable?.text?.length,
   fresh_capture: readable?.source?.fresh_capture, transcript_cache_read: readable?.source?.transcript_cache_read,
-  full_video_scanned: readable?.source?.coverage?.full_video_scanned }));
+  full_video_scanned: readable?.source?.coverage?.full_video_scanned,
+  method: readable?.method, asr_provider: readable?.source?.provider }));
