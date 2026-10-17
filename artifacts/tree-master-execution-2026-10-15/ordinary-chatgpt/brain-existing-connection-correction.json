@@ -1,0 +1,66 @@
+{
+  "observed_at": "2026-10-17T13:43:11.481Z",
+  "goal": "A",
+  "kind": "bounded existing local MCP connection correction; not hosted ordinary ChatGPT acceptance",
+  "before": {
+    "enabled": false,
+    "transport": "generic codex mcp-server subprocess",
+    "existing_tree_brain_url": false
+  },
+  "after": {
+    "enabled": true,
+    "url": "https://sigma-silk-88.vercel.app/mcp",
+    "http_headers_helper": "Reused installed Tree Brain plugin helper; no inline credentials",
+    "enabled_tools": [
+      "get_connection_status",
+      "list_workspaces",
+      "task_status",
+      "task_start",
+      "task_resume"
+    ],
+    "default_tools_approval_mode": "prompt"
+  },
+  "private_backup_created": true,
+  "other_config_unchanged": true,
+  "cli_config_parse_and_readback": "PASS",
+  "native_settings_url_and_enabled_readback": "PASS",
+  "service_initialize": {
+    "http_status": 401,
+    "error_code": "TREE_BRAIN_UNAUTHORIZED"
+  },
+  "local_grant": {
+    "workspace_ids": [
+      "content-reader"
+    ],
+    "scopes": [
+      "treebrain:read",
+      "treebrain:check"
+    ],
+    "expires_at": 1789397150,
+    "expiry_utc": "2026-09-14T14:45:50Z",
+    "expired": true
+  },
+  "authorization_changed": false,
+  "production_changed": false,
+  "tunnel_created": false,
+  "task_started": false,
+  "task_resumed": false,
+  "ordinary_chat_after_correction": {
+    "status": "BLOCKED",
+    "error": "TREE_BRAIN_CODEX_TOOL_NOT_AVAILABLE",
+    "plugin_tag_selected": true,
+    "get_connection_status": "NOT_EXPOSED",
+    "task_status": "NOT_EXPOSED",
+    "task_start": "NOT_EXPOSED",
+    "task_resume": "NOT_EXPOSED",
+    "task_id": "NOT_READ",
+    "thread_id": "NOT_READ",
+    "task_status_value": "NOT_READ",
+    "remaining_steps": "NOT_READ",
+    "actual_backend_call": false,
+    "response_file": "brain-after-config-probe-response.md"
+  },
+  "warning": "The local configuration correction neither registers a hosted ChatGPT connection nor proves tool execution. Remote grant value was not read back; 401 must not be attributed solely to local metadata expiry.",
+  "owner_only_gate": "Renew/re-authorize and reconnect the existing account-side Tree Brain Codex connection with its original bounded content-reader read/check grant. Do not send credentials in chat. Local MCP correction alone is insufficient.",
+  "implicit_credential_rotation_not_run": "Existing provision-read-token.ps1 explicitly refuses overwriting existing credential/grant; its stale a2a-control/read-only defaults also do not match the authorized existing grant."
+}

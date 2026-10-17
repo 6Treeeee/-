@@ -1,0 +1,406 @@
+{
+  "request_id": "5257ca03-3033-40d8-ad75-bba78cfa3545",
+  "aweme_id": "7374041148219788595",
+  "worker": {
+    "run_id": "38988228481",
+    "attempt": "1",
+    "commit": "b85689156e82e664a1f4e4fc392f4f2763686279"
+  },
+  "duration_ms": 90836,
+  "fresh_capture": true,
+  "transcript_cache_read": false,
+  "coverage": {
+    "start_ms": 0,
+    "end_ms": 90835,
+    "full_video_scanned": true,
+    "visual_step_ms": 250,
+    "threshold": 0.003,
+    "caption_activity": {
+      "sustained": true,
+      "active_ms": 19585,
+      "active_ratio": 0.215611,
+      "window_ms": 10000,
+      "covered_windows": 10,
+      "total_windows": 10,
+      "window_ratio": 1,
+      "minimum_active_ratio": 0.2,
+      "minimum_window_ratio": 0.75
+    }
+  },
+  "method": "hard_subtitle_ocr",
+  "limitations": [
+    "visual_subtitles_only_not_spoken_audio",
+    "subtitle_region_only_capture",
+    "approximate_frame_capture_timestamps",
+    "sub_250ms_or_low_change_captions_may_be_missed",
+    "source_subtitle_errors_preserved",
+    "short_lived_ocr_variants_collapsed_by_temporal_consensus",
+    "ocr_not_manually_corrected"
+  ],
+  "text": "本期视频教大家以最简单的方式\n解决完美世界不能重新安装的问题\n小白也看得懂哈\n完美世界竞技平台1.0.24052311<上一步（P）下一步（D）>\n注册表编辑器\n点击打开上方搜索结果中的注册表编辑器\n打开注册表编辑器以后\n点击前面三角展开HKEYLOCAL_MACHINE\nLen再往下展开SOFTWARE\n滑到下面展开WOW6432Node\nWOW6432Node展开后有很多子项\n其他的不用管\n就看子项名字是一长串字母和数字组合的\n如果有多条就挨个点一下看右边\n有没有名称为InstallLocation\n并且ShortcutName是完美世界竞技平台\n找到以后我们需要把右边对应的子项删除\n删除后继续往下展开Microsoft\nScriptedDiagnosticsProvider再往下展开Windows\n再往下展开CurrentVersion\n再往下展并Uainstall\n展开之后会有很多子项\n和刚才一样只关注名字是一长串字母和数字的\n挨个点一下看看右边\n是不是如图所示有UninstallString\n并且DisplayName是完美世界竞技平台\n同样的删除右边对应的子项\n注意哥能有的网友找不到这架\n找不到这个通常是从控制面板删除过\n只删除这两项就可以重新安装了\n<上一步（P)完成（F）取消（C)",
+  "segments": [
+    {
+      "start_ms": 0,
+      "end_ms": 3500,
+      "last_seen_ms": 0,
+      "text": "本期视频教大家以最简单的方式",
+      "confidence": 0.9942130829606738,
+      "evidence": [
+        "frames/00000-0000000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 3500,
+      "end_ms": 7000,
+      "last_seen_ms": 3500,
+      "text": "解决完美世界不能重新安装的问题",
+      "confidence": 0.995115605990092,
+      "evidence": [
+        "frames/00001-0003500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 7000,
+      "end_ms": 8750,
+      "last_seen_ms": 7250,
+      "text": "小白也看得懂哈",
+      "confidence": 0.985696017742157,
+      "evidence": [
+        "frames/00002-0007000.jpg",
+        "frames/00003-0007250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 8750,
+      "end_ms": 9000,
+      "last_seen_ms": 8750,
+      "text": "完美世界竞技平台1.0.24052311<上一步（P）下一步（D）>",
+      "confidence": 0.8957678175398281,
+      "evidence": [
+        "frames/00004-0008750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 9000,
+      "end_ms": 12500,
+      "last_seen_ms": 9250,
+      "text": "注册表编辑器",
+      "confidence": 0.9990042944749197,
+      "evidence": [
+        "frames/00005-0009000.jpg",
+        "frames/00006-0009250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 12500,
+      "end_ms": 16500,
+      "last_seen_ms": 12750,
+      "text": "点击打开上方搜索结果中的注册表编辑器",
+      "confidence": 0.9664867917696635,
+      "evidence": [
+        "frames/00007-0012500.jpg",
+        "frames/00008-0012750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 16500,
+      "end_ms": 19000,
+      "last_seen_ms": 16500,
+      "text": "打开注册表编辑器以后",
+      "confidence": 0.9984991729259491,
+      "evidence": [
+        "frames/00009-0016500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 19000,
+      "end_ms": 22750,
+      "last_seen_ms": 19250,
+      "text": "点击前面三角展开HKEYLOCAL_MACHINE",
+      "confidence": 0.9893613123893737,
+      "evidence": [
+        "frames/00010-0019000.jpg",
+        "frames/00011-0019250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 22750,
+      "end_ms": 25250,
+      "last_seen_ms": 24750,
+      "text": "Len再往下展开SOFTWARE",
+      "confidence": 0.9652796350419521,
+      "evidence": [
+        "frames/00012-0022750.jpg",
+        "frames/00013-0024750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 25250,
+      "end_ms": 28500,
+      "last_seen_ms": 25250,
+      "text": "滑到下面展开WOW6432Node",
+      "confidence": 0.9805427123518551,
+      "evidence": [
+        "frames/00014-0025250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 28500,
+      "end_ms": 32250,
+      "last_seen_ms": 28500,
+      "text": "WOW6432Node展开后有很多子项",
+      "confidence": 0.9162308009047258,
+      "evidence": [
+        "frames/00015-0028500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 32250,
+      "end_ms": 33750,
+      "last_seen_ms": 33250,
+      "text": "其他的不用管",
+      "confidence": 0.9989532232284546,
+      "evidence": [
+        "frames/00016-0032250.jpg",
+        "frames/00017-0033250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 33750,
+      "end_ms": 37750,
+      "last_seen_ms": 34000,
+      "text": "就看子项名字是一长串字母和数字组合的",
+      "confidence": 0.9950194954872131,
+      "evidence": [
+        "frames/00018-0033750.jpg",
+        "frames/00019-0034000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 37750,
+      "end_ms": 41000,
+      "last_seen_ms": 38000,
+      "text": "如果有多条就挨个点一下看右边",
+      "confidence": 0.9718783710684095,
+      "evidence": [
+        "frames/00020-0037750.jpg",
+        "frames/00021-0038000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 41000,
+      "end_ms": 43750,
+      "last_seen_ms": 41000,
+      "text": "有没有名称为InstallLocation",
+      "confidence": 0.9659080193156288,
+      "evidence": [
+        "frames/00022-0041000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 43750,
+      "end_ms": 47500,
+      "last_seen_ms": 43750,
+      "text": "并且ShortcutName是完美世界竞技平台",
+      "confidence": 0.9927867884221284,
+      "evidence": [
+        "frames/00023-0043750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 47500,
+      "end_ms": 51250,
+      "last_seen_ms": 48000,
+      "text": "找到以后我们需要把右边对应的子项删除",
+      "confidence": 0.9832948876751794,
+      "evidence": [
+        "frames/00024-0047500.jpg",
+        "frames/00025-0047750.jpg",
+        "frames/00026-0048000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 51250,
+      "end_ms": 54500,
+      "last_seen_ms": 51500,
+      "text": "删除后继续往下展开Microsoft",
+      "confidence": 0.9830053779813979,
+      "evidence": [
+        "frames/00027-0051250.jpg",
+        "frames/00028-0051500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 54500,
+      "end_ms": 56750,
+      "last_seen_ms": 54750,
+      "text": "ScriptedDiagnosticsProvider再往下展开Windows",
+      "confidence": 0.9800843767545842,
+      "evidence": [
+        "frames/00029-0054500.jpg",
+        "frames/00030-0054750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 56750,
+      "end_ms": 59250,
+      "last_seen_ms": 57000,
+      "text": "再往下展开CurrentVersion",
+      "confidence": 0.9585895255992287,
+      "evidence": [
+        "frames/00031-0056750.jpg",
+        "frames/00032-0057000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 59250,
+      "end_ms": 61500,
+      "last_seen_ms": 59250,
+      "text": "再往下展并Uainstall",
+      "confidence": 0.8593937882355281,
+      "evidence": [
+        "frames/00033-0059250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 61500,
+      "end_ms": 64250,
+      "last_seen_ms": 63500,
+      "text": "展开之后会有很多子项",
+      "confidence": 0.9530489206314087,
+      "evidence": [
+        "frames/00034-0061500.jpg",
+        "frames/00035-0061750.jpg",
+        "frames/00036-0063500.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 64250,
+      "end_ms": 68250,
+      "last_seen_ms": 64250,
+      "text": "和刚才一样只关注名字是一长串字母和数字的",
+      "confidence": 0.9957918226718903,
+      "evidence": [
+        "frames/00037-0064250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 68250,
+      "end_ms": 70500,
+      "last_seen_ms": 68250,
+      "text": "挨个点一下看看右边",
+      "confidence": 0.9706649714046054,
+      "evidence": [
+        "frames/00038-0068250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 70500,
+      "end_ms": 73750,
+      "last_seen_ms": 70750,
+      "text": "是不是如图所示有UninstallString",
+      "confidence": 0.968963156575742,
+      "evidence": [
+        "frames/00039-0070500.jpg",
+        "frames/00040-0070750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 73750,
+      "end_ms": 77500,
+      "last_seen_ms": 74000,
+      "text": "并且DisplayName是完美世界竞技平台",
+      "confidence": 0.9948644990270789,
+      "evidence": [
+        "frames/00041-0073750.jpg",
+        "frames/00042-0074000.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 77750,
+      "end_ms": 80750,
+      "last_seen_ms": 78000,
+      "text": "同样的删除右边对应的子项",
+      "confidence": 0.934273973107338,
+      "evidence": [
+        "frames/00044-0077750.jpg",
+        "frames/00045-0078000.jpg"
+      ],
+      "recognition_variants": 2
+    },
+    {
+      "start_ms": 80750,
+      "end_ms": 83500,
+      "last_seen_ms": 80750,
+      "text": "注意哥能有的网友找不到这架",
+      "confidence": 0.8869717442072355,
+      "evidence": [
+        "frames/00046-0080750.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 83500,
+      "end_ms": 87000,
+      "last_seen_ms": 86250,
+      "text": "找不到这个通常是从控制面板删除过",
+      "confidence": 0.9901973865926266,
+      "evidence": [
+        "frames/00047-0083500.jpg",
+        "frames/00048-0083750.jpg",
+        "frames/00049-0086250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 87000,
+      "end_ms": 90250,
+      "last_seen_ms": 87250,
+      "text": "只删除这两项就可以重新安装了",
+      "confidence": 0.982761310679572,
+      "evidence": [
+        "frames/00050-0087000.jpg",
+        "frames/00051-0087250.jpg"
+      ],
+      "recognition_variants": 1
+    },
+    {
+      "start_ms": 90250,
+      "end_ms": 90835,
+      "last_seen_ms": 90785,
+      "text": "<上一步（P)完成（F）取消（C)",
+      "confidence": 0.7743613725616818,
+      "evidence": [
+        "frames/00052-0090250.jpg",
+        "frames/00053-0090785.jpg"
+      ],
+      "recognition_variants": 2
+    }
+  ]
+}

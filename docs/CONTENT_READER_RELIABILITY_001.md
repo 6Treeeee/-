@@ -1,5 +1,25 @@
 # TREE_CONTENT_READER_RELIABILITY_001
 
+## 2026-10-17：GOAL B 普通 ChatGPT 连续三次 fresh 完整闭环 PASS
+
+原生桌面既有普通 Tree 聊天（输入框“询问 ChatGPT”）已仅凭陌生公开标准链接自动 start/poll，完整返回画面字幕 OCR、内容分析及 OCR 局限。原始 Worker artifact 与客户端完整文字独立比对通过。Tree大脑 项目已保存并重新读回自动调用及“先返回完整 OCR、再分析”指令；没有新建聊天或替代控制系统。
+
+失败后当前连续验收：
+
+| 轮次 | 输入 | request_id | Worker run | 当前结果 |
+| --- | --- | --- | --- | --- |
+| 4 | 陌生标准 /video/ 链接 | 5374dbe7-1658-4a17-8415-3729da11bf6e | 38979023164 | 完整客户端返回及来源核验 PASS |
+| 5 | 真实作者主页 + numeric modal_id，仍为单视频 | 5257ca03-3033-40d8-ad75-bba78cfa3545 | 38988228481 | 完整客户端返回及来源核验 PASS |
+| 6 | 同视频标准链接，新的 fresh 请求 | 4eff522b-ce6c-4f21-ba54-e8d309c0dfd2 | 38988853909 | 完整客户端返回及来源核验 PASS |
+
+第 4、5、6 轮均为 aweme_id=7374041148219788595，90.836 秒、31 段、557 字；fresh_capture=true、transcript_cache_read=false、full_video_scanned=true、覆盖 0–90835ms，zip digest、request/aweme/Worker 来源、现有完整性契约和客户端完整原文全部通过。每轮在前一轮客户端最终回复后才发送纯链接，分别创建独立 request/run；客户端完整文字仅忽略空白及 Markdown 引用标记，与各自原始 artifact 逐字一致。第 5、6 轮回复未单独打印英文 status 字段，但完整返回了各自新 run 的实际结果；没有用旧结果充数。
+
+第六轮 run=38988853909 的 probe job=117266478593 completed/success；worker commit=3033210dde2e4530003fe9454fb9a1780ab76e6c、attempt=1，artifact=12084437337，SHA-256=f80897d8c46fffae65b8e0a2c494844c5bf2c7e175028296b6969daccf1dd062，已下载原始 zip 并独立验证。汇总证据为 ordinary-chatgpt/three-fresh-client-acceptance.json。GOAL B 在当前画面字幕 OCR 能力范围内 PASS，读取链路冻结，不启动第七轮重复测试。
+
+早期证据仍保留边界：第 1 轮为已知样本且显式选择插件；第 2 轮陌生长视频自动 completed/分析，339 段、4125 字已独立验证，但未在回复展示全部 OCR；第 3 轮真实 failed/WORKER_RESULT_INVALID，日志 OCR_CAPTIONS_SPARSE（字幕活动 2.28%），不能跳过它拼凑三次连续成功。只修正校验原因被笼统错误遮蔽的诊断输出，没有放宽完整 OCR 门槛。
+
+范围：画面字幕 OCR，不等于完整语音转写；当前仅标准链接及带 modal_id 的主页单视频已取得新客户端证据，分享短链本轮尚未独立复测；纯主页批量不在本轮范围。无持续字幕的样本仍真实失败，字幕错字、短暂字幕漏读及未人工纠错的局限保留。证据见 artifacts/tree-master-execution-2026-10-15/ordinary-chatgpt/。GOAL A 的普通 ChatGPT Codex 工具暴露仍单独 BLOCKED，不由 Reader 成功替代。
+
 ## 2026-10-14：原入口故障已修复，普通 ChatGPT 三次仍待验收
 
 TREE_MASTER_EXECUTION 已定位旧 Preview 主机 HTTP 410 / GONE，并将原 Proxy 固定上游替换为现有 Preview 分支别名。Proxy 提交 1c3e443、部署 dpl_7yQH9H4ttXAQJJ8THgA7XJRWnvAH；受保护调用保持既有身份和权限。

@@ -1,5 +1,16 @@
 # Tree Brain private ChatGPT entry
 
+## 2026-10-17 live acceptance checkpoint
+
+Ordinary native ChatGPT still returns TREE_BRAIN_CODEX_TOOL_NOT_AVAILABLE after explicitly selecting Tree Brain Codex. The actual get_connection_status/task_status/task_start/task_resume tools are NOT_EXPOSED; task/thread/status/remaining_steps remain NOT_READ. No task was started or resumed, and no mirror was used as live state.
+
+A separate local configuration fault was corrected: the disabled generic codex mcp-server entry was privately backed up, then replaced only within the existing tree_brain_codex entry with the installed plugin's existing HTTPS URL, header helper and tool allowlist. Approval remains prompt and all other settings are unchanged; CLI parsing and native MCP settings readback pass. This local repair does not register a hosted ChatGPT plugin.
+
+An authenticated initialize against the existing service returns HTTP 401 / TREE_BRAIN_UNAUTHORIZED. The existing local content-reader read/check grant metadata expired 2026-09-14T14:45:50Z; remote sensitive grant contents were not read, so expiry is not claimed as the only cause. No grant renewal/rotation, Production deployment, OAuth or tunnel change was made. Account-side re-authorization/reconnection is required before live task acceptance can continue.
+
+Evidence: artifacts/tree-master-execution-2026-10-15/ordinary-chatgpt/brain-existing-connection-correction.json and brain-after-config-probe-response.md. Goal B independently passed three consecutive fresh native ordinary-chat full OCR deliveries; it does not imply Goal A PASS. The following sections retain historical setup context.
+
+
 Reviewed 2026-09-21. Engineering preparation only; ordinary ChatGPT acceptance is **NOT VERIFIED**.
 Continue from `31d425b709ab329c994b451f23c434be3b5918f9` on `codex/a2a-control-loop`.
 The accepted backend, worker, deployment and original-thread recovery baseline is unchanged.

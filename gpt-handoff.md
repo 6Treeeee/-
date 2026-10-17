@@ -2,18 +2,17 @@
 
 - 任务编号：TREE_MASTER_EXECUTION
 - 目标：分别完成普通 ChatGPT 真正调动现有 Codex，以及真实读取公开抖音单视频两个闭环。
-- 状态：RUNNING
+- 状态：BLOCKED
 - 更新时间：2026-10-17（Asia/Shanghai，UTC+08:00）
 - 仓库：6Treeeee/-
 - 分支：codex/a2a-control-loop
 - 固定路径：gpt-handoff.md
-- 实际结果：原 Proxy/私有 Sites bridge 修复和 Vercel Authentication 保留。第四轮普通 ChatGPT 已仅凭陌生标准链接自动完成 fresh 读取并完整返回 OCR/分析，run=38979023164 success，90.836 秒、31 段、557 字，完整正文与原始 artifact 逐字一致。已具备 GOAL B 单轮完整闭环证据；因第三轮存在真实失败，连续成功目前 1/3。GOAL A 的普通聊天真实探测仍返回工具未暴露；整个项目未 PASS。
-- 证据路径/提交：artifacts/tree-master-execution-2026-10-15/ordinary-chatgpt/ 包含普通聊天完整回复、脱敏结果、来源校验和项目指令保存/读回证据；历史修复证据见 artifacts/tree-master-execution-2026-10-14/、bridge/content-reader-proxy/ 和 docs/CURRENT_PROJECT_STATE.md。执行线程保持 01a1317a-c479-7460-8c24-37351301787c。
-- 最新客户端恢复结果：Browser 运行包缺失及反馈送达未确认的记录保留为历史，当前原生普通聊天已能实际使用 Reader，不再以 Browser 修复或前台条件作为当前唯一阻塞。Tree大脑项目的自定义指令原为空，已补入 Owner 原有 Reader 自动调用规则，实际保存并重新打开逐字读回一致。
-- 前两轮边界：第一轮是已知样本并显式选择 Reader；第二轮陌生纯链接自动 completed/分析，run=38824126698，原始 339 段、4125 字、650741ms 已独立验证，但没有完整展示 OCR。此后已保存并重新读回“先完整 OCR、再分析”的项目指令，未重跑第二轮。第三轮失败及第四轮完整 PASS 见下项，不能混用历史阶段状态。
-- Goal A 独立结果：同一普通聊天显式选中 Tree Brain Codex 后，真实只读探测返回 TREE_BRAIN_CODEX_TOOL_NOT_AVAILABLE；连接检查/task_status 未暴露，task_id/thread_id/status 均 NOT_READ，未启动/恢复或创建替代任务。证据为 ordinary-chatgpt/brain-readonly-probe.json 及原回复；当前阻塞是普通聊天未加载实际工具，不能仅续期旧授权冒充修复。
-- 最新验收：第三轮 run=38978117206 failed/WORKER_RESULT_INVALID，日志 OCR_CAPTIONS_SPARSE（字幕活动比例 2.28%），原始失败证据保留。已修复具体校验原因被 unexpectedly 遮蔽的诊断问题，8 项检查通过，未放宽完整 OCR 验收。第四轮 request_id=5374dbe7-1658-4a17-8415-3729da11bf6e，artifact=12080471475，SHA-256=fbb58754b69bdc4d415628b60a24dedca975701d1c6ae4427504e5a050c9221f；代码/Worker/Preview 证据见 validation-error-repair.json。第五轮只发送真实作者主页加 modal_id=7374041148219788595 的单视频链接，已发送，仍在原聊天继续。
-- 下一步：完成第五轮同一任务的终态和完整正文核验，随后再做一次串行 fresh 客户端验收，达到失败后的三次连续成功；不要跳过失败计数。Goal A 需现有合法托管 MCP 连接实际暴露控制工具；已向 Owner 请求账号侧连接并提供插件页链接，自动打开页面被 blocked by policy 拒绝。不要新造控制系统、泄露密钥或修改 Production 安全边界。
+- 实际结果：GOAL B 已在原生普通 ChatGPT 既有 Tree 聊天完成连续三次独立 fresh 完整 OCR/分析交付，run=38979023164、38988228481、38988853909 均 success；90.836 秒、31 段、557 字，身份、来源、原始 artifact digest、fresh/no-cache/full-scan、完整原文逐字核验均 PASS。GOAL A 仍 BLOCKED：修正本机同名错误 MCP 配置后，普通聊天真实复核仍为 TREE_BRAIN_CODEX_TOOL_NOT_AVAILABLE，task/thread/status 未读取；独立既有服务 initialize 返回 HTTP 401/TREE_BRAIN_UNAUTHORIZED，现存本地授权元数据已过期。两个目标没有同时通过，整个项目不 COMPLETE。
+- 证据路径/提交：artifacts/tree-master-execution-2026-10-15/ordinary-chatgpt/two-goal-status.json、three-fresh-client-acceptance.json、read-4/5/6-verification.json 及客户端完整正文；brain-existing-connection-correction.json、brain-after-config-probe-response.md 保存独立 A 阻塞。既有错误诊断修复 f30d013e5f105dc0a92be746764681c0b451827f、Worker e23ef0b、CI 38978867771 PASS，Preview dpl_AnvKK8LSiYzFkaohPbcuYoW8um4o READY；Production/安全边界未改。原执行线程 01a1317a-c479-7460-8c24-37351301787c 不变。
+- GOAL B 验收边界：第 4 轮为陌生标准链接，第 5 轮为真实作者主页 numeric modal_id 单视频，第 6 轮为该视频标准链接重新 fresh。三轮依次在前一轮客户端最终回复后开始，原始结果分别独立下载验证；客户端仅忽略空白和 Markdown 引用后完整匹配。早期第 3 轮 OCR_CAPTIONS_SPARSE 的真实失败保留，连续成功从第 4 轮重新计数；第 2 轮只有摘要未完整交付的缺口不计为完整 PASS。不启动第七轮重复测试。
+- OCR 范围：画面字幕 OCR，不是完整语音转写；字幕错字、短暂字幕漏识别、无字幕语音及稀疏字幕样本的限制保留。分享短链仍按既有代码支持，本轮三连未独立复测；纯主页批量不在范围。
+- GOAL A 最小修复：原本关闭的 tree_brain_codex 条目实际启动通用 codex mcp-server，已私下备份，仅改为已安装 Tree Brain 插件原有 HTTPS MCP、认证助手及工具白名单；保留 prompt 审批，其余配置逐字不变。CLI 和原生设置页读回 PASS，不能据此声称托管 ChatGPT 已连接。未 task_start/resume、未创建替代 Work/Codex 任务、未改权威持久任务镜像或续期授权。
+- 下一步：Owner 在账号侧重新授权/连接现有 Tree Brain Codex，并恢复 content-reader read/check 范围的有效授权；不要把凭据发到聊天。完成后在原执行线程发送“继续”，先取真实 get_connection_status/task_status，再继续已授权的实际任务及原线程 resume 验收，只做 GOAL A 剩余工作。GOAL B 保持 PASS 冻结。已实测自动打开外部插件页被 blocked by policy 拒绝；不要重试绕过、重造 OAuth/Tunnel 或改 Production 认证。
 
 ## 工作方式
 

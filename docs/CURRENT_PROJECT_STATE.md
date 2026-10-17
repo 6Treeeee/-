@@ -1,24 +1,32 @@
 # CURRENT PROJECT STATE（当前项目状态）
 
-## 2026-10-17：陌生纯链接完整读取单轮 PASS；连续成功 1/3，GOAL A 工具暴露阻塞
+## 2026-10-17 当前结论：GOAL B 连续三次 fresh 完整客户端闭环 PASS；GOAL A 独立验收未通过
 
-第四轮已在既有普通 Tree 聊天仅发送陌生标准链接 7374041148219788595，自动完成 start/poll/completed，并在同一回复先完整返回 OCR、再分析及声明局限。request_id=5374dbe7-1658-4a17-8415-3729da11bf6e，run=38979023164 success，attempt=1，commit=e1b766918056655b29e070d3a07b71e218f9d8cd；artifact=12080471475，SHA-256=fbb58754b69bdc4d415628b60a24dedca975701d1c6ae4427504e5a050c9221f。90.836 秒、31 段、557 字，fresh/no-cache/full-scan、覆盖 0–90835ms，现有契约、身份/来源、zip digest 和客户端完整 OCR 逐字对比均 PASS（仅忽略 Markdown 引用及空白）。这是 GOAL B 的陌生单视频完整闭环真实证据；连续三次成功仍未完成。第五轮已在同一普通聊天仅发送该真实作者主页加 numeric modal_id 的单视频链接，继续独立 fresh 采集验收，不读取主页批量。
+普通 ChatGPT 既有 Tree 聊天（Tree大脑 项目，输入框“询问 ChatGPT”）已仅凭陌生公开视频标准链接自动调用 Reader，完整返回 OCR、分析及局限。此前修复该项目缺失的自动调用指令，并补充“同一回复先完整 OCR、再分析”，均实际保存、重新打开并复制读回一致。第 4–6 轮按序在前一轮最终回复后发送纯链接，独立新建 request/run，三轮均完整 PASS；不启动第七轮重复测试。
 
-第二轮仅发送陌生链接 7650055582929456425，普通 ChatGPT 自动调用 Reader 并返回 completed 和内容分析。request_id=3dd3b53d-387c-4a3c-884f-87b67c71d4cc，run=38824126698 success，attempt=1，worker commit=d2f73fdbb0c7e7c8f4a4be50253f180a9e09a292。原始 artifact 12014621540 已及时下载到仓库外，SHA-256=15f3f182598e6b35508902feef95c91cc0820fd29c99bfe847be02aa1cb41c64，现有结果契约校验通过：650741ms、339 段、4125 字、fresh=true、cache=false、full_scan=true、覆盖 0–650740ms。客户端视频身份、run、时长、覆盖与原始证据一致。
+| 轮次 | 输入形式 | request_id | Worker run | worker commit | artifact |
+| --- | --- | --- | --- | --- | --- |
+| 4 | 陌生标准 /video/ 链接 | 5374dbe7-1658-4a17-8415-3729da11bf6e | 38979023164 | e1b766918056655b29e070d3a07b71e218f9d8cd | 12080471475 |
+| 5 | 真实作者主页 + numeric modal_id 单视频 | 5257ca03-3033-40d8-ad75-bba78cfa3545 | 38988228481 | b85689156e82e664a1f4e4fc392f4f2763686279 | 12084092323 |
+| 6 | 同视频标准链接，独立 fresh 请求 | 4eff522b-ce6c-4f21-ba54-e8d309c0dfd2 | 38988853909 | 3033210dde2e4530003fe9454fb9a1780ab76e6c | 12084437337 |
 
-必须保留的缺口：第二轮客户端回复只展示分析和节选，没有展示全部 OCR；后续在原聊天要求补回时，它明确说原工具原文当前不可见，没有编造。不能宣称第二轮全量文字交付 PASS，也不能用 artifact 代替客户端完整返回。已在原 Tree大脑 项目保留已有指令并补充“同一回复先返回完整 OCR 原文，再分析及局限”，保存、重新打开、复制读回比对一致（仅归一化 CRLF/LF）。没有重新采集第二轮。
+三轮 aweme_id=7374041148219788595，90.836 秒、31 段、557 字；fresh_capture=true、transcript_cache_read=false、full_video_scanned=true，覆盖 0–90835ms。各自原始 zip digest、request/aweme/run/attempt/commit、现有完整性契约和客户端完整 OCR 均通过。第六轮 job=117266478593 completed/success，zip SHA-256=f80897d8c46fffae65b8e0a2c494844c5bf2c7e175028296b6969daccf1dd062；客户端最后正文包含该新 run，完整 OCR 仅忽略空白及 Markdown 引用后与原始结果逐字一致。第 5、6 轮未单独打印英文 status 字段，实际终态证据为完整结果、分析及新 run；没有声称前端返回了不存在的 request/attempt/commit 字段。
 
-第三轮真实失败：7693397287104890490、request_id=f8dcf988-2fae-4522-b1f9-c144865d3d7e、run=38978117206、commit=f6dba2e77d1f4e985b3becaf5d43808ffa5985ae；客户端 failed/WORKER_RESULT_INVALID，未猜内容。原日志 OCR_CAPTIONS_SPARSE：active_ratio=0.022837、4/15 时间窗，不形成持续字幕轨道；artifact=12079628060，SHA-256=f4fb7377fcc6c3f1475e00718505a6cf6d3aad5da6a537596f7f12650aed10e4，已下载校验。该失败保留，连续 completed 从零重新计数，不能跳过失败拼凑三连 PASS。当前 completed 共 3 轮，失败 1 轮，完整正文独立核验 2 轮；失败后的连续成功仅 1/3。
+验收范围是画面硬字幕 OCR，不能等同完整语音转写；短暂字幕、OCR 错字、未呈现为字幕的语音仍有限制。标准及 modal_id 单视频有本次客户端证据；分享短链保留既有支持，本轮三连未独立复测，纯主页批量不在范围。字幕稀疏样本仍可能真实失败。
 
-最小诊断修复已发布：校验器原先抛 plain Error，publicError 将具体原因遮成 unexpectedly。现改用既有 ReaderError，并在 Worker failed envelope 传递经过清理、白名单约束的方法字段；没有接受 ASR 冒充 OCR，没有放宽身份/fresh/full-scan/覆盖校验。8 项针对性检查 PASS。主分支提交 f30d013e5f105dc0a92be746764681c0b451827f，Worker 分支 e23ef0b（发布时 skip ci 避免旧 marker 被重跑，第四轮真实请求已运行新代码及测试）；新 Preview dpl_AnvKK8LSiYzFkaohPbcuYoW8um4o READY，现有 Preview 分支别名和 Production 未改。
+保留早期未通过项：第 1 轮是历史已知样本并显式选择插件；第 2 轮陌生长视频自动 completed/分析（run=38824126698、339 段、4125 字、650741ms），但客户端没有展示完整 OCR，不能计为全量交付 PASS。第 3 轮 run=38978117206 真实 failed/WORKER_RESULT_INVALID，日志 OCR_CAPTIONS_SPARSE，active_ratio=0.022837、4/15 时间窗；失败证据保留，连续成功从第 4 轮重新计数。
 
-GOAL A 已在同一个普通聊天显式选中现有 Tree Brain Codex 并完成只读探测，实际返回 TREE_BRAIN_CODEX_TOOL_NOT_AVAILABLE：连接检查、task_status 未暴露，task_id/thread_id/status/remaining_steps 均 NOT_READ，历史 task 未查询，未执行 task_start/task_resume。这是客户端工具暴露阻塞，不能用旧镜像、插件标签或过期授权解释替代实际调用；没有更新授权、重建控制系统或创建替代 Work 任务。
+最小诊断修复已发布：原校验器抛 plain Error，被 publicError 遮成 unexpectedly。现用既有 ReaderError 并在 Worker failed envelope 传递经过清理的白名单诊断；8 项针对性检查及 CI 38978867771 PASS。没有让 ASR 冒充 OCR或放宽身份/fresh/full-scan/覆盖门槛。主提交 f30d013e5f105dc0a92be746764681c0b451827f、Worker 提交 e23ef0b；第 4–6 轮实际运行修复后代码。新 Preview dpl_AnvKK8LSiYzFkaohPbcuYoW8um4o READY；Production 和已固定的 Preview 别名未改。
 
-实时部署只读复核：Production sigma-silk-88.vercel.app 仍指向 dpl_BrtVwjcUrEQtoaJTYgxsQjQ7zsJq；原 Preview 分支别名现指向 dpl_7CmSsArRnzMgyAf4uRnxkvWGAArE。本执行未改部署/环境变量。其他对话已经发布的作者字段和本地 Whisper 改动已快进保留，不能将其声明当成本执行的验收结果。
+GOAL A：此前普通聊天显式选中 Tree Brain Codex 后实际返回 TREE_BRAIN_CODEX_TOOL_NOT_AVAILABLE，task_id/thread_id/status/remaining_steps 未读取。最新发现本机 config.toml 的同名条目关闭且启动通用 codex mcp-server，并非既有 Tree Brain。已私下备份，仅将该条目修正为已安装插件原有 HTTPS MCP、认证助手和工具白名单，保留 prompt 审批，其他配置逐字不变；CLI 解析和原生设置页读回通过。此修复只涉及本地连接，不等于托管 ChatGPT 注册或普通聊天工具验收通过。
 
-本轮证据：artifacts/tree-master-execution-2026-10-15/ordinary-chatgpt/read-2-{result,verification}.json、read-2-client-response.txt、brain-readonly-probe-response.txt、project-full-text-instruction-repair.json。原始 zip、媒体地址和签名票据留在仓库外。原执行线程 01a1317a-c479-7460-8c24-37351301787c 不变。
+既有服务实测 initialize 返回 HTTP 401 / TREE_BRAIN_UNAUTHORIZED；本地现存 content-reader、read/check 授权元数据已于 2026-09-14T14:45:50Z 到期。未读回远端敏感 grant，不能断言 401 仅由该到期值导致；未续期、旋转或扩大授权。配置修正后在同一普通聊天再次显式选中 Tree Brain Codex，最终回复仍为 TREE_BRAIN_CODEX_TOOL_NOT_AVAILABLE：get_connection_status/task_status/task_start/task_resume 均 NOT_EXPOSED，task_id/thread_id/status/remaining_steps 均 NOT_READ，没有发出后端任务查询。因此整体状态 BLOCKED。Owner 需在账号侧重新授权/连接既有 Tree Brain Codex，并恢复现有 content-reader read/check 范围的有效授权；凭据只在可信本地/产品授权界面输入，不发到聊天。不能通过改写服务端 grant 或重建 OAuth/Tunnel 代替该授权。之后在原执行线程继续，只验收尚未通过的 GOAL A，保留 GOAL B PASS。
 
-## 最新进度：普通 ChatGPT 已有一轮真实读取核验，纯链接自动触发继续验收
+证据目录 artifacts/tree-master-execution-2026-10-15/ordinary-chatgpt/，三连总证据 three-fresh-client-acceptance.json，各轮含结果、客户端正文及独立校验。原始 zip、媒体地址及签名票据均在仓库外。原执行线程 01a1317a-c479-7460-8c24-37351301787c 不变。GOAL B 已冻结；整个双目标项目未 COMPLETE。
+
+## 以下为阶段历史，当前结论以上述 2026-10-17 小节为准
+
+## 历史进度：普通 ChatGPT 已有一轮真实读取核验，纯链接自动触发继续验收
 
 已通过原生桌面普通 ChatGPT 的既有“Tree”对话实际调用 Tree Content Reader 并取得 completed、完整 OCR 和内容分析，且已下载本轮 GitHub 原始 artifact 独立校验。request_id=70b9640f-97ae-409a-bab9-53a023e71a32，aweme_id=7690725127385894198，run=38727115080 success，attempt=1，worker commit=2d480fbb121197c9c8d3a3ab4b2ceaf09f349205；artifact=11968239746，SHA-256=fa5aa57108dc8d3f411068f838d1b2764e504d414f56440603576292b691cb06。40 段、332 字、86.588 秒，fresh=true、cache=false、full_scan=true，覆盖 0–86587ms；客户端完整 OCR 与原始 artifact 逐字一致（忽略 Markdown 引用标记及空白）。普通聊天真实读取已从 0 增至 1 轮；三次连续验收尚未完成，两个 GOAL 均未整体 PASS。
 

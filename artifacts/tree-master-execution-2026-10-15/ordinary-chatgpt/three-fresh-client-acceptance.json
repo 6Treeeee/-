@@ -1,0 +1,113 @@
+{
+  "goal": "B",
+  "status": "PASS_WITHIN_HARD_SUBTITLE_OCR_SCOPE",
+  "client": "Existing native ordinary ChatGPT Tree conversation in Tree大脑",
+  "sequence": [
+    {
+      "client": "Native desktop ordinary ChatGPT, existing Tree conversation",
+      "activation": "Bare unfamiliar canonical URL; no plugin tag or invocation prompt",
+      "request_id": "5374dbe7-1658-4a17-8415-3729da11bf6e",
+      "aweme_id": "7374041148219788595",
+      "worker": {
+        "attempt": "1",
+        "run_id": "38979023164",
+        "commit": "e1b766918056655b29e070d3a07b71e218f9d8cd"
+      },
+      "artifact_id": 12080471475,
+      "artifact_sha256": "fbb58754b69bdc4d415628b60a24dedca975701d1c6ae4427504e5a050c9221f",
+      "worker_conclusion": "success",
+      "client_response_observed": true,
+      "checks": {
+        "existing_contract_verifier": true,
+        "no_cache": true,
+        "client_worker_run": true,
+        "identity_and_provenance": true,
+        "client_completed": true,
+        "fresh": true,
+        "client_identity": true,
+        "complete_ocr_matches_artifact": true,
+        "full_scan": true,
+        "artifact_digest": true
+      },
+      "duration_ms": 90836,
+      "segment_count": 31,
+      "text_characters": 557,
+      "status": "PASS_AUTOMATIC_UNFAMILIAR_FULL_OCR_AND_ANALYSIS",
+      "consecutive_completed_streak": 1,
+      "required_consecutive_completed": 3
+    },
+    {
+      "client": "Native desktop ordinary ChatGPT, existing Tree conversation",
+      "activation": "Bare public author profile URL with numeric modal_id; same video, new fresh acquisition",
+      "request_id": "5257ca03-3033-40d8-ad75-bba78cfa3545",
+      "aweme_id": "7374041148219788595",
+      "worker": {
+        "attempt": "1",
+        "run_id": "38988228481",
+        "commit": "b85689156e82e664a1f4e4fc392f4f2763686279"
+      },
+      "artifact_id": 12084092323,
+      "artifact_sha256": "f5f6f291f8fe8569386a9866b7b6dc5b5c6040dbbde726c1f1ae1cbc1852a11b",
+      "worker_conclusion": "success",
+      "client_response_observed": true,
+      "checks": {
+        "existing_contract_verifier": true,
+        "no_cache": true,
+        "client_worker_run": true,
+        "identity_and_provenance": true,
+        "fresh": true,
+        "client_identity": true,
+        "complete_ocr_matches_artifact": true,
+        "full_scan": true,
+        "artifact_digest": true,
+        "client_final_full_result_returned": true
+      },
+      "duration_ms": 90836,
+      "segment_count": 31,
+      "text_characters": 557,
+      "status": "PASS_AUTOMATIC_MODAL_SINGLE_VIDEO_FULL_OCR_AND_ANALYSIS",
+      "consecutive_completed_streak": 2,
+      "required_consecutive_completed": 3,
+      "client_explicit_completed_status_word": false,
+      "client_completion_evidence": "Finished full OCR/analysis response quotes the exact new worker run 38988228481 and matches its raw artifact; the final prose omits an explicit status field."
+    },
+    {
+      "client": "Native desktop ordinary ChatGPT, existing Tree conversation",
+      "activation": "Bare canonical single-video URL; independent fresh capture after modal_id run completed",
+      "request_id": "4eff522b-ce6c-4f21-ba54-e8d309c0dfd2",
+      "aweme_id": "7374041148219788595",
+      "worker": {
+        "attempt": "1",
+        "run_id": "38988853909",
+        "commit": "3033210dde2e4530003fe9454fb9a1780ab76e6c"
+      },
+      "artifact_id": 12084437337,
+      "artifact_sha256": "f80897d8c46fffae65b8e0a2c494844c5bf2c7e175028296b6969daccf1dd062",
+      "worker_conclusion": "success",
+      "client_response_observed": true,
+      "checks": {
+        "existing_contract_verifier": true,
+        "no_cache": true,
+        "client_worker_run": true,
+        "identity_and_provenance": true,
+        "fresh": true,
+        "client_identity": true,
+        "complete_ocr_matches_artifact": true,
+        "full_scan": true,
+        "artifact_digest": true,
+        "client_final_full_result_returned": true
+      },
+      "duration_ms": 90836,
+      "segment_count": 31,
+      "text_characters": 557,
+      "status": "PASS_AUTOMATIC_FRESH_FULL_OCR_AND_ANALYSIS",
+      "consecutive_completed_streak": 3,
+      "required_consecutive_completed": 3,
+      "client_explicit_completed_status_word": false,
+      "client_completion_evidence": "Final response contains the complete 557-character OCR from this independent artifact and the new worker run 38988853909; analysis and OCR limitations returned."
+    }
+  ],
+  "prior_failed_sample_preserved": "read-3-failure.json",
+  "scope": "Unfamiliar canonical public single video, actual author numeric modal_id single video, repeat canonical fresh reliability. Not complete spoken audio or arbitrary subtitle-free videos. Shortlinks supported by existing code but not newly exercised in this three-run sequence.",
+  "goal_a": "NOT_PASSED"
+}
