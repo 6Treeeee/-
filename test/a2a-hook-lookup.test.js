@@ -42,3 +42,22 @@ for (const upstream of [
     assert.equal(reads, 1);
   });
 }
+
+for (const [name, category] of [
+  ["RunExpiredError", "RUN_EXPIRED"],
+  ["RuntimeDecryptionError", "DECRYPTION_FAILED"],
+  ["WorkflowRunNotFoundError", "RUN_NOT_FOUND"],
+  ["ZodError", "RESPONSE_INVALID"],
+]) {
+  test(`known SDK error ${name} is classified without its payload`, async () => {
+    await assert.rejects(lookupHook("private-hook", async () => {
+      throw Object.assign(new Error("private-response-body"), { name });
+    }), { message: `A2A_WORKFLOW_HOOK_LOOKUP_${category}_FAILED`, statusCode: 503 });
+  });
+}
+
+test("cross-deployment key failure exposes only the SDK operation and HTTP status", async () => {
+  await assert.rejects(lookupHook("private-hook", async () => {
+    throw new Error("Failed to fetch run key for private-run (deployment private-deployment): HTTP 403 Forbidden — private-response-body");
+  }), { message: "A2A_WORKFLOW_HOOK_LOOKUP_KEY_READ_HTTP_403", statusCode: 503 });
+});
