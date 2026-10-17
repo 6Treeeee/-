@@ -1,6 +1,24 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { ensureIndexRun, lookupHook } from "../src/a2a/control-service.js";
+import { ensureIndexRun, lookupHook, readHookRecord } from "../src/a2a/control-service.js";
+
+test("run ID lookup uses authenticated hook storage without hydrating unused metadata or keys", async () => {
+  const calls = [];
+  const world = {
+    hooks: { getByToken: async (token) => {
+      calls.push(token);
+      return { runId: "original-index", get metadata() { assert.fail("must not hydrate metadata"); } };
+    } },
+    runs: { get: async () => assert.fail("must not fetch owning run") },
+    getEncryptionKeyForRun: async () => assert.fail("must not read a key for a metadata-only lookup"),
+  };
+  assert.deepEqual(await readHookRecord("existing-hook", world), { runId: "original-index" });
+  assert.deepEqual(calls, ["existing-hook"]);
+  const denied = Object.assign(new Error("denied"), { status: 403 });
+  await assert.rejects(readHookRecord("existing-hook", {
+    hooks: { getByToken: async () => { throw denied; } },
+  }), (error) => error === denied);
+});
 
 test("existing index lookup reads without starting another workflow", async () => {
   assert.equal(await ensureIndexRun({
