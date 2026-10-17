@@ -34,17 +34,27 @@ function assertTaskId(taskId) {
   }
 }
 
-async function lookupHook(token) {
+export async function lookupHook(token, getHookImpl = getHookByToken) {
   try {
-    return await getHookByToken(token);
-  } catch {
-    return null;
+    return await getHookImpl(token);
+  } catch (error) {
+    // The SDK distinguishes an absent hook from authorization, transport and
+    // hydration failures. Only absence permits creating a replacement run.
+    if (error?.name === "HookNotFoundError") return null;
+    const status = Number(error?.status);
+    const suffix = Number.isInteger(status) && status >= 400 && status <= 599
+      ? `_HTTP_${status}`
+      : "_FAILED";
+    // Upstream messages may contain hook tokens or request headers.
+    const failure = new Error(`A2A_WORKFLOW_HOOK_LOOKUP${suffix}`);
+    failure.statusCode = 503;
+    throw failure;
   }
 }
 
-async function waitForHook(token, { attempts = 30, intervalMs = 100 } = {}) {
+async function waitForHook(token, { attempts = 30, intervalMs = 100, lookupHookImpl = lookupHook } = {}) {
   for (let index = 0; index < attempts; index += 1) {
-    const hook = await lookupHook(token);
+    const hook = await lookupHookImpl(token);
     if (hook) return hook;
     await delay(intervalMs);
   }
@@ -53,12 +63,12 @@ async function waitForHook(token, { attempts = 30, intervalMs = 100 } = {}) {
   throw error;
 }
 
-async function ensureIndexRun() {
-  const existing = await lookupHook(TASK_INDEX_HOOK_TOKEN);
+export async function ensureIndexRun({ lookupHookImpl = lookupHook, startImpl = start } = {}) {
+  const existing = await lookupHookImpl(TASK_INDEX_HOOK_TOKEN);
   if (existing) return existing.runId;
 
-  const run = await start(INDEX_WORKFLOW, []);
-  const hook = await waitForHook(TASK_INDEX_HOOK_TOKEN);
+  const run = await startImpl(INDEX_WORKFLOW, []);
+  const hook = await waitForHook(TASK_INDEX_HOOK_TOKEN, { lookupHookImpl });
   return hook.runId || run.runId;
 }
 
