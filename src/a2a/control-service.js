@@ -41,12 +41,24 @@ export async function lookupHook(token, getHookImpl = getHookByToken) {
     // The SDK distinguishes an absent hook from authorization, transport and
     // hydration failures. Only absence permits creating a replacement run.
     if (error?.name === "HookNotFoundError") return null;
-    const status = Number(error?.status);
+    const categories = {
+      RunExpiredError: "_RUN_EXPIRED",
+      RuntimeDecryptionError: "_DECRYPTION_FAILED",
+      WorkflowRunNotFoundError: "_RUN_NOT_FOUND",
+      ZodError: "_RESPONSE_INVALID",
+    };
+    // The SDK's cross-deployment key reader throws a plain Error. Classify
+    // only its fixed prefix and HTTP status; never forward its response body.
+    const keyRead = typeof error?.message === "string"
+      && error.message.startsWith("Failed to fetch run key for ");
+    const keyStatus = keyRead ? error.message.match(/: HTTP ([45]\d{2})\b/u)?.[1] : null;
+    const status = Number(error?.status || keyStatus);
     const suffix = Number.isInteger(status) && status >= 400 && status <= 599
       ? `_HTTP_${status}`
       : "_FAILED";
     // Upstream messages may contain hook tokens or request headers.
-    const failure = new Error(`A2A_WORKFLOW_HOOK_LOOKUP${suffix}`);
+    const category = Object.hasOwn(categories, error?.name) ? categories[error.name] : "";
+    const failure = new Error(`A2A_WORKFLOW_HOOK_LOOKUP${category || (keyRead ? "_KEY_READ" : "")}${suffix}`);
     failure.statusCode = 503;
     throw failure;
   }
