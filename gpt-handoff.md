@@ -7,12 +7,13 @@
 - 仓库：6Treeeee/-
 - 分支：codex/a2a-control-loop
 - 固定路径：gpt-handoff.md
-- 实际结果：原 Proxy 与私有 Sites bridge 最小修复已上线，Vercel Authentication 保留。现已在原生桌面普通 ChatGPT 的既有 Tree 聊天取得一轮真实 completed 并返回完整 OCR/分析，request_id=70b9640f-97ae-409a-bab9-53a023e71a32，run=38727115080 success，40 段、332 字、86.588 秒，fresh/no-cache/full-scan 和原始 artifact 校验通过。该轮用了已知样本和显式插件选择，不冒充陌生纯链接验收。两个 GOAL 仍未整体 PASS。
+- 实际结果：原 Proxy/私有 Sites bridge 修复和 Vercel Authentication 保留。第四轮普通 ChatGPT 已仅凭陌生标准链接自动完成 fresh 读取并完整返回 OCR/分析，run=38979023164 success，90.836 秒、31 段、557 字，完整正文与原始 artifact 逐字一致。已具备 GOAL B 单轮完整闭环证据；因第三轮存在真实失败，连续成功目前 1/3。GOAL A 的普通聊天真实探测仍返回工具未暴露；整个项目未 PASS。
 - 证据路径/提交：artifacts/tree-master-execution-2026-10-15/ordinary-chatgpt/ 包含普通聊天完整回复、脱敏结果、来源校验和项目指令保存/读回证据；历史修复证据见 artifacts/tree-master-execution-2026-10-14/、bridge/content-reader-proxy/ 和 docs/CURRENT_PROJECT_STATE.md。执行线程保持 01a1317a-c479-7460-8c24-37351301787c。
 - 最新客户端恢复结果：Browser 运行包缺失及反馈送达未确认的记录保留为历史，当前原生普通聊天已能实际使用 Reader，不再以 Browser 修复或前台条件作为当前唯一阻塞。Tree大脑项目的自定义指令原为空，已补入 Owner 原有 Reader 自动调用规则，实际保存并重新打开逐字读回一致。
-- 当前普通聊天验收：第二轮陌生纯链接已自动 completed 并返回分析，run=38824126698 success；原始 artifact=12014621540、SHA-256=15f3f182598e6b35508902feef95c91cc0820fd29c99bfe847be02aa1cb41c64，契约验证通过，650741ms、339 段、4125 字、fresh/no-cache/full-scan。该轮没有在回复中完整展示 OCR，后续原文上下文已不可见，不能宣称全量文字交付通过。已保存并重新读回补充后的“先完整 OCR、再分析”项目指令，未重新采集第二轮。第三轮仅发送另一陌生链接 7693397287104890490，已自动进入 running：request_id=f8dcf988-2fae-4522-b1f9-c144865d3d7e、run=38978117206、commit=f6dba2e77d1f4e985b3becaf5d43808ffa5985ae。
+- 前两轮边界：第一轮是已知样本并显式选择 Reader；第二轮陌生纯链接自动 completed/分析，run=38824126698，原始 339 段、4125 字、650741ms 已独立验证，但没有完整展示 OCR。此后已保存并重新读回“先完整 OCR、再分析”的项目指令，未重跑第二轮。第三轮失败及第四轮完整 PASS 见下项，不能混用历史阶段状态。
 - Goal A 独立结果：同一普通聊天显式选中 Tree Brain Codex 后，真实只读探测返回 TREE_BRAIN_CODEX_TOOL_NOT_AVAILABLE；连接检查/task_status 未暴露，task_id/thread_id/status 均 NOT_READ，未启动/恢复或创建替代任务。证据为 ordinary-chatgpt/brain-readonly-probe.json 及原回复；当前阻塞是普通聊天未加载实际工具，不能仅续期旧授权冒充修复。
-- 下一步：继续普通 Tree 聊天中第三轮同一任务，取得客户端完整 OCR 和分析并独立核验 artifact；不得以当前 2 次 completed（仅 1 次完整 OCR 返回独立核验）宣称三次完整交付。Goal A 需现有合法的托管 MCP 连接真正暴露控制工具；本地安装/标签不等同托管连接。密钥不得发入聊天，不重造系统、不改 Production 安全边界。
+- 最新验收：第三轮 run=38978117206 failed/WORKER_RESULT_INVALID，日志 OCR_CAPTIONS_SPARSE（字幕活动比例 2.28%），原始失败证据保留。已修复具体校验原因被 unexpectedly 遮蔽的诊断问题，8 项检查通过，未放宽完整 OCR 验收。第四轮 request_id=5374dbe7-1658-4a17-8415-3729da11bf6e，artifact=12080471475，SHA-256=fbb58754b69bdc4d415628b60a24dedca975701d1c6ae4427504e5a050c9221f；代码/Worker/Preview 证据见 validation-error-repair.json。第五轮只发送真实作者主页加 modal_id=7374041148219788595 的单视频链接，已发送，仍在原聊天继续。
+- 下一步：完成第五轮同一任务的终态和完整正文核验，随后再做一次串行 fresh 客户端验收，达到失败后的三次连续成功；不要跳过失败计数。Goal A 需现有合法托管 MCP 连接实际暴露控制工具；已向 Owner 请求账号侧连接并提供插件页链接，自动打开页面被 blocked by policy 拒绝。不要新造控制系统、泄露密钥或修改 Production 安全边界。
 
 ## 工作方式
 

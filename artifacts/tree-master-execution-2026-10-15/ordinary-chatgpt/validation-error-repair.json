@@ -1,0 +1,18 @@
+{
+  "trigger_run_id": "38978117206",
+  "trigger_error": "WORKER_RESULT_INVALID",
+  "observed_ocr_error": "OCR_CAPTIONS_SPARSE",
+  "problem": "The validator threw a plain Error, so publicError replaced the useful validation reason with an unexpected-failure message.",
+  "repair": "Use the existing ReaderError and retain its sanitized allowlisted method details in the failure envelope.",
+  "acceptance_gate_unchanged": true,
+  "non_ocr_results_still_rejected": true,
+  "code_commit": "f30d013e5f105dc0a92be746764681c0b451827f",
+  "worker_branch_commit_prefix": "e23ef0b",
+  "worker_change_skip_ci_reason": "Avoid rerunning the old acquisition marker merely to publish diagnostics; the next real client task runs the updated worker and its unit tests.",
+  "local_tests": {"file": "test/acquisition-worker.test.js", "passed": 8, "failed": 0},
+  "preview_deployment_id": "dpl_AnvKK8LSiYzFkaohPbcuYoW8um4o",
+  "preview_state": "READY",
+  "preview_branch_alias_deployment_unchanged": "dpl_7CmSsArRnzMgyAf4uRnxkvWGAArE",
+  "production_deployment_unchanged": "dpl_BrtVwjcUrEQtoaJTYgxsQjQ7zsJq",
+  "security_configuration_changed": false
+}

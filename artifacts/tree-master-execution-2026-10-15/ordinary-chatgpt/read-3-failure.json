@@ -1,0 +1,56 @@
+{
+  "request_id": "f8dcf988-2fae-4522-b1f9-c144865d3d7e",
+  "aweme_id": "7693397287104890490",
+  "worker": {
+    "run_id": "38978117206",
+    "attempt": "1",
+    "commit": "f6dba2e77d1f4e985b3becaf5d43808ffa5985ae"
+  },
+  "artifact_id": 12079628060,
+  "artifact_sha256": "f4fb7377fcc6c3f1475e00718505a6cf6d3aad5da6a537596f7f12650aed10e4",
+  "artifact_digest_verified": true,
+  "client_status": "failed",
+  "client_error": "WORKER_RESULT_INVALID",
+  "root_evidence": [
+    {
+      "at": "2026-10-16T22:53:54.421Z",
+      "run_id": "f742f4ac-64c9-4ac2-a0a6-8a586a5240dc",
+      "request_id": "f8dcf988-2fae-4522-b1f9-c144865d3d7e",
+      "aweme_id": "7693397287104890490",
+      "event": "ocr.failed",
+      "code": "OCR_CAPTIONS_SPARSE",
+      "error_chain": [
+        {
+          "name": "ReaderError",
+          "code": "OCR_CAPTIONS_SPARSE",
+          "message": "Readable scene text was found, but it does not form a sustained hard-subtitle track.",
+          "details": {
+            "sustained": false,
+            "active_ms": 3250,
+            "active_ratio": 0.022837,
+            "window_ms": 10000,
+            "covered_windows": 4,
+            "total_windows": 15,
+            "window_ratio": 0.266667,
+            "minimum_active_ratio": 0.2,
+            "minimum_window_ratio": 0.75
+          }
+        }
+      ]
+    },
+    {
+      "event": "acquisition.completed",
+      "request_id": "f8dcf988-2fae-4522-b1f9-c144865d3d7e",
+      "aweme_id": "7693397287104890490",
+      "pass": false,
+      "elapsed_ms": 208544,
+      "error": {
+        "code": "WORKER_RESULT_INVALID",
+        "message": "The content reader failed unexpectedly."
+      }
+    }
+  ],
+  "status": "FAIL_SPARSE_CAPTIONS_NO_COMPLETE_OCR",
+  "complete_transcript_returned": false,
+  "consecutive_completed_streak": 0
+}

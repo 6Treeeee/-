@@ -1,12 +1,16 @@
 # CURRENT PROJECT STATE（当前项目状态）
 
-## 2026-10-17：陌生长视频自动读取已核验；全量文字展示缺口已修复配置，第三轮正在执行
+## 2026-10-17：陌生纯链接完整读取单轮 PASS；连续成功 1/3，GOAL A 工具暴露阻塞
+
+第四轮已在既有普通 Tree 聊天仅发送陌生标准链接 7374041148219788595，自动完成 start/poll/completed，并在同一回复先完整返回 OCR、再分析及声明局限。request_id=5374dbe7-1658-4a17-8415-3729da11bf6e，run=38979023164 success，attempt=1，commit=e1b766918056655b29e070d3a07b71e218f9d8cd；artifact=12080471475，SHA-256=fbb58754b69bdc4d415628b60a24dedca975701d1c6ae4427504e5a050c9221f。90.836 秒、31 段、557 字，fresh/no-cache/full-scan、覆盖 0–90835ms，现有契约、身份/来源、zip digest 和客户端完整 OCR 逐字对比均 PASS（仅忽略 Markdown 引用及空白）。这是 GOAL B 的陌生单视频完整闭环真实证据；连续三次成功仍未完成。第五轮已在同一普通聊天仅发送该真实作者主页加 numeric modal_id 的单视频链接，继续独立 fresh 采集验收，不读取主页批量。
 
 第二轮仅发送陌生链接 7650055582929456425，普通 ChatGPT 自动调用 Reader 并返回 completed 和内容分析。request_id=3dd3b53d-387c-4a3c-884f-87b67c71d4cc，run=38824126698 success，attempt=1，worker commit=d2f73fdbb0c7e7c8f4a4be50253f180a9e09a292。原始 artifact 12014621540 已及时下载到仓库外，SHA-256=15f3f182598e6b35508902feef95c91cc0820fd29c99bfe847be02aa1cb41c64，现有结果契约校验通过：650741ms、339 段、4125 字、fresh=true、cache=false、full_scan=true、覆盖 0–650740ms。客户端视频身份、run、时长、覆盖与原始证据一致。
 
 必须保留的缺口：第二轮客户端回复只展示分析和节选，没有展示全部 OCR；后续在原聊天要求补回时，它明确说原工具原文当前不可见，没有编造。不能宣称第二轮全量文字交付 PASS，也不能用 artifact 代替客户端完整返回。已在原 Tree大脑 项目保留已有指令并补充“同一回复先返回完整 OCR 原文，再分析及局限”，保存、重新打开、复制读回比对一致（仅归一化 CRLF/LF）。没有重新采集第二轮。
 
-第三轮仍使用既有普通 Tree 聊天，仅发送另一陌生链接 7693397287104890490，未选 Reader 标签或附工具提示。已真实自动开始采集，request_id=f8dcf988-2fae-4522-b1f9-c144865d3d7e，run=38978117206，commit=f6dba2e77d1f4e985b3becaf5d43808ffa5985ae；请求 marker 的视频身份匹配，尚待客户端终态、完整原文和 artifact 验收。当前普通聊天 completed 已观察 2 轮，其中完整 OCR 交付独立验证仅 1 轮；三次连续完整交付及 GOAL B 尚未整体 PASS。
+第三轮真实失败：7693397287104890490、request_id=f8dcf988-2fae-4522-b1f9-c144865d3d7e、run=38978117206、commit=f6dba2e77d1f4e985b3becaf5d43808ffa5985ae；客户端 failed/WORKER_RESULT_INVALID，未猜内容。原日志 OCR_CAPTIONS_SPARSE：active_ratio=0.022837、4/15 时间窗，不形成持续字幕轨道；artifact=12079628060，SHA-256=f4fb7377fcc6c3f1475e00718505a6cf6d3aad5da6a537596f7f12650aed10e4，已下载校验。该失败保留，连续 completed 从零重新计数，不能跳过失败拼凑三连 PASS。当前 completed 共 3 轮，失败 1 轮，完整正文独立核验 2 轮；失败后的连续成功仅 1/3。
+
+最小诊断修复已发布：校验器原先抛 plain Error，publicError 将具体原因遮成 unexpectedly。现改用既有 ReaderError，并在 Worker failed envelope 传递经过清理、白名单约束的方法字段；没有接受 ASR 冒充 OCR，没有放宽身份/fresh/full-scan/覆盖校验。8 项针对性检查 PASS。主分支提交 f30d013e5f105dc0a92be746764681c0b451827f，Worker 分支 e23ef0b（发布时 skip ci 避免旧 marker 被重跑，第四轮真实请求已运行新代码及测试）；新 Preview dpl_AnvKK8LSiYzFkaohPbcuYoW8um4o READY，现有 Preview 分支别名和 Production 未改。
 
 GOAL A 已在同一个普通聊天显式选中现有 Tree Brain Codex 并完成只读探测，实际返回 TREE_BRAIN_CODEX_TOOL_NOT_AVAILABLE：连接检查、task_status 未暴露，task_id/thread_id/status/remaining_steps 均 NOT_READ，历史 task 未查询，未执行 task_start/task_resume。这是客户端工具暴露阻塞，不能用旧镜像、插件标签或过期授权解释替代实际调用；没有更新授权、重建控制系统或创建替代 Work 任务。
 
