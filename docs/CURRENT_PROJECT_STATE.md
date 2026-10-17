@@ -1,6 +1,25 @@
 # CURRENT PROJECT STATE（当前项目状态）
 
-## 2026-10-17 当前结论：GOAL B 连续三次 fresh 完整客户端闭环 PASS；GOAL A 独立验收未通过
+## 2026-10-18 当前检查点：授权及工程会话真实工具已恢复；普通聊天入口和持久状态查询仍 BLOCKED
+
+Owner 已明确批准“授权续期 24 小时并重新发布原 Production 代码”。已复用现存令牌，仅将 content-reader、treebrain:read/treebrain:check 的既有授权续期至 2026-10-18 21:54:17 +08:00；没有旋转令牌、扩大工作区或关闭认证。远端 Secret 无法读回，实际使用本机已保存且令牌摘要匹配的既有 grant；没有声称远端旧值已逐字段比较。
+
+原 Production dpl_BrtVwjcUrEQtoaJTYgxsQjQ7zsJq 按 deploymentId、withLatestCommit=false 重新构建为 dpl_CZcqr62yYs7R3zN2v7BfQEBLYHNg（READY、production），源码仍为 5dccd27c7668250574b3122b8c260bbecf031edc。只将原 sigma-silk-88.vercel.app 指向新部署；Reader 的 Preview 分支别名仍为 dpl_7CmSsArRnzMgyAf4uRnxkvWGAArE，未发布新版 Preview 到 Production。认证初始化 HTTP 200、server=tree-brain-codex；匿名同请求仍 401/TREE_BRAIN_UNAUTHORIZED。
+
+当前执行环境已真实发现 mcp__tree_brain_codex 的五个工具。get_connection_status 实际返回 ready；list_workspaces 实际只返回 content-reader。对已有任务 wrun_01M33A83TFAFR2JAXT0TTP2EBS 的真实 task_status 仍返回 isError=true / A2A_WORKFLOW_HOOK_NOT_READY，未读到 thread_id 或持久任务正文，未 task_start/resume。
+
+已用现有 Workflow SDK/CLI 只读核对：原索引运行 wrun_01M2DH54J8W01XKS1HFMF4405M 的元数据为 running，原 hook 元数据存在于同项目 production；查询触发的已观察索引运行 wrun_01M552H0DQZW8HN7YSE6RKTPR9 因 hook_conflict 指向原运行后 completed。独立本机 Vercel 凭据调用 hooks/by-token 返回 403。该 403 不是 Production 内部失败原因的充分证明，不能宣称索引过期/删除，也未重置 hook、创建替代索引或从镜像重构任务状态。
+
+原生普通 Tree 聊天已再次显式选中 Tree Brain Codex 并发送只读探测，最终仍返回 TREE_BRAIN_CODEX_TOOL_NOT_AVAILABLE，任务字段 NOT_READ；此处未实际发出后端调用。工程会话真实工具与普通聊天必须分别验收。Owner 反馈网页插件页找不到 Tree Brain Codex，但有 Tunnel 选项；进一步明确只是列表未显示、尚未输入既有 ID，不能判定无权限或隧道不存在。
+
+已启动原隧道 tunnel_6aa97a833a7481919834581673d9f199 的既有运行程序，仅一份隐藏进程；本地 healthz/readyz 均 200，readyz 同时保留首次 2 秒 MCP 探测超时提示。健康检查不替代真实平台轮询/工具调用证据。本次 Browser 初始化实际报缺 browser/26.1013.40934/scripts/browser-service.mjs，外部网页表单未取得；桌面普通聊天已实图确认。Owner 要求由代理判断，不再让 Owner 判断技术选项；需要当前网页截图或受支持浏览器入口恢复，才能继续账号侧注册。
+
+GOAL B 的三次真实 fresh 完整 OCR/分析 PASS 保持冻结，未新增视频采集。整体仍 BLOCKED，原执行线程不变。新证据为 ordinary-chatgpt/brain-approved-renewal-verification.json、brain-after-approved-renewal-client-response.md、workflow-index-read-diagnostics.json；授权审查及明确批准记录见 brain-grant-renewal-review.json。
+
+## 以下为阶段历史；到期和部署信息以当前检查点为准
+
+
+## 2026-10-17 历史结论：GOAL B 连续三次 fresh 完整客户端闭环 PASS；GOAL A 独立验收未通过
 
 普通 ChatGPT 既有 Tree 聊天（Tree大脑 项目，输入框“询问 ChatGPT”）已仅凭陌生公开视频标准链接自动调用 Reader，完整返回 OCR、分析及局限。此前修复该项目缺失的自动调用指令，并补充“同一回复先完整 OCR、再分析”，均实际保存、重新打开并复制读回一致。第 4–6 轮按序在前一轮最终回复后发送纯链接，独立新建 request/run，三轮均完整 PASS；不启动第七轮重复测试。
 

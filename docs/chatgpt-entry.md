@@ -1,5 +1,16 @@
 # Tree Brain private ChatGPT entry
 
+## 2026-10-18 current recovery checkpoint
+
+Owner explicitly approved the 24-hour renewal and same-code Production release. Existing token/workspace/read+check scopes are preserved; expiry is 2026-10-18T21:54:17+08:00. Production now uses READY dpl_CZcqr62yYs7R3zN2v7BfQEBLYHNg, rebuilt from original dpl_BrtVwjcUrEQtoaJTYgxsQjQ7zsJq at the same source commit 5dccd27c7668250574b3122b8c260bbecf031edc. Preview alias remains on dpl_7CmSsArRnzMgyAf4uRnxkvWGAArE. Authenticated initialize and real execution-host connection tools pass; anonymous initialize still returns 401.
+
+Ordinary native ChatGPT's existing Tree chat still returns TREE_BRAIN_CODEX_TOOL_NOT_AVAILABLE after explicit plugin selection. Execution-host task_status independently returns A2A_WORKFLOW_HOOK_NOT_READY. Neither historical mirrors nor run metadata establish current task/thread state. Existing index run/hook metadata exists, while an independent local by-token SDK lookup returns 403; the Production internal cause remains unproven. Do not reset the index or infer missing/expired data.
+
+The existing tunnel runtime is running once, with loopback health/readiness HTTP 200 and a retained initial 2-second MCP probe timeout warning; this is not hosted client acceptance. Owner reports that the web custom-MCP form has Tunnel, but only that the tunnel is absent from the list: the known ID has not been entered. No permission denial is proven. Browser bootstrap now fails on missing browser/26.1013.40934/scripts/browser-service.mjs, so the external form has not been observed. Owner asks the agent to inspect it; obtain a screenshot or restore the supported browser entry instead of asking Owner to diagnose technical options.
+
+Evidence: artifacts/tree-master-execution-2026-10-15/ordinary-chatgpt/brain-approved-renewal-verification.json and workflow-index-read-diagnostics.json. Goal B remains PASS and frozen. Earlier checkpoints below are history, including the now-resolved old grant-expiry/401 blocker.
+
+
 ## 2026-10-17 live acceptance checkpoint
 
 Ordinary native ChatGPT still returns TREE_BRAIN_CODEX_TOOL_NOT_AVAILABLE after explicitly selecting Tree Brain Codex. The actual get_connection_status/task_status/task_start/task_resume tools are NOT_EXPOSED; task/thread/status/remaining_steps remain NOT_READ. No task was started or resumed, and no mirror was used as live state.

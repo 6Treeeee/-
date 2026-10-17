@@ -1,0 +1,70 @@
+{
+  "task": "TREE_MASTER_EXECUTION",
+  "status": "OWNER_APPROVED_APPLIED_AND_AUTHENTICATION_VERIFIED",
+  "goal_b": "PASS_FROZEN",
+  "account_ui_observations": {
+    "tree_brain_codex_not_found": true,
+    "web_add_custom_mcp_has_tunnel": true
+  },
+  "existing_tunnel_id": "tunnel_6aa97a833a7481919834581673d9f199",
+  "proposed_grant": {
+    "workspace_ids": [
+      "content-reader"
+    ],
+    "scopes": [
+      "treebrain:read",
+      "treebrain:check"
+    ],
+    "duration_hours": 24,
+    "rotate_token": false,
+    "principal_unchanged": true,
+    "local_token_digest_matches_local_grant": true,
+    "remote_value_readable": false,
+    "remote_operation": "Replace the existing sensitive Production TREE_BRAIN_BEARER_GRANT_JSON value with the locally saved existing grant with expires_at advanced by 24 hours; remote contents cannot be independently compared."
+  },
+  "production_redeployment": {
+    "existing_deployment": "dpl_BrtVwjcUrEQtoaJTYgxsQjQ7zsJq",
+    "project": "prj_d7jyKbXib4VZ4M27Lkfwv1D1Xuwp",
+    "git_commit": "5dccd27c7668250574b3122b8c260bbecf031edc",
+    "git_branch": "codex/a2a-control-loop",
+    "target": "production",
+    "withLatestCommit": false,
+    "source": "Reuse existing deploymentId; no new source files or metadata author overrides",
+    "reason": "Deployment environment variables are immutable until redeployment",
+    "production_domain": "sigma-silk-88.vercel.app",
+    "preserve_preview_branch_alias": "git-codex-a2a-control-loop-1790063688-9925s-projects.vercel.app",
+    "rollback_deployment": "dpl_BrtVwjcUrEQtoaJTYgxsQjQ7zsJq"
+  },
+  "security": {
+    "vercel_authentication_unchanged": true,
+    "no_new_scopes": true,
+    "no_new_tunnel": true,
+    "no_new_oauth": true,
+    "no_alternative_task_flow": true,
+    "secrets_remain_private": true
+  },
+  "after_authorization": [
+    "Update only the existing grant variable and local expiry metadata",
+    "Redeploy the exact existing Production deployment and check aliases; restore the frozen Preview alias if affected",
+    "Require initialized authenticated MCP and real readonly task status before starting/resuming tasks",
+    "Restart only the existing private tunnel runtime; register existing endpoint in the web custom MCP form",
+    "Accept Goal A only after ordinary ChatGPT returns real task/thread/results and original-thread resume evidence"
+  ],
+  "authorization_basis": "Owner explicitly approved the exact 24-hour bounded renewal and same-code Production redeployment. No additional scope or token rotation was applied.",
+  "owner_authorization": "Explicit reply: 授权续期 24 小时并重新发布原 Production 代码",
+  "expires_at": 1792331657,
+  "new_deployment": {
+    "id": "dpl_CZcqr62yYs7R3zN2v7BfQEBLYHNg",
+    "state": "READY",
+    "target": "production",
+    "git_commit": "5dccd27c7668250574b3122b8c260bbecf031edc"
+  },
+  "preview_alias_before": {
+    "alias": "git-codex-a2a-control-loop-1790063688-9925s-projects.vercel.app",
+    "deploymentId": "dpl_7CmSsArRnzMgyAf4uRnxkvWGAArE"
+  },
+  "token_rotated": false,
+  "authentication_verified": true,
+  "ordinary_chat_acceptance": false,
+  "verification_file": "brain-approved-renewal-verification.json"
+}

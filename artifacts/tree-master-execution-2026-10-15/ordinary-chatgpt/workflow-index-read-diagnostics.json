@@ -1,0 +1,59 @@
+{
+  "observed_at": "2026-10-17T21:39:50.553Z",
+  "mcp_task_status_error": "A2A_WORKFLOW_HOOK_NOT_READY",
+  "mcp_task_state_read": false,
+  "existing_index_run": {
+    "run_id": "wrun_01M2DH54J8W01XKS1HFMF4405M",
+    "status": "running",
+    "deployment_id": "dpl_6C4Y6nK5hXBAh642WN8jsTgBBxgk",
+    "created_at": "2026-09-13T14:01:21.017Z"
+  },
+  "existing_hook_metadata": [
+    {
+      "hook_id": "hook_01M2DH5A79WK738YC7K3F9TBKZ",
+      "run_id": "wrun_01M2DH54J8W01XKS1HFMF4405M",
+      "environment": "production",
+      "project_id": "prj_d7jyKbXib4VZ4M27Lkfwv1D1Xuwp"
+    }
+  ],
+  "observed_bootstrap_run": {
+    "run_id": "wrun_01M552H0DQZW8HN7YSE6RKTPR9",
+    "deployment_id": "dpl_CZcqr62yYs7R3zN2v7BfQEBLYHNg",
+    "events": [
+      {
+        "event_type": "run_completed",
+        "event_id": "evnt_01M552H76TC13H5DMGGH2K0GSY",
+        "created_at": "2026-10-17T13:58:58.010Z"
+      },
+      {
+        "event_type": "hook_conflict",
+        "event_id": "evnt_01M552H53D3CQWZQJP14H2B958",
+        "created_at": "2026-10-17T13:58:55.853Z",
+        "conflicting_run_id": "wrun_01M2DH54J8W01XKS1HFMF4405M"
+      },
+      {
+        "event_type": "run_started",
+        "event_id": "evnt_01M552H2NZAYYJTCTAHHA1PBV3",
+        "created_at": "2026-10-17T13:58:53.375Z"
+      },
+      {
+        "event_type": "run_created",
+        "event_id": "evnt_01M552H27VW016WJ7AHF72FAAK",
+        "created_at": "2026-10-17T13:58:52.923Z"
+      }
+    ]
+  },
+  "independent_local_workflow_sdk_lookup": {
+    "success": false,
+    "error_name": "WorkflowWorldError",
+    "http_status": 403,
+    "operation": "GET /v2/hooks/by-token through existing Vercel CLI account credentials"
+  },
+  "limits": [
+    "Local proxy 403 is not proof that the Production internal lookup fails for the same reason.",
+    "Existing index run/hook metadata exists; no assertion that it expired or was deleted.",
+    "Raw index/task-state content and Codex thread_id were not obtained through task_status.",
+    "No alternate index, hook reset, task mirror reconstruction, new Codex task or replacement task flow was created."
+  ],
+  "source_code_changed": false
+}

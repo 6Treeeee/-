@@ -1,0 +1,129 @@
+{
+  "observed_at": "2026-10-17T21:39:02.643Z",
+  "owner_authorization": "Explicit reply: 授权续期 24 小时并重新发布原 Production 代码",
+  "grant": {
+    "workspace_ids": [
+      "content-reader"
+    ],
+    "scopes": [
+      "treebrain:read",
+      "treebrain:check"
+    ],
+    "token_rotated": false,
+    "expires_at": 1792331657,
+    "expiry_local": "2026-10-18T21:54:17+08:00",
+    "remote_secret_readback": false,
+    "existing_sensitive_variable_updated": true
+  },
+  "production": {
+    "old_deployment": "dpl_BrtVwjcUrEQtoaJTYgxsQjQ7zsJq",
+    "renewed_deployment": "dpl_CZcqr62yYs7R3zN2v7BfQEBLYHNg",
+    "state": "READY",
+    "target": "production",
+    "source_commit": "5dccd27c7668250574b3122b8c260bbecf031edc",
+    "withLatestCommit": false,
+    "source_code_changed": false,
+    "publication": "Assigned only existing sigma-silk-88.vercel.app alias after same-source build",
+    "aliases": [
+      {
+        "alias": "sigma-silk-88.vercel.app",
+        "deploymentId": "dpl_CZcqr62yYs7R3zN2v7BfQEBLYHNg"
+      },
+      {
+        "alias": "git-codex-a2a-control-loop-1790063688-9925s-projects.vercel.app",
+        "deploymentId": "dpl_7CmSsArRnzMgyAf4uRnxkvWGAArE"
+      }
+    ],
+    "preview_alias_preserved": true,
+    "vercel_authentication_disabled": false,
+    "ssoProtection": {
+      "enabled": true,
+      "deploymentType": "all_except_custom_domains"
+    }
+  },
+  "service": {
+    "authenticated_initialize_http": 200,
+    "server_name": "tree-brain-codex",
+    "protocol_version": "2025-03-26",
+    "anonymous_initialize_http": 401,
+    "anonymous_error": "TREE_BRAIN_UNAUTHORIZED"
+  },
+  "actual_execution_host_mcp": {
+    "tools": [
+      "get_connection_status",
+      "list_workspaces",
+      "task_start",
+      "task_status",
+      "task_resume"
+    ],
+    "get_connection_status": {
+      "service": "tree-brain-codex",
+      "transport": "MCP Streamable HTTP",
+      "status": "ready",
+      "authenticated_principal": "bearer:tree-brain-desktop",
+      "workspaces_available": 1
+    },
+    "list_workspaces": [
+      "content-reader"
+    ],
+    "task_status": {
+      "workspace_id": "content-reader",
+      "task_id": "wrun_01M33A83TFAFR2JAXT0TTP2EBS",
+      "isError": true,
+      "error": "A2A_WORKFLOW_HOOK_NOT_READY",
+      "thread_id": "NOT_READ",
+      "persisted_task_state": "NOT_READ"
+    },
+    "task_start_called": false,
+    "task_resume_called": false,
+    "ordinary_chat_acceptance": false
+  },
+  "ordinary_chat": {
+    "status": "BLOCKED",
+    "error": "TREE_BRAIN_CODEX_TOOL_NOT_AVAILABLE",
+    "response": "brain-after-approved-renewal-client-response.md",
+    "task_id": "NOT_READ",
+    "thread_id": "NOT_READ",
+    "status_value": "NOT_READ",
+    "remaining_steps": "NOT_READ"
+  },
+  "account_ui": {
+    "owner_reported_plugin_not_found": true,
+    "owner_reported_tunnel_option_available": true,
+    "clarified_tunnel_not_listed_but_id_not_entered": true,
+    "permission_denied_not_proven": true,
+    "connector_creation_not_verified": true
+  },
+  "browser": {
+    "bootstrap_error": "Cannot find module .../browser/26.1013.40934/scripts/browser-service.mjs",
+    "web_form_not_observed": true,
+    "native_ordinary_chat_observed": true
+  },
+  "tunnel": {
+    "existing_id": "tunnel_6aa97a833a7481919834581673d9f199",
+    "new_tunnel_created": false,
+    "existing_runtime_started_hidden": true,
+    "initial_mcp_probe_timeout_seconds": 2,
+    "full_control_plane_call_not_verified": true,
+    "local_health": {
+      "runtime_process_count": 1,
+      "pids": [
+        20028
+      ],
+      "health": [
+        {
+          "body": "live",
+          "path": "/healthz",
+          "http_status": 200
+        },
+        {
+          "body": "ready (mcp startup probe timed out: mcp probe timed out after 2s: context deadline exceeded)",
+          "path": "/readyz",
+          "http_status": 200
+        }
+      ]
+    }
+  },
+  "overall": "BLOCKED_GOAL_A",
+  "goal_b": "PASS_FROZEN"
+}
