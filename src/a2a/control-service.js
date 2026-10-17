@@ -1,9 +1,9 @@
 import {
-  getHookByToken,
   getRun,
   resumeHook,
   start,
 } from "workflow/api";
+import { getWorld } from "workflow/runtime";
 
 import {
   findCodexTaskIndexCandidates,
@@ -34,7 +34,15 @@ function assertTaskId(taskId) {
   }
 }
 
-export async function lookupHook(token, getHookImpl = getHookByToken) {
+export async function readHookRecord(token, world = getWorld()) {
+  // Only the run ID is needed here. SDK 4's high-level lookup eagerly fetches
+  // the old deployment's key even when this hook has no metadata to decrypt.
+  // Keep the same authenticated World lookup, without hydrating unused data.
+  const hook = await world.hooks.getByToken(token);
+  return { runId: hook.runId };
+}
+
+export async function lookupHook(token, getHookImpl = readHookRecord) {
   try {
     return await getHookImpl(token);
   } catch (error) {
