@@ -1,0 +1,5 @@
+Tree Brain Codex：普通 ChatGPT 只读验收，日期 2026-10-19。
+请重新检查本会话此刻实际可调用的工具，不沿用历史结论。若可用，先真实调用 get_connection_status，再调用 task_status，参数 workspace_id="content-reader"、task_id="wrun_01M33A83TFAFR2JAXT0TTP2EBS"。
+返回实际工具名和结果：task_id、thread_id、status、current_step、completed_steps、remaining_steps、实际错误。区分工具执行错误与传输状态；工具未提供 HTTP 状态字段时写“未提供”，不要推测 200、401 或其他状态码。
+如本会话未暴露这些工具，直接返回 TREE_BRAIN_CODEX_TOOL_NOT_AVAILABLE，并将未读字段标为 NOT_READ；插件标签、历史消息和 GitHub 镜像不算调用证据。
+仅只读检查，不调用 task_start/task_resume，不创建替代 Work/Codex 任务，不采集视频，不部署或修改任何代码、配置、授权。不要输出令牌、Cookie 或签名任务票据。

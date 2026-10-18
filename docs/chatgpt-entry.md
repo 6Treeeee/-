@@ -1,5 +1,13 @@
 # Tree Brain private ChatGPT entry
 
+## 2026-10-19 current state after explicit renewal and fresh ordinary-chat probe
+
+The one-time renewal was explicitly approved and applied, preserving the token and content-reader read/check scope. Expiry is fixed at 2026-10-20 06:22:56 +08:00. Active Production is READY dpl_29u8iDtKcGYNLTBxEp25W3ZaVsGn, rebuilt from the original current deployment with withLatestCommit=false, same source 7bb3f7c. Authenticated initialize and real execution-host connection tools pass; anonymous initialize remains 401. Reader Preview is unchanged.
+
+The SDK stream candidate passed 37 related tests and built READY, but its real task_status still failed on the original index run-key HTTP404. It was rolled back to the approved same-code deployment. Default build activation was removed in 8fba9f0; helper/tests remain for review. No key/decryption fallback, SDK upgrade, index reset or mirror reconstruction was used. The separate discovered get_task tool was denied HTTP403/TREE_BRAIN_FORBIDDEN and was not retried. Actual index format and runtime codec fingerprint remain unproven.
+
+A fresh explicitly tagged readonly probe in the existing ordinary native Tree chat still returned TREE_BRAIN_CODEX_TOOL_NOT_AVAILABLE, NOT_EXPOSED for all four tools, NOT_READ task fields and no provided HTTP status. The full response is archived. Existing tunnel runtime PID29392 has healthz/readyz200 and readiness body ready; hosted registration remains unverified. The supported Browser service is still missing, and automatic opening was previously rejected by policy. Obtain the current web Connection/Tunnel form image so the agent can judge concrete UI. No further generic permission is needed; do not automatically extend the fixed expiry. See brain-renewal-and-client-acceptance-2026-10-19.json. Older waiting-for-renewal checkpoints below are history.
+
 ## 2026-10-19 authentication gate
 
 The previous explicitly bounded grant expired at 2026-10-18 21:54:17 +08:00. A real authenticated initialize now returns HTTP 401/TREE_BRAIN_UNAUTHORIZED. No renewal or redeploy has been applied. A new one-time 24-hour renewal of the same grant and same Production code 7bb3f7c was prepared for explicit confirmation; see brain-renewal-2026-10-19-review.json. The execution-host Tree Brain namespace is absent today, the tunnel process is not running, and the Browser service module is still missing. Do not assume yesterday's host tools or health check remain current. Production and Reader aliases independently still point to the preserved deployments.

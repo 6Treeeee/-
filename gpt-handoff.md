@@ -7,12 +7,12 @@
 - 仓库：6Treeeee/-
 - 分支：codex/a2a-control-loop
 - 固定路径：gpt-handoff.md
-- 实际结果：GOAL B 三次 fresh 完整 OCR/分析 PASS 保持冻结。GOAL A 仍 BLOCKED：固定24小时授权已于10月18日21:54到期，10月19日06:19真实 initialize 为401/TREE_BRAIN_UNAUTHORIZED；本轮未续期、未部署、未 start/resume。已离线复现 SDK4.8.4 明文帧读取也提前请求密钥，并验证私有隔离候选保留加密和防篡改门槛；候选未部署，真实索引格式和 task/thread 状态仍未知。
-- 证据路径/提交：artifacts/tree-master-execution-2026-10-15/ordinary-chatgpt/brain-renewal-2026-10-19-review.json、sdk-stream-key-resolution-offline-2026-10-19.json、two-goal-status.json。原线上修复与证据保留：5a140b3、Production独立分支7bb3f7c、brain-hook-lookup-repair.json；GOAL B三连仍见three-fresh-client-acceptance.json。
-- 已批准的变更：此前24小时授权已过固定期限，本轮新续期确认正在等待Owner答复，审查稿为PREPARED_NOT_APPLIED。拟仅续期24小时并重新发布当前Production同一7bb3f7c代码，保留原令牌/主体/content-reader read+check和认证；不自动延长固定到期时间。未改变远端敏感变量、Production或Reader。
-- 仍需复核：原索引正文的旧部署run-key 404仍是最后一次实际状态查询结果，未由镜像补造。离线证明SDK提前解析明文帧密钥的问题，但不能据此判定真实索引为明文；原数据格式探测曾403，未绕过。后续需在获准认证恢复后验证最小候选，保留原索引、原任务及原thread恢复语义。
-- 客户端现状：当前执行会话不再暴露mcp__tree_brain_codex；原隧道进程当前未运行，Browser所需service文件仍缺失，普通聊天入口未重新验收。Production别名实际仍为dpl_2JLy9WB5aBk6jbcFgMBW6hVRVquR，Reader Preview仍为dpl_7CmSsArRnzMgyAf4uRnxkvWGAArE。
-- 下一步：等待已提出的单次24小时续期及同代码Production重发确认；未获答复前不改授权或部署。批准后按审查稿恢复认证、原隧道和工具发现，再继续真实索引读取的最小修复。账号侧仍需当前网页连接/Tunnel表单截图或受支持浏览器入口，由代理判断具体UI，不要求Owner诊断技术权限；此前自动打开插件页曾被blocked by policy拒绝，不绕过。
+- 实际结果：GOAL B三次fresh完整OCR/分析PASS保持冻结，本轮零视频请求。GOAL A仍BLOCKED：Owner本次明确批准续期24小时并同代码重发，已完成且认证真实200；当前有效Production为dpl_29u8iDtKcGYNLTBxEp25W3ZaVsGn，仍7bb3f7c。SDK读取候选37项相关测试通过、READY且构建补丁applied，但实际task_status仍旧索引run-key HTTP404，已回滚候选及默认构建激活。普通Tree重新只读验收仍TREE_BRAIN_CODEX_TOOL_NOT_AVAILABLE，四工具NOT_EXPOSED，任务字段NOT_READ。未task_start/resume。
+- 证据路径/提交：artifacts/tree-master-execution-2026-10-15/ordinary-chatgpt/brain-renewal-and-client-acceptance-2026-10-19.json、brain-2026-10-19-client-response.md、brain-2026-10-19-client-prompt.txt、brain-renewal-2026-10-19-review.json、two-goal-status.json；候选3e722c8/独立Production1949e5b，默认构建移除8fba9f0。GOAL B仍见three-fresh-client-acceptance.json；原执行线程01a1317a-c479-7460-8c24-37351301787c、原索引及权威镜像保持。
+- 已批准的变更：Owner答复“授权续期24小时并发布同一代码”。仅更新原敏感Production授权，固定到2026-10-20 06:22:56 +08:00，令牌/主体/content-reader read+check不变；原部署2JLy按deploymentId、withLatestCommit=false重发为29u8，同一7bb3f7c。后续Master范围内的SDK回归候选未通过真实验收，已恢复sigma及默认项目域名到29u8，候选仅保留隔离review别名。未关闭认证/加密、未升级SDK、未新建OAuth/Tunnel/控制总线。
+- 仍需复核：同代码及候选的真实task_status均失败于原索引wrun_01M2DH54J8W01XKS1HFMF4405M、旧部署dpl_6C4Y6nK5hXBAh642WN8jsTgBBxgk的run-key HTTP404。构建应用与合成测试不证明运行时codec指纹、数据格式或数据丢失，不能猜测密文/过期/不可恢复。另行已发现的get_task诊断HTTP403/TREE_BRAIN_FORBIDDEN，未重试/绕过/扩权限。候选默认构建未激活，不再原样重复已失败验收。
+- 客户端现状：工程会话真实Tree Brain五工具已恢复，连接ready；匿名initialize仍401。桌面现有普通Tree于06:31:42显式选中插件发送只读探测，完整最终回复已复制读回，仍NOT_EXPOSED，无实际HTTP调用。原隧道PID29392、06:27:46启动，healthz/readyz200，readyz正文ready；不等于hosted注册。Reader Preview仍7Cm。Browser service仍缺失，外部网页Tunnel表单仍未取得，之前自动打开该页曾blocked by policy。
+- 下一步：需要当前网页自定义MCP的Connection/Tunnel区域截图或恢复受支持Browser，由代理判断具体UI并恢复既有私有注册；无需重复泛化授权。原任务状态读取还需在现有获准Vercel机制下定位run-key404，先确证实际读取位置/格式，不盲升SDK、不提供任意密钥、不关闭加密、不重置索引或从镜像重建。仅在入口有实质变化后再做普通聊天真实task_status/start/resume及原线程恢复验收；固定授权到期后不自动延长。
 
 ## 工作方式
 

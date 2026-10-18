@@ -1,5 +1,15 @@
 # CURRENT PROJECT STATE（当前项目状态）
 
+## 2026-10-19 本轮最终检查点：续期同代码发布通过；新普通聊天验收仍 NOT_EXPOSED；读取候选已回滚
+
+Owner 已明确回复“授权续期24小时并发布同一代码”。原令牌、主体、content-reader read/check 范围保持，仅更新既有敏感 Production 授权并固定到 2026-10-20 06:22:56 +08:00；没有自动续期。按原部署 2JLy、withLatestCommit=false 重建为 READY dpl_29u8iDtKcGYNLTBxEp25W3ZaVsGn，源码仍 7bb3f7c。认证 initialize 实测 200/server=tree-brain-codex；当前工程会话五个真实工具恢复，get_connection_status 为 ready；匿名同请求仍 401。Reader Preview 别名独立读回仍为 dpl_7CmSsArRnzMgyAf4uRnxkvWGAArE。
+
+读取候选 3e722c8（Production 隔离提交 1949e5b）严格限定 SDK4.8.4 源文件指纹，延后明文帧不需要的密钥请求；37项相关测试通过，缺失密钥、无密钥、篡改密文均仍失败。候选 READY dpl_3A7FeX4hSwP8T4tv3nmqX2FoHV6o 的构建日志确认补丁 applied，但真实 task_status 仍 isError=true / 原索引 run-key HTTP404。因此未通过真实验收，已将 sigma 和原默认项目域名都回切到本次获准同代码的 29u8 部署，并以 8fba9f0 从默认构建移除候选激活；候选仅保留隔离 review 别名和 helper/tests 供审查，未修改本机安装依赖或升级 SDK。构建应用不代表运行时指纹及原索引数据格式已确定，不能推断加密、数据删除或不可恢复。另一个已发现的 get_task 只读诊断请求实际被 403/TREE_BRAIN_FORBIDDEN 拒绝，未重试、绕过或扩大权限。
+
+已实际恢复桌面原普通 Tree 聊天，显式选择 Tree Brain Codex，于06:31:42发送限定只读的新探测。完整最终回复已复制保存：TREE_BRAIN_CODEX_TOOL_NOT_AVAILABLE，四个核心入口 NOT_EXPOSED，task/thread/status/remaining_steps 全部 NOT_READ，HTTP未提供且没有真实客户端后端调用。不能用工程会话工具或服务200替代普通聊天验收；本次未 task_start/resume，未创建替代任务。原隧道 PID29392 于06:27:46启动，healthz/readyz均200且 readyz正文为ready，仍不等于 hosted 注册成功。外部网页 Tunnel 表单仍未取得，Browser service组件仍缺失，之前自动打开插件页曾被 blocked by policy拒绝。
+
+GOAL B三连PASS保持冻结，本轮零视频请求；GOAL A仍BLOCKED。需要当前网页 Connection/Tunnel 表单截图或受支持浏览器入口，由代理判断账号侧选项；不再要求Owner技术分类或重复泛化授权。后端保留原索引、任务和线程，继续仅用获准机制核对剩余404，未重置或从镜像重建。证据 brain-renewal-and-client-acceptance-2026-10-19.json、brain-2026-10-19-client-response.md 及 prompt。下文06:19的等待续期记录为历史，已经被本节明确批准/应用结果取代。
+
 ## 2026-10-19：固定授权已到期，真实 401；离线验证 SDK 的明文帧密钥依赖问题
 
 06:19 实测既有 Bearer 的 initialize 为 HTTP 401/TREE_BRAIN_UNAUTHORIZED。原固定 24 小时授权于 2026-10-18 21:54:17 +08:00 到期；未再次续期，未修改远端授权或部署。当前执行会话也不再暴露 mcp__tree_brain_codex 工具，不能把昨天工程会话的工具表视为今天仍可用。原隧道进程当前未运行；Browser 所需 service 文件仍缺失。两个别名独立读回：Production 仍 dpl_2JLy9WB5aBk6jbcFgMBW6hVRVquR，Reader Preview 仍 dpl_7CmSsArRnzMgyAf4uRnxkvWGAArE。

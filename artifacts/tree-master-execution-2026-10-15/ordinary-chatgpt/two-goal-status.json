@@ -1,15 +1,15 @@
 {
   "task": "TREE_MASTER_EXECUTION",
-  "observed_at": "2026-10-18T22:20:53.1127527Z",
+  "observed_at": "2026-10-18T22:37:56.1711104Z",
   "overall": "BLOCKED",
   "goal_a": {
     "status": "BLOCKED",
-    "service_authentication": "401_TREE_BRAIN_UNAUTHORIZED_AFTER_FIXED_GRANT_EXPIRY",
-    "execution_host_real_tools": "NOT_EXPOSED_THIS_SESSION_2026_10_19",
+    "service_authentication": "PASS_AFTER_EXPLICIT_2026_10_19_RENEWAL",
+    "execution_host_real_tools": "RESTORED_AND_REAL_CONNECTION_CHECKED",
     "ordinary_chat_error": "TREE_BRAIN_CODEX_TOOL_NOT_AVAILABLE",
     "actual_task_status_error": "ORIGINAL_INDEX_STREAM_RUN_KEY_HTTP_404",
-    "evidence": "brain-renewal-2026-10-19-review.json",
-    "query_diagnostics": "brain-hook-lookup-repair.json",
+    "evidence": "brain-renewal-and-client-acceptance-2026-10-19.json",
+    "query_diagnostics": "brain-renewal-and-client-acceptance-2026-10-19.json",
     "task_state_not_read": true,
     "task_start_resume_not_executed": true
   },
@@ -26,19 +26,22 @@
   },
   "execution_thread": "01a1317a-c479-7460-8c24-37351301787c",
   "original_task_mirror_unchanged": true,
-  "owner_action": "One-time renewal approval is pending for 24 hours and same-code Production redeploy of current 7bb3f7c. Previous fixed expiry passed; do not renew automatically. The webpage Tunnel form or supported Browser entry is also still required for ordinary ChatGPT registration.",
+  "owner_action": "Provide the current web custom-MCP Connection/Tunnel form screenshot or restore supported Browser access; the agent will judge the UI. Renewal has been approved and applied, so no repeated generic approval is needed. Preserve original index and diagnose remaining run-key 404 via authorized existing mechanisms; no bypass, reset or mirror reconstruction.",
   "vercel_authentication_preserved": true,
   "production_renewal_and_same_source_release_owner_approved": true,
   "production_minimal_hook_repair": {
     "commit": "7bb3f7c002e39bb79cf37d5f1eb15fa5145fa89c",
     "related_tests_passed": 30,
     "base": "5dccd27c7668250574b3122b8c260bbecf031edc",
-    "deployment": "dpl_2JLy9WB5aBk6jbcFgMBW6hVRVquR"
+    "deployment": "dpl_29u8iDtKcGYNLTBxEp25W3ZaVsGn"
   },
   "offline_stream_candidate": {
+    "evidence": "brain-renewal-and-client-acceptance-2026-10-19.json",
+    "synthetic_validation": "PASS_37_RELATED_TESTS",
+    "deployment_attempted": true,
+    "real_read_acceptance": "FAILED_SAME_INDEX_KEY_404",
+    "rolled_back": true,
     "actual_index_format": "UNKNOWN",
-    "evidence": "sdk-stream-key-resolution-offline-2026-10-19.json",
-    "production_changed": false,
-    "synthetic_validation": "PASS"
+    "candidate_active_at_shared_release_aliases": false
   }
 }

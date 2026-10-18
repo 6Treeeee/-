@@ -1,14 +1,23 @@
 {
   "task": "TREE_MASTER_EXECUTION",
-  "status": "PREPARED_NOT_APPLIED_AWAITING_BOUNDED_RENEWAL_APPROVAL",
+  "status": "OWNER_APPROVED_APPLIED_AUTHENTICATION_VERIFIED",
   "observed_date": "2026-10-19",
-  "actual_authenticated_initialize": {"http_status": 401, "error_code": "TREE_BRAIN_UNAUTHORIZED", "observed_at": "2026-10-19T06:19:23.6581900+08:00"},
+  "actual_authenticated_initialize": {
+    "http_status": 401,
+    "error_code": "TREE_BRAIN_UNAUTHORIZED",
+    "observed_at": "2026-10-19T06:19:23.65819+08:00"
+  },
   "existing_grant_expired_at": "2026-10-18T21:54:17+08:00",
   "proposed_one_time_renewal": {
     "duration_hours_from_apply_time": 24,
     "principal_id": "bearer:tree-brain-desktop",
-    "workspace_ids": ["content-reader"],
-    "scopes": ["treebrain:read", "treebrain:check"],
+    "workspace_ids": [
+      "content-reader"
+    ],
+    "scopes": [
+      "treebrain:read",
+      "treebrain:check"
+    ],
     "rotate_token": false,
     "grant_variable": "TREE_BRAIN_BEARER_GRANT_JSON",
     "existing_variable_id": "PCXfrl25JiO67Iiy",
@@ -25,7 +34,22 @@
     "only_alias_to_assign": "sigma-silk-88.vercel.app",
     "preserved_reader_preview_deployment": "dpl_7CmSsArRnzMgyAf4uRnxkvWGAArE"
   },
-  "preserved_boundaries": ["No expanded permissions or workspaces", "No authentication or encryption removal", "No new OAuth, tunnel or task system", "No Reader code or video tests", "No task mirror reconstruction"],
-  "known_remaining_blockers": ["Ordinary ChatGPT registration and tool discovery unverified", "Original index stream run-key HTTP 404", "Supported Browser service module still missing", "Tree Brain namespace is not exposed to this execution session today"],
-  "reason_to_ask": "Prior authorization was explicitly limited to 24 hours; gpt-handoff.md says not to extend its fixed expiry automatically. A generic continue does not establish another fixed-duration renewal."
+  "preserved_boundaries": [
+    "No expanded permissions or workspaces",
+    "No authentication or encryption removal",
+    "No new OAuth, tunnel or task system",
+    "No Reader code or video tests",
+    "No task mirror reconstruction"
+  ],
+  "known_remaining_blockers": [
+    "Ordinary ChatGPT registration and tool discovery unverified",
+    "Original index stream run-key HTTP 404",
+    "Supported Browser service module still missing",
+    "Tree Brain namespace is not exposed to this execution session today"
+  ],
+  "reason_to_ask": "Prior authorization was explicitly limited to 24 hours; gpt-handoff.md says not to extend its fixed expiry automatically. A generic continue does not establish another fixed-duration renewal.",
+  "owner_answer": "授权续期24小时并发布同一代码",
+  "actual_expiry": "2026-10-20T06:22:56+08:00",
+  "active_same_code_deployment": "dpl_29u8iDtKcGYNLTBxEp25W3ZaVsGn",
+  "verification": "brain-renewal-and-client-acceptance-2026-10-19.json"
 }

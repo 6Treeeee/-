@@ -1,0 +1,200 @@
+{
+  "task": "TREE_MASTER_EXECUTION",
+  "date": "2026-10-19",
+  "overall": "BLOCKED",
+  "owner_approved_renewal": {
+    "answer": "授权续期24小时并发布同一代码",
+    "applied": true,
+    "duration_hours": 24,
+    "expires_at": 1792448576,
+    "expires_at_local": "2026-10-20T06:22:56+08:00",
+    "principal_id": "bearer:tree-brain-desktop",
+    "workspace_ids": [
+      "content-reader"
+    ],
+    "scopes": [
+      "treebrain:read",
+      "treebrain:check"
+    ],
+    "token_rotated": false,
+    "local_token_digest_match_verified": true,
+    "remote_sensitive_old_value_readable": false,
+    "env_id": "PCXfrl25JiO67Iiy",
+    "env_type": "sensitive",
+    "env_target": [
+      "production"
+    ],
+    "env_updated_at": 1792362178456
+  },
+  "active_production": {
+    "id": "dpl_29u8iDtKcGYNLTBxEp25W3ZaVsGn",
+    "source_deployment": "dpl_2JLy9WB5aBk6jbcFgMBW6hVRVquR",
+    "source_sha": "7bb3f7c002e39bb79cf37d5f1eb15fa5145fa89c",
+    "withLatestCommit": false,
+    "target": "production",
+    "status": "READY",
+    "alias": "sigma-silk-88.vercel.app",
+    "alias_read_back_after_candidate_rollback": true,
+    "authenticated_initialize": {
+      "http_status": 200,
+      "server_name": "tree-brain-codex",
+      "observed_at": "2026-10-19T06:26:08.0944238+08:00"
+    },
+    "final_real_connection_tool": {
+      "status": "ready",
+      "authenticated_principal": "bearer:tree-brain-desktop",
+      "workspaces_available": 1
+    },
+    "final_anonymous_initialize": {
+      "http_status": 401,
+      "code": "TREE_BRAIN_UNAUTHORIZED"
+    },
+    "reader_preview_alias_unchanged": "dpl_7CmSsArRnzMgyAf4uRnxkvWGAArE",
+    "default_project_alias": "1790063688-9925s-projects.vercel.app",
+    "default_project_alias_verified_same_code_deployment": true
+  },
+  "server_tool_discovery": {
+    "observed_at": "2026-10-19T06:26:32.4722307+08:00",
+    "transport_http_status": 200,
+    "names": [
+      "get_connection_status",
+      "list_workspaces",
+      "check_project",
+      "get_task",
+      "task_start",
+      "task_status",
+      "task_resume"
+    ],
+    "execution_host_namespace_restored": true,
+    "does_not_establish_ordinary_chat_exposure": true
+  },
+  "real_persisted_state_calls": {
+    "requested_task_id": "wrun_01M33A83TFAFR2JAXT0TTP2EBS",
+    "workspace_id": "content-reader",
+    "same_code_task_status": {
+      "observed_at": "2026-10-19T06:26:44.2742684+08:00",
+      "transport_http_status": 200,
+      "isError": true,
+      "underlying_operation": "index run-key read",
+      "underlying_http_status": 404
+    },
+    "index_run_id": "wrun_01M2DH54J8W01XKS1HFMF4405M",
+    "index_deployment_id": "dpl_6C4Y6nK5hXBAh642WN8jsTgBBxgk",
+    "candidate_task_status": {
+      "tool": "mcp__tree_brain_codex__task_status",
+      "isError": true,
+      "underlying_http_status": 404,
+      "transport_http_status_provided": false,
+      "underlying_error": "Failed to fetch run key for original index; Deployment not found"
+    },
+    "separate_get_task_diagnostic": {
+      "observed_at": "2026-10-19T06:30:33.2080872+08:00",
+      "transport_http_status": 403,
+      "code": "TREE_BRAIN_FORBIDDEN",
+      "state_read": false,
+      "not_retried_or_bypassed": true
+    },
+    "returned_task_id": "NOT_READ",
+    "thread_id": "NOT_READ",
+    "status": "NOT_READ",
+    "remaining_steps": "NOT_READ",
+    "task_start_calls": 0,
+    "task_resume_calls": 0
+  },
+  "stream_candidate": {
+    "main_source_commit": "3e722c860fc499069e5773492a77d6c4ba067d67",
+    "isolated_production_source_commit": "1949e5b6fc57d1757fce25a2aef1f7f035560681",
+    "source_base": "7bb3f7c002e39bb79cf37d5f1eb15fa5145fa89c",
+    "changed_files": [
+      "scripts/build-workflows.mjs",
+      "scripts/patch-workflow-stream-key.mjs",
+      "test/workflow-stream-key-patch.test.js"
+    ],
+    "related_tests": {
+      "passed": 37,
+      "failed": 0
+    },
+    "isolated_production_base_candidate_tests": {
+      "passed": 7,
+      "failed": 0
+    },
+    "test_controls": [
+      "plaintext without a key",
+      "partial frame buffering",
+      "valid-key encrypted roundtrip",
+      "missing and absent key rejection",
+      "tampered ciphertext rejection",
+      "mixed frames",
+      "idempotence and unknown-source rejection"
+    ],
+    "installed_local_sdk_modified": false,
+    "sdk_version_upgraded": false,
+    "sdk_version": "4.8.4",
+    "original_source_sha256": "d185f557baceb96c2bdfbfa4514715ce075adeed6f187b053228cc944bf77c25",
+    "candidate_source_sha256": "520bdd14a9596c7b2ab5a8826a759daffa26253d399ad6ca9f252319dc97b58f",
+    "deployment_id": "dpl_3A7FeX4hSwP8T4tv3nmqX2FoHV6o",
+    "deployment_status": "READY",
+    "build_log_confirms_patch_applied": true,
+    "real_read_acceptance": "FAILED_SAME_INDEX_KEY_404",
+    "rolled_back_to_same_code_renewal_deployment": true,
+    "default_build_activation_removed_commit": "8fba9f0c7272b38c5b12973cc333bc33254eff9d",
+    "candidate_helper_and_tests_retained_for_review": true,
+    "runtime_package_fingerprint_and_original_index_format": "NOT_ESTABLISHED",
+    "limits": "Build application and synthetic tests do not prove the original index is plaintext or that task data is readable. No decryption fallback or invented key was used.",
+    "shared_release_aliases_restored": [
+      "sigma-silk-88.vercel.app",
+      "1790063688-9925s-projects.vercel.app"
+    ],
+    "unique_review_alias_retained": "git-1949e5b6fc57d1757fce25a2a-42da0b-1790063688-9925s-projects.vercel.app"
+  },
+  "ordinary_chat_acceptance": {
+    "surface": "native desktop, existing Tree chat in Tree大脑 project",
+    "composer": "询问 ChatGPT",
+    "model_shown": "5.6 高",
+    "plugin_explicitly_selected": "Tree Brain Codex",
+    "probe_sent_at": "2026-10-19T06:31:42.1371668+08:00",
+    "probe_scope": "readonly get_connection_status then task_status for original task",
+    "result": "TREE_BRAIN_CODEX_TOOL_NOT_AVAILABLE",
+    "get_connection_status": "NOT_EXPOSED",
+    "task_status": "NOT_EXPOSED",
+    "task_start": "NOT_EXPOSED",
+    "task_resume": "NOT_EXPOSED",
+    "task_fields": "NOT_READ",
+    "http_status": "NOT_PROVIDED_NO_REAL_CALL",
+    "response": "brain-2026-10-19-client-response.md",
+    "not_a_plugin_tag_pass": true
+  },
+  "existing_tunnel": {
+    "id": "tunnel_6aa97a833a7481919834581673d9f199",
+    "new_tunnel_created": false,
+    "runtime_pid": 29392,
+    "started_at": "2026-10-19T06:27:46+08:00",
+    "healthz_http_status": 200,
+    "readyz_http_status": 200,
+    "readyz_body": "ready",
+    "hosted_registration_installation": "NOT_VERIFIED"
+  },
+  "external_entry_blocker": {
+    "browser_service_module_still_missing": "browser/26.1013.40934/scripts/browser-service.mjs",
+    "current_web_tunnel_form_observed": false,
+    "previous_automatic_open_rejection": "blocked by policy",
+    "no_alternative_browser_control_or_security_bypass": true,
+    "needed_owner_action": "Provide a current screenshot of the web custom-MCP Connection/Tunnel area, or restore the supported Browser entry; the agent will judge the concrete UI. No further generic permission request is needed."
+  },
+  "goal_b": {
+    "status": "PASS_WITHIN_HARD_SUBTITLE_OCR_SCOPE",
+    "frozen": true,
+    "new_video_requests": 0
+  },
+  "original_task_mirror_unchanged": true,
+  "security": {
+    "bearer_scope_unchanged": true,
+    "vercel_authentication_unchanged": true,
+    "encryption_not_disabled": true,
+    "no_new_task_bus_oauth_or_tunnel": true,
+    "credentials_not_published": true
+  },
+  "continuation": "Preserve original task/thread/index. Resolve ordinary ChatGPT registration via observable UI. Diagnose the remaining index run-key 404 through authorized existing Vercel mechanisms; do not reset the index, reconstruct from mirrors, provide arbitrary keys or retry forbidden reads. The stream candidate is not active in the release build. Fixed grant expiry must not be extended automatically.",
+  "saved_at": "2026-10-19T06:37:09.9494206+08:00",
+  "client_response_sha256": "d2460595af40f6bafa1c78a076d9547467e5aea1683636d97432ada75f731879"
+}
