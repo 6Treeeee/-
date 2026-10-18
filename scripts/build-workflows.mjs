@@ -2,13 +2,10 @@ import { copyFile, mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
-import { applyWorkflowStreamKeyPatch } from "./patch-workflow-stream-key.mjs";
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const workflowCli = path.join(projectRoot, "node_modules", "workflow", "bin", "run.js");
 const generatedRoot = path.join(projectRoot, ".well-known", "workflow", "v1");
-
-await applyWorkflowStreamKeyPatch();
 
 const build = spawnSync(
   process.execPath,
