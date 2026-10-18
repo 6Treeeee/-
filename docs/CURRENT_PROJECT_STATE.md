@@ -1,5 +1,17 @@
 # CURRENT PROJECT STATE（当前项目状态）
 
+## 2026-10-18 续执行：索引查询最小修复已部署，真实正文读取仍遇到旧部署密钥 404
+
+已修复两处有实测依据的问题：hook 查询不再把权限、网络、解密异常当作“不存在”并创建索引运行；只取 runId 时通过相同认证 World 的 hooks.getByToken 读取，不再让 SDK 4 提前解密未使用的 metadata。保留原索引、主体/工作区隔离、正文读取和解密、原线程恢复；未升级 SDK。主线提交 af685df、c8cf64e、e511f7f；30 项相关测试通过。
+
+为保留 Production 边界，从原 5dccd27 单独应用上述修复到 codex/brain-hook-lookup-fix / 7bb3f7c002e39bb79cf37d5f1eb15fa5145fa89c，与原 Production 仅 control-service.js 和测试两个文件不同。READY Production dpl_2JLy9WB5aBk6jbcFgMBW6hVRVquR 已接原 sigma 域名；没有把新版 Reader Preview 发到 Production。原 Reader Preview 别名仍为 dpl_7CmSsArRnzMgyAf4uRnxkvWGAArE。匿名 initialize 实测仍 401/TREE_BRAIN_UNAUTHORIZED，现有工程会话连接工具实际 ready。
+
+真实 task_status 先由安全分类定位为 A2A_WORKFLOW_HOOK_LOOKUP_KEY_READ_HTTP_404；去除无用 metadata 解密后，原索引正文读取仍报 run-key HTTP 404，指向 wrun_01M2DH54J8W01XKS1HFMF4405M / dpl_6C4Y6nK5hXBAh642WN8jsTgBBxgk。该旧部署元数据 API 同样 404/not_found。不能据此断言索引数据已删除、过期、加密或不可恢复。现有 CLI 身份对一个数据分片的格式探测返回 403，未取得正文或格式，未解密、未绕过。首次修复后查询前后运行列表及 SHA-256 完全相同，未再因查询失败新增索引运行；未 task_start/resume，task/thread/remaining_steps 仍 NOT_READ。
+
+20:22 续执行现场：工程连接认证仍通过，Browser 所需 26.1013.40934/scripts/browser-service.mjs 仍缺失，网页表单未取得；没有重复发送普通聊天探测。原隧道进程已不在运行，已用现有 PowerShell 7 启动同一原隧道程序，PID 17936，20:24:06 启动，healthz/readyz 均 200；保留首次 2 秒 MCP 探测超时，不能当 hosted 插件验收。较早使用 Windows PowerShell 的隐藏启动失败，未将失败计作运行成功。既有 grant 仍仅 content-reader read/check，到期 2026-10-18 21:54:17 +08:00，没有再次续期。
+
+整体仍 BLOCKED：普通 ChatGPT 注册/工具暴露未通过，持久索引正文也未读到；GOAL B 保持三连 PASS 并冻结。继续需要当前网页 Tunnel 表单截图或受支持的浏览器入口，由代理判断具体 UI；后端保留原索引，通过既有获准 Vercel 机制继续查明旧部署密钥依赖，不关闭加密、不重置或从镜像重建。证据：ordinary-chatgpt/brain-hook-lookup-repair.json。下节是本次修复前的历史检查点。
+
 ## 2026-10-18 当前检查点：授权及工程会话真实工具已恢复；普通聊天入口和持久状态查询仍 BLOCKED
 
 Owner 已明确批准“授权续期 24 小时并重新发布原 Production 代码”。已复用现存令牌，仅将 content-reader、treebrain:read/treebrain:check 的既有授权续期至 2026-10-18 21:54:17 +08:00；没有旋转令牌、扩大工作区或关闭认证。远端 Secret 无法读回，实际使用本机已保存且令牌摘要匹配的既有 grant；没有声称远端旧值已逐字段比较。

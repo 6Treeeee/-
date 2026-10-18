@@ -1,5 +1,13 @@
 # Tree Brain private ChatGPT entry
 
+## 2026-10-18 continued recovery: bounded hook repair deployed
+
+Production sigma-silk-88.vercel.app now points to READY dpl_2JLy9WB5aBk6jbcFgMBW6hVRVquR at 7bb3f7c002e39bb79cf37d5f1eb15fa5145fa89c. This is original Production 5dccd27 plus only control-service hook lookup changes and tests, not promotion of current Reader Preview. Thirty related tests pass. Only explicit HookNotFoundError permits bootstrap; identity-only lookup uses the same authenticated World without hydrating unused metadata. Task scope checks, stream decryption and original-thread resume remain unchanged.
+
+Actual task_status now reaches the original index stream, but its old-deployment run-key request returns HTTP 404. The owning deployment metadata lookup also returns 404/not_found. A separate operator format-only chunk probe returned 403 and yielded no bytes. Do not infer data loss, encryption format or expiry; do not bypass, recreate the index, supply arbitrary keys or rebuild task state from a mirror. See brain-hook-lookup-repair.json.
+
+At the evening continuation, service authentication remains ready and anonymous initialize remains 401. The previous tunnel process was gone; the original runtime was restarted through the existing PowerShell 7 engine, PID 17936, healthz/readyz 200 with the retained initial two-second probe warning. Hosted registration is still unverified. Browser's required service module is still absent. Obtain the current web Tunnel form image or a working supported browser to inspect UI directly; do not ask Owner to classify technical permissions. No new ordinary-chat prompt or Reader test was sent. Grant expiry is unchanged: 2026-10-18 21:54:17 +08:00. Older checkpoints below retain their original historical facts.
+
 ## 2026-10-18 current recovery checkpoint
 
 Owner explicitly approved the 24-hour renewal and same-code Production release. Existing token/workspace/read+check scopes are preserved; expiry is 2026-10-18T21:54:17+08:00. Production now uses READY dpl_CZcqr62yYs7R3zN2v7BfQEBLYHNg, rebuilt from original dpl_BrtVwjcUrEQtoaJTYgxsQjQ7zsJq at the same source commit 5dccd27c7668250574b3122b8c260bbecf031edc. Preview alias remains on dpl_7CmSsArRnzMgyAf4uRnxkvWGAArE. Authenticated initialize and real execution-host connection tools pass; anonymous initialize still returns 401.

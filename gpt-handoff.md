@@ -7,12 +7,12 @@
 - 仓库：6Treeeee/-
 - 分支：codex/a2a-control-loop
 - 固定路径：gpt-handoff.md
-- 实际结果：GOAL B 保持普通 ChatGPT 连续三次 fresh 完整 OCR/分析 PASS，未新增读取。GOAL A 已按 Owner 明确批准续期原 content-reader read/check 授权 24 小时，并重新发布原 Production 同一代码：新部署 dpl_CZcqr62yYs7R3zN2v7BfQEBLYHNg READY，源码仍 5dccd27c7668250574b3122b8c260bbecf031edc；认证初始化与工程会话真实连接工具通过，匿名请求仍 401。普通 Tree 聊天复核仍为 TREE_BRAIN_CODEX_TOOL_NOT_AVAILABLE；工程会话真实 task_status 另返回 A2A_WORKFLOW_HOOK_NOT_READY，持久任务/thread 状态未读取，未 task_start/resume。因此整体仍 BLOCKED，不能宣布双目标完成。
-- 证据路径/提交：artifacts/tree-master-execution-2026-10-15/ordinary-chatgpt/brain-approved-renewal-verification.json、brain-after-approved-renewal-client-response.md、workflow-index-read-diagnostics.json、brain-grant-renewal-review.json；GOAL B 三连证据 three-fresh-client-acceptance.json 及 read-4/5/6 文件。原执行线程 01a1317a-c479-7460-8c24-37351301787c 保持，权威任务镜像未重写。
-- 已批准的变更：仅更新既有敏感授权变量并续期至 2026-10-18 21:54:17 +08:00，原令牌/主体/工作区/权限范围不变。原 Production deploymentId 重建、withLatestCommit=false；只切原 sigma-silk-88.vercel.app 到新部署。Reader Preview 分支别名仍指向 dpl_7CmSsArRnzMgyAf4uRnxkvWGAArE。未关闭 Vercel Authentication、未发新版 Preview 到 Production、未新建 OAuth/Tunnel/任务控制系统。
-- 仍需复核：原索引运行及 hook 元数据存在，已观察到 bootstrap 索引运行与原 hook 冲突后完成；本机 Workflow SDK 的 by-token 读取独立返回 403，不能据此认定 Production 内部相同原因或索引过期/删除。没有重置 hook 或从镜像重建状态。应只围绕实际失败继续最小诊断。
-- 客户端现状：Owner 在网页插件页找不到 Tree Brain Codex，但有 Tunnel 选项；已澄清只是列表未显示，尚未输入既有 tunnel_id，不能宣称无权或隧道不存在。原隧道运行程序已启动一次，healthz/readyz 为 200，保留首次 2 秒探测超时提示，尚不代表平台实际工具链 PASS。外部表单未取得，Browser 实际缺 browser/26.1013.40934/scripts/browser-service.mjs。Owner 要求代理自行判断，不再让其判断技术选项。
-- 下一步：取得当前网页表单截图或恢复受支持浏览器入口，由代理判断并恢复现有私有注册；复用原 tunnel_6aa97a833a7481919834581673d9f199，不新建隧道。继续定位持久索引查询错误，按真实工具调用验收 task_status/start/resume 及原 thread_id 恢复。无需再次授权已批准的 24 小时续期，也不重复 GOAL B；到期后不得擅自再延长期限。此前自动打开插件页被 blocked by policy 拒绝，禁止绕过；当前截图需求由浏览器组件缺失造成。
+- 实际结果：GOAL B 三次 fresh 完整 OCR/分析 PASS 保持冻结。GOAL A 的 hook 查询最小修复已部署：30 项相关测试通过；原 Production 5dccd27 仅应用 control-service 与测试改动为 7bb3f7c，READY dpl_2JLy9WB5aBk6jbcFgMBW6hVRVquR 已接原 sigma 域名。真实查询已越过无用 hook metadata 解密，但原索引正文读取仍遇到旧部署运行密钥 HTTP 404，任务/thread/remaining_steps 未读取，未 task_start/resume。普通 ChatGPT 的注册及实际工具暴露仍未通过，整体 BLOCKED。
+- 证据路径/提交：主线修复 af685df、c8cf64e、e511f7f；Production 独立修复分支 codex/brain-hook-lookup-fix / 7bb3f7c002e39bb79cf37d5f1eb15fa5145fa89c；artifacts/tree-master-execution-2026-10-15/ordinary-chatgpt/brain-hook-lookup-repair.json、two-goal-status.json。GOAL B 三连仍见 three-fresh-client-acceptance.json。原执行线程 01a1317a-c479-7460-8c24-37351301787c 及权威镜像保持。
+- 已批准的变更：既有 24 小时授权仍至 2026-10-18 21:54:17 +08:00，令牌/主体/content-reader read+check 不变，没有再次续期。本次依据 Master 对已证实回归的最小修复/部署授权及 Owner 再次要求继续执行，单独发布原 Production 基础上的 hook 修复；未将新版 Reader Preview 代码发到 Production，未更改认证、加密或权限边界。Reader Preview 别名仍为 dpl_7CmSsArRnzMgyAf4uRnxkvWGAArE。
+- 仍需复核：原索引 run/hook 元数据存在；原所属部署 dpl_6C4Y6nK5hXBAh642WN8jsTgBBxgk 元数据查询 404/not_found，实际正文读取的 run-key 请求同样 404。不能推断正文已删除/过期、数据是否加密或不可恢复。现有 CLI 身份的格式分片探测另返回 403，未读取内容或解密，未绕过、未重置索引或从镜像重建。首次修复后查询前后的运行列表及哈希相同，没有新增索引运行。
+- 客户端现状：20:22 工程会话真实连接仍 ready，匿名 initialize 仍 401/TREE_BRAIN_UNAUTHORIZED；Browser 所需 26.1013.40934/scripts/browser-service.mjs 仍缺失，未取得网页表单，未重复发送普通聊天验收提示。原隧道进程已退出，已通过现有 PowerShell 7 重启同一 runtime，PID 17936，20:24:06 启动，healthz/readyz 均 200，保留首次 2 秒 MCP 探测超时警告；健康不等于 hosted 插件验收。
+- 下一步：取得当前网页自定义 MCP 的连接/Tunnel 表单截图或恢复受支持浏览器入口，由代理判断具体选项并恢复原私有注册；复用 tunnel_6aa97a833a7481919834581673d9f199，不新建隧道。用既有获准 Vercel 机制定位旧部署密钥依赖和数据格式；遇到 403 不绕过，不提供任意密钥、不关闭加密、不重建任务状态。仍须真实验收普通聊天 task_status/start/resume 及原线程。此前自动打开插件页曾被 blocked by policy 拒绝；当前还存在浏览器组件缺失。无需再次泛化授权，不自动延长固定到期时间。
 
 ## 工作方式
 

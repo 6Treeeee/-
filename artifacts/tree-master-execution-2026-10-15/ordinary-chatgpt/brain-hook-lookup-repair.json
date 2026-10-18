@@ -1,0 +1,140 @@
+{
+  "task": "TREE_MASTER_EXECUTION",
+  "saved_at": "2026-10-18T20:25:40.5006933+08:00",
+  "overall": "BLOCKED",
+  "authorization": "Original master execution authorizes minimal repairs for demonstrated regressions and deployment; Owner reiterated continue and all available permissions. No security boundary or grant scope was expanded.",
+  "source": {
+    "main_commits": [
+      "af685df6e53ae4409e730ce7e725062fefacdf9f",
+      "c8cf64ec12825dfefaf4f76c1e8070de91118537",
+      "e511f7f7c152994a266c9cf23392caf8cb4c6476"
+    ],
+    "production_base": "5dccd27c7668250574b3122b8c260bbecf031edc",
+    "production_commit": "7bb3f7c002e39bb79cf37d5f1eb15fa5145fa89c",
+    "production_branch": "codex/brain-hook-lookup-fix",
+    "changed_from_production_base": [
+      "src/a2a/control-service.js",
+      "test/a2a-hook-lookup.test.js"
+    ],
+    "control_service_blob": "3490faccf8862f26f6cad9bca09d002a414be81d",
+    "sdk_upgraded": false
+  },
+  "repair": {
+    "confirmed_defect": "The catch-all hook lookup treated authorization, transport and hydration failures as an absent hook, attempted index bootstrap, and masked the underlying error as HOOK_NOT_READY.",
+    "behavior": "Only SDK HookNotFoundError permits bootstrap. Other failures stop immediately and expose bounded error codes without upstream payloads. Run ID lookup uses the same authenticated World hook store and projects only runId; it does not hydrate unused hook metadata or fetch its owning deployment key.",
+    "preserved": [
+      "Original index hook and run",
+      "Principal/workspace task filtering",
+      "Task-state stream reader and encryption",
+      "Original-thread resume semantics",
+      "Existing bounded Bearer and Vercel Authentication",
+      "Frozen Reader Preview alias"
+    ]
+  },
+  "validation": {
+    "related_tests": {
+      "passed": 30,
+      "failed": 0
+    },
+    "production_base_hook_tests": {
+      "passed": 14,
+      "failed": 0
+    },
+    "suites": [
+      "a2a-hook-lookup",
+      "a2a-consistency",
+      "codex-task",
+      "mcp-server"
+    ],
+    "production_build": "READY",
+    "first_repaired_status_probe_workflow_run_ids_unchanged": true,
+    "before_after_metadata_sha256": "18ce68eb707918386c1b4d8a8daa043152b83825d28e540560feed7ba83d7b82"
+  },
+  "deployment": {
+    "id": "dpl_2JLy9WB5aBk6jbcFgMBW6hVRVquR",
+    "target": "production",
+    "status": "READY",
+    "source_sha": "7bb3f7c002e39bb79cf37d5f1eb15fa5145fa89c",
+    "alias": "sigma-silk-88.vercel.app",
+    "alias_independently_read_back": true,
+    "previous_diagnostic_deployments": [
+      "dpl_71tXDoCfUhf9RAWULCSPkAzqMuoC",
+      "dpl_CXW6ys7R6ENRmJ5hRq8PVxUYHuc1"
+    ],
+    "rollback_deployment_before_this_repair": "dpl_CZcqr62yYs7R3zN2v7BfQEBLYHNg",
+    "reader_preview_deployment": "dpl_7CmSsArRnzMgyAf4uRnxkvWGAArE",
+    "redundant_task_owned_preview_builds_canceled": [
+      "dpl_Cwnuc9F2cKWzrmBXwnUguS1hcnv9",
+      "dpl_7ZwiWkouTTJpBJEpbiJHSmyKDqrw",
+      "dpl_Cwn5KPLsV6KkHgFQPNt54Lw4EpMJ"
+    ]
+  },
+  "actual_calls": {
+    "workspace_id": "content-reader",
+    "requested_task_id": "wrun_01M33A83TFAFR2JAXT0TTP2EBS",
+    "after_safe_error_classification": {
+      "isError": true,
+      "code": "A2A_WORKFLOW_HOOK_LOOKUP_KEY_READ_HTTP_404"
+    },
+    "after_metadata_only_hook_lookup": {
+      "isError": true,
+      "operation": "persisted index stream key read",
+      "http_status": 404,
+      "run_id": "wrun_01M2DH54J8W01XKS1HFMF4405M",
+      "deployment_id": "dpl_6C4Y6nK5hXBAh642WN8jsTgBBxgk"
+    },
+    "old_index_deployment_metadata": {
+      "http_status": 404,
+      "code": "not_found",
+      "request_id": "sfo1:sfo1::hlwb2-1792274117874-13ce96aa330d"
+    },
+    "operator_stream_format_probe": {
+      "observed_at": "2026-10-18T12:22:36.253Z",
+      "success": false,
+      "error_name": "WorkflowWorldError",
+      "http_status": 403,
+      "content_decoded": false,
+      "decryption_attempted": false
+    },
+    "service_connection_recheck": {
+      "status": "ready",
+      "authenticated_principal": "bearer:tree-brain-desktop",
+      "workspaces_available": 1
+    },
+    "anonymous_initialize_recheck": {
+      "http_status": 401,
+      "code": "TREE_BRAIN_UNAUTHORIZED"
+    },
+    "task_id_thread_id_state_remaining_steps": "NOT_READ",
+    "task_start_resume": "NOT_EXECUTED"
+  },
+  "entry": {
+    "ordinary_chat_last_observed_error": "TREE_BRAIN_CODEX_TOOL_NOT_AVAILABLE",
+    "ordinary_chat_reprobe_this_repair": false,
+    "reason": "No account-side registration change was observed. Do not repeat unchanged prompts or equate execution-host tools with ordinary ChatGPT.",
+    "browser_required_service_file_still_missing": "browser/26.1013.40934/scripts/browser-service.mjs",
+    "existing_tunnel_id": "tunnel_6aa97a833a7481919834581673d9f199",
+    "evening_runtime_was_not_running": true,
+    "first_evening_hidden_launcher_attempt_failed": true,
+    "restarted_with_existing_powershell7_runtime": true,
+    "runtime_pid": 17936,
+    "runtime_started_at": "2026-10-18T20:24:06+08:00",
+    "healthz_http_status": 200,
+    "readyz_http_status": 200,
+    "retained_warning": "initial MCP startup probe timed out after 2 seconds",
+    "hosted_plugin_registration_installation": "NOT_VERIFIED",
+    "grant_expiry_unchanged": "2026-10-18T21:54:17+08:00"
+  },
+  "limits": [
+    "The original deployment metadata lookup and run-key lookup both returned HTTP 404. Whether the stored index frames require that key, or the deployment is deleted versus otherwise unavailable, is not established: the operator format probe returned 403.",
+    "Do not assert ciphertext, state expiration, deletion of the index run, or irrecoverable loss of task data from these observations alone.",
+    "Do not fetch, invent or expose deployment keys, remove encryption, reset the index, reconstruct task state from a mirror, or bypass the rejected read.",
+    "Goal A remains blocked on ordinary-client registration and the durable index read. Goal B stays PASS and frozen with no new video requests."
+  ],
+  "continuation": "Inspect a current screenshot of the web custom-MCP Tunnel form or restore the supported Browser runtime, then register/install the existing private tunnel. Preserve the original index and task while diagnosing the missing deployment-key dependency through the existing authorized Vercel mechanisms. Do not renew the fixed grant automatically.",
+  "primary_references": [
+    "Installed workflow/docs/v4/api-reference/workflow-runtime/get-world.mdx",
+    "Installed @workflow/core/dist/runtime/resume-hook.js and serialization.js",
+    "https://raw.githubusercontent.com/vercel/workflow/main/packages/core/src/runtime/resume-hook.ts"
+  ]
+}

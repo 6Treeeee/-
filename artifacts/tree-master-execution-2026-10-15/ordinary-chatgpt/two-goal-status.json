@@ -1,15 +1,15 @@
 {
   "task": "TREE_MASTER_EXECUTION",
-  "observed_at": "2026-10-17T21:39:50.558Z",
+  "observed_at": "2026-10-18T12:25:40.4832225Z",
   "overall": "BLOCKED",
   "goal_a": {
     "status": "BLOCKED",
     "service_authentication": "PASS_AFTER_OWNER_APPROVED_RENEWAL",
     "execution_host_real_tools": "DISCOVERED_AND_CONNECTION_CHECK_PASSED",
     "ordinary_chat_error": "TREE_BRAIN_CODEX_TOOL_NOT_AVAILABLE",
-    "actual_task_status_error": "A2A_WORKFLOW_HOOK_NOT_READY",
-    "evidence": "brain-approved-renewal-verification.json",
-    "query_diagnostics": "workflow-index-read-diagnostics.json",
+    "actual_task_status_error": "ORIGINAL_INDEX_STREAM_RUN_KEY_HTTP_404",
+    "evidence": "brain-hook-lookup-repair.json",
+    "query_diagnostics": "brain-hook-lookup-repair.json",
     "task_state_not_read": true,
     "task_start_resume_not_executed": true
   },
@@ -26,7 +26,13 @@
   },
   "execution_thread": "01a1317a-c479-7460-8c24-37351301787c",
   "original_task_mirror_unchanged": true,
-  "owner_action": "Send the current web form screenshot so the agent can judge the account-side registration; no further technical classification is requested from Owner. Restore the supported Browser runtime before automated web interaction. Retain the pending backend hook-query failure for continued bounded diagnosis.",
+  "owner_action": "Provide the current web custom-MCP Tunnel form screenshot, or restore the supported Browser runtime, so the agent can judge registration. Preserve the original index and diagnose the old-deployment key dependency only through authorized Vercel mechanisms; the operator chunk-format read returned 403. Do not reset or reconstruct state.",
   "vercel_authentication_preserved": true,
-  "production_renewal_and_same_source_release_owner_approved": true
+  "production_renewal_and_same_source_release_owner_approved": true,
+  "production_minimal_hook_repair": {
+    "commit": "7bb3f7c002e39bb79cf37d5f1eb15fa5145fa89c",
+    "related_tests_passed": 30,
+    "base": "5dccd27c7668250574b3122b8c260bbecf031edc",
+    "deployment": "dpl_2JLy9WB5aBk6jbcFgMBW6hVRVquR"
+  }
 }
