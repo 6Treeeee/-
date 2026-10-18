@@ -1,5 +1,11 @@
 # Tree Brain private ChatGPT entry
 
+## 2026-10-19 authentication gate
+
+The previous explicitly bounded grant expired at 2026-10-18 21:54:17 +08:00. A real authenticated initialize now returns HTTP 401/TREE_BRAIN_UNAUTHORIZED. No renewal or redeploy has been applied. A new one-time 24-hour renewal of the same grant and same Production code 7bb3f7c was prepared for explicit confirmation; see brain-renewal-2026-10-19-review.json. The execution-host Tree Brain namespace is absent today, the tunnel process is not running, and the Browser service module is still missing. Do not assume yesterday's host tools or health check remain current. Production and Reader aliases independently still point to the preserved deployments.
+
+An isolated SDK 4.8.4 synthetic reproduction confirms eager key resolution even for plaintext framed streams. A private candidate defers key resolution to encrypted frames and preserves valid-key decryption and missing-key/tamper rejection. It is not deployed, does not reveal the original index format and does not establish a task read. Ordinary-client registration and real tool calls remain separate gates. Goal B stays frozen.
+
 ## 2026-10-18 continued recovery: bounded hook repair deployed
 
 Production sigma-silk-88.vercel.app now points to READY dpl_2JLy9WB5aBk6jbcFgMBW6hVRVquR at 7bb3f7c002e39bb79cf37d5f1eb15fa5145fa89c. This is original Production 5dccd27 plus only control-service hook lookup changes and tests, not promotion of current Reader Preview. Thirty related tests pass. Only explicit HookNotFoundError permits bootstrap; identity-only lookup uses the same authenticated World without hydrating unused metadata. Task scope checks, stream decryption and original-thread resume remain unchanged.

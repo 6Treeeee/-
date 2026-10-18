@@ -1,0 +1,16 @@
+{
+  "observed_at": "2026-10-18T22:20:21.865Z",
+  "sdk_version": "4.8.4",
+  "scope": "synthetic offline only",
+  "original_plain_framed_read_fails_on_unnecessary_key_request": true,
+  "isolated_candidate_plain_framed_read_passed_without_key": true,
+  "isolated_candidate_encrypted_read_with_valid_key_passed": true,
+  "isolated_candidate_encrypted_read_with_missing_key_failed": true,
+  "isolated_candidate_tampered_ciphertext_failed": true,
+  "actual_index_format_known": false,
+  "actual_task_state_read": false,
+  "repository_code_changed": false,
+  "installed_dependency_changed": false,
+  "production_changed": false,
+  "candidate_deployed": false
+}

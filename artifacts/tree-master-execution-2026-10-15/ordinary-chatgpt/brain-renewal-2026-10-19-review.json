@@ -1,0 +1,31 @@
+{
+  "task": "TREE_MASTER_EXECUTION",
+  "status": "PREPARED_NOT_APPLIED_AWAITING_BOUNDED_RENEWAL_APPROVAL",
+  "observed_date": "2026-10-19",
+  "actual_authenticated_initialize": {"http_status": 401, "error_code": "TREE_BRAIN_UNAUTHORIZED", "observed_at": "2026-10-19T06:19:23.6581900+08:00"},
+  "existing_grant_expired_at": "2026-10-18T21:54:17+08:00",
+  "proposed_one_time_renewal": {
+    "duration_hours_from_apply_time": 24,
+    "principal_id": "bearer:tree-brain-desktop",
+    "workspace_ids": ["content-reader"],
+    "scopes": ["treebrain:read", "treebrain:check"],
+    "rotate_token": false,
+    "grant_variable": "TREE_BRAIN_BEARER_GRANT_JSON",
+    "existing_variable_id": "PCXfrl25JiO67Iiy",
+    "environment": "production",
+    "remote_sensitive_old_value_readable": false
+  },
+  "same_code_redeployment": {
+    "project_id": "prj_d7jyKbXib4VZ4M27Lkfwv1D1Xuwp",
+    "team_id": "team_ycnNdyU7i77RkROrgI8GtooX",
+    "source_deployment_id": "dpl_2JLy9WB5aBk6jbcFgMBW6hVRVquR",
+    "source_sha": "7bb3f7c002e39bb79cf37d5f1eb15fa5145fa89c",
+    "target": "production",
+    "withLatestCommit": false,
+    "only_alias_to_assign": "sigma-silk-88.vercel.app",
+    "preserved_reader_preview_deployment": "dpl_7CmSsArRnzMgyAf4uRnxkvWGAArE"
+  },
+  "preserved_boundaries": ["No expanded permissions or workspaces", "No authentication or encryption removal", "No new OAuth, tunnel or task system", "No Reader code or video tests", "No task mirror reconstruction"],
+  "known_remaining_blockers": ["Ordinary ChatGPT registration and tool discovery unverified", "Original index stream run-key HTTP 404", "Supported Browser service module still missing", "Tree Brain namespace is not exposed to this execution session today"],
+  "reason_to_ask": "Prior authorization was explicitly limited to 24 hours; gpt-handoff.md says not to extend its fixed expiry automatically. A generic continue does not establish another fixed-duration renewal."
+}

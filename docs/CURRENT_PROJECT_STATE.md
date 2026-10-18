@@ -1,5 +1,15 @@
 # CURRENT PROJECT STATE（当前项目状态）
 
+## 2026-10-19：固定授权已到期，真实 401；离线验证 SDK 的明文帧密钥依赖问题
+
+06:19 实测既有 Bearer 的 initialize 为 HTTP 401/TREE_BRAIN_UNAUTHORIZED。原固定 24 小时授权于 2026-10-18 21:54:17 +08:00 到期；未再次续期，未修改远端授权或部署。当前执行会话也不再暴露 mcp__tree_brain_codex 工具，不能把昨天工程会话的工具表视为今天仍可用。原隧道进程当前未运行；Browser 所需 service 文件仍缺失。两个别名独立读回：Production 仍 dpl_2JLy9WB5aBk6jbcFgMBW6hVRVquR，Reader Preview 仍 dpl_7CmSsArRnzMgyAf4uRnxkvWGAArE。
+
+已准备单次 24 小时续期及同一 Production 代码 7bb3f7c 的审查稿，并提出异步确认；保留原令牌、主体、content-reader read/check、认证和 Reader 边界，不自动延长固定期限。审查稿 brain-renewal-2026-10-19-review.json 为 PREPARED_NOT_APPLIED，不代表已批准或应用。
+
+独立离线验证发现 SDK 4.8.4 的 getDeserializeStream 在判断帧是否加密之前就解析密钥。使用合成明文帧与失败的模拟密钥解析器，真实复现“明文也因密钥请求失败而不可读”。私有隔离候选把密钥解析移到 encr 帧分支，验证明文无需密钥、加密帧用有效密钥可读、缺失密钥和篡改密文仍失败；没有修改安装依赖、仓库生产代码或线上部署。证据 sdk-stream-key-resolution-offline-2026-10-19.json。候选仅为后续最小修复依据，不证明原索引为明文，也没有读到真实任务正文。
+
+GOAL B 保持 PASS 冻结；GOAL A 仍 BLOCKED，原索引密钥 404、普通聊天注册、工具暴露和任务状态读取均未被离线结果替代。恢复线上认证需等待这次有明确时限的续期答复；账号侧仍需可观察的网页表单或受支持浏览器入口。以下为历史检查点。
+
 ## 2026-10-18 续执行：索引查询最小修复已部署，真实正文读取仍遇到旧部署密钥 404
 
 已修复两处有实测依据的问题：hook 查询不再把权限、网络、解密异常当作“不存在”并创建索引运行；只取 runId 时通过相同认证 World 的 hooks.getByToken 读取，不再让 SDK 4 提前解密未使用的 metadata。保留原索引、主体/工作区隔离、正文读取和解密、原线程恢复；未升级 SDK。主线提交 af685df、c8cf64e、e511f7f；30 项相关测试通过。
