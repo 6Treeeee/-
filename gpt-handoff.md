@@ -16,6 +16,8 @@
 
 ## 工作方式
 
+10月20日历史TikHub报告复核：Owner提供的bda833e/176项测试/App和Web均402证据实际为9月24日旧Production65C，非新部署。后来三次客户端PASS的Worker只用directProvider、不用TikHub，不能据旧记录认定当前视频链路回归。现有远端TikHub敏感变量元数据可见，但无本机可用凭据/可见账号页面，当前余额及权益NOT_READ，未调用TikHub或新增视频请求，未付款/改凭据/改部署。新增证据artifacts/tree-master-execution-2026-10-15/ordinary-chatgpt/tikhub-historical-report-review-2026-10-20.json；两个目标的既有状态不变。
+
 10月20日新增只读诊断：连接仍ready，授权到当日06:22:56有效，原隧道PID11448在运行。上游vercel/workflow#1203由#1174修复的是成功响应key:null，本机world-vercel4.7.0已含该逻辑，不能套用于本项目原索引HTTP404。官方软删除恢复机制已核对，但实际保留策略、原部署软删除/恢复资格仍未知；本机已有Vercel凭据一次项目元数据GET返回403后停止。未重新部署候选、升级SDK、重置索引或换身份重试；未新增客户端/视频验收。新增证据artifacts/tree-master-execution-2026-10-15/ordinary-chatgpt/brain-upstream-readonly-diagnostics-2026-10-20.json，两个目标状态不变。
 
 22:27账号侧补充证据：plugin_management.get_app_permissions按明确名称Tree Brain Codex返回not_installed；该结果限于当前名称查询，不代表已定位私有app ID或穷尽全部工作区。目录搜索无精确匹配且非穷尽。现有管理工具没有创建/连接自定义MCP能力，未更改权限或安装其它应用；原隧道PID11448仍运行。完整证据追加在brain-evening-continuation-2026-10-19.json。当前阻塞需要可见网页Connection/Tunnel表单或受支持浏览器恢复；未再重复普通聊天、task_status或视频验收。

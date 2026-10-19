@@ -1,0 +1,56 @@
+{
+  "task_id": "TREE_MASTER_EXECUTION",
+  "review_date": "2026-10-20",
+  "observed_at": "2026-10-20T02:16:37.1086409+08:00",
+  "historical_evidence_sha256": "d1b37460137ae8cef8d88464440d0b900d4e228f85cfa777fbbfe3737fd665a1",
+  "worker_source_sha256": "72b04855df21e9bc87aa41ca831f1b869b5ac5154e3d084067cda8fdd1c72478",
+  "provided_report": {
+    "recorded_at": "2026-09-23T23:59:54.7780753Z",
+    "local_date": "2026-09-24",
+    "commit": "bda833e1fe69de78c41c1986f0dc3bd08c04a8ad",
+    "commit_is_ancestor_of_current_worktree": true,
+    "production_deployment": "dpl_65CefkWQs4vzv6p8cxEL2dukhLYB",
+    "tests": { "passed": 176, "failed": 0 },
+    "fresh_requests_in_original_report": 1,
+    "sample_id": "7673753332166430002",
+    "app_http": 402,
+    "web_http": 402,
+    "upstream_code": null,
+    "upstream_message": "",
+    "specific_billing_reason": "NOT_ESTABLISHED"
+  },
+  "current_path_review": {
+    "source": "scripts/acquisition-worker.mjs",
+    "configured_providers": ["directProvider"],
+    "tikhub_provider_used": false,
+    "documentation": "docs/CONTENT_READER_ACQUISITION_WORKER.md",
+    "later_ordinary_chatgpt_acceptance": "three-fresh-client-acceptance.json",
+    "conclusion": "The September report is historical evidence for the old Production TikHub path. It does not establish a regression in the later accepted public-browser acquisition Worker."
+  },
+  "account_inspection": {
+    "official_account_endpoint": "https://api.tikhub.io/api/v1/tikhub/user/get_user_info",
+    "official_reference": "https://docs.tikhub.io/186826050e0",
+    "official_http_status_reference": "https://docs.tikhub.io/",
+    "local_process_key_available": false,
+    "project_root_env_key_assignment_available": false,
+    "named_tikhub_credential_file_found": false,
+    "remote_metadata_lookup": "PASS_decrypt_false",
+    "remote_key_type": "sensitive",
+    "remote_key_targets": ["preview", "production"],
+    "remote_key_value_requested_or_read": false,
+    "account_endpoint_called": false,
+    "balance": "NOT_READ",
+    "free_credit": "NOT_READ",
+    "endpoint_entitlements": "NOT_READ",
+    "exact_402_reason": "NOT_ESTABLISHED",
+    "limit": "No existing usable local credential or observable signed-in account page; configured sensitive metadata alone does not permit an account API call."
+  },
+  "actions": {
+    "new_video_requests": 0,
+    "new_tikhub_requests": 0,
+    "payments_or_credential_changes": false,
+    "application_source_or_deployment_changes": false,
+    "goal_b_acceptance_preserved": true,
+    "goal_a_still_blocked": true
+  }
+}

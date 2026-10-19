@@ -1,5 +1,13 @@
 # CURRENT PROJECT STATE（当前项目状态）
 
+## 2026-10-20：Owner提供的TikHub402报告已核对为9月24日历史记录
+
+实际读取原acceptance.json：recorded_at=2026-09-23T23:59:54.778Z（本地9月24日），提交bda833e1fe69de78c41c1986f0dc3bd08c04a8ad、旧Production dpl_65CefkWQs4vzv6p8cxEL2dukhLYB、测试176/176、当时仅一次fresh请求，App/Web均402且code=null/message为空。该提交已在当前历史中，不能作为刚上线的新提交或当前回归证据。
+
+已复核当前scripts/acquisition-worker.mjs显式providers:[directProvider]及采集文档：后来通过普通ChatGPT三次fresh完整OCR的公开浏览器Worker不使用TikHub。因此保留GOAL B已有PASS，不重复采集，也不以这份旧402报告要求充值。TikHub当前余额/赠送额度/接口权益仍NOT_READ：进程、两个相关仓库根目录env及已有Tree Brain凭据目录没有可用TikHub副本；远端decrypt=false元数据确认TIKHUB_API_KEY为preview/production敏感变量，未请求或导出值。已核对官方只读get_user_info接口，但没有凭据/可见已登录页面，未调用账号API。官方402说明涉及余额和免费额度适用性，空响应不足以确证具体原因。
+
+证据tikhub-historical-report-review-2026-10-20.json；本轮零视频/TikHub请求、无付款、无凭据/源码/部署修改。原GOAL A入口和任务读取阻塞不变，未创建替代任务。
+
 ## 2026-10-20 续执行：排除已包含的上游空密钥修复；保留策略读取被403拒绝
 
 固定授权到10月20日06:22:56仍有效，实际get_connection_status为ready，原隧道PID11448仍运行；Browser所需service文件仍缺失。本轮未重试Browser启动、普通聊天提示、task_status或视频验收，未续期、部署或改生产源码。
