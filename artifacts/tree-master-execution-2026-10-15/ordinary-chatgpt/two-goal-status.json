@@ -1,7 +1,7 @@
 {
   "task": "TREE_MASTER_EXECUTION",
-  "observed_at": "2026-10-19T22:19:26.4232186+08:00",
-  "latest_continuation_evidence": "brain-evening-continuation-2026-10-19.json",
+  "observed_at": "2026-10-20T01:38:29+08:00",
+  "latest_continuation_evidence": "brain-upstream-readonly-diagnostics-2026-10-20.json",
   "overall": "BLOCKED",
   "goal_a": {
     "status": "BLOCKED",

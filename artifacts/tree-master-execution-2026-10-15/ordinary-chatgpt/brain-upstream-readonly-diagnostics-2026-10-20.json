@@ -1,0 +1,48 @@
+{
+  "task_id": "TREE_MASTER_EXECUTION",
+  "date": "2026-10-20",
+  "timezone": "Asia/Shanghai",
+  "overall": "BLOCKED",
+  "live_connection_status": "ready",
+  "grant_expires_at": "2026-10-20T06:22:56+08:00",
+  "grant_renewed": false,
+  "original_tunnel_pid_observed": 11448,
+  "required_browser_service_present": false,
+  "new_browser_bootstrap_or_client_prompt": false,
+  "task_start_resume_or_status_retried": false,
+  "upstream_investigation": {
+    "issue": "https://github.com/vercel/workflow/issues/1203",
+    "maintainer_fix": "https://github.com/vercel/workflow/pull/1174",
+    "fix_merge_commit": "e1a2f475aa3258ee9e36e0694f73dbbe72b49fbe",
+    "fix_scope": "Accept a successful API response with key:null as no encryption; non-success HTTP responses still fail",
+    "installed_world_vercel_version": "4.7.0",
+    "installed_encryption_source_sha256": "9076b8b94f0176f9561f98e8322841e73ffd464d95d4f54ac59005b280f6ab62",
+    "installed_fix_present": true,
+    "source_observation": "Installed encryption.js accepts key:string|null and returns undefined for null; HTTP failures retain rejection",
+    "conclusion": "This already-present null-key fix does not resolve the project's last observed original-index HTTP404. No SDK upgrade or patch justified by this issue."
+  },
+  "retention_investigation": {
+    "official_source": "https://vercel.com/docs/deployment-retention",
+    "documented_recovery": "Successfully built soft-deleted deployments can be restored within the documented recovery window through Settings/Security/Recently Deleted",
+    "connector_project_metadata": "Returned project identity and limited metadata; no retention policy fields returned",
+    "operator_project_metadata_request": {
+      "method": "GET",
+      "path": "/v9/projects/prj_d7jyKbXib4VZ4M27Lkfwv1D1Xuwp",
+      "team": "team_ycnNdyU7i77RkROrgI8GtooX",
+      "existing_credentials_only": true,
+      "actual_http": 403,
+      "retried_after_denial": false
+    },
+    "actual_project_retention_policy": "NOT_READ",
+    "original_deployment_deleted_or_recoverable": "NOT_ESTABLISHED",
+    "restoration_attempted": false
+  },
+  "boundaries": {
+    "no_deployment_or_source_changes": true,
+    "no_new_tunnel_or_credentials": true,
+    "no_index_reset_or_mirror_reconstruction": true,
+    "no_new_video_requests": true,
+    "goal_b": "PASS_FROZEN"
+  },
+  "next_input": "Observable current ChatGPT web Connection/Tunnel form or supported Browser recovery. Reuse the existing tunnel. Retention recovery remains conditional on confirming actual deployment state through authorized access."
+}

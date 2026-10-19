@@ -1,5 +1,13 @@
 # CURRENT PROJECT STATE（当前项目状态）
 
+## 2026-10-20 续执行：排除已包含的上游空密钥修复；保留策略读取被403拒绝
+
+固定授权到10月20日06:22:56仍有效，实际get_connection_status为ready，原隧道PID11448仍运行；Browser所需service文件仍缺失。本轮未重试Browser启动、普通聊天提示、task_status或视频验收，未续期、部署或改生产源码。
+
+只读核对上游vercel/workflow#1203及维护者指向的#1174：实际修复针对成功响应key:null的解析，本机@workflow/world-vercel4.7.0已包含nullable及null返回undefined逻辑，非成功HTTP仍拒绝。它不能修复本项目最近实测的原索引run-key404；没有据此盲升SDK或重新部署候选。官方Deployment Retention提供成功构建的软删除部署恢复窗口和网页Settings/Security/Recently Deleted入口，但当前尚未确认原部署删除状态、恢复资格或项目具体策略。现有连接器返回的项目元数据不含策略；使用已有本机Vercel凭据进行一次公开项目元数据GET实际403，已停止，未换凭据重试或绕过。不能将上游Issue的原始猜测当本项目根因，也不能断言原数据丢失。
+
+证据brain-upstream-readonly-diagnostics-2026-10-20.json。GOAL B保持三连PASS冻结；GOAL A仍BLOCKED，原任务/thread/remaining仍未读到。账号侧仍需当前网页Connection/Tunnel画面或受支持Browser恢复，由代理判断已有隧道注册；保留策略恢复只在获准可见事实成立后执行，不重置索引。
+
 ## 2026-10-19 22:19 续执行：原隧道已恢复，网页控制组件仍缺失
 
 22:27新增账号侧工具证据：对明确名称Tree Brain Codex调用plugin_management.get_app_permissions，实际返回status=not_installed（当前名称查询的账号结果，不代表已识别私有hosted app ID或断言所有工作区均无此应用）。插件目录搜索没有返回同名精确匹配，目录本身非穷尽，不能据此断言私有插件不存在。当前管理能力仅查询权限/依赖、搜索/建议、卸载和更新权限，没有创建或连接自定义MCP接口；未更改权限、安装其它应用或使用替代服务。PID11448仍在运行。未重复Browser失败启动、普通聊天提示、task_status或视频验收；源码只读追踪未获得新的线上格式或运行时指纹证据，因此未再部署候选。账号侧仍需可见网页表单，由代理判断后复用已有隧道。
