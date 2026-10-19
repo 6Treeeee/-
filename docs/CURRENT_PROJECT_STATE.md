@@ -2,6 +2,8 @@
 
 ## 2026-10-19 22:19 续执行：原隧道已恢复，网页控制组件仍缺失
 
+22:27新增账号侧工具证据：对明确名称Tree Brain Codex调用plugin_management.get_app_permissions，实际返回status=not_installed（当前名称查询的账号结果，不代表已识别私有hosted app ID或断言所有工作区均无此应用）。插件目录搜索没有返回同名精确匹配，目录本身非穷尽，不能据此断言私有插件不存在。当前管理能力仅查询权限/依赖、搜索/建议、卸载和更新权限，没有创建或连接自定义MCP接口；未更改权限、安装其它应用或使用替代服务。PID11448仍在运行。未重复Browser失败启动、普通聊天提示、task_status或视频验收；源码只读追踪未获得新的线上格式或运行时指纹证据，因此未再部署候选。账号侧仍需可见网页表单，由代理判断后复用已有隧道。
+
 实际 get_connection_status 返回 ready，主体仍 bearer:tree-brain-desktop、可见工作区1；原固定授权到2026-10-20 06:22:56 +08:00仍有效，本轮未续期、未部署、未改源码。发现早晨原隧道进程已退出；旧日志仅确认两条含超时的记录，未确定退出根因。使用原PowerShell7隐藏启动器恢复同一隧道，PID11448、22:18:56启动；重新解析响应后 healthz 为200/live、readyz为200/ready。第一次本地健康探测解析抛ArgumentException，不能算服务失败或成功。
 
 当前官方Browser启动再次实际失败，缺少26.1013.40934/scripts/browser-service.mjs；没有修改可信配置、伪造组件或重试先前被策略拒绝的外部页面启动。网页Connection/Tunnel区域仍未观察到，hosted注册仍未验证。没有重复发送普通聊天探测或重试条件未变的task_status；早晨普通聊天NOT_EXPOSED和原索引run-key404仍为最近实测结果，任务字段仍NOT_READ，未task_start/resume。

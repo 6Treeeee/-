@@ -1,5 +1,9 @@
 # Tree Brain private ChatGPT entry
 
+## 2026-10-19 22:27 account management inspection
+
+The current-account permission inspection by the explicit name Tree Brain Codex returned status=not_installed. This is a real management-tool response, not a hosted private-app identifier lookup or proof across every workspace. Catalog search returned no exact same-name plugin and is not exhaustive. Available management tools cannot create or connect a custom MCP app. No permissions or installations were changed. The original tunnel was restarted at22:18:56 as PID11448 and health/readiness returned200/live and200/ready; this supersedes the morning process observation below. Official Browser bootstrap still fails on the missing26.1013.40934 service module. Account-side form inspection remains required; use the existing tunnel only. No fresh client prompt, task query, deployment or video request was repeated. Evidence: brain-evening-continuation-2026-10-19.json.
+
 ## 2026-10-19 current state after explicit renewal and fresh ordinary-chat probe
 
 The one-time renewal was explicitly approved and applied, preserving the token and content-reader read/check scope. Expiry is fixed at 2026-10-20 06:22:56 +08:00. Active Production is READY dpl_29u8iDtKcGYNLTBxEp25W3ZaVsGn, rebuilt from the original current deployment with withLatestCommit=false, same source 7bb3f7c. Authenticated initialize and real execution-host connection tools pass; anonymous initialize remains 401. Reader Preview is unchanged.

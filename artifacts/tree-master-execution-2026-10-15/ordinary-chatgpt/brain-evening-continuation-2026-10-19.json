@@ -2,6 +2,19 @@
   "task_id": "TREE_MASTER_EXECUTION",
   "observed_at": "2026-10-19T22:19:26.4232186+08:00",
   "overall": "BLOCKED",
+  "account_plugin_inspection": {
+    "observed_at": "2026-10-19T22:27:32+08:00",
+    "actual_tool": "plugin_management.get_app_permissions",
+    "lookup": "Tree Brain Codex",
+    "actual_status": "not_installed",
+    "scope_limit": "Name-based current-account management response; does not identify a private hosted app ID or prove absence in every account or workspace",
+    "catalog_search": "Tree Brain Codex",
+    "exact_catalog_match_returned": false,
+    "catalog_is_exhaustive": false,
+    "available_management_actions": ["inspect permissions", "inspect dependencies", "search", "suggest", "uninstall", "update permissions"],
+    "create_or_connect_custom_mcp_tool_available": false,
+    "permissions_or_installation_changed": false
+  },
   "service_connection": {
     "actual_tool": "mcp__tree_brain_codex__get_connection_status",
     "status": "ready",

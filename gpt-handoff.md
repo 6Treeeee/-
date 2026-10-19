@@ -3,7 +3,7 @@
 - 任务编号：TREE_MASTER_EXECUTION
 - 目标：分别完成普通 ChatGPT 真正调动现有 Codex，以及真实读取公开抖音单视频两个闭环。
 - 状态：BLOCKED
-- 更新时间：2026-10-19 22:19（Asia/Shanghai，UTC+08:00）
+- 更新时间：2026-10-19 22:27（Asia/Shanghai，UTC+08:00）
 - 仓库：6Treeeee/-
 - 分支：codex/a2a-control-loop
 - 固定路径：gpt-handoff.md
@@ -15,6 +15,8 @@
 - 下一步：需要当前网页自定义MCP的Connection/Tunnel区域截图或恢复受支持Browser，由代理判断具体UI并恢复既有私有注册；无需重复泛化授权。原任务状态读取还需在现有获准Vercel机制下定位run-key404，先确证实际读取位置/格式，不盲升SDK、不提供任意密钥、不关闭加密、不重置索引或从镜像重建。仅在入口有实质变化后再做普通聊天真实task_status/start/resume及原线程恢复验收；固定授权到期后不自动延长。
 
 ## 工作方式
+
+22:27账号侧补充证据：plugin_management.get_app_permissions按明确名称Tree Brain Codex返回not_installed；该结果限于当前名称查询，不代表已定位私有app ID或穷尽全部工作区。目录搜索无精确匹配且非穷尽。现有管理工具没有创建/连接自定义MCP能力，未更改权限或安装其它应用；原隧道PID11448仍运行。完整证据追加在brain-evening-continuation-2026-10-19.json。当前阻塞需要可见网页Connection/Tunnel表单或受支持浏览器恢复；未再重复普通聊天、task_status或视频验收。
 
 1. 当前对话负责限定目标、工作范围和判断标准。
 2. 当前对话启动执行方。
