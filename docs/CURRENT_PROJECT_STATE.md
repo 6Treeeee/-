@@ -1,5 +1,13 @@
 # CURRENT PROJECT STATE（当前项目状态）
 
+## 2026-10-19 22:19 续执行：原隧道已恢复，网页控制组件仍缺失
+
+实际 get_connection_status 返回 ready，主体仍 bearer:tree-brain-desktop、可见工作区1；原固定授权到2026-10-20 06:22:56 +08:00仍有效，本轮未续期、未部署、未改源码。发现早晨原隧道进程已退出；旧日志仅确认两条含超时的记录，未确定退出根因。使用原PowerShell7隐藏启动器恢复同一隧道，PID11448、22:18:56启动；重新解析响应后 healthz 为200/live、readyz为200/ready。第一次本地健康探测解析抛ArgumentException，不能算服务失败或成功。
+
+当前官方Browser启动再次实际失败，缺少26.1013.40934/scripts/browser-service.mjs；没有修改可信配置、伪造组件或重试先前被策略拒绝的外部页面启动。网页Connection/Tunnel区域仍未观察到，hosted注册仍未验证。没有重复发送普通聊天探测或重试条件未变的task_status；早晨普通聊天NOT_EXPOSED和原索引run-key404仍为最近实测结果，任务字段仍NOT_READ，未task_start/resume。
+
+GOAL B三次真实客户端PASS保持冻结，本轮零视频请求。整体仍BLOCKED，需要当前网页Connection/Tunnel区域截图或恢复受支持Browser，由代理直接判断和操作既有隧道注册。证据：brain-evening-continuation-2026-10-19.json；此前完整部署与普通聊天证据不变。
+
 ## 2026-10-19 本轮最终检查点：续期同代码发布通过；新普通聊天验收仍 NOT_EXPOSED；读取候选已回滚
 
 Owner 已明确回复“授权续期24小时并发布同一代码”。原令牌、主体、content-reader read/check 范围保持，仅更新既有敏感 Production 授权并固定到 2026-10-20 06:22:56 +08:00；没有自动续期。按原部署 2JLy、withLatestCommit=false 重建为 READY dpl_29u8iDtKcGYNLTBxEp25W3ZaVsGn，源码仍 7bb3f7c。认证 initialize 实测 200/server=tree-brain-codex；当前工程会话五个真实工具恢复，get_connection_status 为 ready；匿名同请求仍 401。Reader Preview 别名独立读回仍为 dpl_7CmSsArRnzMgyAf4uRnxkvWGAArE。

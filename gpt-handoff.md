@@ -3,7 +3,7 @@
 - 任务编号：TREE_MASTER_EXECUTION
 - 目标：分别完成普通 ChatGPT 真正调动现有 Codex，以及真实读取公开抖音单视频两个闭环。
 - 状态：BLOCKED
-- 更新时间：2026-10-19（Asia/Shanghai，UTC+08:00）
+- 更新时间：2026-10-19 22:19（Asia/Shanghai，UTC+08:00）
 - 仓库：6Treeeee/-
 - 分支：codex/a2a-control-loop
 - 固定路径：gpt-handoff.md
@@ -11,7 +11,7 @@
 - 证据路径/提交：artifacts/tree-master-execution-2026-10-15/ordinary-chatgpt/brain-renewal-and-client-acceptance-2026-10-19.json、brain-2026-10-19-client-response.md、brain-2026-10-19-client-prompt.txt、brain-renewal-2026-10-19-review.json、two-goal-status.json；候选3e722c8/独立Production1949e5b，默认构建移除8fba9f0。GOAL B仍见three-fresh-client-acceptance.json；原执行线程01a1317a-c479-7460-8c24-37351301787c、原索引及权威镜像保持。
 - 已批准的变更：Owner答复“授权续期24小时并发布同一代码”。仅更新原敏感Production授权，固定到2026-10-20 06:22:56 +08:00，令牌/主体/content-reader read+check不变；原部署2JLy按deploymentId、withLatestCommit=false重发为29u8，同一7bb3f7c。后续Master范围内的SDK回归候选未通过真实验收，已恢复sigma及默认项目域名到29u8，候选仅保留隔离review别名。未关闭认证/加密、未升级SDK、未新建OAuth/Tunnel/控制总线。
 - 仍需复核：同代码及候选的真实task_status均失败于原索引wrun_01M2DH54J8W01XKS1HFMF4405M、旧部署dpl_6C4Y6nK5hXBAh642WN8jsTgBBxgk的run-key HTTP404。构建应用与合成测试不证明运行时codec指纹、数据格式或数据丢失，不能猜测密文/过期/不可恢复。另行已发现的get_task诊断HTTP403/TREE_BRAIN_FORBIDDEN，未重试/绕过/扩权限。候选默认构建未激活，不再原样重复已失败验收。
-- 客户端现状：工程会话真实Tree Brain五工具已恢复，连接ready；匿名initialize仍401。桌面现有普通Tree于06:31:42显式选中插件发送只读探测，完整最终回复已复制读回，仍NOT_EXPOSED，无实际HTTP调用。原隧道PID29392、06:27:46启动，healthz/readyz200，readyz正文ready；不等于hosted注册。Reader Preview仍7Cm。Browser service仍缺失，外部网页Tunnel表单仍未取得，之前自动打开该页曾blocked by policy。
+- 客户端现状：22:19工程会话真实get_connection_status仍ready，原授权到10月20日06:22:56有效，本轮未续期或部署。普通Tree于06:31:42的最近实测仍NOT_EXPOSED，无实际HTTP调用；条件未变，本轮未重复发送或重试task_status。发现早晨隧道已退出，使用原启动器恢复同一原隧道为PID11448、22:18:56启动，healthz200/live、readyz200/ready；退出根因未确定，健康不等于hosted注册。官方Browser启动实际仍缺26.1013.40934/browser-service组件，外部网页Tunnel表单未取得，未重试先前blocked by policy的外部启动。新增证据artifacts/tree-master-execution-2026-10-15/ordinary-chatgpt/brain-evening-continuation-2026-10-19.json；GOAL B保持冻结，本轮零视频请求，原任务和索引未改动。
 - 下一步：需要当前网页自定义MCP的Connection/Tunnel区域截图或恢复受支持Browser，由代理判断具体UI并恢复既有私有注册；无需重复泛化授权。原任务状态读取还需在现有获准Vercel机制下定位run-key404，先确证实际读取位置/格式，不盲升SDK、不提供任意密钥、不关闭加密、不重置索引或从镜像重建。仅在入口有实质变化后再做普通聊天真实task_status/start/resume及原线程恢复验收；固定授权到期后不自动延长。
 
 ## 工作方式
