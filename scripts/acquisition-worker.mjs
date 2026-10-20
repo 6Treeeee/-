@@ -20,7 +20,12 @@ const browserService = new PublicBrowserService({
 });
 const directProvider = new DirectPublicWebProvider({ browserService, retries: 2,
   retryDelayMs: 500, videoNavigationTimeoutMs: 45_000, videoContentWaitMs: 22_000, settleMs: 700 });
-const hardSubtitles = new HardSubtitleOcr({ env: process.env, provider: directProvider, requestId: request_id });
+// Only the asynchronous worker gets a longer media/runtime budget.
+const hardSubtitles = new HardSubtitleOcr({ env: process.env, provider: directProvider, requestId: request_id,
+  maxDurationMs: 7_200_000 });
+const requestBudgetMs = 3_300_000;
+console.info(JSON.stringify({ event: "acquisition.policy", request_id,
+  max_duration_ms: hardSubtitles.maxDurationMs, request_budget_ms: requestBudgetMs }));
 const localWhisper = createLocalWhisperAsr();
 let envelope;
 try {
@@ -29,7 +34,7 @@ try {
     hardSubtitleOcr: hardSubtitles.read.bind(hardSubtitles),
     localAsr: localWhisper.available ? localWhisper.transcribe : null,
     openAiApiKey: null, aiGatewayApiKey: null, vercelOidcToken: null,
-    requestId: request_id, requestDeadlineAt: started + 1_000_000
+    requestId: request_id, requestDeadlineAt: started + requestBudgetMs
   });
   envelope = { request_id, aweme_id, pass: true, result, elapsed_ms: Date.now() - started,
     worker: { run_id: process.env.GITHUB_RUN_ID, attempt: process.env.GITHUB_RUN_ATTEMPT, commit: process.env.GITHUB_SHA } };

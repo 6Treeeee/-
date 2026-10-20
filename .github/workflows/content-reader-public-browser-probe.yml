@@ -22,6 +22,7 @@ on:
       - test/douyin-pipeline.test.js
       - test/public-browser-runtime.test.js
       - test/acquisition-worker.test.js
+      - test/ocr-duration.test.js
       - test/hard-subtitle-ocr-player.test.js
       - test/public-profile-probe.test.js
       - .github/workflows/content-reader-public-browser-probe.yml
@@ -48,7 +49,7 @@ jobs:
   probe:
     if: ${{ !(github.event_name == 'push' && startsWith(github.event.head_commit.message, 'profile-probe:')) && !(github.event_name == 'workflow_dispatch' && inputs.mode == 'profile_probe') }}
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -57,7 +58,7 @@ jobs:
           cache: npm
       - run: npm ci
       - name: Unit tests
-        run: node --test test/public-browser-runtime.test.js test/douyin-pipeline.test.js test/acquisition-worker.test.js test/hard-subtitle-ocr-player.test.js
+        run: node --test test/public-browser-runtime.test.js test/douyin-pipeline.test.js test/acquisition-worker.test.js test/hard-subtitle-ocr-player.test.js test/ocr-duration.test.js
       - name: Existing fixed baseline probe (manual only)
         if: github.event_name == 'workflow_dispatch' && inputs.mode == 'probe'
         run: node scripts/probe-sparticuz-video.mjs '7688672103729483058'

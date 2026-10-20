@@ -11,6 +11,26 @@ import { PublicBrowserService } from "./public-browser.js";
 import { waitForBoundPublicPlayer } from "./public-player-wait.js";
 
 const hash = (value) => createHash("sha256").update(value).digest("hex");
+const DEFAULT_MAX_DURATION_MS = 1_500_000;
+const MAX_WORKER_DURATION_MS = 7_200_000;
+
+function checkedDurationLimit(value) {
+  if (!Number.isSafeInteger(value) || value <= 0 || value > MAX_WORKER_DURATION_MS) {
+    throw new RangeError("OCR duration limit must be a positive integer no greater than 7200000 ms.");
+  }
+  return value;
+}
+
+export function assertOcrDuration(duration, maxDurationMs = DEFAULT_MAX_DURATION_MS) {
+  checkedDurationLimit(maxDurationMs);
+  if (!Number.isFinite(duration) || duration <= 0 || duration > maxDurationMs) {
+    throw fail("OCR_DURATION_UNSUPPORTED", `OCR accepts public single videos up to ${maxDurationMs / 60_000} minutes.`, {
+      duration_ms: Number.isFinite(duration) ? duration : null,
+      max_duration_ms: maxDurationMs,
+    });
+  }
+  return duration;
+}
 const textKey = (text) => String(text ?? "").replace(/[\s，。！？、；：,.!?;:·•“”‘’《》（）—…↑↓]/g, "").toLowerCase();
 function editSimilarity(left, right) {
   const a=textKey(left),b=textKey(right);
@@ -247,8 +267,9 @@ async function canvasCaptureFrame({ high=false, low=true }) {
 }
 
 export class HardSubtitleOcr {
-  constructor({ env=process.env, provider=null, requestId=null } = {}) {
+  constructor({ env=process.env, provider=null, requestId=null, maxDurationMs=DEFAULT_MAX_DURATION_MS } = {}) {
     this.env=env; this.requestId=requestId;
+    this.maxDurationMs=checkedDurationLimit(maxDurationMs);
     this.available=env.CONTENT_READER_HARD_SUBTITLES !== "0" && Boolean(env.CONTENT_READER_OCR_PYTHON);
     this.provider=provider ?? new DirectPublicWebProvider({
       browserService:new PublicBrowserService({ protocolTimeoutMs:45_000 }), retries:1,
@@ -308,7 +329,8 @@ export class HardSubtitleOcr {
         };
         const playback=await capturePage.evaluate(initializeCapture,{expectedId:id,expectedDurationSeconds,deadlineAt});
         const duration=playback.duration_ms;
-        if(!Number.isFinite(duration)||duration<=0||duration>1_500_000)throw fail("OCR_DURATION_UNSUPPORTED","OCR accepts public single videos up to 25 minutes.");
+        await journal({event:"ocr.duration_checked",duration_ms:Number.isFinite(duration)?duration:null,max_duration_ms:this.maxDurationMs});
+        assertOcrDuration(duration,this.maxDurationMs);
         const mediaHash=hash(playback.media_url); delete playback.media_url;
         await writeFile(join(root,"session.json"),JSON.stringify({run_id:runId,request_id:requestId,aweme_id:id,started_at:startedAt,engine,probe_engine:probeEngine,playback,media_url_sha256:mediaHash,cache_read:false},null,2));
         const records=[];let chain="",probeChain="";let checked=0,probeId=0;
