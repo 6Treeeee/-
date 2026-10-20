@@ -1,5 +1,13 @@
 # CURRENT PROJECT STATE（当前项目状态）
 
+## 2026-10-20 09:35：Owner新指定分享短链已真实调用；当前视频因时长限制失败
+
+Owner要求先做抖音，并提供https://v.douyin.com/1wV5KN8c8wc/。本工程会话实际调用已连接Tree Content Reader的start_douyin_read一次，解析aweme_id=7683407444361399590，取得request_id=e4b425a1-e6fc-42dd-85b9-7d33fad3478b和真实queued任务；按10秒间隔持续查询同一票据，经running到failed。客户端返回VIDEO_READ_FAILED，并附error_code=INVALID_ARGUMENT；没有取得字幕，不根据分享标题总结。这是Codex桌面连接器调用，不补称为新普通ChatGPT验收。
+
+只读核对同次Worker：请求提交49401c7811b238b2aab7174d98f8db382735b490、run39353939930、job118404307130、artifact12234752285精确匹配request与视频。单测和OCR打包成功，真实采集步骤失败；日志ocr.failed=OCR_DURATION_UNSUPPORTED，消息说明当前上限25分钟；最终TRANSCRIPTION_UNAVAILABLE，备用路径AUDIO_EXTRACTION_NO_AUDIO_TRACK及LOCAL_ASR_DURATION_LIMIT。保留日志/客户端结果未返回精确视频时长，不能编造数值。源码OCR及本地ASR的默认总时长上限均1500000ms。本轮未改阈值、读取逻辑、部署、授权或新增付费服务，没有重启采集。
+
+历史三个普通客户端PASS仅保留其原样本与支持范围；本条当前请求必须记FAILED_DURATION_UNSUPPORTED，不能因历史PASS覆盖。GOAL A按Owner抖音优先暂不推进，其阻塞事实不变。证据ordinary-chatgpt/douyin-7683407444361399590-read-2026-10-20.json；若要在现有能力内读取此内容，需要已有25分钟内的公开视频分段或用户提供完整字幕，不能把片段文字充当全片结果。
+
 ## 2026-10-20 08:23：固定授权已到期，实测401；当前工程工具也未暴露
 
 授权已于今天06:22:56 +08:00固定到期。08:23:18使用现有同一凭据作一次只读get_connection_status，实际HTTP401/TREE_BRAIN_UNAUTHORIZED；本会话实际工具表没有mcp__tree_brain_codex。原隧道进程本轮未发现，未携过期授权重启。Browser所需26.1013.40934/scripts/browser-service.mjs仍缺失，未重复失败启动；用户提供的open_page为null，不是可见或实时网页表单。

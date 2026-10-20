@@ -1,0 +1,74 @@
+{
+  "task_id": "TREE_MASTER_EXECUTION",
+  "client": "Codex desktop session using connected Tree Content Reader tools; not a fresh ordinary-ChatGPT client acceptance",
+  "input_url": "https://v.douyin.com/1wV5KN8c8wc/",
+  "aweme_id": "7683407444361399590",
+  "request_id": "e4b425a1-e6fc-42dd-85b9-7d33fad3478b",
+  "request_commit": "49401c7811b238b2aab7174d98f8db382735b490",
+  "request_blob": "fea20d6a3ad0b4f7f7f8fb3f2d9788e1bd60b6ad",
+  "started_at": "2026-10-20T09:31:49+08:00",
+  "worker_finished_at": "2026-10-20T09:33:28+08:00",
+  "start_status": "queued",
+  "observed_poll_statuses": [
+    "running",
+    "failed"
+  ],
+  "terminal_client_result": {
+    "status": "failed",
+    "error": {
+      "code": "VIDEO_READ_FAILED",
+      "message": "视频读取失败，请换一条公开视频重试。"
+    },
+    "aweme_id": "7683407444361399590",
+    "error_code": "INVALID_ARGUMENT"
+  },
+  "worker": {
+    "run_id": 39353939930,
+    "run_url": "https://github.com/6Treeeee/-/actions/runs/39353939930",
+    "attempt": 1,
+    "commit": "49401c7811b238b2aab7174d98f8db382735b490",
+    "job_id": 118404307130,
+    "conclusion": "failure",
+    "unit_tests": "success",
+    "runtime_packaging": "success",
+    "fresh_acquisition": "failure",
+    "artifact_upload": "success",
+    "artifact_id": 12234752285,
+    "artifact_sha256": "5b233c80eb92be6ffc5b40a50f50b09fc27c6d33c249240981fddad176482168"
+  },
+  "diagnosis": {
+    "worker_error": "TRANSCRIPTION_UNAVAILABLE",
+    "attempts": [
+      {
+        "method": "hard_subtitle_ocr",
+        "code": "OCR_DURATION_UNSUPPORTED"
+      },
+      {
+        "method": "audio_extraction",
+        "code": "AUDIO_EXTRACTION_NO_AUDIO_TRACK"
+      },
+      {
+        "method": "local_asr",
+        "code": "LOCAL_ASR_DURATION_LIMIT"
+      }
+    ],
+    "ocr_error_message": "OCR accepts public single videos up to 25 minutes.",
+    "existing_ocr_max_duration_ms": 1500000,
+    "existing_local_asr_max_total_duration_ms": 1500000,
+    "exact_video_duration_ms": "NOT_RETURNED_IN_CLIENT_RESULT_OR_RETAINED_WORKER_LOG",
+    "ocr_full_transcript_returned": false,
+    "content_analysis_performed": false,
+    "tikhub_used": false
+  },
+  "scope": {
+    "start_calls": 1,
+    "duplicate_capture_or_rerun": false,
+    "reading_logic_changed": false,
+    "limits_relaxed": false,
+    "paid_service_added": false,
+    "credentials_or_signed_task_ticket_published": false,
+    "prior_three_client_acceptances": "Historical successes preserved within their sample/scope; do not treat this new video as PASS",
+    "current_video_status": "FAILED_DURATION_UNSUPPORTED"
+  },
+  "next_input": "An existing public segment within the current 25-minute limit, or complete subtitle/transcript supplied by the user; no inference from the title."
+}

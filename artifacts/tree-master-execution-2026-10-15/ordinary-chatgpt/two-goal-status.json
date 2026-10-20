@@ -1,7 +1,7 @@
 {
   "task": "TREE_MASTER_EXECUTION",
-  "observed_at": "2026-10-20T08:23:18.4461871+08:00",
-  "latest_continuation_evidence": "brain-expired-entry-checkpoint-2026-10-20.json",
+  "observed_at": "2026-10-20T09:35:02.6146533+08:00",
+  "latest_continuation_evidence": "douyin-7683407444361399590-read-2026-10-20.json",
   "overall": "BLOCKED",
   "goal_a": {
     "status": "BLOCKED",
@@ -16,7 +16,17 @@
     "task_start_resume_not_executed": true
   },
   "goal_b": {
-    "status": "PASS_WITHIN_HARD_SUBTITLE_OCR_SCOPE",
+    "status": "PREVIOUS_ACCEPTANCE_PASS_CURRENT_VIDEO_FAILED_DURATION_UNSUPPORTED",
+    "prior_acceptance_status": "PASS_WITHIN_HARD_SUBTITLE_OCR_SCOPE",
+    "current_video": {
+      "aweme_id": "7683407444361399590",
+      "request_id": "e4b425a1-e6fc-42dd-85b9-7d33fad3478b",
+      "status": "FAILED_DURATION_UNSUPPORTED",
+      "run_id": "39353939930",
+      "full_transcript_obtained": false,
+      "client": "Codex desktop connected Tree Content Reader tools",
+      "evidence": "douyin-7683407444361399590-read-2026-10-20.json"
+    },
     "consecutive_fresh_client_successes": 3,
     "evidence": "three-fresh-client-acceptance.json",
     "runs": [
@@ -24,7 +34,9 @@
       "38988228481",
       "38988853909"
     ],
-    "new_tests_stopped": true
+    "new_tests_stopped": true,
+    "owner_requested_new_video_start_calls": 1,
+    "repeat_acquisition_started": false
   },
   "execution_thread": "01a1317a-c479-7460-8c24-37351301787c",
   "original_task_mirror_unchanged": true,

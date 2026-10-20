@@ -7,12 +7,12 @@
 - 仓库：6Treeeee/-
 - 分支：codex/a2a-control-loop
 - 固定路径：gpt-handoff.md
-- 实际结果：GOAL B三次fresh完整OCR/分析PASS保持冻结，本轮零视频请求。GOAL A仍BLOCKED：固定授权已于10月20日06:22:56到期，08:23:18实际只读连接请求为HTTP401/TREE_BRAIN_UNAUTHORIZED，当前工程会话Tree Brain工具也未暴露。未自动续期或重发部署；原隧道进程本轮未发现，Browser组件仍缺失，网页表单未取得。原任务字段NOT_READ，未task_start/resume；此前原索引run-key404仍为历史认证读失败，未在401后重试。
-- 证据路径/提交：artifacts/tree-master-execution-2026-10-15/ordinary-chatgpt/brain-expired-entry-checkpoint-2026-10-20.json、two-goal-status.json为当前到期/401现场；之前认证及普通聊天证据见brain-renewal-and-client-acceptance-2026-10-19.json和brain-2026-10-19-client-response.md。GOAL B仍见three-fresh-client-acceptance.json；旧TikHub报告见tikhub-historical-report-review-2026-10-20.json；原执行线程01a1317a-c479-7460-8c24-37351301787c、原索引及权威镜像保持。
+- 实际结果：Owner指定先做抖音后，本工程会话对新分享短链真实start一次，视频7683407444361399590、request e4b425a1-e6fc-42dd-85b9-7d33fad3478b，持续poll到failed。客户端VIDEO_READ_FAILED；同次Worker run39353939930日志为OCR_DURATION_UNSUPPORTED（现有25分钟上限），最终TRANSCRIPTION_UNAVAILABLE，备用音频/ASR也失败。无完整文字，未总结或重试采集。GOAL B历史三个客户端PASS保留其原样本/范围，本条当前请求FAILED；未将工程连接器冒充普通聊天验收。GOAL A仍BLOCKED，按Owner优先级暂不推进，固定授权到期/401及原索引历史404不变。
+- 证据路径/提交：artifacts/tree-master-execution-2026-10-15/ordinary-chatgpt/douyin-7683407444361399590-read-2026-10-20.json、two-goal-status.json为本条新视频失败证据；旧普通客户端PASS见three-fresh-client-acceptance.json。GOAL A到期/401见brain-expired-entry-checkpoint-2026-10-20.json，原执行线程01a1317a-c479-7460-8c24-37351301787c、原索引及权威镜像保持。
 - 已批准的变更：Owner答复“授权续期24小时并发布同一代码”。仅更新原敏感Production授权，固定到2026-10-20 06:22:56 +08:00，令牌/主体/content-reader read+check不变；原部署2JLy按deploymentId、withLatestCommit=false重发为29u8，同一7bb3f7c。后续Master范围内的SDK回归候选未通过真实验收，已恢复sigma及默认项目域名到29u8，候选仅保留隔离review别名。未关闭认证/加密、未升级SDK、未新建OAuth/Tunnel/控制总线。
 - 仍需复核：同代码及候选的真实task_status均失败于原索引wrun_01M2DH54J8W01XKS1HFMF4405M、旧部署dpl_6C4Y6nK5hXBAh642WN8jsTgBBxgk的run-key HTTP404。构建应用与合成测试不证明运行时codec指纹、数据格式或数据丢失，不能猜测密文/过期/不可恢复。另行已发现的get_task诊断HTTP403/TREE_BRAIN_FORBIDDEN，未重试/绕过/扩权限。候选默认构建未激活，不再原样重复已失败验收。
 - 客户端现状：10月20日08:23当前工程会话不暴露Tree Brain工具，现有凭据只读请求为401。普通Tree最近真实探测仍是10月19日06:31:42的NOT_EXPOSED，无客户端后端调用；本轮未重复提示。原隧道进程本轮未发现，未用到期授权重启；Browser所需service文件仍缺，网页Connection/Tunnel表单未取得，open_page=null不代表实时UI。未重试先前被策略拒绝的外部启动。历史PID11448和ready结果不是当前存活证据。
-- 下一步：需要当前网页自定义MCP的Connection/Tunnel区域截图或恢复受支持Browser，由代理判断具体UI并复用原隧道注册；当前固定授权已到期，恢复认证验收前须另获明确限定时长的续期批准，不把“继续”当自动续期。原任务仍需在获准机制下处理旧索引run-key404；不盲升SDK、不提供任意密钥、不关闭加密、不重置索引或从镜像重建。新检查点为artifacts/tree-master-execution-2026-10-15/ordinary-chatgpt/brain-expired-entry-checkpoint-2026-10-20.json；下列ready/运行中等观察均按各自历史时间理解。
+- 下一步：当前优先处理Owner指定抖音内容。此条触发既有25分钟限制，现有能力内需要已有公开分段链接或完整字幕；不抬阈值、不凭标题猜内容、不把片段当全片。GOAL A仍保留原账号入口/授权/索引阻塞，待Owner恢复优先级后继续，不创建替代任务。以下零视频请求、GOAL B冻结PASS等记载均为本条新请求前的历史。
 
 ## 工作方式
 
