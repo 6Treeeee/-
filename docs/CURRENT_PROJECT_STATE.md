@@ -1,5 +1,13 @@
 # CURRENT PROJECT STATE（当前项目状态）
 
+## 2026-10-20 09:57：按Owner“继续”在原异步Worker内做有界长视频适配，真实新任务运行中
+
+当前任务目标仍是读完7683407444361399590。只读复核确认OCR取播放器秒数乘1000、并与公开元数据绑定，备用ASR也独立触发总时长限制，没有发现单位换算错误；公开页面核对未取得精确时长，也未把网页预览当视频内容。因Owner要求继续，已只在原codex/content-reader-acquisition分支做运行预算适配：f763f9d74aab6b519fc2c2098b8deee7ffe727ad新增显式maxDurationMs，上限保持有界；默认同步调用仍25分钟，异步Worker显式允许最长2小时媒体、55分钟请求预算，原GitHub job上限60分钟。250ms全片扫描、身份、fresh/no-cache、字幕活动/覆盖率及完整结果验收均保持。未修改Vercel或Production、未新增基础设施/付费ASR。新增只含时长和上限的诊断事件，禁止日志含媒体签名URL。
+
+隔离Worker工作区缺puppeteer-core依赖的本地测试先失败，已链接本机现有依赖目录，144项相关测试通过；工作流文件行结束符有规范化，语义差异见long-video-worker-2026-10-20.patch。修复提交使用skip-ci避免旧request被重复采集，随后现有Reader工具对同一原短链仅启动一次新请求b128b407-0ebb-4093-8b69-1b64e85240ad；请求提交a9430918eab420ad9026f18f610d0a42a0c647c4、run39355719565、job118409902745，09:51:16启动。云端单测及OCR打包成功，Reader最近实测仍running；尚无完整文字，不能宣布PASS或总结。运行中日志下载一次返回404 BlobNotFound，不当作任务失败，待完成后再读。
+
+当前持续按poll_after_ms查询同一票据，私有票据只保留现有会话存储，不写仓库/日志。证据douyin-long-video-2026-10-20.json（RUNNING_NOT_ACCEPTED）；原首次25分钟失败证据保留，GOAL A按Owner优先级暂不推进。下文“不抬时长上限/需分段”的建议被本次有界异步适配替代，质量门槛没有放宽。
+
 ## 2026-10-20 09:35：Owner新指定分享短链已真实调用；当前视频因时长限制失败
 
 Owner要求先做抖音，并提供https://v.douyin.com/1wV5KN8c8wc/。本工程会话实际调用已连接Tree Content Reader的start_douyin_read一次，解析aweme_id=7683407444361399590，取得request_id=e4b425a1-e6fc-42dd-85b9-7d33fad3478b和真实queued任务；按10秒间隔持续查询同一票据，经running到failed。客户端返回VIDEO_READ_FAILED，并附error_code=INVALID_ARGUMENT；没有取得字幕，不根据分享标题总结。这是Codex桌面连接器调用，不补称为新普通ChatGPT验收。

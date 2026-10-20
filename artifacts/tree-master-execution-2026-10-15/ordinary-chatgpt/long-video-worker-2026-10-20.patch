@@ -1,0 +1,144 @@
+diff --git a/.github/workflows/content-reader-public-browser-probe.yml b/.github/workflows/content-reader-public-browser-probe.yml
+index 8c948fe..33ed5e4 100644
+--- a/.github/workflows/content-reader-public-browser-probe.yml
++++ b/.github/workflows/content-reader-public-browser-probe.yml
+@@ -22,6 +22,7 @@ on:
+       - test/douyin-pipeline.test.js
+       - test/public-browser-runtime.test.js
+       - test/acquisition-worker.test.js
++      - test/ocr-duration.test.js
+       - test/hard-subtitle-ocr-player.test.js
+       - test/public-profile-probe.test.js
+       - .github/workflows/content-reader-public-browser-probe.yml
+@@ -48,7 +49,7 @@ jobs:
+   probe:
+     if: ${{ !(github.event_name == 'push' && startsWith(github.event.head_commit.message, 'profile-probe:')) && !(github.event_name == 'workflow_dispatch' && inputs.mode == 'profile_probe') }}
+     runs-on: ubuntu-latest
+-    timeout-minutes: 25
++    timeout-minutes: 60
+     steps:
+       - uses: actions/checkout@v6
+       - uses: actions/setup-node@v6
+@@ -57,7 +58,7 @@ jobs:
+           cache: npm
+       - run: npm ci
+       - name: Unit tests
+-        run: node --test test/public-browser-runtime.test.js test/douyin-pipeline.test.js test/acquisition-worker.test.js test/hard-subtitle-ocr-player.test.js
++        run: node --test test/public-browser-runtime.test.js test/douyin-pipeline.test.js test/acquisition-worker.test.js test/hard-subtitle-ocr-player.test.js test/ocr-duration.test.js
+       - name: Existing fixed baseline probe (manual only)
+         if: github.event_name == 'workflow_dispatch' && inputs.mode == 'probe'
+         run: node scripts/probe-sparticuz-video.mjs '7688672103729483058'
+diff --git a/scripts/acquisition-worker.mjs b/scripts/acquisition-worker.mjs
+index 5a5a33a..643056a 100644
+--- a/scripts/acquisition-worker.mjs
++++ b/scripts/acquisition-worker.mjs
+@@ -20,7 +20,12 @@ const browserService = new PublicBrowserService({
+ });
+ const directProvider = new DirectPublicWebProvider({ browserService, retries: 2,
+   retryDelayMs: 500, videoNavigationTimeoutMs: 45_000, videoContentWaitMs: 22_000, settleMs: 700 });
+-const hardSubtitles = new HardSubtitleOcr({ env: process.env, provider: directProvider, requestId: request_id });
++// Only the asynchronous worker gets a longer media/runtime budget.
++const hardSubtitles = new HardSubtitleOcr({ env: process.env, provider: directProvider, requestId: request_id,
++  maxDurationMs: 7_200_000 });
++const requestBudgetMs = 3_300_000;
++console.info(JSON.stringify({ event: "acquisition.policy", request_id,
++  max_duration_ms: hardSubtitles.maxDurationMs, request_budget_ms: requestBudgetMs }));
+ const localWhisper = createLocalWhisperAsr();
+ let envelope;
+ try {
+@@ -29,7 +34,7 @@ try {
+     hardSubtitleOcr: hardSubtitles.read.bind(hardSubtitles),
+     localAsr: localWhisper.available ? localWhisper.transcribe : null,
+     openAiApiKey: null, aiGatewayApiKey: null, vercelOidcToken: null,
+-    requestId: request_id, requestDeadlineAt: started + 1_000_000
++    requestId: request_id, requestDeadlineAt: started + requestBudgetMs
+   });
+   envelope = { request_id, aweme_id, pass: true, result, elapsed_ms: Date.now() - started,
+     worker: { run_id: process.env.GITHUB_RUN_ID, attempt: process.env.GITHUB_RUN_ATTEMPT, commit: process.env.GITHUB_SHA } };
+diff --git a/src/services/hard-subtitle-ocr.js b/src/services/hard-subtitle-ocr.js
+index 1220b3b..990c13d 100644
+--- a/src/services/hard-subtitle-ocr.js
++++ b/src/services/hard-subtitle-ocr.js
+@@ -11,6 +11,26 @@ import { PublicBrowserService } from "./public-browser.js";
+ import { waitForBoundPublicPlayer } from "./public-player-wait.js";
+ 
+ const hash = (value) => createHash("sha256").update(value).digest("hex");
++const DEFAULT_MAX_DURATION_MS = 1_500_000;
++const MAX_WORKER_DURATION_MS = 7_200_000;
++
++function checkedDurationLimit(value) {
++  if (!Number.isSafeInteger(value) || value <= 0 || value > MAX_WORKER_DURATION_MS) {
++    throw new RangeError("OCR duration limit must be a positive integer no greater than 7200000 ms.");
++  }
++  return value;
++}
++
++export function assertOcrDuration(duration, maxDurationMs = DEFAULT_MAX_DURATION_MS) {
++  checkedDurationLimit(maxDurationMs);
++  if (!Number.isFinite(duration) || duration <= 0 || duration > maxDurationMs) {
++    throw fail("OCR_DURATION_UNSUPPORTED", `OCR accepts public single videos up to ${maxDurationMs / 60_000} minutes.`, {
++      duration_ms: Number.isFinite(duration) ? duration : null,
++      max_duration_ms: maxDurationMs,
++    });
++  }
++  return duration;
++}
+ const textKey = (text) => String(text ?? "").replace(/[\s，。！？、；：,.!?;:·•“”‘’《》（）—…↑↓]/g, "").toLowerCase();
+ function editSimilarity(left, right) {
+   const a=textKey(left),b=textKey(right);
+@@ -247,8 +267,9 @@ async function canvasCaptureFrame({ high=false, low=true }) {
+ }
+ 
+ export class HardSubtitleOcr {
+-  constructor({ env=process.env, provider=null, requestId=null } = {}) {
++  constructor({ env=process.env, provider=null, requestId=null, maxDurationMs=DEFAULT_MAX_DURATION_MS } = {}) {
+     this.env=env; this.requestId=requestId;
++    this.maxDurationMs=checkedDurationLimit(maxDurationMs);
+     this.available=env.CONTENT_READER_HARD_SUBTITLES !== "0" && Boolean(env.CONTENT_READER_OCR_PYTHON);
+     this.provider=provider ?? new DirectPublicWebProvider({
+       browserService:new PublicBrowserService({ protocolTimeoutMs:45_000 }), retries:1,
+@@ -308,7 +329,8 @@ export class HardSubtitleOcr {
+         };
+         const playback=await capturePage.evaluate(initializeCapture,{expectedId:id,expectedDurationSeconds,deadlineAt});
+         const duration=playback.duration_ms;
+-        if(!Number.isFinite(duration)||duration<=0||duration>1_500_000)throw fail("OCR_DURATION_UNSUPPORTED","OCR accepts public single videos up to 25 minutes.");
++        await journal({event:"ocr.duration_checked",duration_ms:Number.isFinite(duration)?duration:null,max_duration_ms:this.maxDurationMs});
++        assertOcrDuration(duration,this.maxDurationMs);
+         const mediaHash=hash(playback.media_url); delete playback.media_url;
+         await writeFile(join(root,"session.json"),JSON.stringify({run_id:runId,request_id:requestId,aweme_id:id,started_at:startedAt,engine,probe_engine:probeEngine,playback,media_url_sha256:mediaHash,cache_read:false},null,2));
+         const records=[];let chain="",probeChain="";let checked=0,probeId=0;
+diff --git a/test/ocr-duration.test.js b/test/ocr-duration.test.js
+new file mode 100644
+index 0000000..eaf9e21
+--- /dev/null
++++ b/test/ocr-duration.test.js
+@@ -0,0 +1,29 @@
++import test from "node:test";
++import assert from "node:assert/strict";
++import { assertOcrDuration, HardSubtitleOcr } from "../src/services/hard-subtitle-ocr.js";
++
++test("synchronous callers retain 25 minutes and errors contain actual duration", () => {
++  assert.equal(new HardSubtitleOcr({ env: {} }).maxDurationMs, 1_500_000);
++  assert.equal(assertOcrDuration(1_500_000), 1_500_000);
++  assert.throws(() => assertOcrDuration(1_500_001), error => {
++    assert.equal(error.code, "OCR_DURATION_UNSUPPORTED");
++    assert.deepEqual(error.details, { duration_ms: 1_500_001, max_duration_ms: 1_500_000 });
++    return true;
++  });
++});
++
++test("explicit worker bound admits long media but rejects oversized and invalid durations", () => {
++  const worker = new HardSubtitleOcr({ env: {}, maxDurationMs: 7_200_000 });
++  assert.equal(assertOcrDuration(1_500_001, worker.maxDurationMs), 1_500_001);
++  assert.equal(assertOcrDuration(7_200_000, worker.maxDurationMs), 7_200_000);
++  for (const duration of [7_200_001, 0, -1, NaN, Infinity]) {
++    assert.throws(() => assertOcrDuration(duration, worker.maxDurationMs), { code: "OCR_DURATION_UNSUPPORTED" });
++  }
++  assert.throws(() => assertOcrDuration(Infinity, worker.maxDurationMs), error => error.details.duration_ms === null);
++});
++
++test("invalid configuration cannot remove the duration bound", () => {
++  for (const maxDurationMs of [0, -1, 7_200_001, Infinity, NaN, 1.5, "7200000"]) {
++    assert.throws(() => new HardSubtitleOcr({ env: {}, maxDurationMs }), RangeError);
++  }
++});

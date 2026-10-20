@@ -2,17 +2,17 @@
 
 - 任务编号：TREE_MASTER_EXECUTION
 - 目标：分别完成普通 ChatGPT 真正调动现有 Codex，以及真实读取公开抖音单视频两个闭环。
-- 状态：BLOCKED
+- 状态：RUNNING
 - 更新时间：2026-10-20（Asia/Shanghai，UTC+08:00）
 - 仓库：6Treeeee/-
 - 分支：codex/a2a-control-loop
 - 固定路径：gpt-handoff.md
-- 实际结果：Owner指定先做抖音后，本工程会话对新分享短链真实start一次，视频7683407444361399590、request e4b425a1-e6fc-42dd-85b9-7d33fad3478b，持续poll到failed。客户端VIDEO_READ_FAILED；同次Worker run39353939930日志为OCR_DURATION_UNSUPPORTED（现有25分钟上限），最终TRANSCRIPTION_UNAVAILABLE，备用音频/ASR也失败。无完整文字，未总结或重试采集。GOAL B历史三个客户端PASS保留其原样本/范围，本条当前请求FAILED；未将工程连接器冒充普通聊天验收。GOAL A仍BLOCKED，按Owner优先级暂不推进，固定授权到期/401及原索引历史404不变。
+- 实际结果：Owner要求继续读取抖音7683407444361399590，已在原异步Worker分支发布有界时长适配f763f9d，144项相关测试通过；默认同步接口仍25分钟，Worker媒体上限2小时、请求预算55分钟、GitHub job60分钟，身份/250ms全片扫描/字幕质量/完整验收不变。未改Vercel或Production。仅启动一次修改后的新请求b128b407-0ebb-4093-8b69-1b64e85240ad，run39355719565、请求提交a943091；云端单测和OCR打包成功，最近Reader真实状态running，未取得完整文字，尚非PASS。第一次25分钟失败证据保留。GOAL A仍BLOCKED并按Owner优先级暂不推进。
 - 证据路径/提交：artifacts/tree-master-execution-2026-10-15/ordinary-chatgpt/douyin-7683407444361399590-read-2026-10-20.json、two-goal-status.json为本条新视频失败证据；旧普通客户端PASS见three-fresh-client-acceptance.json。GOAL A到期/401见brain-expired-entry-checkpoint-2026-10-20.json，原执行线程01a1317a-c479-7460-8c24-37351301787c、原索引及权威镜像保持。
 - 已批准的变更：Owner答复“授权续期24小时并发布同一代码”。仅更新原敏感Production授权，固定到2026-10-20 06:22:56 +08:00，令牌/主体/content-reader read+check不变；原部署2JLy按deploymentId、withLatestCommit=false重发为29u8，同一7bb3f7c。后续Master范围内的SDK回归候选未通过真实验收，已恢复sigma及默认项目域名到29u8，候选仅保留隔离review别名。未关闭认证/加密、未升级SDK、未新建OAuth/Tunnel/控制总线。
 - 仍需复核：同代码及候选的真实task_status均失败于原索引wrun_01M2DH54J8W01XKS1HFMF4405M、旧部署dpl_6C4Y6nK5hXBAh642WN8jsTgBBxgk的run-key HTTP404。构建应用与合成测试不证明运行时codec指纹、数据格式或数据丢失，不能猜测密文/过期/不可恢复。另行已发现的get_task诊断HTTP403/TREE_BRAIN_FORBIDDEN，未重试/绕过/扩权限。候选默认构建未激活，不再原样重复已失败验收。
 - 客户端现状：10月20日08:23当前工程会话不暴露Tree Brain工具，现有凭据只读请求为401。普通Tree最近真实探测仍是10月19日06:31:42的NOT_EXPOSED，无客户端后端调用；本轮未重复提示。原隧道进程本轮未发现，未用到期授权重启；Browser所需service文件仍缺，网页Connection/Tunnel表单未取得，open_page=null不代表实时UI。未重试先前被策略拒绝的外部启动。历史PID11448和ready结果不是当前存活证据。
-- 下一步：当前优先处理Owner指定抖音内容。此条触发既有25分钟限制，现有能力内需要已有公开分段链接或完整字幕；不抬阈值、不凭标题猜内容、不把片段当全片。GOAL A仍保留原账号入口/授权/索引阻塞，待Owner恢复优先级后继续，不创建替代任务。以下零视频请求、GOAL B冻结PASS等记载均为本条新请求前的历史。
+- 下一步：持续使用原新请求票据按poll_after_ms查询至completed或failed；票据仅在现有私有会话存储douyinLongTicket，不打印/入库。运行编号39355719565，不能再start或用新请求替代。完成后核对完整文字、身份、全片扫描及fresh/no-cache，并取得原始证据；失败则查同次run日志。当前记录artifacts/tree-master-execution-2026-10-15/ordinary-chatgpt/douyin-long-video-2026-10-20.json为RUNNING_NOT_ACCEPTED。GOAL A保持原阻塞，不绕过授权或重置索引。
 
 ## 工作方式
 

@@ -1,0 +1,40 @@
+{
+  "task_id": "TREE_MASTER_EXECUTION",
+  "status": "RUNNING_NOT_ACCEPTED",
+  "input_url": "https://v.douyin.com/1wV5KN8c8wc/",
+  "aweme_id": "7683407444361399590",
+  "prior_failure_request": "e4b425a1-e6fc-42dd-85b9-7d33fad3478b",
+  "prior_failure": "OCR_DURATION_UNSUPPORTED at existing 25-minute bound",
+  "worker_change": {
+    "branch": "codex/content-reader-acquisition",
+    "base": "49401c7811b238b2aab7174d98f8db382735b490",
+    "commit": "f763f9d74aab6b519fc2c2098b8deee7ffe727ad",
+    "patch": "long-video-worker-2026-10-20.patch",
+    "local_tests_passed": 144,
+    "synchronous_duration_ms": 1500000,
+    "worker_duration_ms": 7200000,
+    "worker_request_budget_ms": 3300000,
+    "workflow_timeout_minutes": 60,
+    "sampling_interval_ms": 250,
+    "coverage_and_subtitle_quality_checks_changed": false,
+    "vercel_deployment_changed": false,
+    "production_changed": false,
+    "initial_local_dependency_failure": "Missing puppeteer-core in isolated worktree; linked existing dependency directory and all tests passed",
+    "workflow_line_endings_normalized": true
+  },
+  "fresh_verification": {
+    "request_id": "b128b407-0ebb-4093-8b69-1b64e85240ad",
+    "commit": "a9430918eab420ad9026f18f610d0a42a0c647c4",
+    "run_id": 39355719565,
+    "job_id": 118409902745,
+    "started_at": "2026-10-20T09:51:16+08:00",
+    "start_calls_after_change": 1,
+    "cloud_unit_tests": "success",
+    "ocr_packaging": "success",
+    "last_actual_reader_status": "running",
+    "live_log_download": "404 BlobNotFound while in progress; not treated as run failure; no repeat until completion",
+    "client": "Codex desktop connected Tree Content Reader tools; not ordinary-ChatGPT acceptance"
+  },
+  "completed_transcript_obtained": false,
+  "goal_a": "Deferred by user priority; prior authorization/entry/index blockers unchanged"
+}
