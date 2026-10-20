@@ -1,6 +1,6 @@
 {
   "task_id": "TREE_MASTER_EXECUTION",
-  "status": "RUNNING_NOT_ACCEPTED",
+  "status": "OWNER_PAUSED_CLOUD_RUN_CANCELLED_NOT_ACCEPTED",
   "input_url": "https://v.douyin.com/1wV5KN8c8wc/",
   "aweme_id": "7683407444361399590",
   "prior_failure_request": "e4b425a1-e6fc-42dd-85b9-7d33fad3478b",
@@ -31,10 +31,75 @@
     "start_calls_after_change": 1,
     "cloud_unit_tests": "success",
     "ocr_packaging": "success",
-    "last_actual_reader_status": "running",
+    "last_actual_reader_status": "running before owner pause; not polled after cancellation",
     "live_log_download": "404 BlobNotFound while in progress; not treated as run failure; no repeat until completion",
-    "client": "Codex desktop connected Tree Content Reader tools; not ordinary-ChatGPT acceptance"
+    "client": "Codex desktop connected Tree Content Reader tools; not ordinary-ChatGPT acceptance",
+    "workflow_status": "completed",
+    "workflow_conclusion": "cancelled"
   },
   "completed_transcript_obtained": false,
-  "goal_a": "Deferred by user priority; prior authorization/entry/index blockers unchanged"
+  "goal_a": "Deferred by user priority; prior authorization/entry/index blockers unchanged",
+  "owner_pause": {
+    "requested": true,
+    "execution_goal_status": "paused",
+    "local_polling_stopped": true,
+    "cancel_request_http": 202,
+    "cancel_requested_at": "2026-10-20T09:59:17.0380674+08:00",
+    "cloud_readback": {
+      "status": "completed",
+      "conclusion": "cancelled",
+      "updated_at": "2026-10-20T10:00:21+08:00"
+    },
+    "worker_candidate_reverted": false,
+    "worker_candidate_still_published": true,
+    "new_capture_started_after_pause": false
+  },
+  "partial_scan_after_cancel": {
+    "policy": {
+      "event": "acquisition.policy",
+      "request_id": "b128b407-0ebb-4093-8b69-1b64e85240ad",
+      "max_duration_ms": 7200000,
+      "request_budget_ms": 3300000
+    },
+    "duration": {
+      "at": "2026-10-20T01:52:30.064Z",
+      "run_id": "f0a316a6-8685-469d-893b-4777a7874ca0",
+      "request_id": "b128b407-0ebb-4093-8b69-1b64e85240ad",
+      "aweme_id": "7683407444361399590",
+      "event": "ocr.duration_checked",
+      "duration_ms": 2132986,
+      "max_duration_ms": 7200000
+    },
+    "progress_count": 12,
+    "first_progress": {
+      "at": "2026-10-20T01:53:06.822Z",
+      "run_id": "f0a316a6-8685-469d-893b-4777a7874ca0",
+      "request_id": "b128b407-0ebb-4093-8b69-1b64e85240ad",
+      "aweme_id": "7683407444361399590",
+      "event": "ocr.progress",
+      "scanned_ms": 29750,
+      "frames": 35,
+      "checked_frames": 120,
+      "ocr_worker_elapsed_ms": 6015,
+      "probe_worker_elapsed_ms": 161,
+      "elapsed_ms": 40006
+    },
+    "last_progress": {
+      "at": "2026-10-20T01:59:46.818Z",
+      "run_id": "f0a316a6-8685-469d-893b-4777a7874ca0",
+      "request_id": "b128b407-0ebb-4093-8b69-1b64e85240ad",
+      "aweme_id": "7683407444361399590",
+      "event": "ocr.progress",
+      "scanned_ms": 359750,
+      "frames": 506,
+      "checked_frames": 1440,
+      "ocr_worker_elapsed_ms": 81642,
+      "probe_worker_elapsed_ms": 1875,
+      "elapsed_ms": 440002
+    },
+    "cancelled": true,
+    "scanned_ratio": 0.16866027250061652,
+    "linear_estimated_full_scan_wall_ms": 2608806.4099291177,
+    "estimate_limit": "Linear extrapolation from this partial scan only; not measured completion, excludes later variations and finalization"
+  }
 }
