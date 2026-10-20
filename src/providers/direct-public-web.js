@@ -261,6 +261,7 @@ function createCapture({ expectedAwemeId = null, expectedSecUserId = null } = {}
     media: new Map(),
     endpointPaths: new Set(),
     mainDocument: null,
+    navigationTrail: [],
     signals: {
       loginRequired: false,
       securityChallenge: false,
@@ -282,6 +283,14 @@ function createCapture({ expectedAwemeId = null, expectedSecUserId = null } = {}
       const mainFrame = page?.mainFrame?.();
       if (request?.isNavigationRequest?.() && frame && mainFrame && frame === mainFrame) {
         state.mainDocument = { url: value, status: response.status() };
+        if (state.navigationTrail.length < 8) {
+          const navigation = safeUrl(value);
+          state.navigationTrail.push({
+            status: response.status(),
+            host: navigation && isDouyinHost(navigation.host) ? navigation.host : "untrusted",
+            path: navigation && isDouyinHost(navigation.host) ? navigation.path : null
+          });
+        }
       }
     } catch {
       // Navigation response diagnostics are optional; content capture continues.
@@ -1307,17 +1316,21 @@ export class DirectPublicWebProvider {
             !(rawHydration && hydrationId === selected.awemeId)) ||
           (embeddedAwemeMediaUrls(preliminaryAweme).length === 0 && preliminaryMediaUrls.length === 0)
         );
+        const detailProbe = { attempted: false, http_status: null, response_aweme_id: null };
         if (needsExplicitDetail) {
+          detailProbe.attempted = true;
           const publicDetail = await fetchPublicVideoDetail(page, selected.awemeId, {
             timeoutMs: this.videoDetailTimeoutMs,
             totalTimeoutMs: this.videoDetailTotalTimeoutMs
           });
+          detailProbe.http_status = publicDetail?.status ?? null;
           if (publicDetail?.payload) {
             mergeSignals(capture.state.signals, readAccessSignals(publicDetail.payload));
             if (publicDetail.status === 200) {
               capture.state.endpointPaths.add(DETAIL_PATH);
               const refreshedAweme = extractAweme(publicDetail.payload);
               const refreshedId = postIdentity(refreshedAweme);
+              detailProbe.response_aweme_id = refreshedId;
               if (refreshedAweme && refreshedId === selected.awemeId) {
                 capture.state.aweme = refreshedAweme;
               } else if (refreshedAweme &&
@@ -1336,6 +1349,25 @@ export class DirectPublicWebProvider {
         }
         if (pageUrlMismatch && !capture.state.aweme &&
             !(rawHydration && hydrationId === selected.awemeId)) {
+          // Diagnostic only: do not accept the redirected page or its media as the target video.
+          console.info("CONTENT_READER_IDENTITY_DIAG", JSON.stringify({
+            attempt,
+            expected_aweme_id: selected.awemeId,
+            observed_page_aweme_id: finalUrlId,
+            navigation: capture.state.navigationTrail,
+            final_page: targetDiagnostic(finalPage.url.href),
+            canonical_page: targetDiagnostic(dom.canonical),
+            hydration_aweme_id: hydrationId,
+            captured_detail_aweme_id: postIdentity(capture.state.aweme),
+            mismatched_detail_aweme_ids: capture.state.mismatchedAwemeIds,
+            public_detail_probe: detailProbe,
+            access_signals: {
+              login_required: Boolean(combinedAccess.loginRequired),
+              security_challenge: Boolean(combinedAccess.securityChallenge),
+              private_content: Boolean(combinedAccess.privateContent),
+              unavailable: Boolean(combinedAccess.unavailable)
+            }
+          }));
           throw identityMismatchError(target, selected.awemeId, finalUrlId, "page_url");
         }
         if (canonicalMismatch && !capture.state.aweme) {
