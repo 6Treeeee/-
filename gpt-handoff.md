@@ -7,12 +7,12 @@
 - 仓库：6Treeeee/-
 - 分支：codex/a2a-control-loop
 - 固定路径：gpt-handoff.md
-- 实际结果：GOAL B三次fresh完整OCR/分析PASS保持冻结，本轮零视频请求。GOAL A仍BLOCKED：Owner本次明确批准续期24小时并同代码重发，已完成且认证真实200；当前有效Production为dpl_29u8iDtKcGYNLTBxEp25W3ZaVsGn，仍7bb3f7c。SDK读取候选37项相关测试通过、READY且构建补丁applied，但实际task_status仍旧索引run-key HTTP404，已回滚候选及默认构建激活。普通Tree重新只读验收仍TREE_BRAIN_CODEX_TOOL_NOT_AVAILABLE，四工具NOT_EXPOSED，任务字段NOT_READ。未task_start/resume。
-- 证据路径/提交：artifacts/tree-master-execution-2026-10-15/ordinary-chatgpt/brain-renewal-and-client-acceptance-2026-10-19.json、brain-2026-10-19-client-response.md、brain-2026-10-19-client-prompt.txt、brain-renewal-2026-10-19-review.json、two-goal-status.json；候选3e722c8/独立Production1949e5b，默认构建移除8fba9f0。GOAL B仍见three-fresh-client-acceptance.json；原执行线程01a1317a-c479-7460-8c24-37351301787c、原索引及权威镜像保持。
+- 实际结果：GOAL B三次fresh完整OCR/分析PASS保持冻结，本轮零视频请求。GOAL A仍BLOCKED：固定授权已于10月20日06:22:56到期，08:23:18实际只读连接请求为HTTP401/TREE_BRAIN_UNAUTHORIZED，当前工程会话Tree Brain工具也未暴露。未自动续期或重发部署；原隧道进程本轮未发现，Browser组件仍缺失，网页表单未取得。原任务字段NOT_READ，未task_start/resume；此前原索引run-key404仍为历史认证读失败，未在401后重试。
+- 证据路径/提交：artifacts/tree-master-execution-2026-10-15/ordinary-chatgpt/brain-expired-entry-checkpoint-2026-10-20.json、two-goal-status.json为当前到期/401现场；之前认证及普通聊天证据见brain-renewal-and-client-acceptance-2026-10-19.json和brain-2026-10-19-client-response.md。GOAL B仍见three-fresh-client-acceptance.json；旧TikHub报告见tikhub-historical-report-review-2026-10-20.json；原执行线程01a1317a-c479-7460-8c24-37351301787c、原索引及权威镜像保持。
 - 已批准的变更：Owner答复“授权续期24小时并发布同一代码”。仅更新原敏感Production授权，固定到2026-10-20 06:22:56 +08:00，令牌/主体/content-reader read+check不变；原部署2JLy按deploymentId、withLatestCommit=false重发为29u8，同一7bb3f7c。后续Master范围内的SDK回归候选未通过真实验收，已恢复sigma及默认项目域名到29u8，候选仅保留隔离review别名。未关闭认证/加密、未升级SDK、未新建OAuth/Tunnel/控制总线。
 - 仍需复核：同代码及候选的真实task_status均失败于原索引wrun_01M2DH54J8W01XKS1HFMF4405M、旧部署dpl_6C4Y6nK5hXBAh642WN8jsTgBBxgk的run-key HTTP404。构建应用与合成测试不证明运行时codec指纹、数据格式或数据丢失，不能猜测密文/过期/不可恢复。另行已发现的get_task诊断HTTP403/TREE_BRAIN_FORBIDDEN，未重试/绕过/扩权限。候选默认构建未激活，不再原样重复已失败验收。
-- 客户端现状：22:19工程会话真实get_connection_status仍ready，原授权到10月20日06:22:56有效，本轮未续期或部署。普通Tree于06:31:42的最近实测仍NOT_EXPOSED，无实际HTTP调用；条件未变，本轮未重复发送或重试task_status。发现早晨隧道已退出，使用原启动器恢复同一原隧道为PID11448、22:18:56启动，healthz200/live、readyz200/ready；退出根因未确定，健康不等于hosted注册。官方Browser启动实际仍缺26.1013.40934/browser-service组件，外部网页Tunnel表单未取得，未重试先前blocked by policy的外部启动。新增证据artifacts/tree-master-execution-2026-10-15/ordinary-chatgpt/brain-evening-continuation-2026-10-19.json；GOAL B保持冻结，本轮零视频请求，原任务和索引未改动。
-- 下一步：需要当前网页自定义MCP的Connection/Tunnel区域截图或恢复受支持Browser，由代理判断具体UI并恢复既有私有注册；无需重复泛化授权。原任务状态读取还需在现有获准Vercel机制下定位run-key404，先确证实际读取位置/格式，不盲升SDK、不提供任意密钥、不关闭加密、不重置索引或从镜像重建。仅在入口有实质变化后再做普通聊天真实task_status/start/resume及原线程恢复验收；固定授权到期后不自动延长。
+- 客户端现状：10月20日08:23当前工程会话不暴露Tree Brain工具，现有凭据只读请求为401。普通Tree最近真实探测仍是10月19日06:31:42的NOT_EXPOSED，无客户端后端调用；本轮未重复提示。原隧道进程本轮未发现，未用到期授权重启；Browser所需service文件仍缺，网页Connection/Tunnel表单未取得，open_page=null不代表实时UI。未重试先前被策略拒绝的外部启动。历史PID11448和ready结果不是当前存活证据。
+- 下一步：需要当前网页自定义MCP的Connection/Tunnel区域截图或恢复受支持Browser，由代理判断具体UI并复用原隧道注册；当前固定授权已到期，恢复认证验收前须另获明确限定时长的续期批准，不把“继续”当自动续期。原任务仍需在获准机制下处理旧索引run-key404；不盲升SDK、不提供任意密钥、不关闭加密、不重置索引或从镜像重建。新检查点为artifacts/tree-master-execution-2026-10-15/ordinary-chatgpt/brain-expired-entry-checkpoint-2026-10-20.json；下列ready/运行中等观察均按各自历史时间理解。
 
 ## 工作方式
 

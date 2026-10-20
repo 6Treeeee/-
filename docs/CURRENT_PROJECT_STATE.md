@@ -1,5 +1,11 @@
 # CURRENT PROJECT STATE（当前项目状态）
 
+## 2026-10-20 08:23：固定授权已到期，实测401；当前工程工具也未暴露
+
+授权已于今天06:22:56 +08:00固定到期。08:23:18使用现有同一凭据作一次只读get_connection_status，实际HTTP401/TREE_BRAIN_UNAUTHORIZED；本会话实际工具表没有mcp__tree_brain_codex。原隧道进程本轮未发现，未携过期授权重启。Browser所需26.1013.40934/scripts/browser-service.mjs仍缺失，未重复失败启动；用户提供的open_page为null，不是可见或实时网页表单。
+
+没有自动续期、改远端变量、重新部署或重复task_status/普通聊天验收。当前任务字段仍NOT_READ；原索引run-key404是此前认证通过时的最近读失败，不能当成本次401之后的新任务调用。账号侧仍需当前网页Connection/Tunnel画面或恢复受支持Browser，由代理判断现有注册；固定授权需另一次明确限定时长的批准才能恢复认证验收，不以“继续”自动延长。GOAL B已有三连PASS保持冻结，零新视频请求；9月24日TikHub报告的历史归属不变。证据brain-expired-entry-checkpoint-2026-10-20.json。以下“授权仍有效/连接ready”均为本次到期前的历史记录。
+
 ## 2026-10-20：Owner提供的TikHub402报告已核对为9月24日历史记录
 
 实际读取原acceptance.json：recorded_at=2026-09-23T23:59:54.778Z（本地9月24日），提交bda833e1fe69de78c41c1986f0dc3bd08c04a8ad、旧Production dpl_65CefkWQs4vzv6p8cxEL2dukhLYB、测试176/176、当时仅一次fresh请求，App/Web均402且code=null/message为空。该提交已在当前历史中，不能作为刚上线的新提交或当前回归证据。

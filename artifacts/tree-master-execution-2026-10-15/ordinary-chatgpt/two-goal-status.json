@@ -1,15 +1,16 @@
 {
   "task": "TREE_MASTER_EXECUTION",
-  "observed_at": "2026-10-20T01:38:29+08:00",
-  "latest_continuation_evidence": "brain-upstream-readonly-diagnostics-2026-10-20.json",
+  "observed_at": "2026-10-20T08:23:18.4461871+08:00",
+  "latest_continuation_evidence": "brain-expired-entry-checkpoint-2026-10-20.json",
   "overall": "BLOCKED",
   "goal_a": {
     "status": "BLOCKED",
-    "service_authentication": "PASS_AFTER_EXPLICIT_2026_10_19_RENEWAL",
-    "execution_host_real_tools": "RESTORED_AND_REAL_CONNECTION_CHECKED",
+    "service_authentication": "FAIL_HTTP_401_AFTER_FIXED_GRANT_EXPIRY",
+    "execution_host_real_tools": "NOT_EXPOSED_CURRENT_SESSION",
     "ordinary_chat_error": "TREE_BRAIN_CODEX_TOOL_NOT_AVAILABLE",
     "actual_task_status_error": "ORIGINAL_INDEX_STREAM_RUN_KEY_HTTP_404",
-    "evidence": "brain-renewal-and-client-acceptance-2026-10-19.json",
+    "actual_task_status_error_context": "Last authenticated task read before expiry; not retried after current HTTP401",
+    "evidence": "brain-expired-entry-checkpoint-2026-10-20.json",
     "query_diagnostics": "brain-renewal-and-client-acceptance-2026-10-19.json",
     "task_state_not_read": true,
     "task_start_resume_not_executed": true
@@ -27,7 +28,7 @@
   },
   "execution_thread": "01a1317a-c479-7460-8c24-37351301787c",
   "original_task_mirror_unchanged": true,
-  "owner_action": "Provide the current web custom-MCP Connection/Tunnel form screenshot or restore supported Browser access; the agent will judge the UI. Renewal has been approved and applied, so no repeated generic approval is needed. Preserve original index and diagnose remaining run-key 404 via authorized existing mechanisms; no bypass, reset or mirror reconstruction.",
+  "owner_action": "Provide the current web Connection/Tunnel form image or restore supported Browser access; the agent will judge the UI. The fixed grant expired at 2026-10-20 06:22:56+08:00; a new explicitly bounded renewal is required before authenticated acceptance, with no automatic extension. Preserve the original index and diagnose the prior run-key404 only via authorized mechanisms; no bypass, reset or mirror reconstruction.",
   "vercel_authentication_preserved": true,
   "production_renewal_and_same_source_release_owner_approved": true,
   "production_minimal_hook_repair": {
