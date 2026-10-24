@@ -1442,7 +1442,9 @@ export class DirectPublicWebProvider {
       } finally {
         capture.detach();
       }
-    }), (attempt) => attempt > 0 && selected.retryTarget ? selected.retryTarget : selected.target);
+    }), (attempt) => attempt === this.retries && attempt > 0 && selected.retryTarget
+      ? selected.retryTarget
+      : selected.target);
   }
 
   async readProfile({ inputUrl, resolvedUrl, secUserId } = {}) {
