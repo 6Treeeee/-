@@ -1,0 +1,22 @@
+name: Preview ASR acceptance contract (isolated)
+on:
+  push:
+    branches: [codex/content-reader-preview-asr-gate-20261025]
+    paths: [.github/workflows/preview-asr-gate-check.yml]
+permissions:
+  contents: read
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Check syntax
+        run: node --check src/services/acquisition-result.js && node --check test/preview-asr-gate.test.js
+      - name: Check preview result validation and historical safety
+        run: node --test test/preview-asr-gate.test.js test/acquisition-worker.test.js
