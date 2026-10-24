@@ -1,0 +1,22 @@
+name: Reader result-stage diagnostics tests
+on:
+  push:
+    branches: [codex/content-reader-return-diagnostic-20261025]
+    paths: [.github/workflows/reader-result-stage-diagnostics.yml]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Check syntax and acquisition contract
+        run: |
+          node --check src/services/acquisition-github.js
+          node --test test/acquisition-worker.test.js test/douyin-pipeline.test.js test/local-whisper.test.js
