@@ -73,7 +73,64 @@ test('cached, partial and mismatched transcripts are rejected', () => {
     e => e.request_id = 'another-task'
   ]) { const e = envelope(task); mutate(e); assert.throws(() => verifyAcquisitionResult(e, task), { code: 'WORKER_RESULT_INVALID' }); }
 });
-test('non-OCR results stay rejected with a useful credential-free public error', () => {
+function asrEnvelope(task) {
+  const e = envelope(task);
+  e.result.content.readable_content = {
+    status: 'complete',
+    method: 'local_whisper_cpp_base_q5_1',
+    text: 'A verified speech segment\nAnother verified speech segment',
+    segments: [
+      { start_ms: 0, end_ms: 12000, text: 'A verified speech segment' },
+      { start_ms: 300000, end_ms: 312000, text: 'Another verified speech segment' }
+    ],
+    limitations: ['quantized_base_model_lower_accuracy', 'domain_terms_and_homophones_may_be_inaccurate'],
+    source: {
+      type: 'asr', provider: 'local_whisper_cpp',
+      fresh_capture: true, transcript_cache_read: false,
+      stable_aweme_id: id, engine: { name: 'whisper.cpp' },
+      model: { sha256: 'b'.repeat(64) },
+      coverage: { start_ms: 0, end_ms: 440000, full_audio_scanned: true, chunk_count: 2 }
+    },
+    media_resolution: {
+      stable_identity: 'aweme_id', media_kind: 'video',
+      validated_at: '2026-10-24T00:00:00Z',
+      validation: { status: 206 }
+    }
+  };
+  return e;
+}
+
+test('independently proven, full-audio local ASR is eligible without weakening OCR', () => {
+  const task = { request_id: 'test', aweme_id: id };
+  assert.equal(verifyAcquisitionResult(asrEnvelope(task), task).pass, true);
+  assert.equal(verifyAcquisitionResult(envelope(task), task).pass, true);
+});
+
+test('local ASR does not pass on partial coverage, stale media, identity conflicts, or fabricated timestamps', () => {
+  const task = { request_id: 'test', aweme_id: id };
+  for (const mutate of [
+    e => e.result.content.readable_content.source.coverage.end_ms = 1000,
+    e => e.result.content.readable_content.source.coverage.full_audio_scanned = false,
+    e => e.result.content.readable_content.source.coverage.chunk_count = 0,
+    e => e.result.content.readable_content.source.stable_aweme_id = '1234567890123456',
+    e => e.result.content.readable_content.source.fresh_capture = false,
+    e => e.result.content.readable_content.source.transcript_cache_read = true,
+    e => e.result.content.readable_content.source.model.sha256 = null,
+    e => e.result.content.readable_content.media_resolution.validated_at = null,
+    e => e.result.content.readable_content.media_resolution.validation.status = 403,
+    e => e.result.content.readable_content.segments[1].start_ms = -1,
+    e => e.result.content.readable_content.segments[1].end_ms = 500000,
+    e => e.result.content.readable_content.segments[1].text = '',
+    e => e.result.content.aweme_id = '1234567890123456',
+    e => e.request_id = 'wrong-request'
+  ]) {
+    const e = asrEnvelope(task);
+    mutate(e);
+    assert.throws(() => verifyAcquisitionResult(e, task), { code: 'WORKER_RESULT_INVALID' });
+  }
+});
+
+test('unsupported or unverified speech paths fail with safe diagnostics', () => {
   const task = { request_id: 'test', aweme_id: id };
   for (const method of ['local_whisper_cpp_base_q5_1', 'https://media.invalid/video?token=private']) {
     const e = envelope(task);
@@ -81,8 +138,8 @@ test('non-OCR results stay rejected with a useful credential-free public error',
     assert.throws(() => verifyAcquisitionResult(e, task), error => {
       const safe = publicError(error);
       assert.equal(safe.code, 'WORKER_RESULT_INVALID');
-      assert.match(safe.message, /hard-subtitle OCR/);
-      assert.equal(safe.details.required_method, 'hard_subtitle_ocr');
+      assert.match(safe.message, /verified fresh OCR or full-audio/);
+      assert.deepEqual(safe.details.required_methods, ['hard_subtitle_ocr', 'local_whisper_cpp_base_q5_1']);
       assert.equal(safe.details.actual_method,
         method === 'local_whisper_cpp_base_q5_1' ? method : 'unknown');
       assert.doesNotMatch(JSON.stringify(safe), /private|media\.invalid/);

@@ -1090,6 +1090,14 @@ export class LocalWhisperAsr {
             processingMs: Date.now() - startedAt,
             audioPreprocessing
           });
+      // Coverage describes completed inference windows, not guaranteed word accuracy.
+      // It is emitted only after every bounded window has returned successfully.
+      result.coverage = {
+        start_ms: 0,
+        end_ms: boundedDurationMs,
+        full_audio_scanned: true,
+        chunk_count: windows.length
+      };
       logLocalAsr("local_asr.completed", {
         duration_ms: boundedDurationMs,
         segment_count: result.segments.length,

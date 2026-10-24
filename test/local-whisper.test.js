@@ -167,6 +167,9 @@ test("LocalWhisperAsr keeps a bounded 273-second MP3 in one CLI invocation", asy
   assert.equal(invocations[0].timeoutMs, 280_000);
   assert.equal(result.method, "local_whisper_cpp_base_q5_1");
   assert.deepEqual(result.segments.map((segment) => segment.start_ms), [0, 2_360]);
+  assert.deepEqual(result.coverage, {
+    start_ms: 0, end_ms: 273_834, full_audio_scanned: true, chunk_count: 1
+  });
 });
 
 test("LocalWhisperAsr chunks long MP3 media and restores global timestamps", async () => {
@@ -220,6 +223,9 @@ test("LocalWhisperAsr chunks long MP3 media and restores global timestamps", asy
   ]);
   assert.equal(result.chunking.chunk_count, 3);
   assert.equal(result.chunking.duplicates_removed, 1);
+  assert.deepEqual(result.coverage, {
+    start_ms: 0, end_ms: 560_000, full_audio_scanned: true, chunk_count: 3
+  });
   assert.ok(result.limitations.includes("chunked_long_audio"));
 });
 
