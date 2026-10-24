@@ -136,13 +136,36 @@ export class GithubAcquisition {
       chunks.push(chunk);
     }
     const envelope = readResultZip(Buffer.concat(chunks));
-    if (String(envelope.worker?.run_id) !== String(run.id) || String(envelope.worker?.attempt) !== String(run.run_attempt) ||
-        envelope.worker?.commit !== task.commit || envelope.request_id !== task.request_id || envelope.aweme_id !== task.aweme_id) {
+    const proof = {
+      run_id_match: String(envelope.worker?.run_id) === String(run.id),
+      attempt_match: String(envelope.worker?.attempt) === String(run.run_attempt),
+      commit_match: envelope.worker?.commit === task.commit,
+      request_match: envelope.request_id === task.request_id,
+      video_match: envelope.aweme_id === task.aweme_id
+    };
+    if (Object.values(proof).some((value) => !value)) {
+      // Diagnostic booleans only: never print tokens, task tickets, transcript or signed URLs.
+      console.warn(JSON.stringify({ event: "content_reader.return_rejected", stage: "provenance", run_id: run.id, proof }));
       throw fail("WORKER_RESULT_INVALID", "Result provenance mismatch.", 502);
     }
     if (run.conclusion !== "success" || envelope.pass !== true) return { status: "failed", ...evidence,
       error: envelope.error ?? { code: "WORKER_FAILED", message: "Worker run failed." } };
-    verifyAcquisitionResult(envelope, task);
+    try {
+      verifyAcquisitionResult(envelope, task);
+    } catch (error) {
+      console.warn(JSON.stringify({
+        event: "content_reader.return_rejected", stage: "content_contract",
+        run_id: run.id, code: String(error?.code ?? "UNKNOWN").slice(0, 64),
+        method: ["hard_subtitle_ocr", "local_whisper_cpp_base_q5_1"]
+          .includes(envelope?.result?.content?.readable_content?.method)
+          ? envelope.result.content.readable_content.method : "unknown",
+        duration_ms: Number(envelope?.result?.content?.duration_ms ?? 0),
+        segment_count: Array.isArray(envelope?.result?.content?.readable_content?.segments)
+          ? envelope.result.content.readable_content.segments.length : 0
+      }));
+      throw error;
+    }
+    console.info(JSON.stringify({ event: "content_reader.return_verified", run_id: run.id, method: envelope.result?.content?.readable_content?.method }));
     return { status: "completed", ...evidence, artifact_id: artifact.id, elapsed_ms: envelope.elapsed_ms,
       pass: true, result: envelope.result };
   }
