@@ -1,0 +1,81 @@
+name: Tree yt-dlp Douyin metadata-only probe
+on:
+  push:
+    branches:
+      - codex/yt-dlp-metadata-probe-20261024
+    paths:
+      - .github/workflows/yt-dlp-metadata-probe.yml
+permissions:
+  contents: read
+jobs:
+  metadata-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install yt-dlp
+        run: python -m pip install --disable-pip-version-check --quiet yt-dlp
+      - name: Probe two known failing public videos without downloading media
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import subprocess
+          import sys
+          videos = ["7697212455247695145", "7696459896636323306"]
+          cmd = [sys.executable, "-m", "yt_dlp"]
+          version = subprocess.run(cmd + ["--version"], capture_output=True, text=True, timeout=15).stdout.strip()
+          results = []
+          for video_id in videos:
+              url = f"https://www.douyin.com/video/{video_id}"
+              args = cmd + ["--ignore-config", "--no-cache-dir", "--no-playlist",
+                            "--dump-single-json", "--skip-download", "--no-warnings",
+                            "--retries", "0", "--extractor-retries", "0",
+                            "--socket-timeout", "12", url]
+              try:
+                  process = subprocess.run(args, capture_output=True, text=True, timeout=55)
+                  if process.returncode == 0:
+                      data = json.loads(process.stdout)
+                      formats = data.get("formats") or []
+                      result = {
+                          "target_id": video_id,
+                          "status": "metadata_available",
+                          "returned_id": str(data.get("id") or ""),
+                          "id_match": str(data.get("id") or "") == video_id,
+                          "format_count": len(formats),
+                          "has_video": any(f.get("vcodec") not in (None, "none") for f in formats),
+                          "has_audio": any(f.get("acodec") not in (None, "none") for f in formats)
+                      }
+                  else:
+                      error = (process.stderr or "").lower()
+                      if "fresh cookies" in error or "cookies" in error:
+                          category = "cookies_required"
+                      elif "403" in error:
+                          category = "http_403"
+                      elif "429" in error:
+                          category = "http_429"
+                      elif "captcha" in error or "verification" in error:
+                          category = "verification_required"
+                      elif "timed out" in error or "timeout" in error:
+                          category = "timeout"
+                      elif "unable to extract" in error or "no video formats" in error:
+                          category = "extraction_failed"
+                      else:
+                          category = "other_yt_dlp_error"
+                      result = {"target_id": video_id, "status": "failed", "category": category, "exit_code": process.returncode}
+              except subprocess.TimeoutExpired:
+                  result = {"target_id": video_id, "status": "failed", "category": "probe_timeout"}
+              except Exception as exc:
+                  result = {"target_id": video_id, "status": "failed", "category": type(exc).__name__}
+              results.append(result)
+          payload = {"yt_dlp_version": version, "probe": "metadata_only_no_login_no_media_download", "results": results}
+          output = json.dumps(payload, ensure_ascii=False)
+          print("TREE_YT_DLP_PROBE_RESULT", output)
+          summary_file = os.environ.get("GITHUB_STEP_SUMMARY")
+          if summary_file:
+              with open(summary_file, "a", encoding="utf-8") as f:
+                  f.write("### Tree yt-dlp metadata-only probe\n\n" + "\`\`\`json\n" + output + "\n\`\`\`\n")
+          PY
