@@ -22,3 +22,5 @@ jobs:
           node --check test/douyin-pipeline.test.js
       - name: Offline identity and ASR regression tests
         run: node --test test/douyin-pipeline.test.js test/acquisition-worker.test.js test/local-whisper.test.js
+
+# Rerun after aligning the legacy navigation assertions.
