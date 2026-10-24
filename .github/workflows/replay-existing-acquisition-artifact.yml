@@ -1,0 +1,23 @@
+name: Replay existing Content Reader result
+on:
+  push:
+    branches: [codex/content-reader-preview-asr-return-fix-20261025]
+    paths: [.github/workflows/replay-existing-acquisition-artifact.yml]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  replay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Replay existing public-artifact ZIP, no video request
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/replay-one-acquisition-artifact.mjs
