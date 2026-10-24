@@ -1,0 +1,24 @@
+name: Canonical Douyin identity retry tests
+on:
+  push:
+    branches: [codex/content-reader-canonical-retry-20261025]
+    paths: [.github/workflows/canonical-identity-retry-check.yml]
+permissions:
+  contents: read
+jobs:
+  identity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Syntax check
+        run: |
+          node --check src/providers/direct-public-web.js
+          node --check test/douyin-pipeline.test.js
+      - name: Offline identity and ASR regression tests
+        run: node --test test/douyin-pipeline.test.js test/acquisition-worker.test.js test/local-whisper.test.js
