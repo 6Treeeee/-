@@ -1,5 +1,18 @@
 # CURRENT PROJECT STATE（当前项目状态）
 
+## 2026-10-25 客户端结果返回阻塞（最新）
+
+- Goal B 唯一主线保持，Goal A 暂停。当前不是重新做 ASR 或 OCR 的问题。
+- 真实 Worker 运行 [40130743092](https://github.com/6Treeeee/-/actions/runs/40130743092) `pass=true`，目标 `7699751880649428250`。实际下载并解包原始 GitHub Artifact `12575305245`；包含 `result.json`，本地 Whisper ASR 4026 字符、343 分段、整段 720534ms，视频 ID、媒体验证和来源正确。原文不可视为人工逐字校对稿。
+- 根因之一：ChatGPT 使用的原 Vercel preview 部署 `dpl_7CmSsArRnzMgyAf4uRnxkvWGAArE`（提交 `b4b7e8c`）仍只允许 `hard_subtitle_ocr`，对 ASR 会返回 HTTP 502。
+- 已将严格 ASR/OCR 验收同步到原授权 GitHub 分支 `codex/a2a-control-loop`（仅修改 `src/services/acquisition-result.js` 及其测试），提交 `ce37ea2759f6a556d9b005a4d9dd740c1d471650`。隔离分支 Actions `40131660514` 154/154 PASS。
+- Vercel 新 Preview `dpl_5ZmtabHCFHjZGbNt3NgwepKztLJo` READY，既有预览域名别名已指向该部署；未动 Production、未复制密钥。曾测试新的独立分支部署，发现密钥只对 `codex/a2a-control-loop` 的 Preview 生效，已撤回该临时别名切换；最终仍使用原授权分支。
+- 同一完整 Artifact 在 `40132502082` 的 GitHub 真实 ZIP 离线重放中，来源四项一致且 `verifyAcquisitionResult` PASS；没有再次采集视频。
+- **仍然 BLOCKED**：原 ChatGPT 插件 `get_douyin_read_result` 对同一任务返回 `WORKER_RESULT_INVALID`；**不可称为普通聊天端到端 PASS**。原因可能在外层 Tree Content Reader 插件/代理的第二层结果契约，尚未证实。不可为制造 PASS 将 ASR 冒充 OCR，亦不可跳过身份、媒体或覆盖验收。
+- 下一唯一有效动作：只读检查已连接插件及 trusted-source proxy 的完整结果校验代码，明确是上游 HTTP 响应还是代理/插件二次拒绝；必要时在有源码且已授权的环境中小范围同步相同 ASR 验收。不要重跑这条视频、不要付费服务、不要触碰 Goal A 调度功能。
+
+
+
 ## Content Reader ASR 恢复验证（2026-10-25）
 
 **唯一最新主线：先确认抖音 page_url 身份跳转的根因；保留已经改好的 ASR，禁止以放松身份校验换取成功。**
