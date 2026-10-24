@@ -500,7 +500,7 @@ function normalizedResult(result, {
   };
 }
 
-function localAsrSource(result, mediaSource) {
+function localAsrSource(result, mediaSource, video) {
   const engine = result?.engine;
   const model = result?.model;
   const isWhisperCpp = engine?.name === "whisper.cpp";
@@ -508,6 +508,18 @@ function localAsrSource(result, mediaSource) {
   return {
     type: "asr",
     provider: isWhisperCpp ? "local_whisper_cpp" : "local",
+    // Inference runs on bytes fetched for this request, never a stored transcript.
+    fresh_capture: true,
+    transcript_cache_read: false,
+    stable_aweme_id: String(video?.aweme_id ?? video?.id ?? ""),
+    ...(isWhisperCpp && result?.coverage ? {
+      coverage: {
+        start_ms: result.coverage.start_ms,
+        end_ms: result.coverage.end_ms,
+        full_audio_scanned: result.coverage.full_audio_scanned === true,
+        chunk_count: result.coverage.chunk_count
+      }
+    } : {}),
     ...(isWhisperCpp ? {
       engine: {
         name: "whisper.cpp",
@@ -981,7 +993,7 @@ export class TranscriptionService {
         const result = normalizedResult(local, {
           method: "local_asr",
           limitations: inheritedLimitations,
-          source: localAsrSource(local, transcriptionMedia.source)
+          source: localAsrSource(local, transcriptionMedia.source, video)
         });
         if (result) return attachMediaResolution(result, mediaResolution);
         attempts.push({ method: "local_asr", code: "ASR_EMPTY_RESULT" });
