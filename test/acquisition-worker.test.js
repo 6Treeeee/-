@@ -74,19 +74,57 @@ test('cached, partial and mismatched transcripts are rejected', () => {
     e => e.request_id = 'another-task'
   ]) { const e = envelope(task); mutate(e); assert.throws(() => verifyAcquisitionResult(e, task), { code: 'WORKER_RESULT_INVALID' }); }
 });
-test('non-OCR results stay rejected with a useful credential-free public error', () => {
-  const task = { request_id: 'test', aweme_id: id };
-  for (const method of ['local_whisper_cpp_base_q5_1', 'https://media.invalid/video?token=private']) {
-    const e = envelope(task);
-    e.result.content.readable_content.method = method;
-    assert.throws(() => verifyAcquisitionResult(e, task), error => {
-      const safe = publicError(error);
-      assert.equal(safe.code, 'WORKER_RESULT_INVALID');
-      assert.match(safe.message, /hard-subtitle OCR/);
-      assert.equal(safe.details.required_method, 'hard_subtitle_ocr');
-      assert.equal(safe.details.actual_method,
-        method === 'local_whisper_cpp_base_q5_1' ? method : 'unknown');
-      assert.doesNotMatch(JSON.stringify(safe), /private|media\.invalid/);
+function verifiedAsrEnvelope(task) {
+  const sample = envelope(task);
+  sample.result.content.readable_content = {
+    status: 'complete', method: 'local_whisper_cpp_base_q5_1',
+    text: 'Verified spoken content',
+    segments: [{start_ms: 0, end_ms: 440000, text: 'Verified spoken content'}],
+    source: {
+      type: 'asr', provider: 'local_whisper_cpp', fresh_capture: true,
+      transcript_cache_read: false, stable_aweme_id: id,
+      coverage: {start_ms: 0, end_ms: 440000, full_audio_scanned: true, chunk_count: 1},
+      engine: {name: 'whisper.cpp'}, model: {sha256: 'a'.repeat(64)}
+    },
+    media_resolution: {
+      stable_identity: 'aweme_id', media_kind: 'audio',
+      validated_at: '2026-10-24T00:00:00Z', validation: {status: 206}
+    }
+  };
+  return sample;
+}
+test('preview returns an authenticated fresh full-audio transcription, without relaxing OCR proof', () => {
+  const task = {request_id: 'test', aweme_id: id};
+  assert.equal(verifyAcquisitionResult(verifiedAsrEnvelope(task), task).pass, true);
+  assert.equal(verifyAcquisitionResult(envelope(task), task).pass, true);
+});
+test('preview never accepts a spoofed, stale, or incomplete ASR result', () => {
+  const task = {request_id: 'test', aweme_id: id};
+  for (const corrupt of [
+    x => x.result.content.readable_content.source.stable_aweme_id = '1234567890123456',
+    x => x.result.content.readable_content.source.fresh_capture = false,
+    x => x.result.content.readable_content.source.coverage.full_audio_scanned = false,
+    x => x.result.content.readable_content.source.coverage.end_ms = 1000,
+    x => x.result.content.readable_content.media_resolution.validation.status = 403,
+    x => x.result.content.readable_content.source.model.sha256 = 'invalid',
+    x => x.result.content.readable_content.segments[0].end_ms = 0,
+    x => x.result.content.aweme_id = '1234567890123456'
+  ]) {
+    const sample=verifiedAsrEnvelope(task); corrupt(sample);
+    assert.throws(() => verifyAcquisitionResult(sample,task), {code: 'WORKER_RESULT_INVALID'});
+  }
+});
+test('unverified speech and malicious method fields produce credential-free errors', () => {
+  const task={request_id: 'test',aweme_id:id};
+  for (const method of ['local_whisper_cpp_base_q5_1','https://media.invalid/video?token=private']) {
+    const x=envelope(task);x.result.content.readable_content.method=method;
+    assert.throws(() => verifyAcquisitionResult(x,task), error => {
+      const safe=publicError(error);
+      assert.equal(safe.code,'WORKER_RESULT_INVALID');
+      assert.match(safe.message,/verified fresh OCR or full-audio/);
+      assert.deepEqual(safe.details.required_methods,['hard_subtitle_ocr','local_whisper_cpp_base_q5_1']);
+      assert.equal(safe.details.actual_method, method === 'local_whisper_cpp_base_q5_1' ? method : 'unknown');
+      assert.doesNotMatch(JSON.stringify(safe),/private|media\\.invalid/);
       return true;
     });
   }
