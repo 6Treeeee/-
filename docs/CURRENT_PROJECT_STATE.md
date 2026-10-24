@@ -1,5 +1,18 @@
 # CURRENT PROJECT STATE（当前项目状态）
 
+## Content Reader ASR 恢复验证（2026-10-25）
+
+**唯一最新主线：先确认抖音 page_url 身份跳转的根因；保留已经改好的 ASR，禁止以放松身份校验换取成功。**
+
+- 主干读取分支：`codex/content-reader-acquisition`。
+- 原视频 `7699751880649428250`、长约 720.533 秒。2026-10-24 的旧采集 `40073519509` 完成 OCR 全片扫描后 `OCR_CAPTIONS_SPARSE`；本地 Whisper 返回语音结果，但旧 `verifyAcquisitionResult` 只接受 `hard_subtitle_ocr`，最终 `WORKER_RESULT_INVALID`。
+- 已最小修复：Whisper 完成全部有界分段后产生处理覆盖证据；ASR 来源标注真实读取、绑定视频身份，验收时要求经验证的媒体、完整分段处理、有效时间戳及原视频 ID；OCR 的原有验收条件不变。
+- 离线实际测试：GitHub Actions `40113730428`，**159/159 PASS**。隔离真实 ASR-only 测试：`40113922828`，目标 `7699751880649428250`，处理完约 720.534 秒音频的 3 个分段，得到 336 段、4018 字符，并通过修复后的独立验收。实际语音可能有同音误识，confidence 为 null；这不是人工准确性验收。
+- 补丁已同步到当前采集分支：`d36526142677dfc438630ef93d5dc4cef364f575`；5 个文件的远端 blob 已逐一验证。未改 Vercel Production，也未新增付费 ASR。
+- **普通聊天客户端验收仍 FAIL**：独立调用 `start_douyin_read` 对同一视频启动了 `40114436965`，最终 `DOUYIN_PUBLIC_WEB_IDENTITY_MISMATCH`，来源 `page_url`，备用页目标 ID `7699751880649428250`，实际页面 ID `7700118541021809960`。这是到达 ASR 前的视频身份阻塞，不应解释为 ASR 修复失败或产品已经 PASS。
+- 下一最高价值动作：对一次已知的 `page_url` 错误建立低成本跳转链与正确详情证据；保留安全校验。不要重新扫描已经完成的 12 分钟视频，也不要继续重试 yt-dlp 相同 Cookie 受限路径。
+
+
 最后更新：2026-09-23
 
 ## Owner Goal（用户最终目标）
