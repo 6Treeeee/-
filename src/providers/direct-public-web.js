@@ -261,6 +261,7 @@ function createCapture({ expectedAwemeId = null, expectedSecUserId = null } = {}
     media: new Map(),
     endpointPaths: new Set(),
     mainDocument: null,
+    navigationTrail: [],
     signals: {
       loginRequired: false,
       securityChallenge: false,
@@ -282,6 +283,14 @@ function createCapture({ expectedAwemeId = null, expectedSecUserId = null } = {}
       const mainFrame = page?.mainFrame?.();
       if (request?.isNavigationRequest?.() && frame && mainFrame && frame === mainFrame) {
         state.mainDocument = { url: value, status: response.status() };
+        if (state.navigationTrail.length < 10) {
+          const target = safeUrl(value);
+          state.navigationTrail.push({
+            status: response.status(),
+            host: target && isDouyinHost(target.host) ? target.host : "untrusted",
+            path: target && isDouyinHost(target.host) ? target.path : null
+          });
+        }
       }
     } catch {
       // Navigation response diagnostics are optional; content capture continues.
@@ -1287,6 +1296,14 @@ export class DirectPublicWebProvider {
           selected.awemeId && finalUrlId && finalUrlId !== selected.awemeId
         );
         if (pageUrlMismatch && attempt === 0) {
+          console.info("TREE_IDENTITY_PROBE", JSON.stringify({
+            attempt, target: targetDiagnostic(target), expected_id: selected.awemeId,
+            observed_page_id: finalUrlId, page: targetDiagnostic(finalPage.url.href),
+            canonical: targetDiagnostic(dom.canonical),
+            main_document_status: capture.state.mainDocument?.status ?? null,
+            navigation: capture.state.navigationTrail,
+            detail_attempted: false, detail_reason: "first_attempt_policy"
+          }));
           const accessFailure = capturedAccessFailure();
           if (accessFailure) throw accessFailure;
           throw identityMismatchError(target, selected.awemeId, finalUrlId, "page_url");
@@ -1307,11 +1324,16 @@ export class DirectPublicWebProvider {
             !(rawHydration && hydrationId === selected.awemeId)) ||
           (embeddedAwemeMediaUrls(preliminaryAweme).length === 0 && preliminaryMediaUrls.length === 0)
         );
+        const detailProbe = { attempted: false, status: null, received_id: null, payload_present: false };
         if (needsExplicitDetail) {
+          detailProbe.attempted = true;
           const publicDetail = await fetchPublicVideoDetail(page, selected.awemeId, {
             timeoutMs: this.videoDetailTimeoutMs,
             totalTimeoutMs: this.videoDetailTotalTimeoutMs
           });
+          detailProbe.status = publicDetail?.status ?? null;
+          detailProbe.payload_present = Boolean(publicDetail?.payload);
+          detailProbe.received_id = postIdentity(extractAweme(publicDetail?.payload));
           if (publicDetail?.payload) {
             mergeSignals(capture.state.signals, readAccessSignals(publicDetail.payload));
             if (publicDetail.status === 200) {
@@ -1336,6 +1358,23 @@ export class DirectPublicWebProvider {
         }
         if (pageUrlMismatch && !capture.state.aweme &&
             !(rawHydration && hydrationId === selected.awemeId)) {
+          console.info("TREE_IDENTITY_PROBE", JSON.stringify({
+            attempt, target: targetDiagnostic(target), expected_id: selected.awemeId,
+            observed_page_id: finalUrlId, page: targetDiagnostic(finalPage.url.href),
+            canonical: targetDiagnostic(dom.canonical),
+            main_document_status: capture.state.mainDocument?.status ?? null,
+            navigation: capture.state.navigationTrail,
+            hydration_id: hydrationId,
+            captured_aweme_id: postIdentity(capture.state.aweme),
+            mismatched_details: capture.state.mismatchedAwemeIds.slice(0, 4),
+            detail: detailProbe,
+            access: {
+              login_required: Boolean(combinedAccess.loginRequired),
+              security_challenge: Boolean(combinedAccess.securityChallenge),
+              private_content: Boolean(combinedAccess.privateContent),
+              unavailable: Boolean(combinedAccess.unavailable)
+            }
+          }));
           throw identityMismatchError(target, selected.awemeId, finalUrlId, "page_url");
         }
         if (canonicalMismatch && !capture.state.aweme) {
