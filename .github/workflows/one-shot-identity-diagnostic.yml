@@ -1,0 +1,21 @@
+name: Tree Douyin one-shot identity evidence
+on:
+  push:
+    branches: [codex/content-reader-identity-investigation-20261025]
+    paths: [.github/workflows/one-shot-identity-diagnostic.yml]
+permissions:
+  contents: read
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: node --check scripts/one-shot-identity-diagnostic.mjs
+      - name: One metadata-only public-video diagnostic
+        run: node scripts/one-shot-identity-diagnostic.mjs
