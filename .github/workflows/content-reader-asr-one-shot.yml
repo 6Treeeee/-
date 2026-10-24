@@ -1,0 +1,31 @@
+name: One-shot verified Douyin ASR
+on:
+  push:
+    branches: [codex/content-reader-asr-verification-20261025]
+    paths: [.github/workflows/content-reader-asr-one-shot.yml]
+permissions:
+  contents: read
+jobs:
+  asr-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Install locked runtime
+        run: npm ci --ignore-scripts
+      - name: Run single bounded public-video speech-to-text test
+        run: node scripts/asr-one-shot-test.mjs
+        env:
+          CONTENT_READER_HARD_SUBTITLES: '0'
+      - name: Upload bounded sanitized test result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: verified-asr-one-shot-${{ github.run_id }}
+          path: asr-one-shot-output/
+          retention-days: 1
+          if-no-files-found: ignore
