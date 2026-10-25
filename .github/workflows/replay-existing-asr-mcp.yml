@@ -1,0 +1,23 @@
+name: Replay existing ASR result through MCP
+on:
+  push:
+    branches: [codex/content-reader-asr-projection-fix-20261025]
+    paths: [.github/workflows/replay-existing-asr-mcp.yml]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  replay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Read already captured Artifact and project its real ASR
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/replay-asr-mcp-projection.mjs
