@@ -50,7 +50,7 @@ jobs:
           cache: npm
       - run: npm ci
       - name: Unit tests
-        run: node --test test/public-browser-runtime.test.js test/douyin-pipeline.test.js test/acquisition-worker.test.js test/douyin-tools.test.js
+        run: node --test test/public-browser-runtime.test.js test/douyin-pipeline.test.js test/acquisition-worker.test.js test/douyin-tools.test.js test/acquisition-result-diagnostics.test.js
       - name: Existing fixed baseline probe (manual only)
         if: github.event_name == 'workflow_dispatch' && inputs.mode == 'probe'
         run: node scripts/probe-sparticuz-video.mjs '7688672103729483058'
@@ -95,6 +95,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: acquisition-${{ steps.task.outputs.request_id }}
-          path: acquisition-output/result.json
+          path: |
+            acquisition-output/result.json
+            acquisition-output/diagnostics.json
           if-no-files-found: error
           retention-days: 1

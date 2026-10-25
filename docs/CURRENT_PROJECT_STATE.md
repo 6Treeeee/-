@@ -1,5 +1,15 @@
 # CURRENT PROJECT STATE（当前项目状态）
 
+## 2026-10-26：40221770611 低成本诊断；安全逐项诊断已补齐，历史真实失败项仍 UNKNOWN
+
+本轮仅处理视频 7698100976309275939 的 run 40221770611。原 Artifact 12609602790 为 520 字节，ZIP digest 已核对；只保留 OCR_CAPTIONS_SPARSE 后的 Whisper 摘要（6060 字符、570 段、coverage_end_ms=1006516）和 WORKER_RESULT_INVALID。原 Worker 的 catch 覆盖候选 result，未保存 source/media_resolution/分段或逐项检查，不能从现有证据确认具体失败项。从该提交的摘要生成规则仅能支持 5 项通过，其余 32 项未知；未把另一视频的身份问题当成这里的原因。
+
+verifyAcquisitionResult 的原身份、音频覆盖、时间戳验收代码保持不变，已有逐字比对。新增拒绝诊断覆盖 Whisper 的 37 项条件，记录所有失败项、违规段计数和最多 10 个从 0 开始的样例索引/数值时间戳；不复制正文、密钥或媒体地址。Worker 丢弃失败候选前保留安全报告，另先写 diagnostics.json，现有 always() 上传步骤同时上传 result.json 和 diagnostics.json；失败仍 pass=false/exit 2。新增离线 ZIP/JSON 诊断命令，缺候选时明确 UNKNOWN，读取已保存安全诊断时只投影白名单字段。
+
+相关测试：后端 153/153、采集分支 157/157（含新增诊断 10 项）；原失败 Artifact 离线结果 unavailable_candidate_not_retained，failed_checks=null，不补造历史结论。本轮新视频/OCR/ASR/付费服务=0，未改另一视频的身份路线、Site 或其他模块。发布使用 skip-ci，防止源代码推送触发旧视频采集；尚无新版云端失败任务的诊断文件实测。
+
+状态 LOW_COST_DIAGNOSTICS_IMPLEMENTED_HISTORICAL_FAILURE_CONDITION_UNKNOWN。若有原始候选/Whisper JSON，优先离线检查；当前 GitHub Artifact 无此输入。以后同视频带诊断的一次受控复现只能证明新一轮失败项，不能回填旧 run。本轮未自动重跑。说明 docs/CONTENT_READER_RESULT_DIAGNOSTICS.md；证据 artifacts/douyin/result-diagnostics-2026-10-26/。
+
 ## 2026-10-25：原 Site Whisper 返回校验已修复并发布；普通 ChatGPT 最终验收仍未完成
 
 Owner 当前唯一目标是让现有 Tree Content Reader 普通 ChatGPT 插件返回视频 7699751880649428250 已成功生成的文字。本轮未启动视频采集、OCR 或 ASR，未新建插件/服务，未修改后端业务模块、安全授权、原 Site 访问范围或其他任务状态。

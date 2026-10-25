@@ -1,0 +1,12 @@
+{
+  "checks": [
+    {
+      "branch": "backend",
+      "acceptance_predicates_and_return_logic_unchanged": true
+    },
+    {
+      "branch": "worker",
+      "acceptance_predicates_and_return_logic_unchanged": true
+    }
+  ]
+}
