@@ -1,5 +1,20 @@
 # CURRENT PROJECT STATE（当前项目状态）
 
+## 2026-10-25 Content Reader 插件投影验收（最新阻塞）
+
+**目标：普通 ChatGPT 单条公开视频 `start_douyin_read` → `get_douyin_read_result` 得到正确视频的真实完整文字。绝不以工程测试 PASS 冒充普通聊天端到端 PASS。**
+
+- 真实工作任务：视频 `7699751880649428250`；原 GitHub Worker 运行 `40130743092`，Artifact `12575305245`。已保存 4026 字符、343 段的未经人工校对 Whisper 全音频转录结果，不允许重新采集消耗资源。
+- 旧 MCP 投影代码 `src/mcp/douyin-tools.js` 的 `publicDouyinResult` 误要求 `readable.source.coverage.full_video_scanned === true`。此条件仅属于 OCR；正确的 Whisper 结果使用 `full_audio_scanned === true`，导致上游已 PASS 后被最后的结果映射错误拒绝。
+- 修复提交：`de71806b89562d5a6538437bdbd3be567b2579da`，已同步到原有 `codex/a2a-control-loop`，仅修改 `src/mcp/douyin-tools.js` 及 `test/douyin-tools.test.js`；不改 ASR、OCR 或 Goal A。复用 `verifyAcquisitionResult` 已验证过的统一严格验收；对 ASR 如实输出 `full_audio_scanned` 而非伪称画面 OCR 扫描。
+- 真实验收：MCP 离线测试 `40163507117` 为 **52/52 PASS**。同一 Artifact 真正读取、解析、再通过修复后的 `publicDouyinResult`：`40163632437` 为 PASS，保留 4026 字符、343 段、正确 ID 和音频覆盖。
+- Vercel 预览部署 `dpl_GMW1NN78vTL1MpvkxVeUppAhC9nD` 已 READY、分支域名别名已指向该版本。Vercel 线上再查询时产生 `content_reader.return_verified`，run_id `40130743092`、方法 `local_whisper_cpp_base_q5_1`，证明后端服务器真正通过验收。
+- **尚未 PASS：** 本会话实际调用连接的 `mcp__Tree_Content_Reader__get_douyin_read_result` 对原任务仍返回 `WORKER_RESULT_INVALID`（中文消息“视频结果未通过完整性校验”）。这个工具的暴露描述仍是全片画面字幕 OCR-only，与修复后源代码的描述不一致，表明工具的已连接运行时/外层处理可能仍使用独立旧规则。既有 trusted-source proxy `bridge/content-reader-proxy/src/proxy.js` 仅转发身份认证与 JSON，并没有 OCR-only 完整性规则；无法从当前工具直接管理或重部署 ChatGPT 私人插件本身。不能臆称该连接已更新。
+- **当前唯一剩余步骤：** 查明实际已连接 Tree Content Reader 私人插件的运行地址与源代码；将最后的结果投影同步到该真正运行时（或将插件重连到已修复的 MCP 端点，保留同等 OAuth/权限）；随后只查询同一个已有任务，验证客户端收到 `status=completed`、指定 `aweme_id`、`method=local_whisper_cpp_base_q5_1`、`4026` 字符、`343` 段、`full_audio_scanned=true`。未达此标准则不得标记端到端 PASS。
+- 未更新生产环境、不扩大或复制密钥、不改变 AI/投资逻辑、不重复 ASR、不触发 Codex 新任务。
+
+
+
 ## 2026-10-25 客户端结果返回阻塞（最新）
 
 - Goal B 唯一主线保持，Goal A 暂停。当前不是重新做 ASR 或 OCR 的问题。
