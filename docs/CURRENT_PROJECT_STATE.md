@@ -1,5 +1,18 @@
 # CURRENT PROJECT STATE（当前项目状态）
 
+## 2026-10-26：同视频受控复现 PASS；旧 run 的失败项仍 UNKNOWN
+
+本轮按上一条状态对同一视频 7698100976309275939 做一次受控复现，未触碰另一视频身份问题。请求 16523257-830e-4de5-9502-659e5f1be45b；GitHub Actions run 40227782543；Worker commit ba14defd8e4b6bdc08636bd04ea5060b4f57aad7，父提交为已包含诊断补丁的 a981a628676f21a791ac6ac0972f58dc38d8119c；Artifact 12612236924。
+
+真实结果：run conclusion=success，result.json pass=true，Reader 返回 completed。使用 local_whisper_cpp_base_q5_1，文字 6027 字符、551 段；duration_ms=1006516，full_audio_scanned=true，coverage 0–1006516ms，4 个音频分块。Artifact 内 diagnostics.json 的 37/37 检查均为 true，failed_checks=[]；551 段的 7 类时间戳/文本检查均为零违规。fresh_capture=true、transcript_cache_read=false、视频身份一致，媒体验证 HTTP 206。该结果是这次同视频受控复现的实际 PASS，不外推为所有陌生视频都可靠。
+
+旧 run 40221770611 的候选结果已被覆盖，原 Artifact 只有 520 字节错误摘要，因此其具体失败条件仍 UNKNOWN；新 run 通过不能反向证明旧 run 的失败原因。当前诊断补丁已在真实 Worker 失败/成功流程上至少完成一次运行，且成功路径保留 diagnostics.json；未来若发生验收失败，可用当次 Artifact 的逐项检查定位，不再根据摘要猜测。没有新增付费 ASR；另一视频身份问题仍单独保持未处理。
+
+状态：SAME_VIDEO_CONTROLLED_REPRODUCTION_PASS; HISTORICAL_FAILURE_PREDICATE_UNKNOWN; GENERIC_BLIND_VIDEO_RELIABILITY_NOT_ESTABLISHED。
+
+下一步：停止对该视频的重复采集；保留本次 Artifact 与旧失败记录。仅当后续真实任务再次失败时，读取该次 diagnostics.json 的 failed_checks 和分段违规计数；不为追溯旧 run 反复重跑。
+
+
 ## 2026-10-26：40221770611 安全诊断补丁；原真实失败项仍 UNKNOWN，未重跑
 
 本轮仅诊断视频 7698100976309275939。已核对原 run/commit/request 和 Artifact 12609602790 的 digest；520 字节的失败 Artifact 只保留 6060 字符、570 段、coverage_end_ms=1006516 与 WORKER_RESULT_INVALID，候选 result 被旧 catch 覆盖。根据原摘要生成逻辑仅能确认 5 项通过，其他 32 项缺证，不能声称找到历史具体失败项，也未混入另一视频的身份问题。
