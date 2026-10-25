@@ -1,0 +1,29 @@
+{
+  "verified_at": "2026-10-25T11:51:07.025Z",
+  "type": "real_artifact_local_site_replay",
+  "ordinary_chatgpt_acceptance": "NOT_EXECUTED",
+  "source_run_id": 40130743092,
+  "artifact_id": 12575305245,
+  "zip_sha256": "3c9ae516d7b49e6ba88c7f84daf7a3607c8c1098ead6b28fd0a43ece641456de",
+  "request_id": "7c0b063e-a70f-4637-b9d8-92328870101a",
+  "aweme_id": "7699751880649428250",
+  "method": "local_whisper_cpp_base_q5_1",
+  "text_length": 4026,
+  "segment_count": 343,
+  "full_audio_scanned": true,
+  "transcript_and_segments_exact_match": true,
+  "new_acquisitions": 0,
+  "records": [
+    {
+      "label": "before",
+      "status": "failed",
+      "error": "WORKER_RESULT_INVALID",
+      "upstream_get_calls": 1
+    },
+    {
+      "label": "after",
+      "status": "completed",
+      "upstream_get_calls": 1
+    }
+  ]
+}

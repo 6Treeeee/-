@@ -1,0 +1,105 @@
+{
+  "status": "SITE_FIX_DEPLOYED_ORDINARY_CHATGPT_NOT_VERIFIED",
+  "recorded_at": "2026-10-25T11:56:22.122Z",
+  "repository": "6Treeeee/-",
+  "branch": "codex/a2a-control-loop",
+  "backend_commit": "de71806b89562d5a6538437bdbd3be567b2579da",
+  "plugin_id": "plugin_asdk_app_sites_af310756503881919ff366ba9baa6eef",
+  "site": {
+    "project_id": "appgprj_6ac22b038e0881918d8035a163bbc37d",
+    "url": "https://tree-content-reader-bridge.clear-hake-8441.chatgpt.site",
+    "previous_version": 10,
+    "version": 11,
+    "source_commit": "2ee90014143402dd68bbc92fbdcd21c5e61e75ac",
+    "version_id": "appgprj_6ac22b038e0881918d8035a163bbc37d~appgver_1015258501c08191af292b08047aad07",
+    "deployment_id": "appgdep_6added65c89481918b4c39cb655b9597",
+    "deployment_status": "succeeded",
+    "env_set_revision": 4,
+    "access_revision": 1
+  },
+  "defect": {
+    "file": "worker/index.js",
+    "function": "completed",
+    "reason": "Existing Site bridge unconditionally required OCR-only full_video_scanned and rejected the valid full-audio Whisper result.",
+    "old_source_commit": "ab4daf29f38200313a4866b2b28eab538bb7de89"
+  },
+  "fix": {
+    "accepted_methods": [
+      "hard_subtitle_ocr",
+      "local_whisper_cpp_base_q5_1"
+    ],
+    "asr_proof": [
+      "fresh_capture=true",
+      "transcript_cache_read=false",
+      "matching content/stable_aweme_id",
+      "whisper.cpp engine",
+      "64-hex model hash",
+      "full_audio_scanned=true",
+      "bounded full coverage and positive chunk_count",
+      "validated media resolution",
+      "nonempty monotonic bounded segments"
+    ],
+    "security_checks_removed": false
+  },
+  "original_result": {
+    "run_id": 40130743092,
+    "artifact_id": 12575305245,
+    "request_id": "7c0b063e-a70f-4637-b9d8-92328870101a",
+    "aweme_id": "7699751880649428250",
+    "attempt": 1,
+    "worker_commit": "19d16d75ec8c5d5900d5b5a40c973f3f8f2695f4",
+    "zip_sha256": "3c9ae516d7b49e6ba88c7f84daf7a3607c8c1098ead6b28fd0a43ece641456de",
+    "method": "local_whisper_cpp_base_q5_1",
+    "text_length": 4026,
+    "segment_count": 343,
+    "full_audio_scanned": true
+  },
+  "validation": {
+    "site_tests": {
+      "passed": 12,
+      "failed": 0
+    },
+    "existing_backend_targeted_tests": {
+      "passed": 18,
+      "failed": 0
+    },
+    "real_artifact_replay": {
+      "before": "WORKER_RESULT_INVALID",
+      "after": "completed",
+      "text_and_segments_exact_match": true,
+      "scope": "Local Site Worker using actual unchanged artifact; upstream response injected, not live ordinary ChatGPT."
+    },
+    "live_plugin_negative_test": {
+      "client": "Codex connected plugin",
+      "task_input": "intentionally invalid non-secret test value",
+      "actual_error": "INVALID_TASK",
+      "http_status": 400,
+      "stage": "proxy",
+      "completed_result": false
+    },
+    "proxy_target": {
+      "url": "https://git-codex-a2a-control-loop-1790063688-9925s-projects.vercel.app/api/acquisition",
+      "deployment_id": "dpl_GMW1NN78vTL1MpvkxVeUppAhC9nD",
+      "source_commit": "de71806b89562d5a6538437bdbd3be567b2579da",
+      "state": "READY"
+    },
+    "ordinary_chatgpt": {
+      "status": "NOT_EXECUTED",
+      "missing": "Authenticated original ChatGPT client call using the existing valid task ticket.",
+      "browser_error": "Cannot find module C:\\Users\\Administrator\\.codex\\plugins\\cache\\openai-bundled\\browser\\26.1016.62342\\scripts\\browser-service.mjs",
+      "new_task_triggered": false
+    }
+  },
+  "additional_checks": {
+    "service_access_probe": {"status":"FAILED","http_status":401,"response":"Unauthorized","scope":"Direct discovery using the existing Sites service token; no credentials created or rotated."},
+    "historical_log_lookup": {"status":"UNAVAILABLE","http_status":400,"reason":"14-hour window exceeds existing Hobby retention; no paid service enabled. Supported 30-minute query exposed no task ticket."}
+  },
+  "scope": {
+    "new_video_acquisitions": 0,
+    "new_ocr_asr_jobs": 0,
+    "new_plugins": 0,
+    "new_services": 0,
+    "backend_source_changed": false,
+    "production_backend_deployed": false
+  }
+}

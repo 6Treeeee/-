@@ -1,5 +1,17 @@
 # CURRENT PROJECT STATE（当前项目状态）
 
+## 2026-10-25：原 Site Whisper 返回校验已修复并发布；普通 ChatGPT 最终验收仍未完成
+
+Owner 当前唯一目标是让现有 Tree Content Reader 普通 ChatGPT 插件返回视频 7699751880649428250 已成功生成的文字。本轮未启动视频采集、OCR 或 ASR，未新建插件/服务，未修改后端业务模块、安全授权、原 Site 访问范围或其他任务状态。
+
+根因已用同一真实 Artifact 12575305245 复现：原 Site（独立源码 ab4daf29f38200313a4866b2b28eab538bb7de89，第 10 版）的 worker/index.js completed() 强制要求 OCR 专用 full_video_scanned，拒绝 run 40130743092 的合格 Whisper full_audio_scanned 结果。GitHub 后端 de71806 的 MCP 映射修复没有覆盖这份独立 Site 源码。现有代理真实使用 Preview 分支别名，当前指向 READY 的 de71806 部署，无需改代理或后端。
+
+仅在原 Site 源码增加与后端一致的严格 ASR 分支：保留 fresh/no-cache、视频身份、全音频覆盖、分块数、Whisper 引擎与模型哈希、媒体验证及时间戳校验；OCR 仍要求全视频扫描，ASR 不冒称 OCR。原 Site 已发布第 11 版，源码 2ee90014143402dd68bbc92fbdcd21c5e61e75ac，deployment appgdep_6added65c89481918b4c39cb655b9597 succeeded/has_mcp=true；插件 ID plugin_asdk_app_sites_af310756503881919ff366ba9baa6eef、URL 和访问 revision=1 保持。生产运行环境 revision=4 未改。
+
+验证：Site 测试 12/12、现有后端相关测试 18/18、构建/ESM 包验证通过。原 Artifact ZIP SHA-256 与 GitHub digest 一致；同一结果在旧 Site 回放 WORKER_RESULT_INVALID，在修复版回放 completed，视频 ID/方法匹配、4026 字符、343 段、full_audio_scanned=true，正文与分段逐项精确一致。已连接 Codex 插件的只读无效票据检查真实返回 INVALID_TASK/400/stage=proxy，不能算有效任务 completed 或普通 ChatGPT PASS。
+
+最终状态：SITE_FIX_DEPLOYED_ORDINARY_CHATGPT_NOT_VERIFIED。普通 ChatGPT 原有效 task 未在本工程上下文提供；受支持浏览器组件缺失 browser/26.1016.62342/scripts/browser-service.mjs，无法替用户操作原普通 ChatGPT。待在原普通 ChatGPT 对话只调用已有 task 的 get_douyin_read_result，核对 completed、正确 ID/方法、4026/343、full_audio_scanned=true；禁止通过 start_douyin_read 重采集。证据与 Site 源码补丁见 artifacts/douyin/site-asr-return-2026-10-25/。
+
 ## 2026-10-20 10:00：Owner明确暂停；云端采集已取消，转入深度复盘
 
 当前执行状态为PAUSED_BY_OWNER，正式目标已paused。本地轮询停止；09:59:17发出取消run39355719565的请求，HTTP202，随后独立读回completed/cancelled，更新时间10:00:21+08:00。Reader最后实测为取消前running，没有补造其终态。后续“继续”在本轮仅指完成复盘，不恢复工程或启动新视频。

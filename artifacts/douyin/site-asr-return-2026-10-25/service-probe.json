@@ -1,0 +1,11 @@
+{
+  "verified_at": "2026-10-25T11:55:45.061Z",
+  "type": "production_site_mcp_discovery",
+  "records": [
+    {
+      "method": "server/discover",
+      "http_status": 401,
+      "error": "Unauthorized"
+    }
+  ]
+}

@@ -1,0 +1,161 @@
+diff --git a/README.md b/README.md
+index 1c0c2e8..0ca6b23 100644
+--- a/README.md
++++ b/README.md
+@@ -4,0 +5,2 @@ This is an owner-private ChatGPT Sites MCP bridge for the **existing Vercel Prev
++Completed results accept the same strict methods as Preview: `hard_subtitle_ocr` requires fresh full-video scanning; `local_whisper_cpp_base_q5_1` requires fresh full-audio scanning, matching video identity, verified media resolution, engine/model provenance, and valid monotonic segments. Audio transcription is returned with `full_audio_scanned`, never relabeled as video OCR. Authentication, signed task validation, and GitHub run/artifact provenance remain enforced by their existing boundaries.
++
+diff --git a/test/bridge.test.js b/test/bridge.test.js
+index 43adb48..f40eba2 100644
+--- a/test/bridge.test.js
++++ b/test/bridge.test.js
+@@ -240,0 +241,92 @@ test("poll returns a complete, checked transcript and rejects incomplete coverag
++
++function whisperPoll() {
++  return {
++    status: "completed", pass: true, aweme_id: id, request_id: "request-asr",
++    run_id: 123, run_url: "https://github.com/6Treeeee/-/actions/runs/123",
++    attempt: 1, commit: "a".repeat(40),
++    result: { content: { aweme_id: id, duration_ms: 440000,
++      readable_content: {
++        status: "complete", method: "local_whisper_cpp_base_q5_1",
++        text: "完整音频文字\n第二段", limitations: ["machine_transcription"],
++        segments: [{ start_ms: 0, end_ms: 2000, text: "完整音频文字" },
++          { start_ms: 3000, end_ms: 5000, text: "第二段" }],
++        source: { type: "asr", provider: "local_whisper_cpp", fresh_capture: true,
++          transcript_cache_read: false, stable_aweme_id: id,
++          engine: { name: "whisper.cpp" }, model: { sha256: "b".repeat(64) },
++          coverage: { start_ms: 0, end_ms: 440000, full_audio_scanned: true, chunk_count: 2 } },
++        media_resolution: { stable_identity: "aweme_id", media_kind: "video",
++          validated_at: "2026-10-25T00:00:00Z", validation: { status: 206 },
++          url: "https://media.invalid/private?token=secret" },
++      } } },
++  };
++}
++
++test("poll delivers verified full-audio Whisper without claiming video OCR", async () => {
++  const poll = whisperPoll();
++  const worker = createWorker({ fetchImpl: async (_url, options) => {
++    assert.equal(options.method, "GET");
++    return json(poll);
++  } });
++  for (const modern of [false, true]) {
++    const result = await call(worker, rpc("tools/call", {
++      name: "get_douyin_read_result", arguments: { task: "signed.ticket" },
++    }, { modern }));
++    const value = result.body.result.structuredContent;
++    assert.equal(result.body.result.isError, undefined);
++    assert.equal(value.status, "completed");
++    assert.equal(value.aweme_id, id);
++    assert.equal(value.request_id, poll.request_id);
++    assert.equal(value.readable_content.method, "local_whisper_cpp_base_q5_1");
++    assert.equal(value.readable_content.text, poll.result.content.readable_content.text);
++    assert.equal(value.readable_content.segments.length, 2);
++    assert.equal(value.readable_content.coverage.full_audio_scanned, true);
++    assert.equal(value.readable_content.coverage.full_video_scanned, undefined);
++    assert.equal(value.readable_content.coverage.chunk_count, 2);
++    assert.equal(value.worker.attempt, 1);
++    assert.equal(value.worker.commit, poll.commit);
++    assert.equal(JSON.stringify(result.body).includes("token=secret"), false);
++  }
++});
++
++test("poll rejects unverified or incomplete Whisper results", async () => {
++  const mutations = [
++    p => p.pass = false,
++    p => p.result.content.aweme_id = "7699751880649428250",
++    p => p.result.content.duration_ms = 0,
++    p => p.result.content.readable_content.status = "partial",
++    p => p.result.content.readable_content.method = "captions",
++    p => p.result.content.readable_content.text = " ",
++    p => p.result.content.readable_content.source.type = "ocr",
++    p => p.result.content.readable_content.source.provider = "unverified",
++    p => p.result.content.readable_content.source.fresh_capture = false,
++    p => p.result.content.readable_content.source.transcript_cache_read = true,
++    p => p.result.content.readable_content.source.stable_aweme_id = "7699751880649428250",
++    p => p.result.content.readable_content.source.engine.name = "unknown",
++    p => p.result.content.readable_content.source.model.sha256 = "invalid",
++    p => p.result.content.readable_content.source.coverage.full_audio_scanned = false,
++    p => p.result.content.readable_content.source.coverage.start_ms = 1,
++    p => p.result.content.readable_content.source.coverage.end_ms = 438999,
++    p => p.result.content.readable_content.source.coverage.end_ms = 450001,
++    p => p.result.content.readable_content.source.coverage.chunk_count = 0,
++    p => p.result.content.readable_content.media_resolution.stable_identity = "title",
++    p => p.result.content.readable_content.media_resolution.media_kind = "image",
++    p => p.result.content.readable_content.media_resolution.validated_at = null,
++    p => p.result.content.readable_content.media_resolution.validation.status = 403,
++    p => p.result.content.readable_content.segments = [],
++    p => p.result.content.readable_content.segments[0].end_ms = 0,
++    p => p.result.content.readable_content.segments[0].start_ms = -1,
++    p => p.result.content.readable_content.segments[1].start_ms = -1,
++    p => p.result.content.readable_content.segments[1].end_ms = 450001,
++    p => p.result.content.readable_content.segments[0].text = " ",
++  ];
++  for (const mutate of mutations) {
++    const poll = whisperPoll();
++    mutate(poll);
++    const worker = createWorker({ fetchImpl: async () => json(poll) });
++    const result = await call(worker, rpc("tools/call", {
++      name: "get_douyin_read_result", arguments: { task: "signed.ticket" },
++    }));
++    assert.equal(result.body.result.isError, true, mutate.toString());
++    assert.equal(result.body.result.structuredContent.error.code, "WORKER_RESULT_INVALID", mutate.toString());
++  }
++});
+diff --git a/worker/index.js b/worker/index.js
+index c58222d..4236962 100644
+--- a/worker/index.js
++++ b/worker/index.js
+@@ -3 +3 @@
+-const SERVER = { name: "tree-content-reader-bridge", version: "0.1.0" };
++const SERVER = { name: "tree-content-reader-bridge", version: "0.1.1" };
+@@ -49 +49 @@ const TOOLS = [
+-    description: "用 start_douyin_read 返回的 task 凭证查询同一视频任务；queued 或 running 时无需用户转交结果，按返回的 poll_after_ms 再查。completed 后依据返回的画面字幕文字总结，并说明 OCR 的局限；failed 时说明无法读取，不猜测内容。",
++    description: "用 start_douyin_read 返回的 task 凭证查询同一视频任务；queued 或 running 时无需用户转交结果，按返回的 poll_after_ms 再查。completed 后依据返回的完整文字总结，并按 method 说明画面字幕 OCR 或 Whisper 音频转写的局限；failed 时说明无法读取，不猜测内容。",
+@@ -202,0 +203,27 @@ function limited(value, max) { return typeof value === "string" ? value.slice(0,
++
++// Keep the existing Preview's strict Whisper acceptance contract at this final
++// return boundary. ASR proves full audio coverage; OCR proves video scanning.
++function verifiedAudioInference(readable, duration, id) {
++  const source = readable.source, coverage = source?.coverage;
++  const media = readable.media_resolution;
++  if (readable.method !== "local_whisper_cpp_base_q5_1" ||
++      source?.type !== "asr" || source?.provider !== "local_whisper_cpp" ||
++      source?.stable_aweme_id !== id || source?.engine?.name !== "whisper.cpp" ||
++      !/^[a-f0-9]{64}$/.test(String(source?.model?.sha256 ?? "")) ||
++      coverage?.full_audio_scanned !== true ||
++      coverage.end_ms > duration + 10000 ||
++      !Number.isInteger(coverage.chunk_count) || coverage.chunk_count < 1 ||
++      media?.stable_identity !== "aweme_id" ||
++      !["video", "audio"].includes(media?.media_kind) || !media?.validated_at ||
++      ![200, 206].includes(Number(media?.validation?.status))) return false;
++  let previousStart = 0;
++  for (const segment of readable.segments) {
++    const start = segment?.start_ms, end = segment?.end_ms;
++    if (!Number.isFinite(start) || !Number.isFinite(end) || start < previousStart ||
++        end <= start || start < 0 || end > duration + 10000 ||
++        typeof segment?.text !== "string" || !segment.text.trim()) return false;
++    previousStart = start;
++  }
++  return true;
++}
++
+@@ -215 +242 @@ function completed(poll) {
+-      readable.source?.coverage?.full_video_scanned !== true ||
++      !readable.source?.coverage ||
+@@ -218,0 +246,4 @@ function completed(poll) {
++  const isAsr = readable.method === "local_whisper_cpp_base_q5_1";
++  if (isAsr ? !verifiedAudioInference(readable, duration, id)
++    : readable.method !== "hard_subtitle_ocr" ||
++      readable.source.coverage.full_video_scanned !== true) fail("WORKER_RESULT_INVALID");
+@@ -226 +257 @@ function completed(poll) {
+-  return { status: "completed", aweme_id: id,
++  return { status: "completed", aweme_id: id, request_id: limited(poll.request_id, 128),
+@@ -235 +266,2 @@ function completed(poll) {
+-      coverage: { full_video_scanned: true,
++      coverage: { ...(isAsr ? { full_audio_scanned: true,
++          chunk_count: readable.source.coverage.chunk_count } : { full_video_scanned: true }),
+@@ -238 +270,2 @@ function completed(poll) {
+-    worker: { run_id: poll.run_id, run_url: limited(poll.run_url, 500), elapsed_ms: poll.elapsed_ms } };
++    worker: { run_id: poll.run_id, run_url: limited(poll.run_url, 500),
++      attempt: poll.attempt, commit: limited(poll.commit, 40), elapsed_ms: poll.elapsed_ms } };
