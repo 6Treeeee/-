@@ -121,3 +121,77 @@ test("a mismatched worker result is rejected instead of summarized", async () =>
   assert.equal(response.structuredContent.error.code, "WORKER_RESULT_INVALID");
 });
 
+
+function acceptedSpeechResult() {
+  const result = structuredClone(accepted);
+  result.result.content.readable_content = {
+    status: "complete",
+    method: "local_whisper_cpp_base_q5_1",
+    text: "First spoken phrase. Second spoken phrase.",
+    segments: [
+      { start_ms: 0, end_ms: 10_000, text: "First spoken phrase.", confidence: null },
+      { start_ms: 200_000, end_ms: 211_000, text: "Second spoken phrase.", confidence: null },
+    ],
+    confidence: null,
+    limitations: ["quantized_base_model_lower_accuracy", "uncorrected_asr_homophones"],
+    source: {
+      type: "asr", provider: "local_whisper_cpp", fresh_capture: true, transcript_cache_read: false,
+      stable_aweme_id: awemeId, engine: {name:"whisper.cpp"}, model: {sha256:"a".repeat(64)},
+      coverage: {start_ms:0, end_ms:440_000, full_audio_scanned:true, chunk_count:2},
+    },
+    media_resolution: {
+      stable_identity: "aweme_id", media_kind: "audio",
+      validated_at:"2026-10-24T12:00:00Z", validation:{status:206},
+    },
+  };
+  return result;
+}
+
+test("a verified Whisper transcription completes through the real MCP projection without being relabeled as OCR", async () => {
+  const { tools } = fixture({ poll: () => acceptedSpeechResult() });
+  const response = await tools.get("get_douyin_read_result").handler({ task: "signed-ticket" });
+  assert.equal(response.isError, undefined);
+  const value = response.structuredContent;
+  assert.equal(value.status, "completed");
+  assert.equal(value.aweme_id, awemeId);
+  assert.equal(value.readable_content.method, "local_whisper_cpp_base_q5_1");
+  assert.equal(value.readable_content.coverage.full_audio_scanned, true);
+  assert.equal(value.readable_content.coverage.chunk_count, 2);
+  assert.equal(value.readable_content.coverage.end_ms, 440_000);
+  assert.equal(value.readable_content.coverage.full_video_scanned, undefined);
+  assert.equal(value.readable_content.segments.length, 2);
+  assert.equal(value.readable_content.text, "First spoken phrase. Second spoken phrase.");
+  assert.equal(value.readable_content.confidence, null);
+  assert.equal(value.readable_content.source, undefined);
+  assert.equal(value.result, undefined);
+  assert.equal(value.media, undefined);
+  assert(!JSON.stringify(value).includes("do-not-return"));
+  assert(!JSON.stringify(value).includes("private-signed-url"));
+});
+
+test("MCP rejects incomplete, mismatched, or unverified Whisper results instead of fabricating a transcript", async () => {
+  const modifications = [
+    r => r.result.content.readable_content.source.coverage.full_audio_scanned = false,
+    r => r.result.content.readable_content.source.coverage.end_ms = 5_000,
+    r => r.result.content.readable_content.source.coverage.chunk_count = 0,
+    r => r.result.content.readable_content.source.stable_aweme_id = "7000000000000000000",
+    r => r.result.content.readable_content.source.fresh_capture = false,
+    r => r.result.content.readable_content.source.transcript_cache_read = true,
+    r => r.result.content.readable_content.source.model.sha256 = "invalid",
+    r => r.result.content.readable_content.media_resolution.validated_at = null,
+    r => r.result.content.readable_content.media_resolution.validation.status = 403,
+    r => r.result.content.readable_content.segments[1].end_ms = 900_000,
+    r => r.result.content.readable_content.segments[0].text = "",
+    r => r.result.content.aweme_id = "7000000000000000000",
+  ];
+  for (const mutate of modifications) {
+    const bad=acceptedSpeechResult();
+    mutate(bad);
+    const { tools } = fixture({poll:()=>bad});
+    const response = await tools.get("get_douyin_read_result").handler({task:"signed-ticket"});
+    assert.equal(response.isError, true);
+    assert.equal(response.structuredContent.status, "failed");
+    assert.equal(response.structuredContent.error.code, "WORKER_RESULT_INVALID");
+    assert.equal(response.structuredContent.readable_content, undefined);
+  }
+});
