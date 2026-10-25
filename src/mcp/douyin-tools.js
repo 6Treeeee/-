@@ -1,4 +1,5 @@
 import { GithubAcquisition } from "../services/acquisition-github.js";
+import { verifyAcquisitionResult } from "../services/acquisition-result.js";
 import { resolveDouyinVideoId } from "../services/douyin-video-url.js";
 
 const VIDEO_WORKSPACE = "content-reader";
@@ -66,13 +67,21 @@ export function publicDouyinResult(poll) {
   const awemeId = String(poll.aweme_id ?? "");
   const durationMs = Number(content?.duration_ms ?? content?.media?.duration_ms ?? 0);
   const author = publicAuthor(content?.author);
-  if (!/^\d{15,22}$/.test(awemeId) || String(content?.aweme_id ?? content?.id ?? "") !== awemeId ||
-      readable?.status !== "complete" || typeof readable.text !== "string" || !readable.text.trim() ||
-      !Array.isArray(readable.segments) || readable.segments.length === 0 || durationMs <= 0 ||
-      readable.source?.fresh_capture !== true || readable.source?.transcript_cache_read !== false ||
-      readable.source?.coverage?.full_video_scanned !== true) {
+  if (!/^\d{15,22}$/.test(awemeId) || typeof poll.request_id !== "string" ||
+      !poll.request_id || String(content?.aweme_id ?? content?.id ?? "") !== awemeId) {
     throw Object.assign(new Error("Worker result is incomplete or does not match the video."), { code: "WORKER_RESULT_INVALID" });
   }
+  // The worker already verifies its signed request, commit, and ZIP artifact.
+  // Apply the SAME strict OCR/ASR acceptance gate here, rather than incorrectly
+  // requiring full_video_scanned (an OCR-only flag) for a verified ASR result.
+  verifyAcquisitionResult({
+    request_id: poll.request_id,
+    aweme_id: awemeId,
+    pass: poll.pass,
+    result: poll.result,
+  }, { request_id: poll.request_id, aweme_id: awemeId });
+  const coverage = readable.source.coverage;
+  const isAsr = readable.method === "local_whisper_cpp_base_q5_1";
   return {
     status: "completed",
     request_id: poll.request_id,
@@ -97,9 +106,12 @@ export function publicDouyinResult(poll) {
       fresh_capture: true,
       transcript_cache_read: false,
       coverage: {
-        full_video_scanned: true,
-        start_ms: readable.source.coverage.start_ms,
-        end_ms: readable.source.coverage.end_ms,
+        ...(isAsr ? {
+          full_audio_scanned: true,
+          chunk_count: coverage.chunk_count,
+        } : { full_video_scanned: true }),
+        start_ms: coverage.start_ms,
+        end_ms: coverage.end_ms,
       },
     },
     worker: {
