@@ -1,0 +1,102 @@
+{
+  "status": "LOW_COST_DIAGNOSTICS_IMPLEMENTED_HISTORICAL_FAILURE_CONDITION_UNKNOWN",
+  "recorded_at": "2026-10-25T19:31:26.758Z",
+  "run_id": 40221770611,
+  "aweme_id": "7698100976309275939",
+  "request_id": "767e9a51-f123-45d0-a232-f45f342faedb",
+  "worker_commit": "b9896c5131a07b572c4edafebd39e4acebc774b0",
+  "attempt": 1,
+  "artifact": {
+    "id": 12609602790,
+    "size_in_bytes": 520,
+    "sha256": "6a1f99a5dc15490563e2f858c69e47fae5ccf3d064613e189e5a3cf14e053e0c",
+    "digest_matches_github": true,
+    "candidate_retained": false
+  },
+  "observations": [
+    {
+      "event": "ocr.duration_checked",
+      "duration_ms": 1006516
+    },
+    {
+      "event": "ocr.failed",
+      "code": "OCR_CAPTIONS_SPARSE"
+    },
+    {
+      "event": "acquisition.completed",
+      "pass": false,
+      "error_code": "WORKER_RESULT_INVALID",
+      "details": {
+        "required_methods": [
+          "hard_subtitle_ocr",
+          "local_whisper_cpp_base_q5_1"
+        ],
+        "actual_method": "local_whisper_cpp_base_q5_1",
+        "text_length": 6060,
+        "segment_count": 570,
+        "coverage_end_ms": 1006516
+      }
+    }
+  ],
+  "historical_diagnosis": {
+    "exact_failed_predicate": "UNKNOWN",
+    "checks_total": 37,
+    "checks_supported_by_saved_summary": 5,
+    "unknown_checks": 32,
+    "confirmed_summary_predicates": [
+      "method_supported",
+      "text_string",
+      "segments_array",
+      "segments_nonempty",
+      "coverage_end_finite"
+    ],
+    "unavailable_inputs": [
+      "complete readable_content.source and media_resolution",
+      "candidate content duration",
+      "per-segment timestamps and nonempty text checks"
+    ],
+    "reason": "The original worker replaced the rejected candidate with an error-only envelope; no per-condition or per-segment diagnostics were retained."
+  },
+  "implementation": {
+    "predicate_logic_changed": false,
+    "identity_rules_relaxed": false,
+    "audio_coverage_rules_relaxed": false,
+    "timestamp_rules_relaxed": false,
+    "failure_report": "result.json error.details.validation plus independent diagnostics.json uploaded by the existing always() artifact step",
+    "safe_fields": [
+      "fixed check names",
+      "booleans",
+      "counts",
+      "finite numeric timestamps",
+      "at most 10 invalid segment examples with zero-based indices"
+    ],
+    "copies_transcript_keys_or_media_urls": false,
+    "offline_command": "scripts/diagnose-acquisition-result.mjs"
+  },
+  "verification": {
+    "backend_related_tests": {
+      "passed": 153,
+      "failed": 0
+    },
+    "worker_related_tests": {
+      "passed": 157,
+      "failed": 0
+    },
+    "diagnostic_tests": {
+      "passed": 10,
+      "failed": 0
+    },
+    "acceptance_code_comparison": "The original acceptance predicates and return logic are byte-identical after excluding the added diagnostics-only code.",
+    "historical_offline_result": "unavailable_candidate_not_retained"
+  },
+  "scope": {
+    "new_video_runs": 0,
+    "new_ocr_or_asr_runs": 0,
+    "new_paid_services": 0,
+    "other_video_identity_fix_included": false
+  },
+  "next_step": {
+    "automatic_rerun": false,
+    "reason": "Exact historical conditions cannot be recovered from counts and coverage_end_ms alone. An original candidate payload could be inspected offline; otherwise a later instrumented run can diagnose only that new run, not reconstruct the discarded historical payload."
+  }
+}

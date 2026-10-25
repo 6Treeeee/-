@@ -1,0 +1,25 @@
+{
+  "request_id": "767e9a51-f123-45d0-a232-f45f342faedb",
+  "aweme_id": "7698100976309275939",
+  "pass": false,
+  "elapsed_ms": 551042,
+  "error": {
+    "code": "WORKER_RESULT_INVALID",
+    "message": "Worker result did not provide a verified fresh OCR or full-audio speech-to-text result.",
+    "details": {
+      "required_methods": [
+        "hard_subtitle_ocr",
+        "local_whisper_cpp_base_q5_1"
+      ],
+      "actual_method": "local_whisper_cpp_base_q5_1",
+      "text_length": 6060,
+      "segment_count": 570,
+      "coverage_end_ms": 1006516
+    }
+  },
+  "worker": {
+    "run_id": "40221770611",
+    "attempt": "1",
+    "commit": "b9896c5131a07b572c4edafebd39e4acebc774b0"
+  }
+}

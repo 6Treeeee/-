@@ -1,5 +1,13 @@
 # CURRENT PROJECT STATE（当前项目状态）
 
+## 2026-10-26：40221770611 安全诊断补丁；原真实失败项仍 UNKNOWN，未重跑
+
+本轮仅诊断视频 7698100976309275939。已核对原 run/commit/request 和 Artifact 12609602790 的 digest；520 字节的失败 Artifact 只保留 6060 字符、570 段、coverage_end_ms=1006516 与 WORKER_RESULT_INVALID，候选 result 被旧 catch 覆盖。根据原摘要生成逻辑仅能确认 5 项通过，其他 32 项缺证，不能声称找到历史具体失败项，也未混入另一视频的身份问题。
+
+原 verifyAcquisitionResult 验收谓词和返回逻辑保持不变，新增拒绝时的 37 项安全诊断。失败时先保存 diagnostics.json，并在 result.json 的错误详情保留同一报告；现有 always() 上传步骤上传两份文件，失败仍 pass=false/exit 2。仅固定检查名、布尔值、计数、有限数值时间戳和最多 10 个错误段索引，不复制正文、密钥或媒体地址。新增离线诊断命令支持已有 ZIP/JSON 和 digest 校验，缺原始候选时明确保留未知。
+
+采集分支相关测试 157/157，后端相关测试 153/153；身份、音频覆盖和时间戳门槛逐字审计未改。提交 skip-ci，防止代码更新触发采集；本轮新采集、OCR、ASR、付费服务均为 0，未改既有时长预算或其他模块。尚无新版云端失败任务的诊断文件实测；没有自动重跑本视频。若没有原始候选文件，以后的受控复现只证明新 run 的具体条件。文档 docs/CONTENT_READER_RESULT_DIAGNOSTICS.md，证据 artifacts/douyin/result-diagnostics-2026-10-26/。
+
 ## 2026-10-25 Content Reader 插件投影验收（最新阻塞）
 
 **目标：普通 ChatGPT 单条公开视频 `start_douyin_read` → `get_douyin_read_result` 得到正确视频的真实完整文字。绝不以工程测试 PASS 冒充普通聊天端到端 PASS。**
