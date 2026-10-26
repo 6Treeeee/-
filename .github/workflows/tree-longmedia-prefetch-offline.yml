@@ -1,0 +1,24 @@
+name: Tree long-media prefetch offline contract
+on:
+  push:
+    branches: [codex/content-reader-longmedia-prefetch-20261026]
+    paths: [.github/workflows/tree-longmedia-prefetch-offline.yml]
+permissions:
+  contents: read
+jobs:
+  offline-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Syntax checks
+        run: |
+          node --check src/services/transcription.js
+          node --check test/content-reader-longmedia-prefetch.test.js
+      - name: Offline regression only — no public video capture
+        run: node --test test/content-reader-longmedia-prefetch.test.js test/douyin-pipeline.test.js test/acquisition-worker.test.js test/acquisition-result-diagnostics.test.js
