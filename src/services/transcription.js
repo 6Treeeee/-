@@ -23,6 +23,9 @@ const DEFAULT_GATEWAY_MODELS = Object.freeze([
   "openai/whisper-1"
 ]);
 const LONG_MEDIA_LOCAL_PRIORITY_MS = 180_000;
+// Fetch an identity-validated public soundtrack before a long OCR scan can
+// outlive short-lived Douyin media links. Smaller videos keep OCR-first I/O.
+const LONG_MEDIA_EARLY_FETCH_MS = 600_000;
 
 function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -425,6 +428,23 @@ function providerError(code, message, provider, status, cause) {
   });
 }
 
+// MediaResolver records candidate checks without signed URLs. Expose only a
+// bounded numeric summary, never candidate URLs, hashes, cookies or messages.
+function mediaFailureSummary(error) {
+  if (error?.code !== "MEDIA_UNAVAILABLE" || !Array.isArray(error?.details?.attempts)) return null;
+  const attempts = error.details.attempts.slice(0, 64);
+  const statuses = [...new Set(attempts
+    .map(item => Number(item?.status))
+    .filter(value => Number.isInteger(value) && value >= 100 && value <= 599))]
+    .sort((left, right) => left - right);
+  return {
+    media_candidates_checked: attempts.filter(item => !item?.refresh).length,
+    refresh_failure_recorded: attempts.some(item => Boolean(item?.refresh)),
+    http_statuses: statuses,
+    checks_truncated: error.details.attempts.length > attempts.length
+  };
+}
+
 function safeAttempt(method, error) {
   return {
     method,
@@ -610,6 +630,7 @@ export class TranscriptionService {
     retryDelayMs = 250,
     sleepImpl = wait,
     audioExtractor = extractMp4Audio,
+    prefetchLongMedia = true,
     gatewayFactory = createGateway
   } = {}) {
     if (typeof fetchImpl !== "function") {
@@ -646,6 +667,7 @@ export class TranscriptionService {
     this.retryDelayMs = Math.max(0, retryDelayMs);
     this.sleepImpl = sleepImpl;
     this.audioExtractor = audioExtractor;
+    this.prefetchLongMedia = prefetchLongMedia === true;
     this.gatewayFactory = gatewayFactory;
   }
 
@@ -917,8 +939,32 @@ export class TranscriptionService {
       }
     }
 
-    // Hard subtitles are read from a fresh public browser before any audio is
-    // fetched or extracted. Access-control failures remain terminal.
+    // On long videos, full-frame OCR can run for many minutes while public media
+    // URLs expire. Preserve bounded, identity-validated audio/video bytes early,
+    // but keep caption/OCR result priority and every access-control boundary.
+    // No paid ASR provider or cached transcript is introduced.
+    const mediaDuration = knownVideoDurationMs(video);
+    const prefetchEligible = this.prefetchLongMedia &&
+      typeof this.localAsr === "function" &&
+      typeof this.hardSubtitleOcr === "function" &&
+      Number.isFinite(mediaDuration) && mediaDuration >= LONG_MEDIA_EARLY_FETCH_MS &&
+      (!this.requestDeadlineAt || this.requestDeadlineAt - Date.now() >= 60_000);
+    let earlyMedia = null;
+    if (prefetchEligible) {
+      try {
+        const source = await this.mediaResolver.resolve(video);
+        const media = await this.mediaResolver.fetch(source);
+        earlyMedia = { source, media };
+      } catch (error) {
+        // A login/CAPTCHA/private-content result must never be bypassed by OCR.
+        if (isTerminalAccessError(error)) throw error;
+        // The public media might become available on a later fresh refresh.
+        // Retain the original OCR-first fallback when prefetch was unavailable.
+      }
+    }
+
+    // Hard subtitles are read from a fresh public browser. The early media
+    // fetch above does not change OCR acceptance or its priority.
     const ocrAttempts = [];
     if (typeof this.hardSubtitleOcr === "function") {
       try {
@@ -937,8 +983,8 @@ export class TranscriptionService {
     let media;
     let resolvedSource;
     try {
-      resolvedSource = await this.mediaResolver.resolve(video);
-      media = await this.mediaResolver.fetch(resolvedSource);
+      resolvedSource = earlyMedia?.source ?? await this.mediaResolver.resolve(video);
+      media = earlyMedia?.media ?? await this.mediaResolver.fetch(resolvedSource);
     } catch (error) {
       // A current login/private/CAPTCHA/access signal is authoritative. Do not
       // relabel it as a transient transcription failure or permit another path
@@ -949,6 +995,7 @@ export class TranscriptionService {
         details: {
           ...(video.aweme_id ?? video.id ? { aweme_id: String(video.aweme_id ?? video.id) } : {}),
           cause: safeAttempt("media", error),
+          ...(mediaFailureSummary(error) ? { media_attempts: mediaFailureSummary(error) } : {}),
           ...(ocrAttempts.length ? { ocr_attempts: ocrAttempts } : {}),
           ...(captionAttempts.length ? { caption_attempts: captionAttempts } : {})
         },
