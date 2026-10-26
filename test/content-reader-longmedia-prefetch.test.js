@@ -138,3 +138,34 @@ test("prefetch can be disabled without changing legacy OCR-first flow", async ()
   assert.deepEqual(events, ["ocr", "resolve", "fetch", "asr"]);
   assert.equal(out.status, "complete");
 });
+
+test("media exhaustion reports only bounded candidate count and HTTP statuses", async () => {
+  const r = service({
+    prefetchLongMedia: false,
+    mediaResolver: {
+      async resolve() {
+        throw new ReaderError("MEDIA_UNAVAILABLE", "No usable media", {
+          status: 422,
+          details: { attempts: [
+            { host: "public.example.test", url_hash: "SECRET_HASH_SHOULD_NOT_LEAK", status: 403 },
+            { refresh: { code: "PRIVATE_UPSTREAM_CODE" } },
+            { url: "https://private.invalid/media?key=SECRET", status: 404 }
+          ] }
+        });
+      },
+      async fetch() { throw new Error("Must not fetch"); }
+    },
+    hardSubtitleOcr: async () => { throw new ReaderError("OCR_CAPTIONS_SPARSE", "Sparse", { status: 422 }); }
+  });
+  await assert.rejects(r.read(VIDEO), error => {
+    assert.equal(error.code, "TRANSCRIPTION_MEDIA_UNAVAILABLE");
+    assert.deepEqual(error.details.media_attempts, {
+      media_candidates_checked: 2,
+      refresh_failure_recorded: true,
+      http_statuses: [403, 404],
+      checks_truncated: false
+    });
+    assert.doesNotMatch(JSON.stringify(error.details), /SECRET|PRIVATE_UPSTREAM|private\.invalid|https:\/\//);
+    return true;
+  });
+});
