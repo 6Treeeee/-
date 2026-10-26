@@ -1,0 +1,140 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+import { ReaderError } from "../src/errors.js";
+import { TranscriptionService } from "../src/services/transcription.js";
+
+const ID = "7699093023455612160";
+const SOURCE = {
+  url: "https://douyinvod.example.test/public.m4a",
+  kind: "audio",
+  mediaType: "audio/mpeg",
+  acquired_at: "2026-10-26T00:00:00Z",
+  validated_at: "2026-10-26T00:00:01Z",
+  diagnostics: { status: 206, size: 1000 }
+};
+const MEDIA = { bytes: new Uint8Array([1, 2, 3, 4]), mediaType: "audio/mpeg" };
+const VIDEO = {
+  aweme_id: ID, media: { duration_ms: 1_006_516 },
+  captions: { available: false, tracks: [] }
+};
+function asr() {
+  return {
+    method: "local_whisper_cpp_base_q5_1",
+    text: "真实音频文字",
+    segments: [{ start_ms: 0, end_ms: 1000, text: "真实音频文字" }],
+    engine: { name: "whisper.cpp" }, model: { sha256: "a".repeat(64) },
+    coverage: { start_ms: 0, end_ms: 1_006_516, full_audio_scanned: true, chunk_count: 4 }
+  };
+}
+function service({ mediaResolver, hardSubtitleOcr, localAsr = async () => asr(), prefetchLongMedia = true }) {
+  return new TranscriptionService({
+    mediaResolver, localAsr, hardSubtitleOcr, prefetchLongMedia,
+    openAiApiKey: null, aiGatewayApiKey: null, vercelOidcToken: null,
+    audioExtractor: null
+  });
+}
+test("long sparse-caption videos reuse early validated media after a lengthy OCR pass", async () => {
+  const events = [];
+  const r = service({
+    mediaResolver: {
+      async resolve(v) { assert.equal(v.aweme_id, ID); events.push("resolve"); return SOURCE; },
+      async fetch(s) { assert.equal(s, SOURCE); events.push("fetch"); return MEDIA; }
+    },
+    hardSubtitleOcr: async () => {
+      events.push("ocr");
+      throw new ReaderError("OCR_CAPTIONS_SPARSE", "Sparse labels", { status: 422 });
+    },
+    localAsr: async ({ bytes }) => {
+      assert.equal(bytes, MEDIA.bytes);
+      events.push("asr");
+      return asr();
+    }
+  });
+  const out = await r.read(VIDEO);
+  assert.deepEqual(events, ["resolve", "fetch", "ocr", "asr"]);
+  assert.equal(out.method, "local_whisper_cpp_base_q5_1");
+  assert.equal(out.source.coverage.full_audio_scanned, true);
+  assert.equal(out.media_resolution.validation.status, 206);
+  assert.equal(out.source.stable_aweme_id, ID);
+});
+test("hard OCR remains authoritative even when long-media prefetch succeeded", async () => {
+  const events = [];
+  const r = service({
+    mediaResolver: {
+      async resolve() { events.push("resolve"); return SOURCE; },
+      async fetch() { events.push("fetch"); return MEDIA; }
+    },
+    hardSubtitleOcr: async () => {
+      events.push("ocr");
+      return { status: "complete", method: "hard_subtitle_ocr",
+        text: "全片字幕", segments: [{ start_ms: 0, end_ms: 1000, text: "全片字幕" }] };
+    },
+    localAsr: async () => { events.push("asr"); throw Error("ASR must not run"); }
+  });
+  const out = await r.read(VIDEO);
+  assert.deepEqual(events, ["resolve", "fetch", "ocr"]);
+  assert.equal(out.method, "hard_subtitle_ocr");
+});
+test("failed early fetch falls back to fresh media after sparse OCR", async () => {
+  let attempts = 0;
+  const events = [];
+  const r = service({
+    mediaResolver: {
+      async resolve() {
+        events.push("resolve");
+        if (++attempts === 1) throw new ReaderError("MEDIA_UNAVAILABLE", "Temporary media gap", { status: 422 });
+        return SOURCE;
+      },
+      async fetch() { events.push("fetch"); return MEDIA; }
+    },
+    hardSubtitleOcr: async () => { events.push("ocr"); throw new ReaderError("OCR_CAPTIONS_SPARSE", "Sparse", { status: 422 }); },
+    localAsr: async () => { events.push("asr"); return asr(); }
+  });
+  const out = await r.read(VIDEO);
+  assert.deepEqual(events, ["resolve", "ocr", "resolve", "fetch", "asr"]);
+  assert.equal(out.status, "complete");
+});
+test("login access restriction during prefetch stays terminal", async () => {
+  const events = [];
+  const r = service({
+    mediaResolver: {
+      async resolve() { events.push("resolve"); throw new ReaderError("DOUYIN_LOGIN_REQUIRED", "Login required", { status: 403 }); },
+      async fetch() { events.push("fetch"); throw Error("Not expected"); }
+    },
+    hardSubtitleOcr: async () => { events.push("ocr"); throw Error("Must not scan"); }
+  });
+  await assert.rejects(r.read(VIDEO), e => e.code === "DOUYIN_LOGIN_REQUIRED");
+  assert.deepEqual(events, ["resolve"]);
+});
+test("short videos retain OCR-first with zero speculative media fetches", async () => {
+  const events = [];
+  const r = service({
+    mediaResolver: {
+      async resolve() { events.push("resolve"); throw Error("Should not fetch"); },
+      async fetch() { events.push("fetch"); throw Error("Should not fetch"); }
+    },
+    hardSubtitleOcr: async () => {
+      events.push("ocr");
+      return { status: "complete", method: "hard_subtitle_ocr",
+        text: "短视频字幕", segments: [{ start_ms: 0, end_ms: 1000, text: "短视频字幕" }] };
+    }
+  });
+  const out = await r.read({ ...VIDEO, media: { duration_ms: 60_000 } });
+  assert.deepEqual(events, ["ocr"]);
+  assert.equal(out.text, "短视频字幕");
+});
+test("prefetch can be disabled without changing legacy OCR-first flow", async () => {
+  const events = [];
+  const r = service({
+    prefetchLongMedia: false,
+    mediaResolver: {
+      async resolve() { events.push("resolve"); return SOURCE; },
+      async fetch() { events.push("fetch"); return MEDIA; }
+    },
+    hardSubtitleOcr: async () => { events.push("ocr"); throw new ReaderError("OCR_CAPTIONS_SPARSE", "Sparse", { status: 422 }); },
+    localAsr: async () => { events.push("asr"); return asr(); }
+  });
+  const out = await r.read(VIDEO);
+  assert.deepEqual(events, ["ocr", "resolve", "fetch", "asr"]);
+  assert.equal(out.status, "complete");
+});
