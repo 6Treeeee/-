@@ -428,6 +428,23 @@ function providerError(code, message, provider, status, cause) {
   });
 }
 
+// MediaResolver records candidate checks without signed URLs. Expose only a
+// bounded numeric summary, never candidate URLs, hashes, cookies or messages.
+function mediaFailureSummary(error) {
+  if (error?.code !== "MEDIA_UNAVAILABLE" || !Array.isArray(error?.details?.attempts)) return null;
+  const attempts = error.details.attempts.slice(0, 64);
+  const statuses = [...new Set(attempts
+    .map(item => Number(item?.status))
+    .filter(value => Number.isInteger(value) && value >= 100 && value <= 599))]
+    .sort((left, right) => left - right);
+  return {
+    media_candidates_checked: attempts.filter(item => !item?.refresh).length,
+    refresh_failure_recorded: attempts.some(item => Boolean(item?.refresh)),
+    http_statuses: statuses,
+    checks_truncated: error.details.attempts.length > attempts.length
+  };
+}
+
 function safeAttempt(method, error) {
   return {
     method,
@@ -978,6 +995,7 @@ export class TranscriptionService {
         details: {
           ...(video.aweme_id ?? video.id ? { aweme_id: String(video.aweme_id ?? video.id) } : {}),
           cause: safeAttempt("media", error),
+          ...(mediaFailureSummary(error) ? { media_attempts: mediaFailureSummary(error) } : {}),
           ...(ocrAttempts.length ? { ocr_attempts: ocrAttempts } : {}),
           ...(captionAttempts.length ? { caption_attempts: captionAttempts } : {})
         },
