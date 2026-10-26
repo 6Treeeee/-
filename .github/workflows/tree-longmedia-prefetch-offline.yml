@@ -20,5 +20,5 @@ jobs:
         run: |
           node --check src/services/transcription.js
           node --check test/content-reader-longmedia-prefetch.test.js
-      - name: Offline regression only — no public video capture
+      - name: Offline regression v2 — no public video capture or paid ASR
         run: node --test test/content-reader-longmedia-prefetch.test.js test/douyin-pipeline.test.js test/acquisition-worker.test.js test/acquisition-result-diagnostics.test.js
