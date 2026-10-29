@@ -26,9 +26,9 @@ function asr() {
     coverage: { start_ms: 0, end_ms: 1_006_516, full_audio_scanned: true, chunk_count: 4 }
   };
 }
-function service({ mediaResolver, hardSubtitleOcr, localAsr = async () => asr(), prefetchLongMedia = true }) {
+function service({ mediaResolver, hardSubtitleOcr, localAsr = async () => asr(), streamingAsr = null, prefetchLongMedia = true, requestDeadlineAt = null }) {
   return new TranscriptionService({
-    mediaResolver, localAsr, hardSubtitleOcr, prefetchLongMedia,
+    mediaResolver, localAsr, hardSubtitleOcr, streamingAsr, prefetchLongMedia, requestDeadlineAt,
     openAiApiKey: null, aiGatewayApiKey: null, vercelOidcToken: null,
     audioExtractor: null
   });
@@ -170,4 +170,94 @@ test("media exhaustion reports only bounded candidate count and HTTP statuses", 
     assert.doesNotMatch(JSON.stringify(error.details), /SECRET|PRIVATE_UPSTREAM|private\.invalid|https:\/\//);
     return true;
   });
+});
+
+const STREAM_SOURCE = {
+  url: "https://douyinvod.example.test/range.mp4",
+  kind: "video",
+  mediaType: "video/mp4",
+  acquired_at: "2026-10-29T00:00:00Z",
+  validated_at: "2026-10-29T00:00:01Z",
+  diagnostics: { status: 206, size: 262144000 }
+};
+function streamedResult(durationMs) {
+  return {
+    ...asr(),
+    coverage: { start_ms: 0, end_ms: durationMs, full_audio_scanned: true, chunk_count: 8 },
+    audio_preprocessing: { method: "ffmpeg_http_range_pcm16_mono", sample_rate: 16000, channel_count: 1, duration_ms: durationMs }
+  };
+}
+
+test("30-90 minute videos prefer verified streaming ASR before full-frame OCR", async () => {
+  const events = [];
+  const durationMs = 31 * 60_000;
+  const r = service({
+    mediaResolver: {
+      async resolve() { events.push("resolve"); throw new Error("full media must not be buffered"); },
+      async fetch() { events.push("fetch"); throw new Error("full media must not be buffered"); }
+    },
+    hardSubtitleOcr: async () => { events.push("ocr"); throw new Error("OCR must not run after streaming succeeds"); },
+    streamingAsr: async ({ video }) => {
+      events.push("stream");
+      return { result: streamedResult(video.media.duration_ms), source: STREAM_SOURCE };
+    }
+  });
+  const out = await r.read({ ...VIDEO, media: { duration_ms: durationMs }, captions: { tracks: [] } });
+  assert.deepEqual(events, ["stream"]);
+  assert.equal(out.method, "local_whisper_cpp_base_q5_1");
+  assert.equal(out.source.coverage.full_audio_scanned, true);
+  assert.equal(out.source.coverage.end_ms, durationMs);
+  assert.equal(out.media_resolution.validation.status, 206);
+});
+
+test("10-30 minute videos fall back to streaming ASR after OCR fails and early media is unavailable", async () => {
+  const events = [];
+  const r = service({
+    mediaResolver: {
+      async resolve() {
+        events.push("resolve");
+        throw new ReaderError("MEDIA_UNAVAILABLE", "The full media is too large for the bounded in-memory path.", { status: 422 });
+      },
+      async fetch() { events.push("fetch"); throw new Error("must not fetch full media after stream success"); }
+    },
+    hardSubtitleOcr: async () => {
+      events.push("ocr");
+      throw new ReaderError("OCR_PLAYER_CHANGED", "The public player rotated its source.", { status: 503 });
+    },
+    streamingAsr: async ({ video }) => {
+      events.push("stream");
+      return { result: streamedResult(video.media.duration_ms), source: STREAM_SOURCE };
+    }
+  });
+  const out = await r.read(VIDEO);
+  assert.deepEqual(events, ["resolve", "ocr", "stream"]);
+  assert.equal(out.source.coverage.full_audio_scanned, true);
+  assert.equal(out.media_resolution.validation.status, 206);
+});
+
+test("90-minute streaming failure skips OCR when the remaining budget cannot cover a full scan", async () => {
+  const events = [];
+  const durationMs = 90 * 60_000;
+  const r = service({
+    requestDeadlineAt: Date.now() + 60_000,
+    mediaResolver: {
+      async resolve() { events.push("resolve"); throw new Error("must not buffer a 90-minute file"); },
+      async fetch() { events.push("fetch"); throw new Error("must not fetch"); }
+    },
+    hardSubtitleOcr: async () => { events.push("ocr"); throw new Error("OCR would exceed remaining budget"); },
+    streamingAsr: async () => {
+      events.push("stream");
+      throw new ReaderError("STREAMING_AUDIO_EXTRACT_TIMEOUT", "The current public media range timed out.", {
+        status: 503, details: { stage: "extract", chunk_index: 3, completed_chunks: 3, total_chunks: 23 }
+      });
+    }
+  });
+  await assert.rejects(r.read({ ...VIDEO, media: { duration_ms: durationMs }, captions: { tracks: [] } }), error => {
+    assert.equal(error.code, "TRANSCRIPTION_UNAVAILABLE");
+    assert.equal(error.details.ocr_skipped_reason, "insufficient_remaining_budget_for_full_video_ocr");
+    assert.equal(error.details.streaming_attempts[0].code, "STREAMING_AUDIO_EXTRACT_TIMEOUT");
+    assert.equal(error.details.streaming_attempts[0].completed_chunks, 3);
+    return true;
+  });
+  assert.deepEqual(events, ["stream"]);
 });
