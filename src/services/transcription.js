@@ -437,10 +437,16 @@ function mediaFailureSummary(error) {
     .map(item => Number(item?.status))
     .filter(value => Number.isInteger(value) && value >= 100 && value <= 599))]
     .sort((left, right) => left - right);
+  const reasons = ["http_status", "oversized", "empty", "non_media", "network_error"];
+  const rejection_counts = Object.fromEntries(reasons.map(reason =>
+    [reason, attempts.filter(item => item?.failure_reason === reason).length]));
+  const sizes = attempts.map(item => Number(item?.size)).filter(value => Number.isFinite(value) && value > 0);
   return {
     media_candidates_checked: attempts.filter(item => !item?.refresh).length,
     refresh_failure_recorded: attempts.some(item => Boolean(item?.refresh)),
     http_statuses: statuses,
+    rejection_counts,
+    largest_declared_size_bytes: sizes.length ? Math.max(...sizes) : null,
     checks_truncated: error.details.attempts.length > attempts.length
   };
 }
