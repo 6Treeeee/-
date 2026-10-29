@@ -26,7 +26,7 @@ const LONG_MEDIA_LOCAL_PRIORITY_MS = 180_000;
 // Fetch an identity-validated public soundtrack before a long OCR scan can
 // outlive short-lived Douyin media links. Smaller videos keep OCR-first I/O.
 const LONG_MEDIA_EARLY_FETCH_MS = 600_000;
-const STREAMING_ASR_PRIORITY_MS = 30 * 60_000;
+const STREAMING_ASR_PRIORITY_MS = 20 * 60_000;
 const OCR_ESTIMATED_RATIO = 0.9;
 const OCR_ESTIMATED_FIXED_MS = 300_000;
 
