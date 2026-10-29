@@ -1,7 +1,7 @@
 import { createGateway } from "@ai-sdk/gateway";
 
 import { ReaderError } from "../errors.js";
-import { visualStepForDuration } from "./hard-subtitle-ocr.js";
+import { visualStepForDuration } from "./ocr-sampling-policy.js";
 import { extractMp4Audio } from "./audio-extraction.js";
 import { MediaResolver, safeMediaDiagnostic } from "./media.js";
 import { isTerminalAccessError } from "./provider-chain.js";
