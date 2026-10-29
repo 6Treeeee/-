@@ -362,7 +362,7 @@ export class MediaResolver {
     );
   }
 
-  async _validate(source, { maxBytes = this.maxBytes, requireRange = false } = {}) {
+  async _validate(source, { maxBytes = this.maxBytes, requireRange = false, timeoutMs = this.timeoutMs } = {}) {
     const diagnostic = safeMediaDiagnostic(source);
     try {
       const response = await this._request(source.url, {
@@ -443,7 +443,10 @@ export class MediaResolver {
   }
 
   async _firstUsable(video, acquiredAt, attempts, options = {}) {
-    const candidates = mediaCandidates(video, acquiredAt);
+    const allCandidates = mediaCandidates(video, acquiredAt);
+    const maxCandidates = Number.isSafeInteger(options.maxCandidates) && options.maxCandidates > 0
+      ? options.maxCandidates : allCandidates.length;
+    const candidates = allCandidates.slice(0, maxCandidates);
     for (const candidate of candidates) {
       const validation = await this._validate(candidate, options);
       attempts.push(validation.diagnostic);
@@ -459,6 +462,14 @@ export class MediaResolver {
           diagnostics: validation.diagnostic
         };
       }
+    }
+    if (allCandidates.length > candidates.length) {
+      attempts.push({
+        candidate_search_truncated: true,
+        candidates_available: allCandidates.length,
+        candidates_checked_limit: candidates.length,
+        candidates_skipped: allCandidates.length - candidates.length
+      });
     }
     return null;
   }
@@ -527,7 +538,12 @@ export class MediaResolver {
     const acquiredMs = timestampMs(acquiredAt);
     const stale = acquiredMs === null || this.now() - acquiredMs > this.maxAgeMs;
     const attempts = [];
-    const options = { maxBytes: this.maxStreamBytes, requireRange: true };
+    const options = {
+      maxBytes: this.maxStreamBytes,
+      requireRange: true,
+      timeoutMs: Math.min(this.timeoutMs, 4_000),
+      maxCandidates: 24
+    };
 
     if (!stale) {
       const current = await this._firstUsable(video, acquiredAt, attempts, options);
@@ -561,6 +577,8 @@ export class MediaResolver {
       details: {
         ...(awemeId ? { aweme_id: String(awemeId) } : {}),
         attempts: attempts.slice(0, 64),
+        candidate_search_truncated: attempts.some((item) => item?.candidate_search_truncated === true),
+        candidates_skipped: attempts.reduce((total, item) => total + (Number.isSafeInteger(item?.candidates_skipped) ? item.candidates_skipped : 0), 0),
         checks_truncated: attempts.length > 64
       }
     });
