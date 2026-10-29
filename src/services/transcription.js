@@ -442,7 +442,7 @@ function mediaFailureSummary(error) {
     .map(item => Number(item?.status))
     .filter(value => Number.isInteger(value) && value >= 100 && value <= 599))]
     .sort((left, right) => left - right);
-  const reasons = ["http_status", "oversized", "empty", "non_media", "network_error", "range_unsupported"];
+  const reasons = ["http_status", "oversized", "empty", "non_media", "network_error", "range_unsupported", "insecure_scheme"];
   const rejection_counts = Object.fromEntries(reasons.map(reason =>
     [reason, attempts.filter(item => item?.failure_reason === reason).length]));
   const sizes = attempts.map(item => Number(item?.size)).filter(value => Number.isFinite(value) && value > 0);
