@@ -1307,8 +1307,9 @@ export class DirectPublicWebProvider {
         // enable a metadata-only fallback; wrong-page media remains discarded.
         let verifiedRecoveryDetail = null;
         const needsExplicitDetail = selected.awemeId && (
-          ((pageUrlMismatch || canonicalMismatch) && !capture.state.aweme &&
-            !(rawHydration && hydrationId === selected.awemeId)) ||
+          // A wrong page must prove the original video's identity again even
+          // when its network payload happens to contain a matching item.
+          pageUrlMismatch || canonicalMismatch ||
           (embeddedAwemeMediaUrls(preliminaryAweme).length === 0 && preliminaryMediaUrls.length === 0)
         );
         if (needsExplicitDetail) {
@@ -1339,12 +1340,12 @@ export class DirectPublicWebProvider {
           const accessFailure = capturedAccessFailure();
           if (accessFailure) throw accessFailure;
         }
-        if (pageUrlMismatch && !capture.state.aweme &&
-            !(rawHydration && hydrationId === selected.awemeId)) {
-          throw identityMismatchError(target, selected.awemeId, finalUrlId, "page_url");
-        }
-        if (canonicalMismatch && !capture.state.aweme) {
-          throw identityMismatchError(target, selected.awemeId, canonicalPageId, "canonical");
+        if ((pageUrlMismatch || canonicalMismatch) && !verifiedRecoveryDetail) {
+          throw identityMismatchError(
+            target, selected.awemeId,
+            pageUrlMismatch ? finalUrlId : canonicalPageId,
+            pageUrlMismatch ? "page_url" : "canonical"
+          );
         }
         if (hydrationMismatch && !capture.state.aweme) {
           throw identityMismatchError(target, selected.awemeId, hydrationId, "hydration");
