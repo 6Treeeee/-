@@ -24,16 +24,18 @@ test("streaming transcription covers every chunk and emits a verified full-audio
   const resolver = { resolveStreamable: async () => source() };
   const extracted = [];
   const transcribed = [];
+  const progress = [];
   const streaming = createStreamingWhisperAsr({
     chunkDurationMs: 30_000, overlapMs: 5_000, minDurationMs: 0, maxDurationMs: 120_000,
     sampleRate: 1000,
+    onProgress: async (event) => progress.push(event),
     extractChunkImpl: async ({ startMs, durationMs }) => {
       extracted.push({ startMs, durationMs });
       return pcmFor(durationMs);
     }
   });
   const output = await streaming({
-    video: video(65_000), mediaResolver: resolver, deadlineAt: Date.now() + 60_000,
+    video: video(65_000), mediaResolver: resolver, deadlineAt: Date.now() + 60_000, requestId: "b52a1e90-7d4c-4f63-a8b2-0c6e91f537da",
     localAsr: async ({ video: part }) => {
       transcribed.push(part.duration_ms);
       return resultFor(part, "spoken " + transcribed.length);
@@ -48,6 +50,11 @@ test("streaming transcription covers every chunk and emits a verified full-audio
   assert.equal(output.result.segments[0].start_ms, 0);
   assert.equal(output.result.segments.at(-1).end_ms, 61_000);
   assert.equal(output.source.diagnostics.status, 206);
+  assert.equal(progress[0].phase, "started");
+  assert.equal(progress.filter((item) => item.phase === "chunk_completed").length, 3);
+  assert.equal(progress.at(-1).completed_chunks, 3);
+  assert.equal(progress.at(-1).aweme_id, "7693868342775532850");
+  assert.ok(!JSON.stringify(progress).includes("video.example.net"));
 });
 
 test("a transient chunk failure refreshes the public media source and retries only that chunk", async () => {
