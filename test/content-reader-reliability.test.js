@@ -172,6 +172,34 @@ test("non-media and rejected HTTP sources report distinct bounded diagnoses", as
   assert.equal(denied.diagnostic.status, 403);
 });
 
+test("streamable media skips insecure HTTP candidates and selects a verified HTTPS source", async () => {
+  const video = {
+    aweme_id: "7693868342775532850",
+    acquired_at: new Date().toISOString(),
+    media: { playback: [
+      { url: "http://video.example.net/insecure.mp4", media_type: "video/mp4" },
+      { url: "https://video.example.net/secure.mp4", media_type: "video/mp4" }
+    ] }
+  };
+  const requested = [];
+  const resolver = new MediaResolver({
+    maxBytes: 1_048_576,
+    maxStreamBytes: 512 * 1024 * 1024,
+    retries: 0,
+    fetchImpl: async (url, options) => {
+      requested.push(url);
+      assert.equal(options.headers.Range, "bytes=0-0");
+      return new Response(new Uint8Array([0]), {
+        status: 206,
+        headers: { "content-type": "video/mp4", "content-range": "bytes 0-0/262144000" }
+      });
+    }
+  });
+  const resolved = await resolver.resolveStreamable(video);
+  assert.equal(resolved.url, "https://video.example.net/secure.mp4");
+  assert.deepEqual(requested, ["https://video.example.net/secure.mp4"]);
+});
+
 test("streamable media candidate search is bounded and reports skipped candidates safely", async () => {
   const video = {
     aweme_id: "7693868342775532850",
