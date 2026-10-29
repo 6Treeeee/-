@@ -77,6 +77,7 @@ export class ContentProcessor {
     transcriptionFactory = null,
     localAsr = null,
     hardSubtitleOcr = null,
+    streamingAsr = null,
     requestId = null,
     openAiApiKey = process.env.OPENAI_API_KEY,
     aiGatewayApiKey = process.env.AI_GATEWAY_API_KEY,
@@ -91,6 +92,7 @@ export class ContentProcessor {
     this.transcriptionFactory = transcriptionFactory;
     this.localAsr = localAsr;
     this.hardSubtitleOcr = hardSubtitleOcr;
+    this.streamingAsr = streamingAsr;
     this.requestId = requestId;
     this.openAiApiKey = openAiApiKey;
     this.aiGatewayApiKey = aiGatewayApiKey;
@@ -124,6 +126,7 @@ export class ContentProcessor {
         fetchImpl: this.fetchImpl,
         localAsr,
         hardSubtitleOcr,
+        streamingAsr: this.streamingAsr,
         requestId: this.requestId,
         requestDeadlineAt: this.requestDeadlineAt
       });
@@ -133,6 +136,7 @@ export class ContentProcessor {
       mediaResolver,
       localAsr,
       hardSubtitleOcr,
+      streamingAsr: this.streamingAsr,
       requestId: this.requestId,
       openAiApiKey: this.openAiApiKey,
       aiGatewayApiKey: this.aiGatewayApiKey,
