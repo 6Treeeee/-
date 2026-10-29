@@ -388,7 +388,9 @@ export function createStreamingWhisperAsr({
 
       let pcm;
       let extractError = null;
-      for (let attempt = 0; attempt < 2; attempt += 1) {
+      // Retry only the failed window, preserving already transcribed chunks.
+      // Each retry must obtain and range-validate a fresh public media source.
+      for (let attempt = 0; attempt < 3; attempt += 1) {
         try {
           pcm = await extractChunkImpl({
             source, startMs: window.startMs, durationMs: window.durationMs,
@@ -398,7 +400,8 @@ export function createStreamingWhisperAsr({
           break;
         } catch (error) {
           extractError = error;
-          if (attempt > 0 || !RETRYABLE_EXTRACT_CODES.has(error?.code)) break;
+          if (attempt >= 2 || !RETRYABLE_EXTRACT_CODES.has(error?.code) ||
+              remainingMs(deadlineAt, now) < RESPONSE_RESERVE_MS + 15_000) break;
           try {
             source = await mediaResolver.resolveStreamable(video);
             if (!safeSourceUrl(source?.url) || source?.diagnostics?.status !== 206) {
@@ -413,7 +416,7 @@ export function createStreamingWhisperAsr({
         }
       }
       if (extractError || !Buffer.isBuffer(pcm)) {
-        throw failure("STREAMING_ASR_CHUNK_FAILED", "A public audio chunk could not be extracted after one safe source refresh.", {
+        throw failure("STREAMING_ASR_CHUNK_FAILED", "A public audio chunk could not be extracted after bounded safe source refreshes.", {
           stage: "extract", chunk_index: window.index, completed_chunks: completed.length,
           total_chunks: windows.length, cause_code: extractError?.code ?? "STREAMING_AUDIO_EXTRACT_FAILED"
         });
