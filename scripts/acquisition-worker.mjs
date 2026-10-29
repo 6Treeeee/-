@@ -6,6 +6,8 @@ import { createLocalWhisperAsr } from "../src/services/local-whisper.js";
 import { verifyAcquisitionResult } from "../src/services/acquisition-result.js";
 import { createAcquisitionFailure, saveAcquisitionOutput } from "../src/services/acquisition-output.js";
 import { createStreamingWhisperAsr } from "../src/services/streaming-whisper.js";
+import { appendFile, mkdir } from "node:fs/promises";
+import { join } from "node:path";
 
 const aweme_id = process.env.ACQUISITION_AWEME_ID;
 const request_id = process.env.ACQUISITION_REQUEST_ID;
@@ -27,7 +29,25 @@ const requestBudgetMs = 3_300_000;
 console.info(JSON.stringify({ event: "acquisition.policy", request_id,
   max_duration_ms: hardSubtitles.maxDurationMs, request_budget_ms: requestBudgetMs }));
 const localWhisper = createLocalWhisperAsr();
-const streamingWhisper = createStreamingWhisperAsr();
+const streamingOutputDir = join(process.cwd(), "acquisition-output");
+const streamingProgressPath = join(streamingOutputDir, "streaming-progress.jsonl");
+const streamingWhisper = createStreamingWhisperAsr({
+  onProgress: async (event) => {
+    await mkdir(streamingOutputDir, { recursive: true });
+    await appendFile(streamingProgressPath, JSON.stringify(event) + "\n", { mode: 0o600 });
+    if (event.phase === "chunk_completed") {
+      console.info(JSON.stringify({
+        event: "streaming_asr.progress",
+        request_id: request_id,
+        aweme_id: aweme_id,
+        completed_chunks: event.completed_chunks,
+        total_chunks: event.total_chunks,
+        chunk_index: event.chunk_index,
+        segment_count: event.segment_count
+      }));
+    }
+  }
+});
 let envelope;
 try {
   const result = await readPublicContent({ url: `https://www.douyin.com/video/${aweme_id}`, type: "video", fresh: true }, {
