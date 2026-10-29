@@ -232,7 +232,8 @@ test("streamable media candidate search is bounded and reports skipped candidate
       lastAttempt: error.details.attempts.at(-1)
     }));
     assert.ok(error.details.candidates_skipped > 0);
-    assert.ok(error.details.attempts.some((item) => item?.candidate_search_truncated === true));
+    assert.equal(error.details.checks_truncated, true);
+    assert.equal(error.details.attempts.length, 64);
     assert.doesNotMatch(JSON.stringify(error.details), /https:\/\/video\.example\.net\/candidate-\d+\.mp4/);
     return true;
   });
