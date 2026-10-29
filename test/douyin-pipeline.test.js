@@ -2203,6 +2203,78 @@ test("DirectPublicWebProvider recovers exact-ID metadata without consuming a wro
   ]);
 });
 
+test("anonymous fallback recovers exact video detail after wrong public redirect without touching that player", async () => {
+  const id = "7000000000000000001", wrongId = "7000000000000000002";
+  const expectedMedia = `https://v3-dy-o.douyinvod.com/${id}.mp4`;
+  const wrongMedia = `https://v3-dy-o.douyinvod.com/${wrongId}.mp4`;
+  const fake = fakeBrowserPage({
+    currentUrl: `https://www.douyin.com/video/${wrongId}`,
+    videoDom: {
+      canonical: `https://www.douyin.com/video/${wrongId}`,
+      title: "Wrong video", description: "Wrong video",
+      videoPresent: true, media: [wrongMedia],
+      durationSeconds: 10, width: 1080, height: 1920, hydration: []
+    }
+  });
+  let requests = 0, consumed = 0;
+  const provider = new DirectPublicWebProvider({
+    browserService: fake.browserService, retries: 0, settleMs: 0, videoContentWaitMs: 0,
+    anonymousDetailFallback: true,
+    fetchImpl: async (url, options) => {
+      requests++;
+      const target = new URL(url);
+      assert.equal(target.origin, "https://www.douyin.com");
+      assert.equal(target.pathname, "/aweme/v1/web/aweme/detail/");
+      assert.equal(target.searchParams.get("aweme_id"), id);
+      assert.equal(target.searchParams.get("device_platform"), "webapp");
+      assert.equal(options.redirect, "error");
+      assert.equal(options.credentials, "omit");
+      assert.equal(options.headers.Cookie, undefined);
+      return Response.json({ aweme_detail: aweme(id, {
+        video: { duration: 10_000, play_addr: { url_list: [expectedMedia] } }
+      }) });
+    }
+  });
+  const result = await provider.readVideo({ awemeId: id, consumeVideo: async () => {
+    consumed++; throw new Error("Wrong player must never be processed.");
+  } });
+  assert.equal(result.aweme.aweme_id, id);
+  assert.equal(result.meta.method, "public_anonymous_detail_fallback");
+  assert.equal(result.meta.identity.metadata_only_recovery, true);
+  assert.deepEqual(result.networkMediaUrls, []);
+  assert.deepEqual(result.aweme.video.play_addr.url_list, [expectedMedia]);
+  assert.equal(consumed, 0);
+  assert.equal(requests, 1);
+});
+
+test("anonymous fallback rejects mismatched and non-public detail responses", async () => {
+  const id = "7000000000000000001", wrongId = "7000000000000000002";
+  for (const responseBody of [
+    Response.json({ aweme_detail: aweme(wrongId, {
+      video: { duration: 10_000, play_addr: { url_list: ["https://v3-dy-o.douyinvod.com/wrong.mp4"] } }
+    }) }),
+    new Response("<html>Login</html>", { status: 200, headers: { "content-type": "text/html" } }),
+    new Response(null, { status: 403 })
+  ]) {
+    const fake = fakeBrowserPage({
+      currentUrl: `https://www.douyin.com/video/${wrongId}`,
+      videoDom: {
+        canonical: `https://www.douyin.com/video/${wrongId}`,
+        title: "Wrong video", description: "Wrong video",
+        videoPresent: true, media: [], durationSeconds: 10,
+        width: 1080, height: 1920, hydration: []
+      }
+    });
+    const provider = new DirectPublicWebProvider({
+      browserService: fake.browserService, retries: 0, settleMs: 0,
+      videoContentWaitMs: 0, anonymousDetailFallback: true,
+      fetchImpl: async () => responseBody
+    });
+    await assert.rejects(provider.readVideo({ awemeId: id }), (error) =>
+      error.code === "DOUYIN_PUBLIC_WEB_IDENTITY_MISMATCH");
+  }
+});
+
 test("DirectPublicWebProvider survives a transient execution-context navigation race", async () => {
   const id = "7670118101211453413";
   const publicMedia = `https://v3-dy-o.douyinvod.com/${id}.mp4`;
