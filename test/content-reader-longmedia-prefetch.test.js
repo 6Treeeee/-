@@ -163,6 +163,8 @@ test("media exhaustion reports only bounded candidate count and HTTP statuses", 
       media_candidates_checked: 2,
       refresh_failure_recorded: true,
       http_statuses: [403, 404],
+      rejection_counts: { http_status: 0, oversized: 0, empty: 0, non_media: 0, network_error: 0 },
+      largest_declared_size_bytes: null,
       checks_truncated: false
     });
     assert.doesNotMatch(JSON.stringify(error.details), /SECRET|PRIVATE_UPSTREAM|private\.invalid|https:\/\//);
