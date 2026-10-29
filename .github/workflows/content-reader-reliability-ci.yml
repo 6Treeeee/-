@@ -19,6 +19,7 @@ jobs:
           node-version: '24'
           cache: npm
       - run: npm ci
-      - name: Unit and regression tests without external video capture
-        run: |
-          node --test test/content-reader-reliability.test.js test/douyin-pipeline.test.js test/content-reader-longmedia-prefetch.test.js test/hard-subtitle-ocr-player.test.js test/ocr-duration.test.js test/acquisition-result-diagnostics.test.js
+      - name: Syntax check
+        run: npm run check
+      - name: Full repository unit and regression suite without external capture
+        run: npm test
