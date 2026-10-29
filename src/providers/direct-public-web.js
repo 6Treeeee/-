@@ -769,6 +769,13 @@ async function fetchPublicVideoDetail(page, awemeId, {
       try {
         const endpoint = new URL("/aweme/v1/web/aweme/detail/", current.origin);
         endpoint.searchParams.set("aweme_id", id);
+        // Use the public website's documented client context only.
+        // No login cookies, reverse-engineered signatures or CAPTCHA bypass.
+        endpoint.searchParams.set("device_platform", "webapp");
+        endpoint.searchParams.set("aid", "6383");
+        endpoint.searchParams.set("channel", "channel_pc_web");
+        endpoint.searchParams.set("request_source", "600");
+        endpoint.searchParams.set("origin_type", "quick_player");
         const response = await fetch(endpoint, {
           method: "GET",
           credentials: "same-origin",
