@@ -250,9 +250,10 @@ export function createStreamingWhisperAsr({
   minDurationMs = DEFAULT_MIN_DURATION_MS,
   maxDurationMs = DEFAULT_MAX_DURATION_MS,
   sampleRate = SAMPLE_RATE,
-  now = Date.now
+  now = Date.now,
+  onProgress = null
 } = {}) {
-  return async function streamingWhisperAsr({ video, mediaResolver, localAsr, deadlineAt = null } = {}) {
+  return async function streamingWhisperAsr({ video, mediaResolver, localAsr, deadlineAt = null, requestId = null } = {}) {
     const id = String(video?.aweme_id ?? video?.id ?? "");
     if (!/^\d{10,25}$/.test(id)) {
       throw failure("STREAMING_ASR_VIDEO_ID_INVALID", "A stable video identity is required for streaming transcription.", {
@@ -292,6 +293,24 @@ export function createStreamingWhisperAsr({
         durationMs: Math.min(chunkDurationMs + (startMs + chunkDurationMs < duration ? overlapMs : 0), duration - startMs)
       });
     }
+
+    const emitProgress = async (event) => {
+      if (typeof onProgress !== "function") return;
+      try {
+        await onProgress({
+          request_id: requestId,
+          aweme_id: id,
+          video_duration_ms: duration,
+          ...event
+        });
+      } catch (error) {
+        console.warn(JSON.stringify({
+          event: "streaming_asr.progress_sink_failed",
+          code: error?.code === "ENOENT" ? "ENOENT" : "CHECKPOINT_WRITE_FAILED"
+        }));
+      }
+    };
+    await emitProgress({ phase: "started", total_chunks: windows.length, completed_chunks: 0 });
 
     const completed = [];
     let totalPcmBytes = 0;
@@ -411,6 +430,16 @@ export function createStreamingWhisperAsr({
       }
       const segments = await transcribePcm(pcm, actualDurationMs, window.startMs, window.index);
       completed.push({ ...window, actualDurationMs, segments });
+      await emitProgress({
+        phase: "chunk_completed",
+        chunk_index: window.index,
+        chunk_start_ms: window.startMs,
+        chunk_end_ms: Math.min(duration, window.startMs + actualDurationMs),
+        completed_chunks: completed.length,
+        total_chunks: windows.length,
+        segment_count: segments.length,
+        segments
+      });
     }
 
     if (!templateResult || !completed.some((chunk) => chunk.segments.length)) {
