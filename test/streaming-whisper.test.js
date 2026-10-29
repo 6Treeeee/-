@@ -126,3 +126,39 @@ test("a timed-out ASR window is split into smaller bounded windows", async () =>
   assert.ok(calls >= 3);
   assert.equal(output.result.coverage.full_audio_scanned, true);
 });
+
+test("two transient failures on one chunk do not restart already completed windows", async () => {
+  let resolves = 0;
+  const chunkAttempts = new Map();
+  const completed = [];
+  const streaming = createStreamingWhisperAsr({
+    chunkDurationMs: 30_000, overlapMs: 5_000, minDurationMs: 0,
+    maxDurationMs: 120_000, sampleRate: 1000,
+    onProgress: async (event) => {
+      if (event.phase === "chunk_completed") completed.push(event.chunk_index);
+    },
+    extractChunkImpl: async ({ startMs, durationMs }) => {
+      const count = (chunkAttempts.get(startMs) ?? 0) + 1;
+      chunkAttempts.set(startMs, count);
+      if (startMs === 30_000 && count <= 2) {
+        throw Object.assign(new Error("transient media range failure"), {
+          code: "STREAMING_AUDIO_EXTRACT_FAILED"
+        });
+      }
+      return pcmFor(durationMs);
+    }
+  });
+  const output = await streaming({
+    video: video(65_000),
+    mediaResolver: { resolveStreamable: async () =>
+      source("https://video.example.net/fresh-" + ++resolves + ".mp4") },
+    deadlineAt: Date.now() + 600_000,
+    localAsr: async ({ video: part }) => resultFor(part)
+  });
+  assert.equal(resolves, 3);
+  assert.deepEqual([...chunkAttempts.entries()], [
+    [0, 1], [30_000, 3], [60_000, 1]
+  ]);
+  assert.deepEqual(completed, [0, 1, 2]);
+  assert.equal(output.result.coverage.full_audio_scanned, true);
+});
