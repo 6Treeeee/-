@@ -188,7 +188,7 @@ function streamedResult(durationMs) {
   };
 }
 
-test("30-90 minute videos prefer verified streaming ASR before full-frame OCR", async () => {
+test("20-90 minute videos prefer verified streaming ASR before full-frame OCR", async () => {
   const events = [];
   const durationMs = 31 * 60_000;
   const r = service({
