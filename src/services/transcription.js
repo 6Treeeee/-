@@ -26,6 +26,9 @@ const LONG_MEDIA_LOCAL_PRIORITY_MS = 180_000;
 // Fetch an identity-validated public soundtrack before a long OCR scan can
 // outlive short-lived Douyin media links. Smaller videos keep OCR-first I/O.
 const LONG_MEDIA_EARLY_FETCH_MS = 600_000;
+const STREAMING_ASR_PRIORITY_MS = 30 * 60_000;
+const OCR_ESTIMATED_RATIO = 0.9;
+const OCR_ESTIMATED_FIXED_MS = 300_000;
 
 function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -453,16 +456,21 @@ function mediaFailureSummary(error) {
 }
 
 function safeAttempt(method, error) {
-  return {
+  const details = error?.details ?? {};
+  const safe = {
     method,
     code: error instanceof ReaderError ? error.code : "TRANSCRIPTION_PROVIDER_ERROR",
-    ...(Number.isFinite(error?.details?.http_status)
-      ? { http_status: error.details.http_status }
-      : {}),
-    ...(Array.isArray(error?.details?.model_attempts)
-      ? { model_attempts: error.details.model_attempts }
-      : {})
+    ...(Number.isFinite(details.http_status) ? { http_status: details.http_status } : {}),
+    ...(Array.isArray(details.model_attempts) ? { model_attempts: details.model_attempts } : {})
   };
+  for (const key of ["stage", "cause_code"]) {
+    if (typeof details[key] === "string" && /^[A-Z0-9_]{1,80}$/.test(details[key])) safe[key] = details[key];
+  }
+  for (const key of ["chunk_index", "completed_chunks", "total_chunks", "duration_ms",
+    "expected_duration_ms", "actual_duration_ms", "max_duration_ms"]) {
+    if (Number.isSafeInteger(details[key]) && details[key] >= 0) safe[key] = details[key];
+  }
+  return safe;
 }
 
 function retryAfterMs(response, fallback) {
@@ -614,6 +622,7 @@ export class TranscriptionService {
     mediaResolver = null,
     localAsr = null,
     hardSubtitleOcr = null,
+    streamingAsr = null,
     requestId = null,
     openAiApiKey = process.env.OPENAI_API_KEY,
     openAIApiKey,
@@ -649,6 +658,7 @@ export class TranscriptionService {
     this.mediaResolver = mediaResolver ?? new MediaResolver({ fetchImpl });
     this.localAsr = localAsr;
     this.hardSubtitleOcr = hardSubtitleOcr;
+    this.streamingAsr = streamingAsr;
     this.requestId = requestId;
     this.openAiApiKey = openAIApiKey ?? openaiApiKey ?? openAiApiKey;
     this.aiGatewayApiKey = gatewayApiKey ?? aiGatewayApiKey;
@@ -676,6 +686,31 @@ export class TranscriptionService {
     this.audioExtractor = audioExtractor;
     this.prefetchLongMedia = prefetchLongMedia === true;
     this.gatewayFactory = gatewayFactory;
+  }
+
+  async _streamingLocalResult(video) {
+    const output = await this.streamingAsr({
+      video,
+      mediaResolver: this.mediaResolver,
+      localAsr: this.localAsr,
+      deadlineAt: this.requestDeadlineAt,
+      requestId: this.requestId
+    });
+    if (!output?.result || !output?.source) {
+      throw new ReaderError("STREAMING_ASR_INVALID_OUTPUT", "The streaming transcription path returned no verifiable result.", {
+        status: 502, details: { stage: "result_validation" }
+      });
+    }
+    const result = normalizedResult(output.result, {
+      method: "local_asr",
+      source: localAsrSource(output.result, output.source.diagnostics, video)
+    });
+    if (!result) {
+      throw new ReaderError("STREAMING_ASR_EMPTY_RESULT", "The streaming transcription path returned no readable text.", {
+        status: 422, details: { stage: "result_validation" }
+      });
+    }
+    return attachMediaResolution(result, publicMediaResolution(output.source));
   }
 
   async _caption(track) {
@@ -946,15 +981,34 @@ export class TranscriptionService {
       }
     }
 
-    // On long videos, full-frame OCR can run for many minutes while public media
-    // URLs expire. Preserve bounded, identity-validated audio/video bytes early,
-    // but keep caption/OCR result priority and every access-control boundary.
-    // No paid ASR provider or cached transcript is introduced.
+    // Long videos use a range-validated, chunked audio path before full-file buffering.
+    // The worker-only streaming dependency is absent from synchronous deployments.
     const mediaDuration = knownVideoDurationMs(video);
-    const prefetchEligible = this.prefetchLongMedia &&
+    const streamingAvailable = typeof this.streamingAsr === "function" &&
+      typeof this.localAsr === "function" && Number.isFinite(mediaDuration) &&
+      mediaDuration >= LONG_MEDIA_EARLY_FETCH_MS;
+    const streamingPriority = streamingAvailable && mediaDuration >= STREAMING_ASR_PRIORITY_MS;
+    const streamingAttempts = [];
+    const attemptStreaming = async () => {
+      try {
+        return { result: await this._streamingLocalResult(video), error: null };
+      } catch (error) {
+        if (isTerminalAccessError(error) || error?.code === "LOCAL_ASR_BUSY") throw error;
+        streamingAttempts.push(safeAttempt("streaming_local_whisper", error));
+        return { result: null, error };
+      }
+    };
+
+    if (streamingPriority) {
+      const streamed = await attemptStreaming();
+      if (streamed.result) return streamed.result;
+    }
+
+    const prefetchEligible = this.prefetchLongMedia && !streamingPriority &&
       typeof this.localAsr === "function" &&
       typeof this.hardSubtitleOcr === "function" &&
       Number.isFinite(mediaDuration) && mediaDuration >= LONG_MEDIA_EARLY_FETCH_MS &&
+      mediaDuration < STREAMING_ASR_PRIORITY_MS &&
       (!this.requestDeadlineAt || this.requestDeadlineAt - Date.now() >= 60_000);
     let earlyMedia = null;
     if (prefetchEligible) {
@@ -963,17 +1017,18 @@ export class TranscriptionService {
         const media = await this.mediaResolver.fetch(source);
         earlyMedia = { source, media };
       } catch (error) {
-        // A login/CAPTCHA/private-content result must never be bypassed by OCR.
         if (isTerminalAccessError(error)) throw error;
-        // The public media might become available on a later fresh refresh.
-        // Retain the original OCR-first fallback when prefetch was unavailable.
       }
     }
 
-    // Hard subtitles are read from a fresh public browser. The early media
-    // fetch above does not change OCR acceptance or its priority.
     const ocrAttempts = [];
-    if (typeof this.hardSubtitleOcr === "function") {
+    const remainingBeforeOcr = this.requestDeadlineAt ? this.requestDeadlineAt - Date.now() : Number.POSITIVE_INFINITY;
+    const estimatedOcrMs = Number.isFinite(mediaDuration)
+      ? mediaDuration * OCR_ESTIMATED_RATIO + OCR_ESTIMATED_FIXED_MS : 0;
+    const canFinishOcr = !this.requestDeadlineAt || remainingBeforeOcr >= estimatedOcrMs + 30_000;
+    const ocrSkippedReason = streamingPriority && !canFinishOcr
+      ? "insufficient_remaining_budget_for_full_video_ocr" : null;
+    if (typeof this.hardSubtitleOcr === "function" && !ocrSkippedReason) {
       try {
         const result = await this.hardSubtitleOcr(video, {
           deadlineAt: this.requestDeadlineAt ?? Date.now() + 270_000,
@@ -985,6 +1040,24 @@ export class TranscriptionService {
         if (isTerminalAccessError(error) || ["OCR_BUSY", "OCR_DEADLINE_EXCEEDED"].includes(error?.code)) throw error;
         ocrAttempts.push({ ...safeAttempt("hard_subtitle_ocr", error), ...(error?.details?.ocr_run_id ? { ocr_run_id: error.details.ocr_run_id } : {}) });
       }
+    }
+
+    if (streamingAvailable && !streamingPriority && !earlyMedia) {
+      const streamed = await attemptStreaming();
+      if (streamed.result) return streamed.result;
+    }
+
+    if (streamingPriority) {
+      throw new ReaderError("TRANSCRIPTION_UNAVAILABLE", "No complete transcript was produced by the bounded long-video methods.", {
+        status: 503,
+        details: {
+          ...(video.aweme_id ?? video.id ? { aweme_id: String(video.aweme_id ?? video.id) } : {}),
+          ...(streamingAttempts.length ? { streaming_attempts: streamingAttempts } : {}),
+          ...(ocrAttempts.length ? { ocr_attempts: ocrAttempts } : {}),
+          ...(ocrSkippedReason ? { ocr_skipped_reason: ocrSkippedReason } : {}),
+          ...(captionAttempts.length ? { caption_attempts: captionAttempts } : {})
+        }
+      });
     }
 
     let media;
@@ -1004,14 +1077,19 @@ export class TranscriptionService {
           cause: safeAttempt("media", error),
           ...(mediaFailureSummary(error) ? { media_attempts: mediaFailureSummary(error) } : {}),
           ...(ocrAttempts.length ? { ocr_attempts: ocrAttempts } : {}),
+          ...(streamingAttempts.length ? { streaming_attempts: streamingAttempts } : {}),
           ...(captionAttempts.length ? { caption_attempts: captionAttempts } : {})
         },
         cause: error
       });
     }
 
-    const attempts = [...ocrAttempts];
-    const inheritedLimitations = [...(captionAttempts.length ? ["caption_tracks_unusable"] : []), ...(ocrAttempts.length ? ["hard_subtitle_ocr_unavailable"] : [])];
+    const attempts = [...ocrAttempts, ...streamingAttempts];
+    const inheritedLimitations = [
+      ...(captionAttempts.length ? ["caption_tracks_unusable"] : []),
+      ...(ocrAttempts.length ? ["hard_subtitle_ocr_unavailable"] : []),
+      ...(streamingAttempts.length ? ["streaming_local_asr_unavailable"] : [])
+    ];
     const mediaResolution = publicMediaResolution(resolvedSource);
     let transcriptionMedia = media;
     if (isMp4Video(media) && typeof this.audioExtractor === "function") {
