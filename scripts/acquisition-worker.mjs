@@ -33,6 +33,7 @@ const localWhisper = createLocalWhisperAsr();
 const streamingOutputDir = join(process.cwd(), "acquisition-output");
 const streamingProgressPath = join(streamingOutputDir, "streaming-progress.jsonl");
 const streamingWhisper = createStreamingWhisperAsr({
+  minDurationMs: 1_000,
   onProgress: async (event) => {
     await mkdir(streamingOutputDir, { recursive: true });
     await appendFile(streamingProgressPath, JSON.stringify(event) + "\n", { mode: 0o600 });
