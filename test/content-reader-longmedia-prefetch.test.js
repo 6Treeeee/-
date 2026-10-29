@@ -237,6 +237,51 @@ test("10-30 minute videos fall back to streaming ASR after OCR fails and early m
   assert.equal(out.media_resolution.validation.status, 206);
 });
 
+test("under-five-minute high-definition clip recovers from oversized full media using streaming ASR", async () => {
+  const events = [], durationMs = 3 * 60_000;
+  const r = service({
+    mediaResolver: {
+      async resolve() {
+        events.push("full_media");
+        throw new ReaderError("MEDIA_UNAVAILABLE", "High-definition clip exceeds full-file cap.", {
+          status: 422, details: { attempts: [{ failure_reason: "oversized" }] }
+        });
+      },
+      async fetch() { throw Error("No full-file download permitted"); }
+    },
+    hardSubtitleOcr: async () => {
+      events.push("ocr");
+      throw new ReaderError("OCR_CAPTIONS_SPARSE", "Audio-only lecture without hard subtitles.", { status: 422 });
+    },
+    streamingAsr: async ({ video }) => {
+      events.push("stream");
+      assert.equal(video.media.duration_ms, durationMs);
+      return { result: streamedResult(durationMs), source: STREAM_SOURCE };
+    }
+  });
+  const out = await r.read({ ...VIDEO, media: { duration_ms: durationMs } });
+  assert.deepEqual(events, ["ocr", "stream"]);
+  assert.equal(out.source.coverage.full_audio_scanned, true);
+  assert.equal(out.source.coverage.end_ms, durationMs);
+  assert.equal(out.media_resolution.validation.status, 206);
+});
+
+test("short clips with verified OCR text never invoke streaming ASR", async () => {
+  const events = [];
+  const r = service({
+    mediaResolver: { async resolve() { throw Error("must not fetch media"); } },
+    hardSubtitleOcr: async () => {
+      events.push("ocr");
+      return { status: "complete", method: "hard_subtitle_ocr",
+        text: "画面字幕全文", segments: [{ start_ms: 0, end_ms: 1000, text: "画面字幕全文" }] };
+    },
+    streamingAsr: async () => { events.push("stream"); throw Error("stream should not run"); }
+  });
+  const out = await r.read({ ...VIDEO, media: { duration_ms: 90_000 } });
+  assert.equal(out.text, "画面字幕全文");
+  assert.deepEqual(events, ["ocr"]);
+});
+
 test("20-30 minute streaming failure retains one bounded full-media fallback", async () => {
   const events = [];
   const durationMs = 24 * 60_000;
