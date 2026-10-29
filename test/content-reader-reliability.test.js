@@ -177,7 +177,7 @@ test("streamable media candidate search is bounded and reports skipped candidate
     aweme_id: "7693868342775532850",
     acquired_at: new Date().toISOString(),
     media: {
-      playback: Array.from({ length: 30 }, (_, index) => ({
+      playback: Array.from({ length: 70 }, (_, index) => ({
         url: "https://video.example.net/candidate-" + index + ".mp4",
         media_type: "video/mp4"
       }))
