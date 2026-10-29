@@ -991,9 +991,12 @@ export class TranscriptionService {
     // Long videos use a range-validated, chunked audio path before full-file buffering.
     // The worker-only streaming dependency is absent from synchronous deployments.
     const mediaDuration = knownVideoDurationMs(video);
+    // Any non-trivial video can exceed the 25-MB in-memory media cap,
+    // including clips well under ten minutes. Keep OCR/captions first for
+    // short-form videos, but allow validated HTTP-range audio as a fallback.
     const streamingAvailable = typeof this.streamingAsr === "function" &&
       typeof this.localAsr === "function" && Number.isFinite(mediaDuration) &&
-      mediaDuration >= LONG_MEDIA_EARLY_FETCH_MS;
+      mediaDuration >= 1_000 && mediaDuration <= 90 * 60_000;
     const streamingPriority = streamingAvailable && mediaDuration >= STREAMING_ASR_PRIORITY_MS;
     const streamingAttempts = [];
     const attemptStreaming = async () => {
