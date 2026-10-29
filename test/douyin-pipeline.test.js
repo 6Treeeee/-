@@ -2121,7 +2121,7 @@ test("DirectPublicWebProvider checks the actual page URL even when canonical loo
   );
 });
 
-test("DirectPublicWebProvider recovers only identity-bound detail on a fresh page after a wrong redirect", async () => {
+test("DirectPublicWebProvider recovers exact-ID metadata without consuming a wrong redirected player", async () => {
   const id = "7000000000000000001";
   const wrongId = "7000000000000000002";
   const expectedMedia = `https://v3-dy-o.douyinvod.com/${id}.mp4`;
@@ -2183,13 +2183,20 @@ test("DirectPublicWebProvider recovers only identity-bound detail on a fresh pag
     settleMs: 0
   });
 
-  const result = await provider.readVideo({ awemeId: id });
+  let wrongPlayerConsumers = 0;
+  const result = await provider.readVideo({ awemeId: id, consumeVideo: async () => {
+    wrongPlayerConsumers++;
+    throw new Error("A mismatched live player must never be scanned or transcribed.");
+  } });
 
   assert.equal(result.aweme.aweme_id, id);
   assert.deepEqual(result.networkMediaUrls, []);
   assert.deepEqual(result.aweme.video.play_addr.url_list, [expectedMedia]);
   assert.equal(result.meta.identity.source, "public_detail");
   assert.equal(result.meta.identity.page_url_mismatch_recovered, true);
+  assert.equal(result.meta.identity.metadata_only_recovery, true);
+  assert.equal(wrongPlayerConsumers, 0);
+  assert.equal(result.consumed, undefined);
   assert.deepEqual(navigations, [
     `https://www.douyin.com/video/${id}`,
     `https://www.iesdouyin.com/share/video/${id}`
