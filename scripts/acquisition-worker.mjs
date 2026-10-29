@@ -21,7 +21,8 @@ const browserService = new PublicBrowserService({
   viewport: { width: 1920, height: 1080, deviceScaleFactor: 1 }
 });
 const directProvider = new DirectPublicWebProvider({ browserService, retries: 2,
-  retryDelayMs: 500, videoNavigationTimeoutMs: 45_000, videoContentWaitMs: 22_000, settleMs: 700 });
+  retryDelayMs: 500, videoNavigationTimeoutMs: 45_000, videoContentWaitMs: 22_000, settleMs: 700,
+  anonymousDetailFallback: true });
 // Only the asynchronous worker gets a longer media/runtime budget.
 const hardSubtitles = new HardSubtitleOcr({ env: process.env, provider: directProvider, requestId: request_id,
   maxDurationMs: 7_200_000 });
