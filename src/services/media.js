@@ -331,14 +331,14 @@ export class MediaResolver {
     this.sleepImpl = sleepImpl;
   }
 
-  async _request(url, options = {}) {
+  async _request(url, options = {}, { timeoutMs = this.timeoutMs, retries = this.retries } = {}) {
     let lastError;
-    for (let attempt = 0; attempt <= this.retries; attempt += 1) {
+    for (let attempt = 0; attempt <= retries; attempt += 1) {
       const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), this.timeoutMs);
+      const timer = setTimeout(() => controller.abort(), timeoutMs);
       try {
         const response = await this.fetchImpl(url, { ...options, signal: controller.signal });
-        if (attempt < this.retries && TRANSIENT_HTTP_STATUS.has(response.status)) {
+        if (attempt < retries && TRANSIENT_HTTP_STATUS.has(response.status)) {
           try { await response.body?.cancel(); } catch { /* already closed */ }
           await this.sleepImpl(this.retryDelayMs * (attempt + 1));
           continue;
@@ -346,7 +346,7 @@ export class MediaResolver {
         return response;
       } catch (error) {
         lastError = error;
-        if (attempt < this.retries) {
+        if (attempt < retries) {
           await this.sleepImpl(this.retryDelayMs * (attempt + 1));
           continue;
         }
@@ -373,7 +373,7 @@ export class MediaResolver {
           ...source.headers,
           Range: "bytes=0-0"
         }
-      });
+      }, { timeoutMs, retries: requireRange ? 0 : this.retries });
       const contentRange = response.headers?.get?.("content-range");
       const declaredSize = contentRangeSize(contentRange) ??
         numericHeader(response.headers?.get?.("content-length"));
@@ -542,6 +542,7 @@ export class MediaResolver {
       maxBytes: this.maxStreamBytes,
       requireRange: true,
       timeoutMs: Math.min(this.timeoutMs, 4_000),
+      retries: 0,
       maxCandidates: 24
     };
 
