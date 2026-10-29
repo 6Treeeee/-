@@ -235,6 +235,36 @@ test("10-30 minute videos fall back to streaming ASR after OCR fails and early m
   assert.equal(out.media_resolution.validation.status, 206);
 });
 
+test("20-30 minute streaming failure retains one bounded full-media fallback", async () => {
+  const events = [];
+  const durationMs = 24 * 60_000;
+  const r = service({
+    mediaResolver: {
+      async resolve() { events.push("resolve"); return SOURCE; },
+      async fetch() { events.push("fetch"); return MEDIA; }
+    },
+    streamingAsr: async () => {
+      events.push("stream");
+      throw new ReaderError("MEDIA_STREAM_UNAVAILABLE", "The source did not support ranged streaming.", { status: 422 });
+    },
+    hardSubtitleOcr: async () => {
+      events.push("ocr");
+      throw new ReaderError("OCR_PLAYER_CHANGED", "The OCR player source rotated.", { status: 503 });
+    },
+    localAsr: async () => {
+      events.push("asr");
+      const result = asr();
+      result.coverage.end_ms = durationMs;
+      result.coverage.chunk_count = 8;
+      return result;
+    }
+  });
+  const out = await r.read({ ...VIDEO, media: { duration_ms: durationMs }, captions: { tracks: [] } });
+  assert.deepEqual(events, ["stream", "ocr", "resolve", "fetch", "asr"]);
+  assert.equal(out.source.coverage.end_ms, durationMs);
+  assert.ok(out.limitations.includes("streaming_local_asr_unavailable"));
+});
+
 test("90-minute streaming failure skips OCR when the remaining budget cannot cover a full scan", async () => {
   const events = [];
   const durationMs = 90 * 60_000;
