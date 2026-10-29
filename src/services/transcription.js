@@ -431,13 +431,14 @@ function providerError(code, message, provider, status, cause) {
 // MediaResolver records candidate checks without signed URLs. Expose only a
 // bounded numeric summary, never candidate URLs, hashes, cookies or messages.
 function mediaFailureSummary(error) {
-  if (error?.code !== "MEDIA_UNAVAILABLE" || !Array.isArray(error?.details?.attempts)) return null;
+  if (!["MEDIA_UNAVAILABLE", "MEDIA_STREAM_UNAVAILABLE"].includes(error?.code) ||
+      !Array.isArray(error?.details?.attempts)) return null;
   const attempts = error.details.attempts.slice(0, 64);
   const statuses = [...new Set(attempts
     .map(item => Number(item?.status))
     .filter(value => Number.isInteger(value) && value >= 100 && value <= 599))]
     .sort((left, right) => left - right);
-  const reasons = ["http_status", "oversized", "empty", "non_media", "network_error"];
+  const reasons = ["http_status", "oversized", "empty", "non_media", "network_error", "range_unsupported"];
   const rejection_counts = Object.fromEntries(reasons.map(reason =>
     [reason, attempts.filter(item => item?.failure_reason === reason).length]));
   const sizes = attempts.map(item => Number(item?.size)).filter(value => Number.isFinite(value) && value > 0);
@@ -447,7 +448,7 @@ function mediaFailureSummary(error) {
     http_statuses: statuses,
     rejection_counts,
     largest_declared_size_bytes: sizes.length ? Math.max(...sizes) : null,
-    checks_truncated: error.details.attempts.length > attempts.length
+    checks_truncated: error.details.checks_truncated === true || error.details.attempts.length > attempts.length
   };
 }
 
