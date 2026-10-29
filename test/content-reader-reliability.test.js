@@ -1,0 +1,90 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { recoverChangedOcrPlayer } from "../src/services/hard-subtitle-ocr.js";
+import { MediaResolver } from "../src/services/media.js";
+
+test("rotated public player source is rebound only after access revalidation", async () => {
+  let calls = 0, access = 0, rebinds = 0;
+  const state = { count: 0 };
+  const result = await recoverChangedOcrPlayer({
+    capture: async () => {
+      calls++;
+      if (calls === 1) throw new Error("OCR_PLAYER_CHANGED");
+      return { time_ms: 30_000 };
+    },
+    assertAccess: async () => { access++; },
+    rebind: async () => { rebinds++; return true; },
+    samePage: true, state
+  });
+  assert.deepEqual(result, { time_ms: 30_000 });
+  assert.deepEqual([calls, access, rebinds, state.count], [2, 1, 1, 1]);
+});
+
+test("unbound media player never automatically rebinds on changed source", async () => {
+  const state = { count: 0 };
+  await assert.rejects(recoverChangedOcrPlayer({
+    capture: async () => { throw new Error("OCR_PLAYER_CHANGED"); },
+    assertAccess: async () => { throw new Error("should not be called"); },
+    rebind: async () => true, samePage: false, state
+  }), /OCR_PLAYER_CHANGED/);
+  assert.equal(state.count, 0);
+});
+
+test("rebind cannot bypass identity revalidation or exhaust retries", async () => {
+  const capture = async () => { throw new Error("OCR_PLAYER_CHANGED"); };
+  const state = { count: 0 };
+  await assert.rejects(recoverChangedOcrPlayer({
+    capture, assertAccess: async () => { throw new Error("DOUYIN_PUBLIC_WEB_IDENTITY_MISMATCH"); },
+    rebind: async () => true, samePage: true, state
+  }), /DOUYIN_PUBLIC_WEB_IDENTITY_MISMATCH/);
+  assert.equal(state.count, 0);
+
+  await assert.rejects(recoverChangedOcrPlayer({
+    capture, assertAccess: async () => {}, rebind: async () => false,
+    samePage: true, state
+  }), /OCR_PLAYER_REBIND_INVALID/);
+  assert.equal(state.count, 0);
+
+  await assert.rejects(recoverChangedOcrPlayer({
+    capture, assertAccess: async () => { throw Error("not called"); },
+    rebind: async () => true, samePage: true, state: { count: 3 }, limit: 3
+  }), /OCR_PLAYER_CHANGED/);
+});
+
+test("unrelated seek errors are never treated as player rotation", async () => {
+  await assert.rejects(recoverChangedOcrPlayer({
+    capture: async () => { throw new Error("OCR_SEEK_TIMEOUT"); },
+    assertAccess: async () => { throw Error("unexpected"); },
+    rebind: async () => true, samePage: true, state: { count: 0 }
+  }), /OCR_SEEK_TIMEOUT/);
+});
+
+async function validateWith(response, maxBytes = 1_048_576) {
+  const resolver = new MediaResolver({ fetchImpl: async () => response, maxBytes, retries: 0 });
+  return resolver._validate({ url: "https://video.example.net/media.mp4" });
+}
+
+test("HTTP 206 with oversized total is diagnosed without downloading its body", async () => {
+  const result = await validateWith(new Response(new Uint8Array([0]), {
+    status: 206, headers: {
+      "content-type": "video/mp4",
+      "content-range": "bytes 0-0/262144000"
+    }
+  }));
+  assert.equal(result.ok, false);
+  assert.equal(result.diagnostic.status, 206);
+  assert.equal(result.diagnostic.failure_reason, "oversized");
+  assert.equal(result.diagnostic.size, 262144000);
+  assert.ok(!JSON.stringify(result.diagnostic).includes("/media.mp4"));
+});
+
+test("non-media and rejected HTTP sources report distinct bounded diagnoses", async () => {
+  const nonMedia = await validateWith(new Response("login", {
+    status: 206, headers: { "content-type": "text/html", "content-range": "bytes 0-0/5" }
+  }));
+  assert.equal(nonMedia.diagnostic.failure_reason, "non_media");
+
+  const denied = await validateWith(new Response("", { status: 403 }));
+  assert.equal(denied.diagnostic.failure_reason, "http_status");
+  assert.equal(denied.diagnostic.status, 403);
+});
