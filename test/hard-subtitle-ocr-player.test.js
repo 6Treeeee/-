@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { waitForBoundPublicPlayer } from "../src/services/public-player-wait.js";
+import { visualStepForDuration } from "../src/services/hard-subtitle-ocr.js";
 
 test("late public player gets one bounded wait without changing video identity", async () => {
   const waits = [];
@@ -38,4 +39,16 @@ test("non-timeout errors and exhausted deadlines are not retried", async () => {
       assertAccess: async () => {}, deadlineAt: Date.now() + 500 }), failure);
     assert.equal(waits, 1);
   }
+});
+
+test("OCR sampling cadence adapts to duration while keeping the final sample dense enough", () => {
+  assert.equal(visualStepForDuration(5 * 60_000), 250);
+  assert.equal(visualStepForDuration(5 * 60_000 + 1), 350);
+  assert.equal(visualStepForDuration(10 * 60_000), 350);
+  assert.equal(visualStepForDuration(10 * 60_000 + 1), 500);
+  assert.equal(visualStepForDuration(30 * 60_000), 500);
+  assert.equal(visualStepForDuration(30 * 60_000 + 1), 750);
+  assert.equal(visualStepForDuration(90 * 60_000), 750);
+  assert.equal(visualStepForDuration(90 * 60_000 + 1), 1000);
+  assert.equal(visualStepForDuration(120 * 60_000), 1000);
 });
