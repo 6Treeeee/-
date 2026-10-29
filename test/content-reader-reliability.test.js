@@ -30,6 +30,40 @@ test("unbound media player never automatically rebinds on changed source", async
   assert.equal(state.count, 0);
 });
 
+test("fresh media pages can rebind only through an explicitly identity-checked path", async () => {
+  let calls = 0, access = 0, rebinds = 0;
+  const state = { count: 0 };
+  const result = await recoverChangedOcrPlayer({
+    capture: async () => {
+      calls++;
+      if (calls === 1) throw new Error("OCR_PLAYER_CHANGED");
+      return { time_ms: 60_000 };
+    },
+    assertAccess: async () => { access++; },
+    rebind: async () => { rebinds++; return true; },
+    samePage: false, allowRebind: true, state
+  });
+  assert.deepEqual(result, { time_ms: 60_000 });
+  assert.deepEqual([calls, access, rebinds, state.count], [2, 1, 1, 1]);
+});
+
+test("bounded recovery handles seek timeout only after public identity revalidation", async () => {
+  let calls = 0;
+  const state = { count: 0 };
+  const result = await recoverChangedOcrPlayer({
+    capture: async () => {
+      calls++;
+      if (calls === 1) throw new Error("OCR_SEEK_TIMEOUT");
+      return { time_ms: 90_000 };
+    },
+    assertAccess: async () => {},
+    rebind: async () => true,
+    samePage: true, state
+  });
+  assert.deepEqual(result, { time_ms: 90_000 });
+  assert.equal(state.count, 1);
+});
+
 test("rebind cannot bypass identity revalidation or exhaust retries", async () => {
   const capture = async () => { throw new Error("OCR_PLAYER_CHANGED"); };
   const state = { count: 0 };
@@ -53,10 +87,10 @@ test("rebind cannot bypass identity revalidation or exhaust retries", async () =
 
 test("unrelated seek errors are never treated as player rotation", async () => {
   await assert.rejects(recoverChangedOcrPlayer({
-    capture: async () => { throw new Error("OCR_SEEK_TIMEOUT"); },
+    capture: async () => { throw new Error("OCR_FRAME_HASH_MISMATCH"); },
     assertAccess: async () => { throw Error("unexpected"); },
     rebind: async () => true, samePage: true, state: { count: 0 }
-  }), /OCR_SEEK_TIMEOUT/);
+  }), /OCR_FRAME_HASH_MISMATCH/);
 });
 
 async function validateWith(response, maxBytes = 1_048_576) {
