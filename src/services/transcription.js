@@ -1001,7 +1001,16 @@ export class TranscriptionService {
         return { result: await this._streamingLocalResult(video), error: null };
       } catch (error) {
         if (isTerminalAccessError(error) || error?.code === "LOCAL_ASR_BUSY") throw error;
-        streamingAttempts.push(safeAttempt("streaming_local_whisper", error));
+        const safe = safeAttempt("streaming_local_whisper", error);
+        streamingAttempts.push(safe);
+        // The full-video fallback may still pass; preserve why streaming failed
+        // without disclosing CDN URLs, credentials, audio bytes or transcript text.
+        console.warn(JSON.stringify({
+          event: "streaming_asr.failed",
+          request_id: this.requestId,
+          aweme_id: String(video?.aweme_id ?? video?.id ?? ""),
+          ...safe
+        }));
         return { result: null, error };
       }
     };
