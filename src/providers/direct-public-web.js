@@ -1302,6 +1302,10 @@ export class DirectPublicWebProvider {
         const preliminaryConflict = pageUrlMismatch || canonicalMismatch || hydrationMismatch ||
           capture.state.mismatchedAwemeIds.length > 0;
         const preliminaryMediaUrls = preliminaryConflict ? [] : rawObservedMediaUrls;
+        // A redirected player must never be consumed as the requested video.
+        // Only an independent public detail response with the exact aweme_id can
+        // enable a metadata-only fallback; wrong-page media remains discarded.
+        let verifiedRecoveryDetail = null;
         const needsExplicitDetail = selected.awemeId && (
           ((pageUrlMismatch || canonicalMismatch) && !capture.state.aweme &&
             !(rawHydration && hydrationId === selected.awemeId)) ||
@@ -1320,6 +1324,7 @@ export class DirectPublicWebProvider {
               const refreshedId = postIdentity(refreshedAweme);
               if (refreshedAweme && refreshedId === selected.awemeId) {
                 capture.state.aweme = refreshedAweme;
+                verifiedRecoveryDetail = refreshedAweme;
               } else if (refreshedAweme &&
                   !capture.state.mismatchedAwemeIds.includes(refreshedId ?? null)) {
                 capture.state.mismatchedAwemeIds.push(refreshedId ?? null);
@@ -1384,8 +1389,14 @@ export class DirectPublicWebProvider {
           );
         }
 
+        const safeMetadataOnlyRecovery = Boolean(
+          (pageUrlMismatch || canonicalMismatch) &&
+          verifiedRecoveryDetail &&
+          embeddedAwemeMediaUrls(verifiedRecoveryDetail).length > 0 &&
+          postIdentity(verifiedRecoveryDetail) === selected.awemeId
+        );
         let consumed;
-        if (typeof consumeVideo === "function") {
+        if (typeof consumeVideo === "function" && !safeMetadataOnlyRecovery) {
           try {
             consumed = await consumeVideo({
               page, runtime, aweme,
@@ -1429,7 +1440,8 @@ export class DirectPublicWebProvider {
               source: capture.state.aweme
                 ? "public_detail"
                 : hydration ? "hydration" : "page_metadata",
-              page_url_mismatch_recovered: pageUrlMismatch
+              page_url_mismatch_recovered: pageUrlMismatch,
+              metadata_only_recovery: safeMetadataOnlyRecovery
             },
             page: {
               title: dom.title,
