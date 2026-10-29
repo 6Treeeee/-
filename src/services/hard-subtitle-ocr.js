@@ -6,6 +6,8 @@ import { join } from "node:path";
 import { createInterface } from "node:readline";
 import { fileURLToPath } from "node:url";
 import { ReaderError, sanitizeDiagnostics } from "../errors.js";
+import { visualStepForDuration } from "./ocr-sampling-policy.js";
+export { visualStepForDuration };
 import { DirectPublicWebProvider } from "../providers/direct-public-web.js";
 import { PublicBrowserService } from "./public-browser.js";
 import { waitForBoundPublicPlayer } from "./public-player-wait.js";
