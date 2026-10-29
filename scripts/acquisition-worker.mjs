@@ -5,6 +5,7 @@ import { HardSubtitleOcr } from "../src/services/hard-subtitle-ocr.js";
 import { createLocalWhisperAsr } from "../src/services/local-whisper.js";
 import { verifyAcquisitionResult } from "../src/services/acquisition-result.js";
 import { createAcquisitionFailure, saveAcquisitionOutput } from "../src/services/acquisition-output.js";
+import { createStreamingWhisperAsr } from "../src/services/streaming-whisper.js";
 
 const aweme_id = process.env.ACQUISITION_AWEME_ID;
 const request_id = process.env.ACQUISITION_REQUEST_ID;
@@ -26,12 +27,14 @@ const requestBudgetMs = 3_300_000;
 console.info(JSON.stringify({ event: "acquisition.policy", request_id,
   max_duration_ms: hardSubtitles.maxDurationMs, request_budget_ms: requestBudgetMs }));
 const localWhisper = createLocalWhisperAsr();
+const streamingWhisper = createStreamingWhisperAsr();
 let envelope;
 try {
   const result = await readPublicContent({ url: `https://www.douyin.com/video/${aweme_id}`, type: "video", fresh: true }, {
     fetchImpl: globalThis.fetch, providers: [directProvider],
     hardSubtitleOcr: hardSubtitles.read.bind(hardSubtitles),
     localAsr: localWhisper.available ? localWhisper.transcribe : null,
+    streamingAsr: localWhisper.available ? streamingWhisper : null,
     openAiApiKey: null, aiGatewayApiKey: null, vercelOidcToken: null,
     requestId: request_id, requestDeadlineAt: started + requestBudgetMs
   });
