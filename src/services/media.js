@@ -295,7 +295,7 @@ export function safeMediaDiagnostic(value, extra = {}) {
     ...(parsed ? { host: parsed.hostname, url_hash: urlHash(parsed.href) } : {}),
     ...(Number.isFinite(extra.status) ? { status: extra.status } : {}),
     ...(Number.isFinite(extra.size) ? { size: extra.size } : {}),
-    ...(["http_status", "oversized", "empty", "non_media", "network_error", "range_unsupported"]
+    ...(["http_status", "oversized", "empty", "non_media", "network_error", "range_unsupported", "insecure_scheme"]
       .includes(extra.failure_reason) ? { failure_reason: extra.failure_reason } : {})
   };
 }
@@ -362,8 +362,12 @@ export class MediaResolver {
     );
   }
 
-  async _validate(source, { maxBytes = this.maxBytes, requireRange = false, timeoutMs = this.timeoutMs } = {}) {
+  async _validate(source, { maxBytes = this.maxBytes, requireRange = false, requireHttps = false, timeoutMs = this.timeoutMs } = {}) {
     const diagnostic = safeMediaDiagnostic(source);
+    const parsedSource = asPublicHttpUrl(source?.url);
+    if (requireHttps && parsedSource?.protocol !== "https:") {
+      return { ok: false, diagnostic: safeMediaDiagnostic(source, { failure_reason: "insecure_scheme" }) };
+    }
     try {
       const response = await this._request(source.url, {
         method: "GET",
@@ -541,6 +545,7 @@ export class MediaResolver {
     const options = {
       maxBytes: this.maxStreamBytes,
       requireRange: true,
+      requireHttps: true,
       timeoutMs: Math.min(this.timeoutMs, 3_000),
       retries: 0,
       maxCandidates: 64
