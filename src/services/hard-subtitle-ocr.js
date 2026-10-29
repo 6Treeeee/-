@@ -10,7 +10,7 @@ import { visualStepForDuration } from "./ocr-sampling-policy.js";
 export { visualStepForDuration };
 import { DirectPublicWebProvider } from "../providers/direct-public-web.js";
 import { PublicBrowserService } from "./public-browser.js";
-import { waitForBoundPublicPlayer } from "./public-player-wait.js";
+import { waitForBoundPublicPlayer, verifiedPublicPlayerDuration } from "./public-player-wait.js";
 
 const hash = (value) => createHash("sha256").update(value).digest("hex");
 const DEFAULT_MAX_DURATION_MS = 1_500_000;
@@ -343,8 +343,14 @@ export class HardSubtitleOcr {
       if(!engine.ready||!probeEngine.ready)throw fail("OCR_RUNTIME_UNAVAILABLE","OCR engine did not initialize.");
       const consumeVideo=async({page,assertAccess})=>{
         const rawDuration=Number(video?.duration_ms ?? video?.media?.duration_ms ?? video?.duration ?? 0);
-        const expectedDurationSeconds=rawDuration>=1000?rawDuration/1000:rawDuration;
-        if(!Number.isFinite(expectedDurationSeconds)||expectedDurationSeconds<=0)throw fail("OCR_EXPECTED_DURATION_MISSING","Target video duration is required to bind the live player.");
+        let expectedDurationSeconds=rawDuration>=1000?rawDuration/1000:rawDuration;
+        if(!Number.isFinite(expectedDurationSeconds)||expectedDurationSeconds<=0){
+          expectedDurationSeconds=await verifiedPublicPlayerDuration({
+            page,assertAccess,deadlineAt,maxDurationMs:this.maxDurationMs
+          });
+          await journal({event:"ocr.duration_recovered",source:"identity_verified_public_player",
+            duration_ms:Math.round(expectedDurationSeconds*1000)});
+        }
         await waitForBoundPublicPlayer({page,expectedDurationSeconds,assertAccess,deadlineAt});
         const accessPage=page;
         let capturePage=page,captureMode="live_public_page";
