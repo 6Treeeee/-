@@ -192,6 +192,7 @@ async function initializeCapture({ expectedId, expectedDurationSeconds, deadline
   if(Math.abs(v.duration-expectedDurationSeconds)>Math.max(3,expectedDurationSeconds*.02))throw new Error("OCR_PLAYER_DURATION_MISMATCH");
   v.muted = true; v.pause();
   const originalSrc = v.currentSrc || v.src;
+  document.querySelectorAll('style[data-content-reader-ocr="true"]').forEach((node)=>node.remove());
   const style=document.createElement("style");style.dataset.contentReaderOcr="true";
   style.textContent="html,body{margin:0!important;background:#000!important;overflow:hidden!important}body *{visibility:hidden!important}video{visibility:visible!important;position:fixed!important;inset:0!important;width:1280px!important;height:720px!important;object-fit:contain!important;z-index:2147483647!important}";
   document.head.appendChild(style);
@@ -236,6 +237,16 @@ async function seekCaptureFrame({ target, deadlineAt }) {
   await s.seek(target);return {time_ms:Math.round(s.v.currentTime*1000),requested_ms:Math.round(target*1000),ready_state:s.v.readyState,captured_at:new Date().toISOString()};
 }
 
+async function readPublicPlayerSource(expectedDurationSeconds) {
+  const candidates=[...document.querySelectorAll("video")].filter((v)=>
+    Number.isFinite(v.duration)&&v.duration>0&&
+    Math.abs(v.duration-expectedDurationSeconds)<=Math.max(3,expectedDurationSeconds*.02));
+  const v=candidates.sort((a,b)=>
+    Math.abs(a.duration-expectedDurationSeconds)-Math.abs(b.duration-expectedDurationSeconds))[0];
+  if(!v)return null;
+  return {source:v.currentSrc||v.src||null,duration_seconds:v.duration};
+}
+
 async function canvasCaptureFrame({ high=false, low=true }) {
   const s=window.__contentReaderOcr;if(!s)throw new Error("OCR_CAPTURE_NOT_INITIALIZED");
   const v=s.v;
@@ -268,12 +279,16 @@ async function canvasCaptureFrame({ high=false, low=true }) {
 
 // Recovery is deliberately limited to the same verified public page. Never
 // silently rebind a standalone CDN player or bypass a changed video identity.
-export async function recoverChangedOcrPlayer({ capture, assertAccess, rebind, samePage, state, limit = 3 }) {
+export async function recoverChangedOcrPlayer({
+  capture, assertAccess, rebind, samePage = false, allowRebind = samePage, state, limit = 2
+}) {
   try {
     return await capture();
   } catch (error) {
-    if (!samePage || !String(error?.message ?? "").includes("OCR_PLAYER_CHANGED") ||
-        state.count >= limit) throw error;
+    const message=String(error?.message ?? "");
+    const recoverable=["OCR_PLAYER_CHANGED","OCR_SEEK_TIMEOUT","OCR_PLAYER_RELOAD_TIMEOUT"]
+      .some((code)=>message.includes(code));
+    if (!allowRebind || !recoverable || state.count >= limit) throw error;
     await assertAccess();
     if (!(await rebind())) throw new Error("OCR_PLAYER_REBIND_INVALID");
     state.count += 1;
@@ -336,31 +351,68 @@ export class HardSubtitleOcr {
             capturePage=page;captureMode="live_public_page";
           }
         }
-        const assertCaptureAccess=async()=>{
-          await assertAccess();
-          if(capturePage===accessPage)return;
-          const stable=await capturePage.evaluate((expected)=>{const v=document.querySelector("video");return Boolean(v&&v.readyState>=2&&Number.isFinite(v.duration)&&Math.abs(v.duration-expected)<=Math.max(3,expected*.02)&&(v.currentSrc||v.src));},expectedDurationSeconds);
-          if(!stable)throw fail("OCR_PUBLIC_PLAYER_UNAVAILABLE","The fresh public media player changed during OCR.");
-        };
+        const assertCaptureAccess=async()=>{ await assertAccess(); };
         const playback=await capturePage.evaluate(initializeCapture,{expectedId:id,expectedDurationSeconds,deadlineAt});
         const duration=playback.duration_ms;
         await journal({event:"ocr.duration_checked",duration_ms:Number.isFinite(duration)?duration:null,max_duration_ms:this.maxDurationMs});
         assertOcrDuration(duration,this.maxDurationMs);
-        const mediaHash=hash(playback.media_url); delete playback.media_url;
+        let activeMediaUrl=playback.media_url;
+        let mediaHash=hash(activeMediaUrl);
+        delete playback.media_url;
+        await journal({event:"ocr.capture_mode",capture_mode:captureMode,visual_step_ms:250});
         await writeFile(join(root,"session.json"),JSON.stringify({run_id:runId,request_id:requestId,aweme_id:id,started_at:startedAt,engine,probe_engine:probeEngine,playback,media_url_sha256:mediaHash,cache_read:false},null,2));
         const recoveryState={count:0};
         const seekFrame=async(target)=>recoverChangedOcrPlayer({
           capture:()=>capturePage.evaluate(seekCaptureFrame,{target,deadlineAt}),
           samePage:capturePage===accessPage,
+          allowRebind:capturePage===accessPage||captureMode==="fresh_public_media",
           state:recoveryState,
-          assertAccess:assertCaptureAccess,
+          assertAccess,
           rebind:async()=>{
-            const next=await capturePage.evaluate(initializeCapture,{expectedId:id,expectedDurationSeconds,deadlineAt});
-            const sameVideo=next.expected_id===id&&next.page_url===playback.page_url&&
-              Number.isFinite(next.duration_ms)&&
-              Math.abs(next.duration_ms-duration)<=Math.max(3000,duration*.02);
-            if(sameVideo)await journal({event:"ocr.player_rebound",rebind_count:recoveryState.count+1});
-            return sameVideo;
+            if(capturePage!==accessPage){
+              let publicSource=await accessPage.evaluate(readPublicPlayerSource,expectedDurationSeconds);
+              if(!publicSource?.source||!/^https:\/\//i.test(publicSource.source))return false;
+              if(publicSource.source===activeMediaUrl){
+                try{
+                  await accessPage.reload({waitUntil:"domcontentloaded",timeout:15_000});
+                  await waitForBoundPublicPlayer({page:accessPage,expectedDurationSeconds,assertAccess,deadlineAt});
+                  await assertAccess();
+                  publicSource=await accessPage.evaluate(readPublicPlayerSource,expectedDurationSeconds);
+                }catch{return false;}
+              }
+              if(!publicSource?.source||!/^https:\/\//i.test(publicSource.source)||publicSource.source===activeMediaUrl)return false;
+              try{
+                const loaded=await capturePage.evaluate(async({source,expectedDurationSeconds})=>{
+                  const v=document.getElementById("content-reader-media")||document.querySelector("video");
+                  if(!v||!/^https:\/\//i.test(source))return false;
+                  v.pause();v.src=source;v.load();
+                  await new Promise((resolve,reject)=>{
+                    let settled=false;
+                    const finish=(error)=>{if(settled)return;settled=true;clearTimeout(timer);v.removeEventListener("loadeddata",onLoaded);v.removeEventListener("error",onError);error?reject(error):resolve();};
+                    const onLoaded=()=>{if(v.readyState>=2)finish();};
+                    const onError=()=>finish(new Error("OCR_MEDIA_RELOAD_FAILED"));
+                    const timer=setTimeout(()=>finish(new Error("OCR_MEDIA_RELOAD_TIMEOUT")),15_000);
+                    v.addEventListener("loadeddata",onLoaded);
+                    v.addEventListener("error",onError);
+                    if(v.readyState>=2)onLoaded();
+                  });
+                  return Boolean(v.readyState>=2&&v.videoWidth&&Number.isFinite(v.duration)&&
+                    Math.abs(v.duration-expectedDurationSeconds)<=Math.max(3,expectedDurationSeconds*.02));
+                },{source:publicSource.source,expectedDurationSeconds});
+                if(!loaded)return false;
+              }catch{return false;}
+            }
+            let next;
+            try{next=await capturePage.evaluate(initializeCapture,{expectedId:id,expectedDurationSeconds,deadlineAt});}
+            catch{return false;}
+            const sameVideo=next.expected_id===id&&Number.isFinite(next.duration_ms)&&
+              Math.abs(next.duration_ms-duration)<=Math.max(3000,duration*.02)&&
+              typeof next.media_url==="string"&&/^https:\/\//i.test(next.media_url);
+            if(!sameVideo)return false;
+            const nextHash=hash(next.media_url),sourceChanged=nextHash!==mediaHash;
+            activeMediaUrl=next.media_url;mediaHash=nextHash;delete next.media_url;
+            await journal({event:"ocr.player_rebound",rebind_count:recoveryState.count+1,capture_mode:captureMode,source_changed:sourceChanged});
+            return true;
           }
         });
         const records=[];let chain="",probeChain="";let checked=0,probeId=0;
