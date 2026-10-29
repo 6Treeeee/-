@@ -171,3 +171,34 @@ test("non-media and rejected HTTP sources report distinct bounded diagnoses", as
   assert.equal(denied.diagnostic.failure_reason, "http_status");
   assert.equal(denied.diagnostic.status, 403);
 });
+
+test("streamable media candidate search is bounded and reports skipped candidates safely", async () => {
+  const video = {
+    aweme_id: "7693868342775532850",
+    acquired_at: new Date().toISOString(),
+    media: {
+      playback: Array.from({ length: 30 }, (_, index) => ({
+        url: "https://video.example.net/candidate-" + index + ".mp4",
+        media_type: "video/mp4"
+      }))
+    }
+  };
+  const resolver = new MediaResolver({
+    maxBytes: 1_048_576,
+    maxStreamBytes: 512 * 1024 * 1024,
+    timeoutMs: 4_000,
+    retries: 0,
+    fetchImpl: async () => new Response(new Uint8Array([0]), {
+      status: 200,
+      headers: { "content-type": "video/mp4", "content-length": "262144000" }
+    })
+  });
+  await assert.rejects(resolver.resolveStreamable(video), (error) => {
+    assert.equal(error.code, "MEDIA_STREAM_UNAVAILABLE");
+    assert.equal(error.details.candidate_search_truncated, true);
+    assert.ok(error.details.candidates_skipped > 0);
+    assert.ok(error.details.attempts.some((item) => item?.candidate_search_truncated === true));
+    assert.doesNotMatch(JSON.stringify(error.details), /https:\/\/video\.example\.net\/candidate-\d+\.mp4/);
+    return true;
+  });
+});
