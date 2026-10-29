@@ -74,7 +74,7 @@ jobs:
         run: node scripts/probe-content-reader-full.mjs 'https://www.douyin.com/video/7688672103729483058'
       - name: Validate acquisition inputs
         id: task
-        if: github.event_name == 'push' || inputs.mode == 'acquisition'
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'acquisition' || github.event_name == 'push' && (github.ref_name != 'codex/content-reader-reliability-20261029' || contains(github.event.head_commit.modified, 'acquisition-request.json') || contains(github.event.head_commit.added, 'acquisition-request.json')) }}
         env:
           INPUT_AWEME_ID: ${{ inputs.aweme_id }}
           INPUT_REQUEST_ID: ${{ inputs.request_id }}
@@ -91,7 +91,7 @@ jobs:
           appendFileSync(process.env.GITHUB_OUTPUT, `aweme_id=${id}\nrequest_id=${request}\n`);
           NODE
       - name: Fresh acquisition and existing OCR
-        if: github.event_name == 'push' || inputs.mode == 'acquisition'
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'acquisition' || github.event_name == 'push' && (github.ref_name != 'codex/content-reader-reliability-20261029' || contains(github.event.head_commit.modified, 'acquisition-request.json') || contains(github.event.head_commit.added, 'acquisition-request.json')) }}
         env:
           ACQUISITION_AWEME_ID: ${{ steps.task.outputs.aweme_id }}
           ACQUISITION_REQUEST_ID: ${{ steps.task.outputs.request_id }}
