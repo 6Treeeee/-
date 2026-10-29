@@ -98,6 +98,35 @@ test('ambiguous errors do not resubmit a video and risk duplicate processing', a
   await assert.rejects(worker.trigger(id), { code: 'GITHUB_WORKER_HTTP_ERROR' });
   assert.equal(writes, 1);
 });
+test('queued GitHub runs tolerate scheduling delay and overlong runs finish as failed', async () => {
+  let now = 1_000_000, stage = 'missing';
+  const request_id = '2bf00ba4-c130-411e-a5be-98d820ef6d17';
+  const worker = new GithubAcquisition({
+    env, now: () => now,
+    fetchImpl: async (url) => {
+      if (!url.includes('/runs?')) throw Error('Unexpected endpoint');
+      return Response.json({ workflow_runs: stage === 'missing' ? [] : [{
+        id: 72, path: '.github/workflows/content-reader-public-browser-probe.yml@codex/content-reader-acquisition',
+        display_title: `acquisition:${request_id}`, head_sha: sha,
+        status: 'in_progress', conclusion: null, run_attempt: 1
+      }] });
+    }
+  });
+  const task = worker.ticket({
+    request_id, aweme_id: id, commit: sha, created: now, exp: now + 24 * 60 * 60_000
+  });
+  now += 3 * 60_000;
+  assert.equal((await worker.poll(task)).status, 'queued');
+  now += 8 * 60_000;
+  await assert.rejects(worker.poll(task), { code: 'WORKER_RUN_NOT_FOUND' });
+  stage = 'running';
+  const result = await worker.poll(task);
+  assert.equal(result.status, 'running');
+  now += 70 * 60_000;
+  const overdue = await worker.poll(task);
+  assert.equal(overdue.status, 'failed');
+  assert.equal(overdue.error.code, 'WORKER_RUN_TIMEOUT');
+});
 test('cached, partial and mismatched transcripts are rejected', () => {
   const task = { request_id: 'test', aweme_id: id };
   for (const mutate of [
