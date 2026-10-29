@@ -58,7 +58,7 @@ jobs:
           cache: npm
       - run: npm ci
       - name: Unit tests
-        run: node --test test/public-browser-runtime.test.js test/douyin-pipeline.test.js test/acquisition-worker.test.js test/hard-subtitle-ocr-player.test.js test/ocr-duration.test.js test/acquisition-result-diagnostics.test.js test/content-reader-reliability.test.js test/content-reader-longmedia-prefetch.test.js
+        run: node --test test/public-browser-runtime.test.js test/douyin-pipeline.test.js test/acquisition-worker.test.js test/hard-subtitle-ocr-player.test.js test/ocr-duration.test.js test/acquisition-result-diagnostics.test.js test/content-reader-reliability.test.js test/content-reader-longmedia-prefetch.test.js test/streaming-whisper.test.js
       - name: Existing fixed baseline probe (manual only)
         if: github.event_name == 'workflow_dispatch' && inputs.mode == 'probe'
         run: node scripts/probe-sparticuz-video.mjs '7688672103729483058'
@@ -90,6 +90,11 @@ jobs:
           if (!/^\d{15,22}$/.test(id ?? '') || !/^[a-f0-9-]{36}$/.test(request ?? '')) throw new Error('Invalid acquisition inputs');
           appendFileSync(process.env.GITHUB_OUTPUT, `aweme_id=${id}\nrequest_id=${request}\n`);
           NODE
+      - name: Verify FFmpeg for bounded range streaming
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'acquisition' || github.event_name == 'push' && (github.ref_name != 'codex/content-reader-reliability-20261029' || contains(github.event.head_commit.modified, 'acquisition-request.json') || contains(github.event.head_commit.added, 'acquisition-request.json')) }}
+        run: |
+          command -v ffmpeg
+          ffmpeg -version | head -n 1
       - name: Fresh acquisition and existing OCR
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'acquisition' || github.event_name == 'push' && (github.ref_name != 'codex/content-reader-reliability-20261029' || contains(github.event.head_commit.modified, 'acquisition-request.json') || contains(github.event.head_commit.added, 'acquisition-request.json')) }}
         env:
