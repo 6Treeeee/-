@@ -1049,7 +1049,7 @@ export class TranscriptionService {
       if (streamed.result) return streamed.result;
     }
 
-    if (streamingPriority) {
+    if (streamingPriority && mediaDuration >= 30 * 60_000) {
       throw new ReaderError("TRANSCRIPTION_UNAVAILABLE", "No complete transcript was produced by the bounded long-video methods.", {
         status: 503,
         details: {
