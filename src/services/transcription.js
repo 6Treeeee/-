@@ -446,12 +446,18 @@ function mediaFailureSummary(error) {
   const rejection_counts = Object.fromEntries(reasons.map(reason =>
     [reason, attempts.filter(item => item?.failure_reason === reason).length]));
   const sizes = attempts.map(item => Number(item?.size)).filter(value => Number.isFinite(value) && value > 0);
+  const candidateLimitRecords = attempts.filter(item => item?.candidate_search_truncated === true);
+  const candidatesSkipped = Number.isSafeInteger(error.details.candidates_skipped)
+    ? error.details.candidates_skipped
+    : candidateLimitRecords.reduce((total, item) => total + (Number.isSafeInteger(item.candidates_skipped) ? item.candidates_skipped : 0), 0);
   return {
-    media_candidates_checked: attempts.filter(item => !item?.refresh).length,
+    media_candidates_checked: attempts.filter(item => !item?.refresh && item?.candidate_search_truncated !== true).length,
     refresh_failure_recorded: attempts.some(item => Boolean(item?.refresh)),
     http_statuses: statuses,
     rejection_counts,
     largest_declared_size_bytes: sizes.length ? Math.max(...sizes) : null,
+    candidate_search_truncated: error.details.candidate_search_truncated === true || candidateLimitRecords.length > 0,
+    candidates_skipped: candidatesSkipped,
     checks_truncated: error.details.checks_truncated === true || error.details.attempts.length > attempts.length
   };
 }
