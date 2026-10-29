@@ -307,7 +307,7 @@ export class MediaResolver {
     maxAgeMs = 10 * 60 * 1000,
     timeoutMs = 30_000,
     maxBytes = 100 * 1024 * 1024,
-    maxStreamBytes = 2 * 1024 * 1024 * 1024,
+    maxStreamBytes = 16 * 1024 * 1024 * 1024,
     retries = 1,
     retryDelayMs = 250,
     now = () => Date.now(),
