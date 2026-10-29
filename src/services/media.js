@@ -295,7 +295,7 @@ export function safeMediaDiagnostic(value, extra = {}) {
     ...(parsed ? { host: parsed.hostname, url_hash: urlHash(parsed.href) } : {}),
     ...(Number.isFinite(extra.status) ? { status: extra.status } : {}),
     ...(Number.isFinite(extra.size) ? { size: extra.size } : {}),
-    ...(["http_status", "oversized", "empty", "non_media", "network_error"]
+    ...(["http_status", "oversized", "empty", "non_media", "network_error", "range_unsupported"]
       .includes(extra.failure_reason) ? { failure_reason: extra.failure_reason } : {})
   };
 }
@@ -307,6 +307,7 @@ export class MediaResolver {
     maxAgeMs = 10 * 60 * 1000,
     timeoutMs = 30_000,
     maxBytes = 100 * 1024 * 1024,
+    maxStreamBytes = 2 * 1024 * 1024 * 1024,
     retries = 1,
     retryDelayMs = 250,
     now = () => Date.now(),
@@ -322,6 +323,8 @@ export class MediaResolver {
     this.maxAgeMs = maxAgeMs;
     this.timeoutMs = timeoutMs;
     this.maxBytes = maxBytes;
+    this.maxStreamBytes = Number.isSafeInteger(maxStreamBytes) && maxStreamBytes >= maxBytes
+      ? maxStreamBytes : maxBytes;
     this.retries = Math.max(0, Math.floor(retries));
     this.retryDelayMs = Math.max(0, retryDelayMs);
     this.now = now;
@@ -359,7 +362,7 @@ export class MediaResolver {
     );
   }
 
-  async _validate(source) {
+  async _validate(source, { maxBytes = this.maxBytes, requireRange = false } = {}) {
     const diagnostic = safeMediaDiagnostic(source);
     try {
       const response = await this._request(source.url, {
@@ -371,15 +374,25 @@ export class MediaResolver {
           Range: "bytes=0-0"
         }
       });
-      const declaredSize = contentRangeSize(response.headers?.get?.("content-range")) ??
+      const contentRange = response.headers?.get?.("content-range");
+      const declaredSize = contentRangeSize(contentRange) ??
         numericHeader(response.headers?.get?.("content-length"));
+      const rangeSupported = response.status === 206 &&
+        /^bytes\s+\d+-\d+\/(?:\d+|\*)$/i.test(String(contentRange ?? ""));
       const resultDiagnostic = safeMediaDiagnostic(source, {
         status: response.status,
         size: declaredSize
       });
 
+      if (requireRange && !rangeSupported) {
+        try { await response.body?.cancel(); } catch { /* already closed */ }
+        return { ok: false, rangeSupported, diagnostic: safeMediaDiagnostic(source, {
+          status: response.status, size: declaredSize, failure_reason: "range_unsupported"
+        }) };
+      }
+
       if (![200, 206].includes(response.status) ||
-          (declaredSize !== null && (declaredSize === 0 || declaredSize > this.maxBytes))) {
+          (declaredSize !== null && (declaredSize === 0 || declaredSize > maxBytes))) {
         try { await response.body?.cancel(); } catch { /* already closed */ }
         const failure_reason = ![200, 206].includes(response.status) ? "http_status" :
           declaredSize === 0 ? "empty" : "oversized";
@@ -418,6 +431,7 @@ export class MediaResolver {
         ok: true,
         mediaType: type,
         size: observedSize,
+        rangeSupported,
         diagnostic: safeMediaDiagnostic(source, { status: response.status, size: observedSize })
       };
     } catch (error) {
@@ -428,10 +442,10 @@ export class MediaResolver {
     }
   }
 
-  async _firstUsable(video, acquiredAt, attempts) {
+  async _firstUsable(video, acquiredAt, attempts, options = {}) {
     const candidates = mediaCandidates(video, acquiredAt);
     for (const candidate of candidates) {
-      const validation = await this._validate(candidate);
+      const validation = await this._validate(candidate, options);
       attempts.push(validation.diagnostic);
       if (validation.ok) {
         return {
@@ -496,6 +510,56 @@ export class MediaResolver {
       details: {
         ...(awemeId ? { aweme_id: String(awemeId) } : {}),
         attempts
+      }
+    });
+  }
+
+  // Streaming workers may process large public media without buffering the full file.
+  // Range support is mandatory so an input seek cannot silently download the whole asset.
+  async resolveStreamable(video) {
+    if (!video || typeof video !== "object") {
+      throw new ReaderError("MEDIA_VIDEO_REQUIRED", "A normalized video object is required.", { status: 400 });
+    }
+    const awemeId = stableVideoId(video);
+    const acquiredAt = acquisitionTime(video);
+    const acquiredMs = timestampMs(acquiredAt);
+    const stale = acquiredMs === null || this.now() - acquiredMs > this.maxAgeMs;
+    const attempts = [];
+    const options = { maxBytes: this.maxStreamBytes, requireRange: true };
+
+    if (!stale) {
+      const current = await this._firstUsable(video, acquiredAt, attempts, options);
+      if (current) return current;
+    }
+
+    if (typeof this.refreshVideo === "function" && awemeId) {
+      try {
+        const refreshedAt = new Date(this.now()).toISOString();
+        const result = refreshedVideo(await this.refreshVideo(String(awemeId), video));
+        if (result && typeof result === "object") {
+          const refreshed = await this._firstUsable(
+            result, acquisitionTime(result) ?? refreshedAt, attempts, options
+          );
+          if (refreshed) return refreshed;
+          attempts.push({ refresh: { code: "MEDIA_REFRESH_NO_STREAMABLE_SOURCE" } });
+        }
+      } catch (error) {
+        if (isTerminalAccessError(error)) throw error;
+        attempts.push({ refresh: safeError(error) });
+      }
+    }
+
+    if (stale) {
+      const current = await this._firstUsable(video, acquiredAt, attempts, options);
+      if (current) return current;
+    }
+
+    throw new ReaderError("MEDIA_STREAM_UNAVAILABLE", "No range-readable public media source was found.", {
+      status: 422,
+      details: {
+        ...(awemeId ? { aweme_id: String(awemeId) } : {}),
+        attempts: attempts.slice(0, 64),
+        checks_truncated: attempts.length > 64
       }
     });
   }
