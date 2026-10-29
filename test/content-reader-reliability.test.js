@@ -112,6 +112,55 @@ test("HTTP 206 with oversized total is diagnosed without downloading its body", 
   assert.ok(!JSON.stringify(result.diagnostic).includes("/media.mp4"));
 });
 
+test("streamable media accepts large assets only when HTTP byte ranges are verified", async () => {
+  const video = {
+    aweme_id: "7693868342775532850",
+    acquired_at: new Date().toISOString(),
+    media: { playback: [{ url: "https://video.example.net/large.mp4", media_type: "video/mp4" }] }
+  };
+  const resolver = new MediaResolver({
+    maxBytes: 1_048_576,
+    maxStreamBytes: 512 * 1024 * 1024,
+    retries: 0,
+    fetchImpl: async (_url, options) => {
+      assert.equal(options.headers.Range, "bytes=0-0");
+      return new Response(new Uint8Array([0]), {
+        status: 206,
+        headers: {
+          "content-type": "video/mp4",
+          "content-range": "bytes 0-0/262144000"
+        }
+      });
+    }
+  });
+  const source = await resolver.resolveStreamable(video);
+  assert.equal(source.size, 262144000);
+  assert.equal(source.diagnostics.status, 206);
+  assert.equal(source.url, "https://video.example.net/large.mp4");
+});
+
+test("streamable media rejects servers that ignore byte-range requests", async () => {
+  const video = {
+    aweme_id: "7693868342775532850",
+    acquired_at: new Date().toISOString(),
+    media: { playback: [{ url: "https://video.example.net/no-range.mp4", media_type: "video/mp4" }] }
+  };
+  const resolver = new MediaResolver({
+    maxBytes: 1_048_576,
+    maxStreamBytes: 512 * 1024 * 1024,
+    retries: 0,
+    fetchImpl: async () => new Response(new Uint8Array([0]), {
+      status: 200,
+      headers: { "content-type": "video/mp4", "content-length": "262144000" }
+    })
+  });
+  await assert.rejects(resolver.resolveStreamable(video), (error) => {
+    assert.equal(error.code, "MEDIA_STREAM_UNAVAILABLE");
+    assert.equal(error.details.attempts[0].failure_reason, "range_unsupported");
+    return true;
+  });
+});
+
 test("non-media and rejected HTTP sources report distinct bounded diagnoses", async () => {
   const nonMedia = await validateWith(new Response("login", {
     status: 206, headers: { "content-type": "text/html", "content-range": "bytes 0-0/5" }
