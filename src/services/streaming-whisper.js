@@ -344,7 +344,7 @@ export function createStreamingWhisperAsr({
         if (error?.code === "LOCAL_ASR_EMPTY_RESULT") return [];
         const remaining = remainingMs(deadlineAt, now);
         if (SPLITTABLE_ASR_CODES.has(error?.code) && depth < 2 &&
-            actualDurationMs > 60_000 && remaining > 120_000) {
+            actualDurationMs > 30_000 && remaining > 120_000) {
           const splitAt = Math.floor(actualDurationMs / 2);
           const subchunks = splitPcm(pcm, splitAt, Math.min(overlapMs, 5_000), sampleRate);
           const first = await transcribePcm(subchunks[0].pcm, subchunks[0].endMs, parentStartMs, chunkIndex, depth + 1);
