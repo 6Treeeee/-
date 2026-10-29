@@ -266,6 +266,21 @@ async function canvasCaptureFrame({ high=false, low=true }) {
   }
 }
 
+// Recovery is deliberately limited to the same verified public page. Never
+// silently rebind a standalone CDN player or bypass a changed video identity.
+export async function recoverChangedOcrPlayer({ capture, assertAccess, rebind, samePage, state, limit = 3 }) {
+  try {
+    return await capture();
+  } catch (error) {
+    if (!samePage || !String(error?.message ?? "").includes("OCR_PLAYER_CHANGED") ||
+        state.count >= limit) throw error;
+    await assertAccess();
+    if (!(await rebind())) throw new Error("OCR_PLAYER_REBIND_INVALID");
+    state.count += 1;
+    return capture();
+  }
+}
+
 export class HardSubtitleOcr {
   constructor({ env=process.env, provider=null, requestId=null, maxDurationMs=DEFAULT_MAX_DURATION_MS } = {}) {
     this.env=env; this.requestId=requestId;
@@ -333,6 +348,21 @@ export class HardSubtitleOcr {
         assertOcrDuration(duration,this.maxDurationMs);
         const mediaHash=hash(playback.media_url); delete playback.media_url;
         await writeFile(join(root,"session.json"),JSON.stringify({run_id:runId,request_id:requestId,aweme_id:id,started_at:startedAt,engine,probe_engine:probeEngine,playback,media_url_sha256:mediaHash,cache_read:false},null,2));
+        const recoveryState={count:0};
+        const seekFrame=async(target)=>recoverChangedOcrPlayer({
+          capture:()=>capturePage.evaluate(seekCaptureFrame,{target,deadlineAt}),
+          samePage:capturePage===accessPage,
+          state:recoveryState,
+          assertAccess:assertCaptureAccess,
+          rebind:async()=>{
+            const next=await capturePage.evaluate(initializeCapture,{expectedId:id,expectedDurationSeconds,deadlineAt});
+            const sameVideo=next.expected_id===id&&next.page_url===playback.page_url&&
+              Number.isFinite(next.duration_ms)&&
+              Math.abs(next.duration_ms-duration)<=Math.max(3000,duration*.02);
+            if(sameVideo)await journal({event:"ocr.player_rebound",rebind_count:recoveryState.count+1});
+            return sameVideo;
+          }
+        });
         const records=[];let chain="",probeChain="";let checked=0,probeId=0;
         let ocrTail=Promise.resolve(),ocrFailure=null,ocrWorkerElapsedMs=0,probeWorkerElapsedMs=0;
         const pendingOcrTasks=[];
@@ -366,7 +396,7 @@ export class HardSubtitleOcr {
           const scores=[];
           for(let target=start;target<=end+.00001;target+=.25){
             if(ocrFailure)throw ocrFailure;
-            const state=await capturePage.evaluate(seekCaptureFrame,{target,deadlineAt});
+            const state=await seekFrame(target);
             const needHigh=Boolean(pendingCapture)||checked===0;
             const canvasFrames=await capturePage.evaluate(canvasCaptureFrame,{high:needHigh,low:true});
             let highBase64=canvasFrames?.high??null;
@@ -396,7 +426,7 @@ export class HardSubtitleOcr {
             await drainOcrBacklog();
           }
           if(end>=duration/1000-.3){
-            const target=duration/1000-.05,frameState=await capturePage.evaluate(seekCaptureFrame,{target,deadlineAt});
+            const target=duration/1000-.05,frameState=await seekFrame(target);
             const canvasFrames=await capturePage.evaluate(canvasCaptureFrame,{high:true,low:false});
             const imageBase64=canvasFrames?.high??Buffer.from(await capturePage.screenshot({type:"jpeg",quality:95,clip:{x:64,y:396,width:1152,height:324},captureBeyondViewport:false})).toString("base64");
             queueOcrFrame({...frameState,score:pendingCapture?.score??null,reason:"end_boundary",image:imageBase64});
