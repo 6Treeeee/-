@@ -25,7 +25,7 @@ test("streaming transcription covers every chunk and emits a verified full-audio
   const extracted = [];
   const transcribed = [];
   const streaming = createStreamingWhisperAsr({
-    chunkDurationMs: 4000, overlapMs: 500, minDurationMs: 0, maxDurationMs: 120_000,
+    chunkDurationMs: 30_000, overlapMs: 5_000, minDurationMs: 0, maxDurationMs: 120_000,
     sampleRate: 1000,
     extractChunkImpl: async ({ startMs, durationMs }) => {
       extracted.push({ startMs, durationMs });
@@ -33,7 +33,7 @@ test("streaming transcription covers every chunk and emits a verified full-audio
     }
   });
   const output = await streaming({
-    video: video(9500), mediaResolver: resolver, deadlineAt: Date.now() + 60_000,
+    video: video(65_000), mediaResolver: resolver, deadlineAt: Date.now() + 60_000,
     localAsr: async ({ video: part }) => {
       transcribed.push(part.duration_ms);
       return resultFor(part, "spoken " + transcribed.length);
@@ -43,10 +43,10 @@ test("streaming transcription covers every chunk and emits a verified full-audio
   assert.equal(transcribed.length, 3);
   assert.equal(output.result.coverage.full_audio_scanned, true);
   assert.equal(output.result.coverage.start_ms, 0);
-  assert.equal(output.result.coverage.end_ms, 9500);
+  assert.equal(output.result.coverage.end_ms, 65_000);
   assert.equal(output.result.coverage.chunk_count, 3);
   assert.equal(output.result.segments[0].start_ms, 0);
-  assert.equal(output.result.segments.at(-1).end_ms, 9000);
+  assert.equal(output.result.segments.at(-1).end_ms, 61_000);
   assert.equal(output.source.diagnostics.status, 206);
 });
 
@@ -54,7 +54,7 @@ test("a transient chunk failure refreshes the public media source and retries on
   let resolves = 0, extracts = 0;
   const resolver = { resolveStreamable: async () => source("https://video.example.net/public-" + (++resolves) + ".mp4") };
   const streaming = createStreamingWhisperAsr({
-    chunkDurationMs: 4000, overlapMs: 500, minDurationMs: 0, maxDurationMs: 120_000,
+    chunkDurationMs: 30_000, overlapMs: 5_000, minDurationMs: 0, maxDurationMs: 120_000,
     sampleRate: 1000,
     extractChunkImpl: async ({ durationMs }) => {
       extracts++;
@@ -63,7 +63,7 @@ test("a transient chunk failure refreshes the public media source and retries on
     }
   });
   const output = await streaming({
-    video: video(4500), mediaResolver: resolver, deadlineAt: Date.now() + 60_000,
+    video: video(35_000), mediaResolver: resolver, deadlineAt: Date.now() + 60_000,
     localAsr: async ({ video: part }) => resultFor(part)
   });
   assert.equal(resolves, 2);
@@ -76,7 +76,7 @@ test("streaming rejects media sources without a validated HTTP range response", 
   const streaming = createStreamingWhisperAsr({ minDurationMs: 0, maxDurationMs: 120_000 });
   await assert.rejects(streaming({
     video: video(5000), mediaResolver: resolver, localAsr: async () => resultFor(video(5000))
-  }), /STREAMING_ASR_SOURCE_UNVERIFIED/);
+  }), (error) => error.code === "STREAMING_ASR_SOURCE_UNVERIFIED");
 });
 
 test("a duration beyond the streaming policy is rejected before any media fetch", async () => {
@@ -86,33 +86,33 @@ test("a duration beyond the streaming policy is rejected before any media fetch"
     video: video(90 * 60_000 + 1),
     mediaResolver: { resolveStreamable: async () => { resolveCalls++; return source(); } },
     localAsr: async () => resultFor(video(90 * 60_000 + 1))
-  }), /STREAMING_ASR_DURATION_UNSUPPORTED/);
+  }), (error) => error.code === "STREAMING_ASR_DURATION_UNSUPPORTED");
   assert.equal(resolveCalls, 0);
 });
 
 test("silent chunks are tolerated, but an all-silent video is not reported as a transcript", async () => {
   const streaming = createStreamingWhisperAsr({
-    chunkDurationMs: 4000, overlapMs: 500, minDurationMs: 0, maxDurationMs: 120_000,
+    chunkDurationMs: 30_000, overlapMs: 5_000, minDurationMs: 0, maxDurationMs: 120_000,
     sampleRate: 1000, extractChunkImpl: async ({ durationMs }) => pcmFor(durationMs)
   });
   await assert.rejects(streaming({
-    video: video(4500), mediaResolver: { resolveStreamable: async () => source() },
+    video: video(35_000), mediaResolver: { resolveStreamable: async () => source() },
     localAsr: async () => { throw Object.assign(new Error("no speech"), { code: "LOCAL_ASR_EMPTY_RESULT" }); }
-  }), /STREAMING_ASR_NO_SPEECH/);
+  }), (error) => error.code === "STREAMING_ASR_NO_SPEECH");
 });
 
 test("a timed-out ASR window is split into smaller bounded windows", async () => {
   let calls = 0;
   const streaming = createStreamingWhisperAsr({
-    chunkDurationMs: 4000, overlapMs: 500, minDurationMs: 0, maxDurationMs: 120_000,
+    chunkDurationMs: 60_000, overlapMs: 5_000, minDurationMs: 0, maxDurationMs: 120_000,
     sampleRate: 1000, extractChunkImpl: async ({ durationMs }) => pcmFor(durationMs)
   });
   const output = await streaming({
-    video: video(4500), mediaResolver: { resolveStreamable: async () => source() },
+    video: video(65_000), mediaResolver: { resolveStreamable: async () => source() },
     deadlineAt: Date.now() + 60_000,
     localAsr: async ({ video: part }) => {
       calls++;
-      if (part.duration_ms > 3000) throw Object.assign(new Error("timeout"), { code: "LOCAL_ASR_TIMEOUT" });
+      if (part.duration_ms > 30_000) throw Object.assign(new Error("timeout"), { code: "LOCAL_ASR_TIMEOUT" });
       return resultFor(part, "speech " + calls);
     }
   });
