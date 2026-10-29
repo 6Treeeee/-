@@ -111,6 +111,7 @@ jobs:
           path: |
             acquisition-output/result.json
             acquisition-output/diagnostics.json
+            acquisition-output/streaming-progress.jsonl
           if-no-files-found: error
           retention-days: 1
 
