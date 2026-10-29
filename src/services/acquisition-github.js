@@ -80,7 +80,13 @@ export class GithubAcquisition {
         "X-GitHub-Api-Version": "2022-11-28", "Content-Type": "application/json" },
       ...(body ? { body: JSON.stringify(body) } : {}), redirect: "manual", signal: AbortSignal.timeout(15_000)
     });
-    if (!response.ok) throw fail("GITHUB_WORKER_HTTP_ERROR", `GitHub worker API returned HTTP ${response.status}.`, response.status === 401 || response.status === 403 ? 503 : 502);
+    if (!response.ok) {
+      const error = fail("GITHUB_WORKER_HTTP_ERROR",
+        `GitHub worker API returned HTTP ${response.status}.`,
+        response.status === 401 || response.status === 403 ? 503 : 502);
+      error.http_status = response.status;
+      throw error;
+    }
     if (response.status === 204) return null;
     return response.json();
   }
@@ -88,14 +94,30 @@ export class GithubAcquisition {
     this.configured();
     if (!/^\d{15,22}$/.test(aweme_id ?? "")) throw fail("INVALID_AWEME_ID", "A numeric public Douyin video ID is required.", 400);
     const created = this.now(), request_id = randomUUID();
-    const prior = await this.api(`contents/${REQUEST_PATH}?ref=${encodeURIComponent(REF)}`);
-    if (!/^[a-f0-9]{40}$/.test(prior?.sha ?? "")) throw fail("WORKER_REQUEST_FILE_MISSING", "Worker request marker is missing.", 502);
-    const changed = await this.api(`contents/${REQUEST_PATH}`, { method: "PUT", body: {
-      message: `acquisition:${request_id}`, branch: REF, sha: prior.sha,
-      content: Buffer.from(JSON.stringify({ request_id, aweme_id })).toString("base64")
-    } });
-    const commit = changed?.commit?.sha;
-    if (!/^[a-f0-9]{40}$/.test(commit ?? "")) throw fail("WORKER_COMMIT_MISSING", "GitHub accepted request without a commit SHA.", 502);
+    let commit = null;
+    // Parallel ChatGPT link submissions can race on the single GitHub marker.
+    // Retry only an explicit 409 stale-SHA conflict with the same request ID.
+    // Never retry permission failures, ambiguous timeouts or successful writes.
+    for (let attempt = 0; attempt < 4; attempt += 1) {
+      const prior = await this.api(`contents/${REQUEST_PATH}?ref=${encodeURIComponent(REF)}`);
+      if (!/^[a-f0-9]{40}$/.test(prior?.sha ?? "")) {
+        throw fail("WORKER_REQUEST_FILE_MISSING", "Worker request marker is missing.", 502);
+      }
+      try {
+        const changed = await this.api(`contents/${REQUEST_PATH}`, { method: "PUT", body: {
+          message: `acquisition:${request_id}`, branch: REF, sha: prior.sha,
+          content: Buffer.from(JSON.stringify({ request_id, aweme_id })).toString("base64")
+        } });
+        commit = changed?.commit?.sha;
+        if (!/^[a-f0-9]{40}$/.test(commit ?? "")) {
+          throw fail("WORKER_COMMIT_MISSING", "GitHub accepted request without a commit SHA.", 502);
+        }
+        break;
+      } catch (error) {
+        if (error?.http_status !== 409 || attempt === 3) throw error;
+        await new Promise((resolve) => setTimeout(resolve, 150 * (attempt + 1)));
+      }
+    }
     const task = { request_id, aweme_id, commit, created, exp: created + 24 * 60 * 60 * 1000 };
     return { status: "queued", request_id, aweme_id, task: this.ticket(task), poll_after_ms: 10_000 };
   }
