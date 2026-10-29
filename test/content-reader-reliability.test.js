@@ -211,19 +211,26 @@ test("streamable media candidate search is bounded and reports skipped candidate
       }))
     }
   };
+  let fetchCount = 0;
   const resolver = new MediaResolver({
     maxBytes: 1_048_576,
     maxStreamBytes: 512 * 1024 * 1024,
     timeoutMs: 4_000,
     retries: 0,
-    fetchImpl: async () => new Response(new Uint8Array([0]), {
-      status: 200,
-      headers: { "content-type": "video/mp4", "content-length": "262144000" }
-    })
+    fetchImpl: async () => {
+      fetchCount++;
+      return new Response(new Uint8Array([0]), {
+        status: 200,
+        headers: { "content-type": "video/mp4", "content-length": "262144000" }
+      });
+    }
   });
   await assert.rejects(resolver.resolveStreamable(video), (error) => {
     assert.equal(error.code, "MEDIA_STREAM_UNAVAILABLE");
-    assert.equal(error.details.candidate_search_truncated, true);
+    assert.equal(error.details.candidate_search_truncated, true, JSON.stringify({
+      fetchCount, skipped: error.details.candidates_skipped, attempts: error.details.attempts.length,
+      lastAttempt: error.details.attempts.at(-1)
+    }));
     assert.ok(error.details.candidates_skipped > 0);
     assert.ok(error.details.attempts.some((item) => item?.candidate_search_truncated === true));
     assert.doesNotMatch(JSON.stringify(error.details), /https:\/\/video\.example\.net\/candidate-\d+\.mp4/);
