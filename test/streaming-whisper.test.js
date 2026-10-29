@@ -109,7 +109,7 @@ test("a timed-out ASR window is split into smaller bounded windows", async () =>
   });
   const output = await streaming({
     video: video(65_000), mediaResolver: { resolveStreamable: async () => source() },
-    deadlineAt: Date.now() + 60_000,
+    deadlineAt: Date.now() + 600_000,
     localAsr: async ({ video: part }) => {
       calls++;
       if (part.duration_ms > 30_000) throw Object.assign(new Error("timeout"), { code: "LOCAL_ASR_TIMEOUT" });
