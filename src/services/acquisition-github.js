@@ -128,12 +128,20 @@ export class GithubAcquisition {
     const run = list.workflow_runs?.find(r => r.path?.split("@")[0] === `.github/workflows/${WORKFLOW}` &&
       r.display_title === `acquisition:${task.request_id}` && r.head_sha === task.commit);
     if (!run) {
-      if (this.now() - task.created > 120_000) throw fail("WORKER_RUN_NOT_FOUND", "Request commit was accepted but matching worker run was not found.", 502);
+      if (this.now() - task.created > 600_000) throw fail("WORKER_RUN_NOT_FOUND", "Request commit was accepted but matching worker run was not found.", 502);
       return { status: "queued", request_id: task.request_id, poll_after_ms: 10_000 };
     }
     const evidence = { request_id: task.request_id, aweme_id: task.aweme_id, run_id: run.id,
       run_url: run.html_url, commit: run.head_sha, run_status: run.status, conclusion: run.conclusion };
-    if (run.status !== "completed") return { status: "running", ...evidence, poll_after_ms: 10_000 };
+    if (run.status !== "completed") {
+      if (this.now() - task.created > 70 * 60_000) {
+        return { status: "failed", ...evidence, error: {
+          code: "WORKER_RUN_TIMEOUT",
+          message: "The requested public video did not finish inside the bounded worker period."
+        } };
+      }
+      return { status: "running", ...evidence, poll_after_ms: 10_000 };
+    }
     const artifacts = await this.api(`actions/runs/${run.id}/artifacts?per_page=100`);
     const artifact = artifacts.artifacts?.find(a => a.name === `acquisition-${task.request_id}` && !a.expired);
     if (!artifact) return { status: "failed", ...evidence, error: { code: "WORKER_RESULT_MISSING", message: "Run completed without a result artifact." } };
