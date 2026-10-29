@@ -90,12 +90,17 @@ jobs:
           if (!/^\d{15,22}$/.test(id ?? '') || !/^[a-f0-9-]{36}$/.test(request ?? '')) throw new Error('Invalid acquisition inputs');
           appendFileSync(process.env.GITHUB_OUTPUT, `aweme_id=${id}\nrequest_id=${request}\n`);
           NODE
-      - name: Verify FFmpeg for bounded range streaming
+      - name: Install and verify FFmpeg for bounded range streaming
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'acquisition' || github.event_name == 'push' && (github.ref_name != 'codex/content-reader-reliability-20261029' || startsWith(github.event.head_commit.message, 'test-reader-run-live-regression')) }}
         run: |
+          if ! command -v ffmpeg >/dev/null 2>&1; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
           command -v ffmpeg
           ffmpeg -version | head -n 1
       - name: Fresh acquisition and existing OCR
+        id: acquire
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'acquisition' || github.event_name == 'push' && (github.ref_name != 'codex/content-reader-reliability-20261029' || startsWith(github.event.head_commit.message, 'test-reader-run-live-regression')) }}
         env:
           ACQUISITION_AWEME_ID: ${{ steps.task.outputs.aweme_id }}
@@ -104,7 +109,7 @@ jobs:
           CONTENT_READER_HARD_SUBTITLES: '1'
         run: node scripts/acquisition-worker.mjs
       - name: Upload full result and evidence
-        if: always() && steps.task.outputs.request_id != ''
+        if: always() && steps.task.outputs.request_id != '' && steps.acquire.outcome != 'skipped'
         uses: actions/upload-artifact@v4
         with:
           name: acquisition-${{ steps.task.outputs.request_id }}
