@@ -63,6 +63,41 @@ test('Preview trigger and poll bind the exact request commit, artifact and full 
   assert.equal(calls.filter(c => c.url.endsWith('/contents/acquisition-request.json')).length, 1);
   await assert.rejects(worker.poll(accepted.task + 'x'), { code: 'INVALID_TASK' });
 });
+test('parallel link submissions recover one stale-SHA GitHub conflict without duplicating request identity', async () => {
+  let reads = 0, writes = 0; const requests = [];
+  const worker = new GithubAcquisition({ env, fetchImpl: async (url, options) => {
+    if (url.includes('/contents/acquisition-request.json?')) {
+      reads++;
+      return Response.json({ sha: String(reads).padStart(40, 'b') });
+    }
+    if (url.endsWith('/contents/acquisition-request.json')) {
+      writes++;
+      const body = JSON.parse(options.body);
+      requests.push(JSON.parse(Buffer.from(body.content, 'base64').toString()));
+      if (writes === 1) return new Response(null, { status: 409 });
+      return Response.json({ commit: { sha } });
+    }
+    throw Error('Unexpected request');
+  } });
+  const task = await worker.trigger(id);
+  assert.equal(task.status, 'queued');
+  assert.equal(task.aweme_id, id);
+  assert.equal(reads, 2);
+  assert.equal(writes, 2);
+  assert.equal(requests[0].request_id, requests[1].request_id);
+  assert.equal(task.request_id, requests[0].request_id);
+  assert.equal(worker.parseTicket(task.task).commit, sha);
+});
+test('ambiguous errors do not resubmit a video and risk duplicate processing', async () => {
+  let writes = 0;
+  const worker = new GithubAcquisition({ env, fetchImpl: async (url) => {
+    if (url.includes('/contents/acquisition-request.json?')) return Response.json({ sha: 'b'.repeat(40) });
+    writes++;
+    return new Response(null, { status: 502 });
+  } });
+  await assert.rejects(worker.trigger(id), { code: 'GITHUB_WORKER_HTTP_ERROR' });
+  assert.equal(writes, 1);
+});
 test('cached, partial and mismatched transcripts are rejected', () => {
   const task = { request_id: 'test', aweme_id: id };
   for (const mutate of [
