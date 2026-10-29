@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { waitForBoundPublicPlayer } from "../src/services/public-player-wait.js";
+import { waitForBoundPublicPlayer, verifiedPublicPlayerDuration } from "../src/services/public-player-wait.js";
 import { visualStepForDuration } from "../src/services/hard-subtitle-ocr.js";
 
 test("late public player gets one bounded wait without changing video identity", async () => {
@@ -51,4 +51,55 @@ test("OCR sampling cadence adapts to duration while keeping the final sample den
   assert.equal(visualStepForDuration(90 * 60_000), 750);
   assert.equal(visualStepForDuration(90 * 60_000 + 1), 1000);
   assert.equal(visualStepForDuration(120 * 60_000), 1000);
+});
+
+test("missing metadata recovers exactly one verified player duration", async () => {
+  let checked = 0;
+  const page = { evaluate: async () => ({ status: "ready", duration_ms: 1_467_000 }) };
+  const duration = await verifiedPublicPlayerDuration({
+    page, assertAccess: async () => { checked++; },
+    deadlineAt: Date.now() + 30_000
+  });
+  assert.equal(duration, 1467);
+  assert.equal(checked, 2);
+});
+
+test("untrusted or ambiguous player durations are never accepted", async () => {
+  await assert.rejects(
+    verifiedPublicPlayerDuration({
+      page: { evaluate: async () => ({ status: "ready", duration_ms: 220_000 }) },
+      assertAccess: async () => { throw new Error("DOUYIN_PUBLIC_WEB_IDENTITY_MISMATCH"); },
+      deadlineAt: Date.now() + 30_000
+    }), /DOUYIN_PUBLIC_WEB_IDENTITY_MISMATCH/
+  );
+  await assert.rejects(
+    verifiedPublicPlayerDuration({
+      page: { evaluate: async () => ({ status: "ambiguous", candidates: 3 }) },
+      assertAccess: async () => {},
+      deadlineAt: Date.now() + 30_000
+    }), { code: "OCR_PLAYER_DURATION_AMBIGUOUS" }
+  );
+  await assert.rejects(
+    verifiedPublicPlayerDuration({
+      page: { evaluate: async () => ({ status: "ready", duration_ms: 7_200_001 }) },
+      assertAccess: async () => {},
+      deadlineAt: Date.now() + 30_000
+    }), { code: "OCR_DURATION_UNSUPPORTED" }
+  );
+});
+
+test("duration recovery rechecks page identity after the player becomes available", async () => {
+  let checks = 0;
+  const page = {
+    evaluate: async () => ++checks === 1
+      ? { status: "unavailable" } : { status: "ready", duration_ms: 441_000 },
+    waitForFunction: async () => true
+  };
+  let identities = 0;
+  const duration = await verifiedPublicPlayerDuration({
+    page, assertAccess: async () => { identities++; },
+    deadlineAt: Date.now() + 30_000
+  });
+  assert.equal(duration, 441);
+  assert.equal(identities, 2);
 });
