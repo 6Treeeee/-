@@ -43,6 +43,7 @@ const streamingWhisper = createStreamingWhisperAsr({
         completed_chunks: event.completed_chunks,
         total_chunks: event.total_chunks,
         chunk_index: event.chunk_index,
+        video_duration_ms: event.video_duration_ms,
         segment_count: event.segment_count
       }));
     }
