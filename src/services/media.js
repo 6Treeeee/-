@@ -541,9 +541,9 @@ export class MediaResolver {
     const options = {
       maxBytes: this.maxStreamBytes,
       requireRange: true,
-      timeoutMs: Math.min(this.timeoutMs, 4_000),
+      timeoutMs: Math.min(this.timeoutMs, 3_000),
       retries: 0,
-      maxCandidates: 24
+      maxCandidates: 64
     };
 
     if (!stale) {
