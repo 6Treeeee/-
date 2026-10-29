@@ -452,6 +452,8 @@ export class MediaResolver {
           ...candidate,
           mediaType: validation.mediaType,
           media_type: validation.mediaType,
+          size: validation.size,
+          range_supported: validation.rangeSupported === true,
           acquired_at: candidate.acquired_at ?? new Date(this.now()).toISOString(),
           validated_at: new Date(this.now()).toISOString(),
           diagnostics: validation.diagnostic
