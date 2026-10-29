@@ -294,7 +294,9 @@ export function safeMediaDiagnostic(value, extra = {}) {
   return {
     ...(parsed ? { host: parsed.hostname, url_hash: urlHash(parsed.href) } : {}),
     ...(Number.isFinite(extra.status) ? { status: extra.status } : {}),
-    ...(Number.isFinite(extra.size) ? { size: extra.size } : {})
+    ...(Number.isFinite(extra.size) ? { size: extra.size } : {}),
+    ...(["http_status", "oversized", "empty", "non_media", "network_error"]
+      .includes(extra.failure_reason) ? { failure_reason: extra.failure_reason } : {})
   };
 }
 
@@ -379,13 +381,19 @@ export class MediaResolver {
       if (![200, 206].includes(response.status) ||
           (declaredSize !== null && (declaredSize === 0 || declaredSize > this.maxBytes))) {
         try { await response.body?.cancel(); } catch { /* already closed */ }
-        return { ok: false, diagnostic: resultDiagnostic };
+        const failure_reason = ![200, 206].includes(response.status) ? "http_status" :
+          declaredSize === 0 ? "empty" : "oversized";
+        return { ok: false, diagnostic: safeMediaDiagnostic(source, {
+          status: response.status, size: declaredSize, failure_reason
+        }) };
       }
 
       const type = mediaTypeFor(source, response);
       if (isClearlyNotMedia(type)) {
         try { await response.body?.cancel(); } catch { /* already closed */ }
-        return { ok: false, diagnostic: resultDiagnostic };
+        return { ok: false, diagnostic: safeMediaDiagnostic(source, {
+          status: response.status, size: declaredSize, failure_reason: "non_media"
+        }) };
       }
 
       let observedSize = declaredSize;
@@ -403,7 +411,9 @@ export class MediaResolver {
         if (observedSize === null) observedSize = bytes.byteLength;
       }
 
-      if (!observedSize) return { ok: false, diagnostic: resultDiagnostic };
+      if (!observedSize) return { ok: false, diagnostic: safeMediaDiagnostic(source, {
+        status: response.status, size: declaredSize, failure_reason: "empty"
+      }) };
       return {
         ok: true,
         mediaType: type,
@@ -413,7 +423,7 @@ export class MediaResolver {
     } catch (error) {
       return {
         ok: false,
-        diagnostic: { ...diagnostic, error: safeError(error) }
+        diagnostic: { ...diagnostic, failure_reason: "network_error", error: safeError(error) }
       };
     }
   }
