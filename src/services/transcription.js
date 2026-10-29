@@ -1,6 +1,7 @@
 import { createGateway } from "@ai-sdk/gateway";
 
 import { ReaderError } from "../errors.js";
+import { visualStepForDuration } from "./hard-subtitle-ocr.js";
 import { extractMp4Audio } from "./audio-extraction.js";
 import { MediaResolver, safeMediaDiagnostic } from "./media.js";
 import { isTerminalAccessError } from "./provider-chain.js";
@@ -1024,7 +1025,8 @@ export class TranscriptionService {
     const ocrAttempts = [];
     const remainingBeforeOcr = this.requestDeadlineAt ? this.requestDeadlineAt - Date.now() : Number.POSITIVE_INFINITY;
     const estimatedOcrMs = Number.isFinite(mediaDuration)
-      ? mediaDuration * OCR_ESTIMATED_RATIO + OCR_ESTIMATED_FIXED_MS : 0;
+      ? mediaDuration * OCR_ESTIMATED_RATIO * 250 / visualStepForDuration(mediaDuration) + OCR_ESTIMATED_FIXED_MS
+      : 0;
     const canFinishOcr = !this.requestDeadlineAt || remainingBeforeOcr >= estimatedOcrMs + 30_000;
     const ocrSkippedReason = streamingPriority && !canFinishOcr
       ? "insufficient_remaining_budget_for_full_video_ocr" : null;
