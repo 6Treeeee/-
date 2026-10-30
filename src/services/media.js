@@ -294,7 +294,9 @@ export function safeMediaDiagnostic(value, extra = {}) {
   return {
     ...(parsed ? { host: parsed.hostname, url_hash: urlHash(parsed.href) } : {}),
     ...(Number.isFinite(extra.status) ? { status: extra.status } : {}),
-    ...(Number.isFinite(extra.size) ? { size: extra.size } : {})
+    ...(Number.isFinite(extra.size) ? { size: extra.size } : {}),
+    ...(["http_status", "oversized", "empty", "non_media", "network_error", "range_unsupported", "insecure_scheme"]
+      .includes(extra.failure_reason) ? { failure_reason: extra.failure_reason } : {})
   };
 }
 
@@ -305,6 +307,7 @@ export class MediaResolver {
     maxAgeMs = 10 * 60 * 1000,
     timeoutMs = 30_000,
     maxBytes = 100 * 1024 * 1024,
+    maxStreamBytes = 16 * 1024 * 1024 * 1024,
     retries = 1,
     retryDelayMs = 250,
     now = () => Date.now(),
@@ -320,20 +323,22 @@ export class MediaResolver {
     this.maxAgeMs = maxAgeMs;
     this.timeoutMs = timeoutMs;
     this.maxBytes = maxBytes;
+    this.maxStreamBytes = Number.isSafeInteger(maxStreamBytes) && maxStreamBytes >= maxBytes
+      ? maxStreamBytes : maxBytes;
     this.retries = Math.max(0, Math.floor(retries));
     this.retryDelayMs = Math.max(0, retryDelayMs);
     this.now = now;
     this.sleepImpl = sleepImpl;
   }
 
-  async _request(url, options = {}) {
+  async _request(url, options = {}, { timeoutMs = this.timeoutMs, retries = this.retries } = {}) {
     let lastError;
-    for (let attempt = 0; attempt <= this.retries; attempt += 1) {
+    for (let attempt = 0; attempt <= retries; attempt += 1) {
       const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), this.timeoutMs);
+      const timer = setTimeout(() => controller.abort(), timeoutMs);
       try {
         const response = await this.fetchImpl(url, { ...options, signal: controller.signal });
-        if (attempt < this.retries && TRANSIENT_HTTP_STATUS.has(response.status)) {
+        if (attempt < retries && TRANSIENT_HTTP_STATUS.has(response.status)) {
           try { await response.body?.cancel(); } catch { /* already closed */ }
           await this.sleepImpl(this.retryDelayMs * (attempt + 1));
           continue;
@@ -341,7 +346,7 @@ export class MediaResolver {
         return response;
       } catch (error) {
         lastError = error;
-        if (attempt < this.retries) {
+        if (attempt < retries) {
           await this.sleepImpl(this.retryDelayMs * (attempt + 1));
           continue;
         }
@@ -357,8 +362,12 @@ export class MediaResolver {
     );
   }
 
-  async _validate(source) {
+  async _validate(source, { maxBytes = this.maxBytes, requireRange = false, requireHttps = false, timeoutMs = this.timeoutMs } = {}) {
     const diagnostic = safeMediaDiagnostic(source);
+    const parsedSource = asPublicHttpUrl(source?.url);
+    if (requireHttps && parsedSource?.protocol !== "https:") {
+      return { ok: false, diagnostic: safeMediaDiagnostic(source, { failure_reason: "insecure_scheme" }) };
+    }
     try {
       const response = await this._request(source.url, {
         method: "GET",
@@ -368,24 +377,40 @@ export class MediaResolver {
           ...source.headers,
           Range: "bytes=0-0"
         }
-      });
-      const declaredSize = contentRangeSize(response.headers?.get?.("content-range")) ??
+      }, { timeoutMs, retries: requireRange ? 0 : this.retries });
+      const contentRange = response.headers?.get?.("content-range");
+      const declaredSize = contentRangeSize(contentRange) ??
         numericHeader(response.headers?.get?.("content-length"));
+      const rangeSupported = response.status === 206 &&
+        /^bytes\s+\d+-\d+\/(?:\d+|\*)$/i.test(String(contentRange ?? ""));
       const resultDiagnostic = safeMediaDiagnostic(source, {
         status: response.status,
         size: declaredSize
       });
 
-      if (![200, 206].includes(response.status) ||
-          (declaredSize !== null && (declaredSize === 0 || declaredSize > this.maxBytes))) {
+      if (requireRange && !rangeSupported) {
         try { await response.body?.cancel(); } catch { /* already closed */ }
-        return { ok: false, diagnostic: resultDiagnostic };
+        return { ok: false, rangeSupported, diagnostic: safeMediaDiagnostic(source, {
+          status: response.status, size: declaredSize, failure_reason: "range_unsupported"
+        }) };
+      }
+
+      if (![200, 206].includes(response.status) ||
+          (declaredSize !== null && (declaredSize === 0 || declaredSize > maxBytes))) {
+        try { await response.body?.cancel(); } catch { /* already closed */ }
+        const failure_reason = ![200, 206].includes(response.status) ? "http_status" :
+          declaredSize === 0 ? "empty" : "oversized";
+        return { ok: false, diagnostic: safeMediaDiagnostic(source, {
+          status: response.status, size: declaredSize, failure_reason
+        }) };
       }
 
       const type = mediaTypeFor(source, response);
       if (isClearlyNotMedia(type)) {
         try { await response.body?.cancel(); } catch { /* already closed */ }
-        return { ok: false, diagnostic: resultDiagnostic };
+        return { ok: false, diagnostic: safeMediaDiagnostic(source, {
+          status: response.status, size: declaredSize, failure_reason: "non_media"
+        }) };
       }
 
       let observedSize = declaredSize;
@@ -403,36 +428,52 @@ export class MediaResolver {
         if (observedSize === null) observedSize = bytes.byteLength;
       }
 
-      if (!observedSize) return { ok: false, diagnostic: resultDiagnostic };
+      if (!observedSize) return { ok: false, diagnostic: safeMediaDiagnostic(source, {
+        status: response.status, size: declaredSize, failure_reason: "empty"
+      }) };
       return {
         ok: true,
         mediaType: type,
         size: observedSize,
+        rangeSupported,
         diagnostic: safeMediaDiagnostic(source, { status: response.status, size: observedSize })
       };
     } catch (error) {
       return {
         ok: false,
-        diagnostic: { ...diagnostic, error: safeError(error) }
+        diagnostic: { ...diagnostic, failure_reason: "network_error", error: safeError(error) }
       };
     }
   }
 
-  async _firstUsable(video, acquiredAt, attempts) {
-    const candidates = mediaCandidates(video, acquiredAt);
+  async _firstUsable(video, acquiredAt, attempts, options = {}) {
+    const allCandidates = mediaCandidates(video, acquiredAt);
+    const maxCandidates = Number.isSafeInteger(options.maxCandidates) && options.maxCandidates > 0
+      ? options.maxCandidates : allCandidates.length;
+    const candidates = allCandidates.slice(0, maxCandidates);
     for (const candidate of candidates) {
-      const validation = await this._validate(candidate);
+      const validation = await this._validate(candidate, options);
       attempts.push(validation.diagnostic);
       if (validation.ok) {
         return {
           ...candidate,
           mediaType: validation.mediaType,
           media_type: validation.mediaType,
+          size: validation.size,
+          range_supported: validation.rangeSupported === true,
           acquired_at: candidate.acquired_at ?? new Date(this.now()).toISOString(),
           validated_at: new Date(this.now()).toISOString(),
           diagnostics: validation.diagnostic
         };
       }
+    }
+    if (allCandidates.length > candidates.length) {
+      attempts.push({
+        candidate_search_truncated: true,
+        candidates_available: allCandidates.length,
+        candidates_checked_limit: candidates.length,
+        candidates_skipped: allCandidates.length - candidates.length
+      });
     }
     return null;
   }
@@ -486,6 +527,65 @@ export class MediaResolver {
       details: {
         ...(awemeId ? { aweme_id: String(awemeId) } : {}),
         attempts
+      }
+    });
+  }
+
+  // Streaming workers may process large public media without buffering the full file.
+  // Range support is mandatory so an input seek cannot silently download the whole asset.
+  async resolveStreamable(video) {
+    if (!video || typeof video !== "object") {
+      throw new ReaderError("MEDIA_VIDEO_REQUIRED", "A normalized video object is required.", { status: 400 });
+    }
+    const awemeId = stableVideoId(video);
+    const acquiredAt = acquisitionTime(video);
+    const acquiredMs = timestampMs(acquiredAt);
+    const stale = acquiredMs === null || this.now() - acquiredMs > this.maxAgeMs;
+    const attempts = [];
+    const options = {
+      maxBytes: this.maxStreamBytes,
+      requireRange: true,
+      requireHttps: true,
+      timeoutMs: Math.min(this.timeoutMs, 3_000),
+      retries: 0,
+      maxCandidates: 64
+    };
+
+    if (!stale) {
+      const current = await this._firstUsable(video, acquiredAt, attempts, options);
+      if (current) return current;
+    }
+
+    if (typeof this.refreshVideo === "function" && awemeId) {
+      try {
+        const refreshedAt = new Date(this.now()).toISOString();
+        const result = refreshedVideo(await this.refreshVideo(String(awemeId), video));
+        if (result && typeof result === "object") {
+          const refreshed = await this._firstUsable(
+            result, acquisitionTime(result) ?? refreshedAt, attempts, options
+          );
+          if (refreshed) return refreshed;
+          attempts.push({ refresh: { code: "MEDIA_REFRESH_NO_STREAMABLE_SOURCE" } });
+        }
+      } catch (error) {
+        if (isTerminalAccessError(error)) throw error;
+        attempts.push({ refresh: safeError(error) });
+      }
+    }
+
+    if (stale) {
+      const current = await this._firstUsable(video, acquiredAt, attempts, options);
+      if (current) return current;
+    }
+
+    throw new ReaderError("MEDIA_STREAM_UNAVAILABLE", "No range-readable public media source was found.", {
+      status: 422,
+      details: {
+        ...(awemeId ? { aweme_id: String(awemeId) } : {}),
+        attempts: attempts.slice(0, 64),
+        candidate_search_truncated: attempts.some((item) => item?.candidate_search_truncated === true),
+        candidates_skipped: attempts.reduce((total, item) => total + (Number.isSafeInteger(item?.candidates_skipped) ? item.candidates_skipped : 0), 0),
+        checks_truncated: attempts.length > 64
       }
     });
   }

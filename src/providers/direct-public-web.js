@@ -769,6 +769,13 @@ async function fetchPublicVideoDetail(page, awemeId, {
       try {
         const endpoint = new URL("/aweme/v1/web/aweme/detail/", current.origin);
         endpoint.searchParams.set("aweme_id", id);
+        // Use the public website's documented client context only.
+        // No login cookies, reverse-engineered signatures or CAPTCHA bypass.
+        endpoint.searchParams.set("device_platform", "webapp");
+        endpoint.searchParams.set("aid", "6383");
+        endpoint.searchParams.set("channel", "channel_pc_web");
+        endpoint.searchParams.set("request_source", "600");
+        endpoint.searchParams.set("origin_type", "quick_player");
         const response = await fetch(endpoint, {
           method: "GET",
           credentials: "same-origin",
@@ -837,6 +844,85 @@ async function responseStatusErrorWithAccess(page, response, target) {
     return accessError(await pageAccessSnapshot(page), { hasPublicContent: false }) ?? statusError;
   } catch {
     return statusError;
+  }
+}
+
+// Last-resort, no-cookie public detail lookup for a correctly identified
+// video when both public browser routes redirect to unrelated feed content.
+// Fixed HTTPS origin; bounded response; never follows redirects or challenges.
+async function fetchAnonymousPublicDetail(awemeId, fetchImpl, timeoutMs = 8_000, report = () => {}) {
+  if (!/^\d{15,22}$/.test(String(awemeId ?? "")) || typeof fetchImpl !== "function") return null;
+  const endpoint = new URL("https://www.douyin.com/aweme/v1/web/aweme/detail/");
+  endpoint.searchParams.set("aweme_id", String(awemeId));
+  endpoint.searchParams.set("device_platform", "webapp");
+  endpoint.searchParams.set("aid", "6383");
+  endpoint.searchParams.set("channel", "channel_pc_web");
+  endpoint.searchParams.set("request_source", "600");
+  endpoint.searchParams.set("origin_type", "quick_player");
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetchImpl(endpoint.href, {
+      method: "GET",
+      redirect: "error",
+      headers: { Accept: "application/json" },
+      credentials: "omit",
+      signal: controller.signal
+    });
+    if (response.status !== 200 || !/json/i.test(response.headers?.get?.("content-type") ?? "")) {
+      report({ phase: "http_rejected", http_status: response.status,
+        json_content_type: /json/i.test(response.headers?.get?.("content-type") ?? "") });
+      try { await response.body?.cancel?.(); } catch {}
+      return null;
+    }
+    const maxBytes = 2_000_000;
+    const declared = Number(response.headers?.get?.("content-length"));
+    if (Number.isFinite(declared) && declared > maxBytes) {
+      report({ phase: "oversized" });
+      try { await response.body?.cancel?.(); } catch {}
+      return null;
+    }
+    let bytes = 0; const chunks = [];
+    const reader = response.body?.getReader?.();
+    if (!reader) return null;
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      bytes += value.byteLength;
+      if (bytes > maxBytes) {
+        report({ phase: "oversized" });
+        await reader.cancel().catch(() => {});
+        return null;
+      }
+      chunks.push(value);
+    }
+    const buffer = new Uint8Array(bytes);
+    let offset = 0;
+    for (const chunk of chunks) { buffer.set(chunk, offset); offset += chunk.length; }
+    let payload;
+    try { payload = JSON.parse(new TextDecoder().decode(buffer)); }
+    catch { report({ phase: "non_json" }); return null; }
+    const signals = readAccessSignals(payload);
+    if (signals.loginRequired || signals.securityChallenge || signals.privateContent || signals.unavailable) {
+      report({ phase: "access_restricted" });
+      return null;
+    }
+    const aweme = extractAweme(payload);
+    if (postIdentity(aweme) !== String(awemeId)) {
+      report({ phase: "identity_unverified" });
+      return null;
+    }
+    if (embeddedAwemeMediaUrls(aweme).length === 0) {
+      report({ phase: "no_public_media" });
+      return null;
+    }
+    report({ phase: "verified" });
+    return aweme;
+  } catch (error) {
+    report({ phase: "network_failed", cause_code: error?.name === "AbortError" ? "TIMEOUT" : "FETCH_FAILED" });
+    return null;
+  } finally {
+    clearTimeout(timer);
   }
 }
 
@@ -1054,6 +1140,8 @@ export class DirectPublicWebProvider {
     browserService,
     retries = 2,
     retryDelayMs = 350,
+    anonymousDetailFallback = false,
+    fetchImpl = globalThis.fetch,
     contentWaitMs = 22_000,
     videoContentWaitMs = contentWaitMs,
     videoNavigationTimeoutMs = null,
@@ -1068,6 +1156,8 @@ export class DirectPublicWebProvider {
     this.browser = browserService ?? new PublicBrowserService();
     this.retries = Math.max(0, retries);
     this.retryDelayMs = retryDelayMs;
+    this.anonymousDetailFallback = anonymousDetailFallback === true;
+    this.fetchImpl = fetchImpl;
     this.contentWaitMs = contentWaitMs;
     this.videoContentWaitMs = Math.max(0, Number(videoContentWaitMs));
     this.videoNavigationTimeoutMs = videoNavigationTimeoutMs !== null &&
@@ -1176,7 +1266,8 @@ export class DirectPublicWebProvider {
 
   async readVideo({ inputUrl, resolvedUrl, awemeId, consumeVideo = null } = {}) {
     const selected = videoTarget({ inputUrl, resolvedUrl, awemeId });
-    return this.runWithRetry((attempt, target) => this.browser.withPage(async ({ page, runtime }) => {
+    try {
+      return await this.runWithRetry((attempt, target) => this.browser.withPage(async ({ page, runtime }) => {
       const capture = createCapture({ expectedAwemeId: selected.awemeId });
       capture.attach(page);
       const acquiredAt = new Date().toISOString();
@@ -1302,9 +1393,14 @@ export class DirectPublicWebProvider {
         const preliminaryConflict = pageUrlMismatch || canonicalMismatch || hydrationMismatch ||
           capture.state.mismatchedAwemeIds.length > 0;
         const preliminaryMediaUrls = preliminaryConflict ? [] : rawObservedMediaUrls;
+        // A redirected player must never be consumed as the requested video.
+        // Only an independent public detail response with the exact aweme_id can
+        // enable a metadata-only fallback; wrong-page media remains discarded.
+        let verifiedRecoveryDetail = null;
         const needsExplicitDetail = selected.awemeId && (
-          ((pageUrlMismatch || canonicalMismatch) && !capture.state.aweme &&
-            !(rawHydration && hydrationId === selected.awemeId)) ||
+          // A wrong page must prove the original video's identity again even
+          // when its network payload happens to contain a matching item.
+          pageUrlMismatch || canonicalMismatch ||
           (embeddedAwemeMediaUrls(preliminaryAweme).length === 0 && preliminaryMediaUrls.length === 0)
         );
         if (needsExplicitDetail) {
@@ -1320,6 +1416,7 @@ export class DirectPublicWebProvider {
               const refreshedId = postIdentity(refreshedAweme);
               if (refreshedAweme && refreshedId === selected.awemeId) {
                 capture.state.aweme = refreshedAweme;
+                verifiedRecoveryDetail = refreshedAweme;
               } else if (refreshedAweme &&
                   !capture.state.mismatchedAwemeIds.includes(refreshedId ?? null)) {
                 capture.state.mismatchedAwemeIds.push(refreshedId ?? null);
@@ -1334,12 +1431,12 @@ export class DirectPublicWebProvider {
           const accessFailure = capturedAccessFailure();
           if (accessFailure) throw accessFailure;
         }
-        if (pageUrlMismatch && !capture.state.aweme &&
-            !(rawHydration && hydrationId === selected.awemeId)) {
-          throw identityMismatchError(target, selected.awemeId, finalUrlId, "page_url");
-        }
-        if (canonicalMismatch && !capture.state.aweme) {
-          throw identityMismatchError(target, selected.awemeId, canonicalPageId, "canonical");
+        if ((pageUrlMismatch || canonicalMismatch) && !verifiedRecoveryDetail) {
+          throw identityMismatchError(
+            target, selected.awemeId,
+            pageUrlMismatch ? finalUrlId : canonicalPageId,
+            pageUrlMismatch ? "page_url" : "canonical"
+          );
         }
         if (hydrationMismatch && !capture.state.aweme) {
           throw identityMismatchError(target, selected.awemeId, hydrationId, "hydration");
@@ -1384,8 +1481,14 @@ export class DirectPublicWebProvider {
           );
         }
 
+        const safeMetadataOnlyRecovery = Boolean(
+          (pageUrlMismatch || canonicalMismatch) &&
+          verifiedRecoveryDetail &&
+          embeddedAwemeMediaUrls(verifiedRecoveryDetail).length > 0 &&
+          postIdentity(verifiedRecoveryDetail) === selected.awemeId
+        );
         let consumed;
-        if (typeof consumeVideo === "function") {
+        if (typeof consumeVideo === "function" && !safeMetadataOnlyRecovery) {
           try {
             consumed = await consumeVideo({
               page, runtime, aweme,
@@ -1429,7 +1532,8 @@ export class DirectPublicWebProvider {
               source: capture.state.aweme
                 ? "public_detail"
                 : hydration ? "hydration" : "page_metadata",
-              page_url_mismatch_recovered: pageUrlMismatch
+              page_url_mismatch_recovered: pageUrlMismatch,
+              metadata_only_recovery: safeMetadataOnlyRecovery
             },
             page: {
               title: dom.title,
@@ -1445,6 +1549,37 @@ export class DirectPublicWebProvider {
     }), (attempt) => attempt === this.retries && attempt > 0 && selected.retryTarget
       ? selected.retryTarget
       : selected.target);
+    } catch (error) {
+      if (!this.anonymousDetailFallback ||
+          error?.code !== "DOUYIN_PUBLIC_WEB_IDENTITY_MISMATCH" ||
+          !selected.awemeId) throw error;
+      const aweme = await fetchAnonymousPublicDetail(selected.awemeId, this.fetchImpl, 8_000, (diagnostic) => {
+        console.info(JSON.stringify({
+          event: "public_detail_fallback",
+          aweme_id: selected.awemeId,
+          ...diagnostic
+        }));
+      });
+      if (!aweme) throw error;
+      // Preserve original video identity and media; never expose or read the
+      // redirected page's currentSrc, captions or video player.
+      return {
+        aweme,
+        networkMediaUrls: [],
+        meta: {
+          provider: PROVIDER,
+          method: "public_anonymous_detail_fallback",
+          acquired_at: new Date().toISOString(),
+          target: targetDiagnostic(selected.target),
+          identity: {
+            expected_aweme_id: selected.awemeId,
+            observed_aweme_id: postIdentity(aweme),
+            source: "anonymous_exact_id_public_detail",
+            metadata_only_recovery: true
+          }
+        }
+      };
+    }
   }
 
   async readProfile({ inputUrl, resolvedUrl, secUserId } = {}) {

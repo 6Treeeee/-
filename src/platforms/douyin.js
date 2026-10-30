@@ -234,6 +234,7 @@ export class DouyinReader {
     vercelOidcToken = process.env.VERCEL_OIDC_TOKEN,
     localAsr = null,
     hardSubtitleOcr = null,
+    streamingAsr = null,
     requestId = null,
     requestDeadlineAt = null,
     processContent,
@@ -278,6 +279,7 @@ export class DouyinReader {
       vercelOidcToken,
       localAsr,
       hardSubtitleOcr,
+      streamingAsr,
       requestId,
       requestDeadlineAt,
       profileConcurrency
