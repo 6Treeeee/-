@@ -4,6 +4,12 @@ import { verifyAcquisitionResult } from "./acquisition-result.js";
 
 const REPO = "6Treeeee/-";
 const REF = "codex/content-reader-acquisition";
+const RELIABILITY_REF = "codex/content-reader-reliability-20261029";
+function acquisitionRef(env) {
+  const ref = env.CONTENT_READER_ACQUISITION_REF || REF;
+  if (ref !== REF && ref !== RELIABILITY_REF) throw fail("WORKER_REF_NOT_ALLOWED", "Worker branch is not allowlisted.", 503);
+  return ref;
+}
 const REQUEST_PATH = "acquisition-request.json";
 const WORKFLOW = "content-reader-public-browser-probe.yml";
 const MAX_BYTES = 4 * 1024 * 1024;
@@ -16,7 +22,7 @@ export function workerConfiguration(env = process.env) {
   return { preview_only: true, enabled: env.VERCEL_ENV === "preview",
     github_configured: Boolean(env.ACQUISITION_GITHUB_TOKEN),
     api_auth_configured: (env.CONTENT_READER_WORKER_API_KEY ?? "").length >= 32,
-    repository: REPO, ref: REF, workflow: WORKFLOW };
+    repository: REPO, ref: acquisitionRef(env), workflow: WORKFLOW };
 }
 // No files are extracted. Only the bounded result.json member is read.
 export function readResultZip(bytes) {
@@ -54,6 +60,7 @@ export class GithubAcquisition {
     this.env = env; this.fetch = fetchImpl; this.now = now;
     this.token = env.ACQUISITION_GITHUB_TOKEN;
     this.key = env.CONTENT_READER_WORKER_API_KEY;
+    this.ref = acquisitionRef(env);
   }
   configured() {
     const c = workerConfiguration(this.env);
@@ -69,7 +76,8 @@ export class GithubAcquisition {
     let task;
     try { task = JSON.parse(Buffer.from(body, "base64url").toString()); } catch { throw fail("INVALID_TASK", "Invalid task ticket.", 400); }
     if (!/^[a-f0-9-]{36}$/.test(task.request_id ?? "") || !/^\d{15,22}$/.test(task.aweme_id ?? "") ||
-        task.exp < this.now() || task.created > this.now() || !/^[a-f0-9]{40}$/.test(task.commit ?? "")) {
+        task.exp < this.now() || task.created > this.now() || !/^[a-f0-9]{40}$/.test(task.commit ?? "") ||
+        (task.ref !== undefined && task.ref !== REF && task.ref !== RELIABILITY_REF)) {
       throw fail("INVALID_TASK", "Invalid or expired task.", 400);
     }
     return task;
@@ -99,13 +107,13 @@ export class GithubAcquisition {
     // Retry only an explicit 409 stale-SHA conflict with the same request ID.
     // Never retry permission failures, ambiguous timeouts or successful writes.
     for (let attempt = 0; attempt < 4; attempt += 1) {
-      const prior = await this.api(`contents/${REQUEST_PATH}?ref=${encodeURIComponent(REF)}`);
+      const prior = await this.api(`contents/${REQUEST_PATH}?ref=${encodeURIComponent(this.ref)}`);
       if (!/^[a-f0-9]{40}$/.test(prior?.sha ?? "")) {
         throw fail("WORKER_REQUEST_FILE_MISSING", "Worker request marker is missing.", 502);
       }
       try {
         const changed = await this.api(`contents/${REQUEST_PATH}`, { method: "PUT", body: {
-          message: `acquisition:${request_id}`, branch: REF, sha: prior.sha,
+          message: `acquisition:${request_id}`, branch: this.ref, sha: prior.sha,
           content: Buffer.from(JSON.stringify({ request_id, aweme_id })).toString("base64")
         } });
         commit = changed?.commit?.sha;
@@ -118,13 +126,13 @@ export class GithubAcquisition {
         await new Promise((resolve) => setTimeout(resolve, 150 * (attempt + 1)));
       }
     }
-    const task = { request_id, aweme_id, commit, created, exp: created + 24 * 60 * 60 * 1000 };
+    const task = { request_id, aweme_id, commit, ref: this.ref, created, exp: created + 24 * 60 * 60 * 1000 };
     return { status: "queued", request_id, aweme_id, task: this.ticket(task), poll_after_ms: 10_000 };
   }
   async poll(ticket) {
     this.configured();
     const task = this.parseTicket(ticket);
-    const list = await this.api(`actions/runs?event=push&branch=${encodeURIComponent(REF)}&created=${encodeURIComponent(">=" + new Date(task.created - 60_000).toISOString())}&per_page=100`);
+    const list = await this.api(`actions/runs?event=push&branch=${encodeURIComponent(task.ref ?? REF)}&created=${encodeURIComponent(">=" + new Date(task.created - 60_000).toISOString())}&per_page=100`);
     const run = list.workflow_runs?.find(r => r.path?.split("@")[0] === `.github/workflows/${WORKFLOW}` &&
       r.display_title === `acquisition:${task.request_id}` && r.head_sha === task.commit);
     if (!run) {
