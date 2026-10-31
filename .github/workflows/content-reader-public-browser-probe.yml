@@ -3,7 +3,7 @@ run-name: ${{ github.ref == 'refs/heads/codex/content-reader-acquisition' && git
 
 on:
   push:
-    branches: [codex/a2a-control-loop, codex/content-reader-acquisition]
+    branches: [codex/a2a-control-loop, codex/content-reader-acquisition, codex/content-reader-reliability-20261029]
     paths:
       - acquisition-request.json
       - src/services/public-browser.js
@@ -58,7 +58,7 @@ jobs:
           cache: npm
       - run: npm ci
       - name: Unit tests
-        run: node --test test/public-browser-runtime.test.js test/douyin-pipeline.test.js test/acquisition-worker.test.js test/hard-subtitle-ocr-player.test.js test/ocr-duration.test.js test/acquisition-result-diagnostics.test.js
+        run: node --test test/public-browser-runtime.test.js test/douyin-pipeline.test.js test/acquisition-worker.test.js test/hard-subtitle-ocr-player.test.js test/ocr-duration.test.js test/acquisition-result-diagnostics.test.js test/content-reader-reliability.test.js test/content-reader-longmedia-prefetch.test.js test/streaming-whisper.test.js
       - name: Existing fixed baseline probe (manual only)
         if: github.event_name == 'workflow_dispatch' && inputs.mode == 'probe'
         run: node scripts/probe-sparticuz-video.mjs '7688672103729483058'
@@ -74,7 +74,7 @@ jobs:
         run: node scripts/probe-content-reader-full.mjs 'https://www.douyin.com/video/7688672103729483058'
       - name: Validate acquisition inputs
         id: task
-        if: github.event_name == 'push' || inputs.mode == 'acquisition'
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'acquisition' || github.event_name == 'push' && (github.ref_name != 'codex/content-reader-reliability-20261029' || startsWith(github.event.head_commit.message, 'test-reader-run-live-regression')) }}
         env:
           INPUT_AWEME_ID: ${{ inputs.aweme_id }}
           INPUT_REQUEST_ID: ${{ inputs.request_id }}
@@ -82,7 +82,7 @@ jobs:
           node --input-type=module <<'NODE'
           import { appendFileSync, readFileSync } from 'node:fs';
           import { randomUUID } from 'node:crypto';
-          const onDemand = process.env.GITHUB_REF_NAME === 'codex/content-reader-acquisition';
+          const onDemand = ['codex/content-reader-acquisition', 'codex/content-reader-reliability-20261029'].includes(process.env.GITHUB_REF_NAME);
           const smoke = process.env.GITHUB_EVENT_NAME === 'push' && !onDemand;
           const data = onDemand ? JSON.parse(readFileSync('acquisition-request.json', 'utf8')) : null;
           const id = onDemand ? data.aweme_id : smoke ? '7688672103729483058' : process.env.INPUT_AWEME_ID;
@@ -90,8 +90,18 @@ jobs:
           if (!/^\d{15,22}$/.test(id ?? '') || !/^[a-f0-9-]{36}$/.test(request ?? '')) throw new Error('Invalid acquisition inputs');
           appendFileSync(process.env.GITHUB_OUTPUT, `aweme_id=${id}\nrequest_id=${request}\n`);
           NODE
+      - name: Install and verify FFmpeg for bounded range streaming
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'acquisition' || github.event_name == 'push' && (github.ref_name != 'codex/content-reader-reliability-20261029' || startsWith(github.event.head_commit.message, 'test-reader-run-live-regression')) }}
+        run: |
+          if ! command -v ffmpeg >/dev/null 2>&1; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
+          command -v ffmpeg
+          ffmpeg -version | head -n 1
       - name: Fresh acquisition and existing OCR
-        if: github.event_name == 'push' || inputs.mode == 'acquisition'
+        id: acquire
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'acquisition' || github.event_name == 'push' && (github.ref_name != 'codex/content-reader-reliability-20261029' || startsWith(github.event.head_commit.message, 'test-reader-run-live-regression')) }}
         env:
           ACQUISITION_AWEME_ID: ${{ steps.task.outputs.aweme_id }}
           ACQUISITION_REQUEST_ID: ${{ steps.task.outputs.request_id }}
@@ -99,13 +109,14 @@ jobs:
           CONTENT_READER_HARD_SUBTITLES: '1'
         run: node scripts/acquisition-worker.mjs
       - name: Upload full result and evidence
-        if: always() && steps.task.outputs.request_id != ''
+        if: always() && steps.task.outputs.request_id != '' && steps.acquire.outcome != 'skipped'
         uses: actions/upload-artifact@v4
         with:
           name: acquisition-${{ steps.task.outputs.request_id }}
           path: |
             acquisition-output/result.json
             acquisition-output/diagnostics.json
+            acquisition-output/streaming-progress.jsonl
           if-no-files-found: error
           retention-days: 1
 

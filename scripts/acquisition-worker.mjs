@@ -5,6 +5,9 @@ import { HardSubtitleOcr } from "../src/services/hard-subtitle-ocr.js";
 import { createLocalWhisperAsr } from "../src/services/local-whisper.js";
 import { verifyAcquisitionResult } from "../src/services/acquisition-result.js";
 import { createAcquisitionFailure, saveAcquisitionOutput } from "../src/services/acquisition-output.js";
+import { createStreamingWhisperAsr } from "../src/services/streaming-whisper.js";
+import { appendFile, mkdir } from "node:fs/promises";
+import { join } from "node:path";
 
 const aweme_id = process.env.ACQUISITION_AWEME_ID;
 const request_id = process.env.ACQUISITION_REQUEST_ID;
@@ -18,7 +21,8 @@ const browserService = new PublicBrowserService({
   viewport: { width: 1920, height: 1080, deviceScaleFactor: 1 }
 });
 const directProvider = new DirectPublicWebProvider({ browserService, retries: 2,
-  retryDelayMs: 500, videoNavigationTimeoutMs: 45_000, videoContentWaitMs: 22_000, settleMs: 700 });
+  retryDelayMs: 500, videoNavigationTimeoutMs: 45_000, videoContentWaitMs: 22_000, settleMs: 700,
+  anonymousDetailFallback: true });
 // Only the asynchronous worker gets a longer media/runtime budget.
 const hardSubtitles = new HardSubtitleOcr({ env: process.env, provider: directProvider, requestId: request_id,
   maxDurationMs: 7_200_000 });
@@ -26,12 +30,34 @@ const requestBudgetMs = 3_300_000;
 console.info(JSON.stringify({ event: "acquisition.policy", request_id,
   max_duration_ms: hardSubtitles.maxDurationMs, request_budget_ms: requestBudgetMs }));
 const localWhisper = createLocalWhisperAsr();
+const streamingOutputDir = join(process.cwd(), "acquisition-output");
+const streamingProgressPath = join(streamingOutputDir, "streaming-progress.jsonl");
+const streamingWhisper = createStreamingWhisperAsr({
+  minDurationMs: 1_000,
+  onProgress: async (event) => {
+    await mkdir(streamingOutputDir, { recursive: true });
+    await appendFile(streamingProgressPath, JSON.stringify(event) + "\n", { mode: 0o600 });
+    if (event.phase === "chunk_completed") {
+      console.info(JSON.stringify({
+        event: "streaming_asr.progress",
+        request_id: request_id,
+        aweme_id: aweme_id,
+        completed_chunks: event.completed_chunks,
+        total_chunks: event.total_chunks,
+        chunk_index: event.chunk_index,
+        video_duration_ms: event.video_duration_ms,
+        segment_count: event.segment_count
+      }));
+    }
+  }
+});
 let envelope;
 try {
   const result = await readPublicContent({ url: `https://www.douyin.com/video/${aweme_id}`, type: "video", fresh: true }, {
     fetchImpl: globalThis.fetch, providers: [directProvider],
     hardSubtitleOcr: hardSubtitles.read.bind(hardSubtitles),
     localAsr: localWhisper.available ? localWhisper.transcribe : null,
+    streamingAsr: localWhisper.available ? streamingWhisper : null,
     openAiApiKey: null, aiGatewayApiKey: null, vercelOidcToken: null,
     requestId: request_id, requestDeadlineAt: started + requestBudgetMs
   });

@@ -63,6 +63,111 @@ test('Preview trigger and poll bind the exact request commit, artifact and full 
   assert.equal(calls.filter(c => c.url.endsWith('/contents/acquisition-request.json')).length, 1);
   await assert.rejects(worker.poll(accepted.task + 'x'), { code: 'INVALID_TASK' });
 });
+test('explicit Preview reliability branch binds request, poll and signed task without changing default', async () => {
+  const reliabilityRef = 'codex/content-reader-reliability-20261029';
+  const reliabilityEnv = { ...env, CONTENT_READER_ACQUISITION_REF: reliabilityRef };
+  const requests = [];
+  const worker = new GithubAcquisition({ env: reliabilityEnv, fetchImpl: async (url, options) => {
+    requests.push(url);
+    if (url.includes('/contents/acquisition-request.json?')) {
+      assert.match(url, /ref=codex%2Fcontent-reader-reliability-20261029/);
+      return Response.json({ sha: 'b'.repeat(40) });
+    }
+    if (url.endsWith('/contents/acquisition-request.json')) {
+      const body = JSON.parse(options.body);
+      assert.equal(body.branch, reliabilityRef);
+      return Response.json({ commit: { sha } });
+    }
+    if (url.includes('/runs?')) {
+      assert.match(url, /branch=codex%2Fcontent-reader-reliability-20261029/);
+      return Response.json({ workflow_runs: [] });
+    }
+    throw new Error('Unexpected URL');
+  } });
+  const accepted = await worker.trigger(id);
+  assert.equal(worker.parseTicket(accepted.task).ref, reliabilityRef);
+  assert.equal((await worker.poll(accepted.task)).status, 'queued');
+  assert.equal(requests.length, 3);
+  assert.throws(() => new GithubAcquisition({
+    env: { ...env, CONTENT_READER_ACQUISITION_REF: 'untrusted/branch' }
+  }), { code: 'WORKER_REF_NOT_ALLOWED' });
+
+  // Existing signed tasks without ref remain pinned to the legacy worker branch.
+  const legacy = worker.ticket({
+    request_id: '2bf00ba4-c130-411e-a5be-98d820ef6d17', aweme_id: id,
+    commit: sha, created: Date.now(), exp: Date.now() + 60_000
+  });
+  const legacyWorker = new GithubAcquisition({ env: reliabilityEnv, fetchImpl: async url => {
+    assert.match(url, /branch=codex%2Fcontent-reader-acquisition/);
+    return Response.json({ workflow_runs: [] });
+  } });
+  assert.equal((await legacyWorker.poll(legacy)).status, 'queued');
+});
+
+test('parallel link submissions recover one stale-SHA GitHub conflict without duplicating request identity', async () => {
+  let reads = 0, writes = 0; const requests = [];
+  const worker = new GithubAcquisition({ env, fetchImpl: async (url, options) => {
+    if (url.includes('/contents/acquisition-request.json?')) {
+      reads++;
+      return Response.json({ sha: String(reads).padStart(40, 'b') });
+    }
+    if (url.endsWith('/contents/acquisition-request.json')) {
+      writes++;
+      const body = JSON.parse(options.body);
+      requests.push(JSON.parse(Buffer.from(body.content, 'base64').toString()));
+      if (writes === 1) return new Response(null, { status: 409 });
+      return Response.json({ commit: { sha } });
+    }
+    throw Error('Unexpected request');
+  } });
+  const task = await worker.trigger(id);
+  assert.equal(task.status, 'queued');
+  assert.equal(task.aweme_id, id);
+  assert.equal(reads, 2);
+  assert.equal(writes, 2);
+  assert.equal(requests[0].request_id, requests[1].request_id);
+  assert.equal(task.request_id, requests[0].request_id);
+  assert.equal(worker.parseTicket(task.task).commit, sha);
+});
+test('ambiguous errors do not resubmit a video and risk duplicate processing', async () => {
+  let writes = 0;
+  const worker = new GithubAcquisition({ env, fetchImpl: async (url) => {
+    if (url.includes('/contents/acquisition-request.json?')) return Response.json({ sha: 'b'.repeat(40) });
+    writes++;
+    return new Response(null, { status: 502 });
+  } });
+  await assert.rejects(worker.trigger(id), { code: 'GITHUB_WORKER_HTTP_ERROR' });
+  assert.equal(writes, 1);
+});
+test('queued GitHub runs tolerate scheduling delay and overlong runs finish as failed', async () => {
+  let now = 1_000_000, stage = 'missing';
+  const request_id = '2bf00ba4-c130-411e-a5be-98d820ef6d17';
+  const worker = new GithubAcquisition({
+    env, now: () => now,
+    fetchImpl: async (url) => {
+      if (!url.includes('/runs?')) throw Error('Unexpected endpoint');
+      return Response.json({ workflow_runs: stage === 'missing' ? [] : [{
+        id: 72, path: '.github/workflows/content-reader-public-browser-probe.yml@codex/content-reader-acquisition',
+        display_title: `acquisition:${request_id}`, head_sha: sha,
+        status: 'in_progress', conclusion: null, run_attempt: 1
+      }] });
+    }
+  });
+  const task = worker.ticket({
+    request_id, aweme_id: id, commit: sha, created: now, exp: now + 24 * 60 * 60_000
+  });
+  now += 3 * 60_000;
+  assert.equal((await worker.poll(task)).status, 'queued');
+  now += 8 * 60_000;
+  await assert.rejects(worker.poll(task), { code: 'WORKER_RUN_NOT_FOUND' });
+  stage = 'running';
+  const result = await worker.poll(task);
+  assert.equal(result.status, 'running');
+  now += 70 * 60_000;
+  const overdue = await worker.poll(task);
+  assert.equal(overdue.status, 'failed');
+  assert.equal(overdue.error.code, 'WORKER_RUN_TIMEOUT');
+});
 test('cached, partial and mismatched transcripts are rejected', () => {
   const task = { request_id: 'test', aweme_id: id };
   for (const mutate of [
